@@ -24,7 +24,7 @@ jobs:
             - llvm-9-dev
     - name: Clang-9 Release
       stage: Legacy
-      env: CXX=clang++-9 BUILD_TYPE=Release
+      env: CXX=clang++-9 BUILD_TYPE=Release LLVM_VERSION=9
       addons: *clang9
 
     # Clang latest
