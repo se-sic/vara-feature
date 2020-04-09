@@ -52,6 +52,7 @@ if (NOT VARA_FEATURE_IN_TREE)
   if (${LLVM_REQUESTED_VERSION})
     find_package(LLVM ${LLVM_REQUESTED_VERSION} REQUIRED CONFIG)
   else()
+    message(STATUS "Not set")
     find_package(LLVM 10 REQUIRED CONFIG)
   endif()
 
