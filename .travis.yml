@@ -13,7 +13,7 @@ jobs:
     # Clang legacy
     - name: Clang-9 Debug
       stage: Legacy
-      env: CXX=clang++-9 BUILD_TYPE=Debug
+      env: CXX=clang++-9 BUILD_TYPE=Debug LLVM_VERSION=9
       addons: &clang9
         apt:
           sources:
@@ -49,7 +49,7 @@ jobs:
 
     - name: GCC-9 Debug
       stage: Latest
-      env: CXX=g++-9 BUILD_TYPE=Debug
+      env: CXX=g++-9 BUILD_TYPE=Debug LLVM_VERSION=10
       addons: &gcc9
         apt:
           sources:
@@ -66,7 +66,7 @@ jobs:
 script:
   - mkdir build
   - cd build
-  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?}
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION}
   - cmake --build . -- -j ${JOBS}
 
 branches:
