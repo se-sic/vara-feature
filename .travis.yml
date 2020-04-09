@@ -7,9 +7,28 @@ dist: bionic
 jobs:
   include:
 
+    ################
     # Clang on linux
 
-    - name: Clang-10
+    # Clang legacy
+    - name: Clang-9 Debug
+      stage: Legacy
+      env: CXX=clang++-9 BUILD_TYPE=Debug
+      addons: &clang9
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+          packages:
+            - clang-9
+            - llvm-9-dev
+    - name: Clang-9 Release
+      stage: Legacy
+      env: CXX=clang++-9 BUILD_TYPE=Release
+      addons: *clang9
+
+    # Clang latest
+    - name: Clang-10 Debug
       stage: Latest
       env: CXX=clang++-10 BUILD_TYPE=Debug
       addons: &clang10
@@ -20,16 +39,29 @@ jobs:
           packages:
             - clang-10
             - llvm-10-dev
+    - name: Clang-10 Release
+      stage: Latest
+      env: CXX=clang++-10 BUILD_TYPE=Release
+      addons: *clang10
 
-                #addons:
-                #    apt:
-                #      packages:
-                #        - ninja
-                #        - cmake
+    ##############
+    # GCC on linux
 
-                #compiler:
-                #  - clang
-                #  - gcc
+    - name: GCC-9 Debug
+      stage: Latest
+      env: CXX=g++-9 BUILD_TYPE=Debug
+      addons: &gcc9
+        apt:
+          sources:
+            - sourceline:  ppa:ubuntu-toolchain-r/test
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main'
+              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+          packages:
+            - g++-9
+            - llvm-10-dev
+    - name: GCC-9 Release
+      env: CXX=g++-9 BUILD_TYPE=Release
+      addons: *gcc9
 
 script:
   - mkdir build

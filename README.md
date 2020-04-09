@@ -16,7 +16,7 @@ git clone https://github.com/se-passau/vara-feature
 cd vara-feature
 mkdir build && cd build
 CC=clang CXX=clang++ cmake ..
-make
+cmake --build .
 ```
 
 
