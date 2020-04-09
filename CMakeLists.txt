@@ -47,6 +47,9 @@ include("vara_feature_macros")
 # Include external dependencies
 if (NOT VARA_FEATURE_IN_TREE)
   set(MIN_LLVM_REQUIRED 9)
+  SET(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
+  SET(CMAKE_FIND_PACKAGE_SORT_DIRECTION DEC)
+
   # Only search for LLVM if we build out of tree
   find_package(LLVM REQUIRED CONFIG)
   if (NOT "${LLVM_VERSION_MAJOR}" GREATER_EQUAL "${MIN_LLVM_REQUIRED}")
