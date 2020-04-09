@@ -3,7 +3,7 @@ if (DEFINED LLVM_MAIN_SRC_DIR)
 endif()
 
 if (NOT VARA_FEATURE_IN_TREE)
-  cmake_minimum_required (VERSION 3.13)
+  cmake_minimum_required (VERSION 3.12)
   project(vara-feature)
 
   file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
