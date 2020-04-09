@@ -1,4 +1,5 @@
 # VaRA feature library
+[![Documentation Status](https://readthedocs.org/projects/vara/badge/?version=vara-dev)](https://vara.readthedocs.io/en/vara-dev/?badge=vara-dev)
 
 Installation
 ------------
