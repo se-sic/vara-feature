@@ -46,8 +46,12 @@ include("vara_feature_macros")
 
 # Include external dependencies
 if (NOT VARA_FEATURE_IN_TREE)
+  set(MIN_LLVM_REQUIRED 9)
   # Only search for LLVM if we build out of tree
-  find_package(LLVM 9 REQUIRED CONFIG)
+  find_package(LLVM REQUIRED CONFIG)
+  if (NOT "${LLVM_VERSION_MAJOR}" GREATER_EQUAL "${MIN_LLVM_REQUIRED}")
+    message(FATAL_ERROR "LLVM version error: minimal required LLVM-${MIN_LLVM_REQUIRED} but found LLVM-${LLVM_VERSION_MAJOR}. ")
+  endif()
   find_library(LLVM_LIBRARY NAMES llvm REQUIRED)
   include_directories(${LLVM_INCLUDE_DIRS})
   link_directories(${LLVM_LIB_PATH} ${LLVM_LIBRARY_DIRS})
