@@ -29,6 +29,27 @@ if (${VARA_FEATURE_COLORED_OUTPUT})
     endif ()
 endif ()
 
+# Setup git submodules (external projects)
+find_package(Git QUIET)
+if (GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+  option(VARA_FEATURE_GIT_SUBMODULE "Checkout vara-feature's submodules during build" ON)
+  if (VARA_GIT_SUBMODULE)
+    message(STATUS "vara-feature update submodules")
+    execute_process(
+      COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      RESULT_VARIABLE GIT_SUBMOD_RESULT
+      )
+    if (NOT GIT_SUBMOD_RESULT EQUAL "0")
+      message(
+        FATAL_ERROR "git submodule update --init failed with ${VARA_FEATURE_GIT_SUBMODULE}"
+        )
+    endif()
+  endif()
+endif()
+
+# Setup custom targets
+
 find_program(VARA_FEATURE_RUN_CLANG_TIDY
   NAMES run-clang-tidy.py
   PATHS /usr/lib/llvm/*/share/clang/
@@ -72,3 +93,17 @@ include_directories(include/)
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
+
+if (VARA_FEATURE_IN_TREE)
+  # Set llvm distributed includes for gtest header
+  include_directories(${LLVM_MAIN_SRC_DIR}/utils/unittest/googletest/include)
+  include_directories(${LLVM_MAIN_SRC_DIR}/utils/unittest/googlemock/include)
+else()
+  add_subdirectory(external/googletest EXCLUDE_FROM_ALL)
+  include_directories(external/googletest/googletest/include)
+  include_directories(external/googletest/googlemock/include)
+
+  enable_testing()
+endif()
+
+add_subdirectory(unittests)

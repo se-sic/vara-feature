@@ -11,6 +11,7 @@ class Feature {
 public:
   void doStuff();
   void addStuff(int i);
+  size_t getSize() const { data.size(); }
 };
 
 } // namespace vara::feature
