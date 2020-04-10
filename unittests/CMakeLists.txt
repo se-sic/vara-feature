@@ -42,8 +42,6 @@ function(add_vara_unittest test_name)
     )
     set(CTEST_OUTPUT_ON_FAILURE 1)
   endif()
-  # TODO: add link dep
-  # target_link_libraries(${test_name} PRIVATE VaRA)
   target_link_libraries(${test_name} PRIVATE VaRAFeature)
 endfunction()
 
@@ -53,3 +51,4 @@ include_directories(
   )
 
 add_subdirectory(Feature)
+add_subdirectory(Utils)
