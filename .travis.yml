@@ -69,6 +69,7 @@ script:
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION}
   - cmake --build . -- -j ${JOBS}
   - cmake --build . --target check-vara-feature-unittests
+  - cmake --build . --target tidy-vara-feature
 
 branches:
   only:

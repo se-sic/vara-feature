@@ -12,6 +12,12 @@ public:
   void doStuff();
   void addStuff(int i);
   size_t getSize() const { return data.size(); }
+  int doStuffer() const {
+    int counter = 0;
+    for (auto Iter = data.begin(); Iter != data.end(); ++Iter) {
+      counter += *Iter;
+    }
+  }
 };
 
 } // namespace vara::feature

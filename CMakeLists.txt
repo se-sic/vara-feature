@@ -56,7 +56,7 @@ find_program(VARA_FEATURE_RUN_CLANG_TIDY
 )
 message(STATUS ${CMAKE_BINARY_DIR})
 add_custom_target(tidy-vara-feature
-  ${VARA_FEATURE_RUN_CLANG_TIDY}
+  ${VARA_FEATURE_RUN_CLANG_TIDY} -header-filter=vara/.* lib/* unittests/*
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   COMMENT "Run clang-tidy over vara-feature files"
 )
