@@ -6,17 +6,18 @@
 namespace vara::feature {
 
 class Feature {
-  llvm::SmallVector<int, 8> data;
+  llvm::SmallVector<int, 8> Data;
 
 public:
   void doStuff();
-  void addStuff(int i);
-  size_t getSize() const { return data.size(); }
-  int doStuffer() const {
-    int counter = 0;
-    for (auto Iter = data.begin(); Iter != data.end(); ++Iter) {
-      counter += *Iter;
+  void addStuff(int I);
+  [[nodiscard]] size_t getSize() const { return Data.size(); }
+  [[nodiscard]] int doStuffer() const {
+    int Counter = 0;
+    for (auto Value : Data) {
+      Counter += Value;
     }
+    return Counter;
   }
 };
 

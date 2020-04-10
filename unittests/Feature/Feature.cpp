@@ -4,8 +4,8 @@
 
 namespace {
 TEST(Feature, getSize) {
-  vara::feature::Feature f;
-  f.addStuff(42);
-  EXPECT_EQ(1u, f.getSize());
+  vara::feature::Feature F;
+  F.addStuff(42);
+  EXPECT_EQ(1U, F.getSize());
 }
-}
+} // namespace
