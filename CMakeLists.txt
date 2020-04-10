@@ -51,15 +51,9 @@ endif()
 # Setup custom targets
 
 find_program(VARA_FEATURE_RUN_CLANG_TIDY
-  NAMES run-clang-tidy.py
-  PATHS /usr/lib/llvm/*/share/clang/
+  NAMES run-clang-tidy.py run-clang-tidy-10.py run-clang-tidy
+  PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
 )
-if (NOT ${VARA_FEATURE_RUN_CLANG_TIDY})
-  find_program(VARA_FEATURE_RUN_CLANG_TIDY
-    NAMES run-clang-tidy
-    PATHS /usr/bin/run-clang-tidy
-  )
-endif()
 add_custom_target(tidy-vara-feature
   ${VARA_FEATURE_RUN_CLANG_TIDY} -header-filter=vara/.* lib/* unittests/*
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
