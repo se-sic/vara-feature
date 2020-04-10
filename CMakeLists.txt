@@ -57,6 +57,7 @@ find_program(VARA_FEATURE_RUN_CLANG_TIDY
 if (NOT ${VARA_FEATURE_RUN_CLANG_TIDY})
   find_program(VARA_FEATURE_RUN_CLANG_TIDY
     NAMES run-clang-tidy
+    PATHS /usr/bin/run-clang-tidy
   )
 endif()
 add_custom_target(tidy-vara-feature
