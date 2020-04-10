@@ -54,7 +54,11 @@ find_program(VARA_FEATURE_RUN_CLANG_TIDY
   NAMES run-clang-tidy.py
   PATHS /usr/lib/llvm/*/share/clang/
 )
-message(STATUS ${CMAKE_BINARY_DIR})
+if (NOT ${VARA_FEATURE_RUN_CLANG_TIDY})
+  find_program(VARA_FEATURE_RUN_CLANG_TIDY
+    NAMES run-clang-tidy
+  )
+endif()
 add_custom_target(tidy-vara-feature
   ${VARA_FEATURE_RUN_CLANG_TIDY} -header-filter=vara/.* lib/* unittests/*
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
