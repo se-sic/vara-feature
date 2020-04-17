@@ -1,5 +1,6 @@
 set(FEATURE_LIB_SRC
   Feature.cpp
+  XmlParser.cpp
 )
 
 set(LLVM_LINK_COMPONENTS
@@ -10,4 +11,9 @@ set(LLVM_LINK_COMPONENTS
 
 add_vara_library(VaRAFeature
   ${FEATURE_LIB_SRC}
+)
+
+target_link_libraries(VaRAFeature
+  PUBLIC
+  ${LIBXML2_LIBRARIES}
 )
