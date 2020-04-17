@@ -1,0 +1,81 @@
+language: cpp
+
+os: linux
+dist: bionic
+
+jobs:
+  include:
+
+    ################
+    # Clang on linux
+
+    # Clang legacy
+    - name: Clang-9 Debug
+      stage: Legacy
+      env: CXX=clang++-9 BUILD_TYPE=Debug LLVM_VERSION=9
+      addons: &clang9
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main'
+              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+          packages:
+            - clang-9
+            - llvm-9-dev
+            - clang-tidy-10
+    - name: Clang-9 Release
+      stage: Legacy
+      env: CXX=clang++-9 BUILD_TYPE=Release LLVM_VERSION=9
+      addons: *clang9
+
+    # Clang latest
+    - name: Clang-10 Debug
+      stage: Latest
+      env: CXX=clang++-10 BUILD_TYPE=Debug
+      addons: &clang10
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main'
+              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+          packages:
+            - clang-10
+            - clang-tidy-10
+            - llvm-10-dev
+    - name: Clang-10 Release
+      stage: Latest
+      env: CXX=clang++-10 BUILD_TYPE=Release
+      addons: *clang10
+
+    ##############
+    # GCC on linux
+
+    - name: GCC-9 Debug
+      stage: Latest
+      env: CXX=g++-9 BUILD_TYPE=Debug
+      addons: &gcc9
+        apt:
+          sources:
+            - sourceline:  ppa:ubuntu-toolchain-r/test
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main'
+              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+          packages:
+            - g++-9
+            - llvm-10-dev
+            - clang-tidy-10
+    - name: GCC-9 Release
+      env: CXX=g++-9 BUILD_TYPE=Release
+      addons: *gcc9
+
+script:
+  - mkdir build
+  - cd build
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION}
+  - cmake --build . -- -j ${JOBS}
+  - cmake --build . --target check-vara-feature-unittests
+  - cmake --build . --target tidy-vara-feature
+
+branches:
+  only:
+    - vara
+    - vara-dev
