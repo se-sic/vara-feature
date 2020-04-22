@@ -26,8 +26,8 @@ private:
   Feature *Root;
 
 public:
-  FeatureModel(string VM, FeatureMapTy &Features, ConstraintsTy &Constraints)
-      : Name(std::move(VM)), Features(std::move(Features)),
+  FeatureModel(string Name, FeatureMapTy Features, ConstraintsTy Constraints)
+      : Name(std::move(Name)), Features(std::move(Features)),
         Constraints(std::move(Constraints)), Root(Features["root"].get()) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }

@@ -217,7 +217,7 @@ std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
     }
     // TODO (se-passau/VaRA#42): relationships or and xor
   }
-  return std::make_unique<FeatureModel>(VM, Features, Constraints);
+  return std::make_unique<FeatureModel>(VM, std::move(Features), Constraints);
 }
 
 bool XmlParser::parseDtd(const string &Filename) {
