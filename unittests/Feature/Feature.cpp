@@ -2,10 +2,9 @@
 
 #include "gtest/gtest.h"
 
-namespace {
-TEST(Feature, getSize) {
-  vara::feature::Feature F;
-  F.addStuff(42);
-  EXPECT_EQ(1U, F.getSize());
+namespace vara::feature {
+TEST(BinaryFeature, getName) {
+  BinaryFeature F("Test", false);
+  EXPECT_EQ("Test", F.getName());
 }
-} // namespace
+} // namespace vara::feature
