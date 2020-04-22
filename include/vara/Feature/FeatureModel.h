@@ -1,12 +1,13 @@
-#ifndef VARA_FEATUREMODEL_FEATUREMODEL_H
-#define VARA_FEATUREMODEL_FEATUREMODEL_H
+#ifndef VARA_FEATURE_FEATUREMODEL_H
+#define VARA_FEATURE_FEATUREMODEL_H
+
+#include "vara/Feature/Feature.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
 
-#include "vara/Feature/Feature.h"
-
 using std::string;
+
 namespace vara {
 
 //===----------------------------------------------------------------------===//
@@ -16,16 +17,12 @@ namespace vara {
 class FeatureModel {
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<FMFeature>>;
-
   using ConstraintsTy = std::vector<std::vector<std::pair<FMFeature *, bool>>>;
 
 private:
   string Name;
-
   FeatureMapTy Features;
-
   ConstraintsTy Constraints;
-
   FMFeature *Root;
 
 public:
@@ -219,4 +216,4 @@ struct DOTGraphTraits<vara::FeatureModel *> : public DefaultDOTGraphTraits {
 };
 } // namespace llvm
 
-#endif // LLVM_TOOLS_VARA_INCLUDE_VARA_FEATUREMODEL_FEATUREMODEL_H
+#endif // VARA_FEATURE_FEATUREMODEL_H

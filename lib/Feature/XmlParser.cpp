@@ -215,7 +215,7 @@ std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
         P.second->addRelationship(std::make_unique<Mandatory<FMFeature>>(C));
       }
     }
-    // TODO relationships: or and xor
+    // TODO (se-passau/VaRA#42): relationships or and xor
   }
   return std::make_unique<FeatureModel>(VM, Features, Constraints);
 }

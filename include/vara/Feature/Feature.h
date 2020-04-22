@@ -1,13 +1,15 @@
-#ifndef VARA_FEATUREMODEL_FMFEATURE_H
-#define VARA_FEATUREMODEL_FMFEATURE_H
-
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/Support/raw_ostream.h"
-#include <variant>
+#ifndef VARA_FEATURE_FEATURE_H
+#define VARA_FEATURE_FEATURE_H
 
 #include "vara/Feature/Relationship.h"
 
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/Support/raw_ostream.h"
+
+#include <variant>
+
 using std::string;
+
 namespace vara {
 
 //===----------------------------------------------------------------------===//
@@ -18,27 +20,19 @@ namespace vara {
 class FMFeature {
 public:
   using FeatureListType = typename llvm::SmallVector<FMFeature *, 3>;
-
   using RelationshipListTy =
       typename llvm::SmallVector<std::unique_ptr<Relationship<FMFeature>>, 3>;
-
   using feature_iterator = typename FeatureListType::iterator;
+  using relationship_iterator = RelationshipListTy ::iterator;
 
 private:
   string Name;
-
   llvm::SmallVector<FMFeature *, 1> Parents;
-
   FeatureListType Children;
-
   FeatureListType Excludes;
-
   FeatureListType Implications;
-
   FeatureListType Alternatives;
-
   RelationshipListTy Relationships;
-
   bool Opt;
 
 protected:
@@ -102,8 +96,6 @@ public:
     Alternatives.push_back(Alternative);
   }
 
-  using relationship_iterator = RelationshipListTy ::iterator;
-
   relationship_iterator relationships_begin() { return Relationships.begin(); }
   relationship_iterator relationships_end() { return Relationships.end(); }
   llvm::iterator_range<relationship_iterator> relationships() {
@@ -140,4 +132,4 @@ public:
 
 } // namespace vara
 
-#endif // VARA_FEATUREMODEL_FEATUREMODEL_H
+#endif // VARA_FEATURE_FEATURE_H

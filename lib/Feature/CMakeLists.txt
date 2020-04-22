@@ -14,6 +14,6 @@ add_vara_library(VaRAFeature
 )
 
 target_link_libraries(VaRAFeature
-  PUBLIC
+  LINK_PUBLIC
   ${LIBXML2_LIBRARIES}
 )

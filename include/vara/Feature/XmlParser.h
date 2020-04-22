@@ -1,10 +1,11 @@
-#ifndef VARA_FEATUREMODEL_XMLPARSER_H
-#define VARA_FEATUREMODEL_XMLPARSER_H
+#ifndef VARA_FEATURE_XMLPARSER_H
+#define VARA_FEATURE_XMLPARSER_H
 
 #include "vara/Feature/FeatureModel.h"
 
 #include "libxml/parser.h"
 #include "libxml/tree.h"
+
 #include <memory>
 
 namespace vara {
@@ -20,35 +21,20 @@ class XmlParser {
 
 private:
   std::string DocPath;
-
   std::string DtdPath;
-
   std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd;
-
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc;
-
   std::string VM;
-
   FeatureModel::FeatureMapTy Features;
-
   FeatureModel::ConstraintsTy Constraints;
-
   std::vector<std::pair<std::string, std::string>> RawEdges;
-
   std::vector<std::pair<std::string, std::string>> RawExcludes;
-
   std::vector<std::vector<std::pair<std::string, bool>>> RawConstraints;
-
   void parseConfigurationOption(xmlNode *N, bool Num);
-
   void parseOptions(xmlNode *N, bool Num);
-
   void parseConstraints(xmlNode *N);
-
   void parseVm(xmlNode *N);
-
   bool parseDtd(const std::string &Filename);
-
   bool parseDoc(const std::string &Filename);
 
 public:
@@ -70,4 +56,4 @@ public:
 };
 } // namespace vara
 
-#endif // VARA_FEATUREMODEL_XMLPARSER_H
+#endif // VARA_FEATURE_XMLPARSER_H

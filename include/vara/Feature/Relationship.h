@@ -1,7 +1,11 @@
-#ifndef VARA_TMODEL_RELATIONSHIP_H
-#define VARA_TMODEL_RELATIONSHIP_H
+#ifndef VARA_FEATURE_RELATIONSHIP_H
+#define VARA_FEATURE_RELATIONSHIP_H
+
+#include "llvm/Support/raw_ostream.h"
 
 #include <sstream>
+#include <variant>
+
 namespace vara {
 
 //===----------------------------------------------------------------------===//
@@ -78,4 +82,4 @@ public:
 
 } // namespace vara
 
-#endif // VARA_TMODEL_RELATIONSHIP_H
+#endif // VARA_FEATURE_RELATIONSHIP_H
