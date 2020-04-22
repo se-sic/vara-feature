@@ -89,6 +89,9 @@ endif()
 
 include_directories(include/)
 
+find_package(LibXml2 REQUIRED)
+include_directories(${LIBXML2_INCLUDE_DIR})
+
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)

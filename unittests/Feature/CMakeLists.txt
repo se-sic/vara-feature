@@ -1,3 +1,3 @@
-add_vara_unittest(VaRAFeatureUtilsTests
+add_vara_unittest(VaRAFeatureTests
   Feature.cpp
 )

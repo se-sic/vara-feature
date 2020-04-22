@@ -3,6 +3,9 @@ language: cpp
 os: linux
 dist: bionic
 
+before_install:
+  - sudo apt-get -y install libxml2-dev
+
 jobs:
   include:
 
