@@ -1,6 +1,6 @@
 #include "vara/Feature/XmlParser.h"
 
-int main(/*int argc, char ** argv*/) {
+int main(/*int argc, char **argv*/) {
   auto P = vara::feature::XmlParser(
       "../../../vara/external/vara-feature/test/test.xml",
       "../../../vara/external/vara-feature/vm.dtd");
