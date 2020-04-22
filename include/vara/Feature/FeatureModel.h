@@ -148,8 +148,8 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
     return "Feature model for " + FM->getName().str();
   }
 
-  std::string getNodeLabel(const vara::feature::Feature *Node,
-                           const vara::feature::FeatureModel *FM) {
+  static std::string getNodeLabel(const vara::feature::Feature *Node,
+                                  const vara::feature::FeatureModel *FM) {
     std::stringstream S;
     S << Node->getName();
     return S.str();
@@ -160,9 +160,10 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
     return "";
   }
 
-  std::string getEdgeAttributes(const vara::feature::Feature *Node,
-                                vara::feature::Feature::feature_iterator I,
-                                const vara::feature::FeatureModel *FM) {
+  static std::string
+  getEdgeAttributes(const vara::feature::Feature *Node,
+                    vara::feature::Feature::feature_iterator I,
+                    const vara::feature::FeatureModel *FM) {
     std::stringstream S;
     S << "arrowhead=\"";
     if ((*I)->isOptional()) {
@@ -175,9 +176,11 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
   template <typename GraphWriter>
   static void addCustomGraphFeatures(vara::feature::FeatureModel *FM,
                                      GraphWriter &W) {
-    llvm::SmallSet<
-        std::pair<vara::feature::Feature *, vara::feature::Feature *>, 10>
-        SkipE, SkipI, SkipA;
+    using FeatureSetTy = llvm::SmallSet<
+        std::pair<vara::feature::Feature *, vara::feature::Feature *>, 10>;
+    FeatureSetTy SkipE;
+    FeatureSetTy SkipI;
+    FeatureSetTy SkipA;
     for (auto *Node : *FM) {
       for (auto &Exclude : Node->excludes()) {
         if (vara::feature::FeatureModel::skip(std::make_pair(Node, Exclude),
