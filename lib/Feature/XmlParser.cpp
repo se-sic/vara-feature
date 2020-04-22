@@ -3,7 +3,7 @@
 #include <iostream>
 #include <regex>
 
-namespace vara {
+namespace vara::feature {
 
 void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
   string Name;
@@ -202,7 +202,7 @@ std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
     }
   }
 
-  FMFeature *Root = Features["root"].get();
+  Feature *Root = Features["root"].get();
   for (const auto &P : Features) {
     if (P.second->isRoot() && P.second.get() != Root) {
       Root->addChild(P.second.get());
@@ -210,9 +210,9 @@ std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
     }
     for (auto &C : *P.second) {
       if (C->isOptional()) {
-        P.second->addRelationship(std::make_unique<Optional<FMFeature>>(C));
+        P.second->addRelationship(std::make_unique<Optional<Feature>>(C));
       } else {
-        P.second->addRelationship(std::make_unique<Mandatory<FMFeature>>(C));
+        P.second->addRelationship(std::make_unique<Mandatory<Feature>>(C));
       }
     }
     // TODO (se-passau/VaRA#42): relationships or and xor
@@ -264,4 +264,4 @@ bool XmlParser::parseDoc(const string &Filename) {
   return Doc.get();
 }
 
-} // namespace vara
+} // namespace vara::feature

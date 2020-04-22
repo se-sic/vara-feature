@@ -1,8 +1,8 @@
 #include "vara/Feature/Feature.h"
 
-namespace vara {
+namespace vara::feature {
 
-std::string FMFeature::toString() const {
+std::string Feature::toString() const {
   std::stringstream StrS;
   StrS << "name: \"" << Name << "\",\n  optional: " << (Opt ? "true" : "false")
        << ",\n  parents: [";
@@ -55,7 +55,7 @@ std::string FMFeature::toString() const {
 
 std::string NumericFeature::toString() const {
   std::stringstream StrS;
-  StrS << FMFeature::toString();
+  StrS << Feature::toString();
   if (std::holds_alternative<std::pair<int, int>>(Vals)) {
     std::pair<int, int> Pair = std::get<std::pair<int, int>>(Vals);
     StrS << ",\n  minValue: " << Pair.first << ",\n  maxValue: " << Pair.second;
@@ -72,6 +72,6 @@ std::string NumericFeature::toString() const {
   return StrS.str();
 }
 
-std::string BinaryFeature::toString() const { return FMFeature::toString(); }
+std::string BinaryFeature::toString() const { return Feature::toString(); }
 
-} // namespace vara
+} // namespace vara::feature

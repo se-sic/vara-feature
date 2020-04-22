@@ -10,24 +10,24 @@
 
 using std::string;
 
-namespace vara {
+namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
 //                               Feature Class
 //===----------------------------------------------------------------------===//
 
 /// \brief Base class for components of \a FeatureModel.
-class FMFeature {
+class Feature {
 public:
-  using FeatureListType = typename llvm::SmallVector<FMFeature *, 3>;
+  using FeatureListType = typename llvm::SmallVector<Feature *, 3>;
   using RelationshipListTy =
-      typename llvm::SmallVector<std::unique_ptr<Relationship<FMFeature>>, 3>;
+      typename llvm::SmallVector<std::unique_ptr<Relationship<Feature>>, 3>;
   using feature_iterator = typename FeatureListType::iterator;
   using relationship_iterator = RelationshipListTy ::iterator;
 
 private:
   string Name;
-  llvm::SmallVector<FMFeature *, 1> Parents;
+  llvm::SmallVector<Feature *, 1> Parents;
   FeatureListType Children;
   FeatureListType Excludes;
   FeatureListType Implications;
@@ -36,10 +36,10 @@ private:
   bool Opt;
 
 protected:
-  FMFeature(string Name, bool Opt) : Name(std::move(Name)), Opt(Opt) {}
+  Feature(string Name, bool Opt) : Name(std::move(Name)), Opt(Opt) {}
 
 public:
-  virtual ~FMFeature() = default;
+  virtual ~Feature() = default;
 
   [[nodiscard]] string getName() const { return Name; }
 
@@ -58,32 +58,32 @@ public:
   llvm::iterator_range<feature_iterator> children() {
     return llvm::make_range(begin(), end());
   }
-  void addChild(FMFeature *Child) { Children.push_back(Child); }
+  void addChild(Feature *Child) { Children.push_back(Child); }
 
-  llvm::SmallVector<FMFeature *, 1>::iterator parents_begin() {
+  llvm::SmallVector<Feature *, 1>::iterator parents_begin() {
     return Parents.begin();
   }
-  llvm::SmallVector<FMFeature *, 1>::iterator parents_end() {
+  llvm::SmallVector<Feature *, 1>::iterator parents_end() {
     return Parents.end();
   }
-  llvm::iterator_range<llvm::SmallVector<FMFeature *, 1>::iterator> parents() {
+  llvm::iterator_range<llvm::SmallVector<Feature *, 1>::iterator> parents() {
     return llvm::make_range(parents_begin(), parents_end());
   }
-  void addParent(FMFeature *Parent) { Parents.push_back(Parent); }
+  void addParent(Feature *Parent) { Parents.push_back(Parent); }
 
   feature_iterator excludes_begin() { return Excludes.begin(); }
   feature_iterator excludes_end() { return Excludes.end(); }
   llvm::iterator_range<feature_iterator> excludes() {
     return llvm::make_range(excludes_begin(), excludes_end());
   }
-  void addExclude(FMFeature *Exclude) { Excludes.push_back(Exclude); }
+  void addExclude(Feature *Exclude) { Excludes.push_back(Exclude); }
 
   feature_iterator implications_begin() { return Implications.begin(); }
   feature_iterator implications_end() { return Implications.end(); }
   llvm::iterator_range<feature_iterator> implications() {
     return llvm::make_range(implications_begin(), implications_end());
   }
-  void addImplication(FMFeature *Implication) {
+  void addImplication(Feature *Implication) {
     Implications.push_back(Implication);
   }
 
@@ -92,7 +92,7 @@ public:
   llvm::iterator_range<feature_iterator> alternatives() {
     return llvm::make_range(alternatives_begin(), alternatives_end());
   }
-  void addAlternative(FMFeature *Alternative) {
+  void addAlternative(Feature *Alternative) {
     Alternatives.push_back(Alternative);
   }
 
@@ -101,7 +101,7 @@ public:
   llvm::iterator_range<relationship_iterator> relationships() {
     return llvm::make_range(relationships_begin(), relationships_end());
   }
-  void addRelationship(std::unique_ptr<Relationship<FMFeature>> Relationship) {
+  void addRelationship(std::unique_ptr<Relationship<Feature>> Relationship) {
     Relationships.push_back(std::move(Relationship));
   }
 
@@ -109,27 +109,27 @@ public:
 };
 
 /// Options without arguments.
-class BinaryFeature : public FMFeature {
+class BinaryFeature : public Feature {
 
 public:
-  BinaryFeature(string Name, bool Opt) : FMFeature(std::move(Name), Opt) {}
+  BinaryFeature(string Name, bool Opt) : Feature(std::move(Name), Opt) {}
 
   [[nodiscard]] string toString() const override;
 };
 
 /// Options with numeric values.
-class NumericFeature : public FMFeature {
+class NumericFeature : public Feature {
 private:
   std::variant<std::pair<int, int>, std::vector<int>> Vals;
 
 public:
   NumericFeature(string Name, bool Opt,
                  std::variant<std::pair<int, int>, std::vector<int>> Vals)
-      : FMFeature(std::move(Name), Opt), Vals(std::move(Vals)) {}
+      : Feature(std::move(Name), Opt), Vals(std::move(Vals)) {}
 
   [[nodiscard]] string toString() const override;
 };
 
-} // namespace vara
+} // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATURE_H

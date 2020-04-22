@@ -8,7 +8,7 @@
 
 using std::string;
 
-namespace vara {
+namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
 //                               FeatureModel
@@ -16,14 +16,14 @@ namespace vara {
 
 class FeatureModel {
 public:
-  using FeatureMapTy = llvm::StringMap<std::unique_ptr<FMFeature>>;
-  using ConstraintsTy = std::vector<std::vector<std::pair<FMFeature *, bool>>>;
+  using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
+  using ConstraintsTy = std::vector<std::vector<std::pair<Feature *, bool>>>;
 
 private:
   string Name;
   FeatureMapTy Features;
   ConstraintsTy Constraints;
-  FMFeature *Root;
+  Feature *Root;
 
 public:
   FeatureModel(string VM, FeatureMapTy &Features, ConstraintsTy &Constraints)
@@ -32,7 +32,7 @@ public:
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
-  [[nodiscard]] FMFeature *getRoot() const { return Root; }
+  [[nodiscard]] Feature *getRoot() const { return Root; }
 
   [[nodiscard]] unsigned int size() { return Features.size(); }
 
@@ -41,7 +41,7 @@ public:
 
     explicit FeatureModelIter(FeatureMapTy::iterator It) : It(It) {}
 
-    FMFeature *operator*() const { return It->second.get(); }
+    Feature *operator*() const { return It->second.get(); }
 
     FeatureModelIter &operator++() {
       It++;
@@ -82,8 +82,8 @@ public:
   }
 
   static bool
-  skip(std::pair<FMFeature *, FMFeature *> Edge,
-       const llvm::SmallSet<std::pair<FMFeature *, FMFeature *>, 10> &Visited) {
+  skip(std::pair<Feature *, Feature *> Edge,
+       const llvm::SmallSet<std::pair<Feature *, Feature *>, 10> &Visited) {
     for (const auto &P : Visited) {
       if (P.first == Edge.first && P.second == Edge.second) {
         return true;
@@ -92,17 +92,17 @@ public:
     return false;
   }
 };
-} // namespace vara
+} // namespace vara::feature
 
 inline std::ostream &operator<<(std::ostream &Out,
-                                const vara::FMFeature *FMFeature) {
-  FMFeature->print(Out);
+                                const vara::feature::Feature *Feature) {
+  Feature->print(Out);
   return Out;
 }
 
 inline llvm::raw_ostream &operator<<(llvm::raw_ostream &Out,
-                                     const vara::FMFeature *FMFeature) {
-  FMFeature->print(Out);
+                                     const vara::feature::Feature *Feature) {
+  Feature->print(Out);
   return Out;
 }
 
@@ -112,54 +112,57 @@ namespace llvm {
 //                     (Dot)GraphTraits for FeatureModel
 //===----------------------------------------------------------------------===//
 
-template <> struct GraphTraits<vara::FeatureModel *> {
-  using NodeRef = typename vara::FMFeature *;
+template <> struct GraphTraits<vara::feature::FeatureModel *> {
+  using NodeRef = typename vara::feature::Feature *;
 
-  static NodeRef getEntryNode(const vara::FeatureModel *FM) {
+  static NodeRef getEntryNode(const vara::feature::FeatureModel *FM) {
     return FM->getRoot();
   }
 
-  using nodes_iterator = typename vara::FeatureModel::FeatureModelIter;
+  using nodes_iterator = typename vara::feature::FeatureModel::FeatureModelIter;
 
-  static nodes_iterator nodes_begin(vara::FeatureModel *FM) {
+  static nodes_iterator nodes_begin(vara::feature::FeatureModel *FM) {
     return FM->begin();
   }
 
-  static nodes_iterator nodes_end(vara::FeatureModel *FM) { return FM->end(); }
+  static nodes_iterator nodes_end(vara::feature::FeatureModel *FM) {
+    return FM->end();
+  }
 
-  using ChildIteratorType = typename vara::FMFeature::feature_iterator;
+  using ChildIteratorType = typename vara::feature::Feature::feature_iterator;
 
   static ChildIteratorType child_begin(NodeRef N) { return N->begin(); }
 
   static ChildIteratorType child_end(NodeRef N) { return N->end(); }
 
-  static size_t size(vara::FeatureModel *FM) { return FM->size(); }
+  static size_t size(vara::feature::FeatureModel *FM) { return FM->size(); }
 };
 
 template <>
-struct DOTGraphTraits<vara::FeatureModel *> : public DefaultDOTGraphTraits {
+struct DOTGraphTraits<vara::feature::FeatureModel *>
+    : public DefaultDOTGraphTraits {
   explicit DOTGraphTraits(bool IsSimple = false)
       : DefaultDOTGraphTraits(IsSimple) {}
 
-  static std::string getGraphName(const vara::FeatureModel *FM) {
+  static std::string getGraphName(const vara::feature::FeatureModel *FM) {
     return "Feature model for " + FM->getName().str();
   }
 
-  std::string getNodeLabel(const vara::FMFeature *Node,
-                           const vara::FeatureModel *FM) {
+  std::string getNodeLabel(const vara::feature::Feature *Node,
+                           const vara::feature::FeatureModel *FM) {
     std::stringstream S;
     S << Node->getName();
     return S.str();
   }
 
-  static std::string getNodeAttributes(const vara::FMFeature *Node,
-                                       const vara::FeatureModel *FM) {
+  static std::string getNodeAttributes(const vara::feature::Feature *Node,
+                                       const vara::feature::FeatureModel *FM) {
     return "";
   }
 
-  std::string getEdgeAttributes(const vara::FMFeature *Node,
-                                vara::FMFeature::feature_iterator I,
-                                const vara::FeatureModel *FM) {
+  std::string getEdgeAttributes(const vara::feature::Feature *Node,
+                                vara::feature::Feature::feature_iterator I,
+                                const vara::feature::FeatureModel *FM) {
     std::stringstream S;
     S << "arrowhead=\"";
     if ((*I)->isOptional()) {
@@ -170,12 +173,15 @@ struct DOTGraphTraits<vara::FeatureModel *> : public DefaultDOTGraphTraits {
   }
 
   template <typename GraphWriter>
-  static void addCustomGraphFeatures(vara::FeatureModel *FM, GraphWriter &W) {
-    llvm::SmallSet<std::pair<vara::FMFeature *, vara::FMFeature *>, 10> SkipE,
-        SkipI, SkipA;
+  static void addCustomGraphFeatures(vara::feature::FeatureModel *FM,
+                                     GraphWriter &W) {
+    llvm::SmallSet<
+        std::pair<vara::feature::Feature *, vara::feature::Feature *>, 10>
+        SkipE, SkipI, SkipA;
     for (auto *Node : *FM) {
       for (auto &Exclude : Node->excludes()) {
-        if (vara::FeatureModel::skip(std::make_pair(Node, Exclude), SkipE)) {
+        if (vara::feature::FeatureModel::skip(std::make_pair(Node, Exclude),
+                                              SkipE)) {
           continue;
         }
         if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
@@ -188,8 +194,8 @@ struct DOTGraphTraits<vara::FeatureModel *> : public DefaultDOTGraphTraits {
         SkipE.insert(std::make_pair<>(Node, Exclude));
       }
       for (auto &Implication : Node->implications()) {
-        if (vara::FeatureModel::skip(std::make_pair(Node, Implication),
-                                     SkipI)) {
+        if (vara::feature::FeatureModel::skip(std::make_pair(Node, Implication),
+                                              SkipI)) {
           continue;
         }
         if (std::find(Implication->implications_begin(),
@@ -203,8 +209,8 @@ struct DOTGraphTraits<vara::FeatureModel *> : public DefaultDOTGraphTraits {
         SkipI.insert(std::make_pair<>(Node, Implication));
       }
       for (auto &Alternative : Node->alternatives()) {
-        if (vara::FeatureModel::skip(std::make_pair(Node, Alternative),
-                                     SkipA)) {
+        if (vara::feature::FeatureModel::skip(std::make_pair(Node, Alternative),
+                                              SkipA)) {
           continue;
         }
         W.emitEdge(Node, -1, Alternative, -1, "color=green dir=none");

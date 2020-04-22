@@ -8,7 +8,7 @@
 
 #include <memory>
 
-namespace vara {
+namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
 //                               XmlParser Class
@@ -54,6 +54,6 @@ public:
   /// \returns an instance of \a FeatureModel
   std::unique_ptr<FeatureModel> buildFeatureModel();
 };
-} // namespace vara
+} // namespace vara::feature
 
 #endif // VARA_FEATURE_XMLPARSER_H

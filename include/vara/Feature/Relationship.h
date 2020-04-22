@@ -6,7 +6,7 @@
 #include <sstream>
 #include <variant>
 
-namespace vara {
+namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
 //                               Relationship Class
@@ -80,6 +80,6 @@ public:
   }
 };
 
-} // namespace vara
+} // namespace vara::feature
 
 #endif // VARA_FEATURE_RELATIONSHIP_H
