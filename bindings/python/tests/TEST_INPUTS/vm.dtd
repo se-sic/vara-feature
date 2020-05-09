@@ -1,0 +1,24 @@
+<!ELEMENT vm (binaryOptions, numericOptions?, booleanConstraints?, nonBooleanConstraints?, mixedConstraints?)>
+<!ATTLIST vm name CDATA #REQUIRED>
+<!ELEMENT binaryOptions (configurationOption*)>
+<!ELEMENT numericOptions (configurationOption*)>
+<!ELEMENT booleanConstraints (constraint*)>
+<!ELEMENT nonBooleanConstraints (constraint*)>
+<!ELEMENT mixedConstraints (constraint*)>
+<!ELEMENT configurationOption (name, outputString?, prefix?, postfix?, parent?, Children?, impliedOptions?, excludedOptions?, optional?, ((minValue, maxValue)  |  values)?, stepFunction?)>
+<!ELEMENT constraint (#PCDATA)>
+<!ATTLIST constraint req CDATA #IMPLIED exprKind CDATA #IMPLIED>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT outputString (#PCDATA)>
+<!ELEMENT prefix (#PCDATA)>
+<!ELEMENT postfix (#PCDATA)>
+<!ELEMENT parent (#PCDATA)>
+<!ELEMENT Children (#PCDATA)>
+<!ELEMENT impliedOptions (options*)>
+<!ELEMENT excludedOptions (options*)>
+<!ELEMENT options (#PCDATA)>
+<!ELEMENT optional (#PCDATA)>
+<!ELEMENT minValue (#PCDATA)>
+<!ELEMENT maxValue (#PCDATA)>
+<!ELEMENT values (#PCDATA)>
+<!ELEMENT stepFunction (#PCDATA)>

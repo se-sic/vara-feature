@@ -28,7 +28,7 @@ private:
 public:
   FeatureModel(string Name, FeatureMapTy Features, ConstraintsTy Constraints)
       : Name(std::move(Name)), Features(std::move(Features)),
-        Constraints(std::move(Constraints)), Root(Features["root"].get()) {}
+        Constraints(std::move(Constraints)), Root(this->Features["root"].get()) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 

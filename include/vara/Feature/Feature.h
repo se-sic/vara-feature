@@ -39,6 +39,8 @@ protected:
   Feature(string Name, bool Opt) : Name(std::move(Name)), Opt(Opt) {}
 
 public:
+  Feature(const Feature &) = delete;
+  Feature &operator=(const Feature &) = delete;
   virtual ~Feature() = default;
 
   [[nodiscard]] string getName() const { return Name; }
