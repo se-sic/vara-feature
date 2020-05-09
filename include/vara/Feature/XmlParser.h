@@ -15,7 +15,26 @@ namespace vara::feature {
 //===----------------------------------------------------------------------===//
 
 class XmlParser {
+  static constexpr xmlChar NAME[] = "name";
   static constexpr xmlChar OPTIONAL[] = "optional";
+  static constexpr xmlChar PARENT[] = "parent";
+  static constexpr xmlChar EXCLUDEDOPTIONS[] = "excludedOptions";
+  static constexpr xmlChar OPTIONS[] = "options";
+  static constexpr xmlChar LOCATION[] = "location";
+  static constexpr xmlChar PATH[] = "path";
+  static constexpr xmlChar START[] = "start";
+  static constexpr xmlChar END[] = "end";
+  static constexpr xmlChar MINVALUE[] = "minValue";
+  static constexpr xmlChar MAXVALUE[] = "maxValue";
+  static constexpr xmlChar VALUES[] = "values";
+  static constexpr xmlChar CONFIGURATIONOPTION[] = "configurationOption";
+  static constexpr xmlChar CONSTRAINT[] = "constraint";
+  static constexpr xmlChar ROOT[] = "root";
+  static constexpr xmlChar BINARYOPTIONS[] = "binaryOptions";
+  static constexpr xmlChar NUMERICOPTIONS[] = "numericOptions";
+  static constexpr xmlChar BOOLEANCONSTRAINTS[] = "booleanConstraints";
+  static constexpr xmlChar LINE[] = "line";
+  static constexpr xmlChar COLUMN[] = "column";
 
   using constXmlCharPtr = const xmlChar *;
 

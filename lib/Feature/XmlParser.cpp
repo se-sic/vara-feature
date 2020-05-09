@@ -18,19 +18,16 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
           reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                        xmlNodeGetContent(Head), xmlFree)
                                        .get()));
-      if (!xmlStrcmp(Head->name, reinterpret_cast<constXmlCharPtr>("name"))) {
+      if (!xmlStrcmp(Head->name, NAME)) {
         Name = Cnt;
       } else if (!xmlStrcmp(Head->name, OPTIONAL)) {
         Opt = Cnt == "True";
-      } else if (!xmlStrcmp(Head->name,
-                            reinterpret_cast<constXmlCharPtr>("parent"))) {
+      } else if (!xmlStrcmp(Head->name, PARENT)) {
         RawEdges.emplace_back(Cnt, Name);
-      } else if (!xmlStrcmp(Head->name, reinterpret_cast<constXmlCharPtr>(
-                                            "excludedOptions"))) {
+      } else if (!xmlStrcmp(Head->name, EXCLUDEDOPTIONS)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
-            if (!xmlStrcmp(Child->name,
-                           reinterpret_cast<constXmlCharPtr>("options"))) {
+            if (!xmlStrcmp(Child->name, OPTIONS)) {
               std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
                   xmlNodeGetContent(Child), xmlFree);
               RawExcludes.emplace_back(Name,
@@ -38,39 +35,32 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
             }
           }
         }
-      } else if (!xmlStrcmp(Head->name,
-                            reinterpret_cast<constXmlCharPtr>("location"))) {
+      } else if (!xmlStrcmp(Head->name, LOCATION)) {
         std::string Path;
         std::optional<Location::TableEntry> Start;
         std::optional<Location::TableEntry> End;
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
-            if (!xmlStrcmp(Child->name,
-                           reinterpret_cast<constXmlCharPtr>("path"))) {
+            if (!xmlStrcmp(Child->name, PATH)) {
               Path = reinterpret_cast<char *>(
                   std::unique_ptr<xmlChar, void (*)(void *)>(
                       xmlNodeGetContent(Child), xmlFree)
                       .get());
 
-            } else if (!xmlStrcmp(Child->name,
-                                  reinterpret_cast<constXmlCharPtr>("start"))) {
+            } else if (!xmlStrcmp(Child->name, START)) {
               Start = createTableEntry(Child);
-            } else if (!xmlStrcmp(Child->name,
-                                  reinterpret_cast<constXmlCharPtr>("end"))) {
+            } else if (!xmlStrcmp(Child->name, END)) {
               End = createTableEntry(Child);
             }
           }
         }
         Loc = Location(Path, Start, End);
       } else if (Num) {
-        if (!xmlStrcmp(Head->name,
-                       reinterpret_cast<constXmlCharPtr>("minValue"))) {
+        if (!xmlStrcmp(Head->name, MINVALUE)) {
           MinValue = std::stoi(Cnt);
-        } else if (!xmlStrcmp(Head->name,
-                              reinterpret_cast<constXmlCharPtr>("maxValue"))) {
+        } else if (!xmlStrcmp(Head->name, MAXVALUE)) {
           MaxValue = std::stoi(Cnt);
-        } else if (!xmlStrcmp(Head->name,
-                              reinterpret_cast<constXmlCharPtr>("values"))) {
+        } else if (!xmlStrcmp(Head->name, VALUES)) {
           const std::regex Regex(R"(\d+)");
           std::smatch Matches;
           for (string Suffix = Cnt; regex_search(Suffix, Matches, Regex);
@@ -106,8 +96,7 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
 void XmlParser::parseOptions(xmlNode *N, bool Num = false) {
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name, reinterpret_cast<constXmlCharPtr>(
-                                  "configurationOption"))) {
+      if (!xmlStrcmp(H->name, CONFIGURATIONOPTION)) {
         parseConfigurationOption(H, Num);
       }
     }
@@ -117,8 +106,7 @@ void XmlParser::parseOptions(xmlNode *N, bool Num = false) {
 void XmlParser::parseConstraints(xmlNode *N) {
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name,
-                     reinterpret_cast<constXmlCharPtr>("constraint"))) {
+      if (!xmlStrcmp(H->name, CONSTRAINT)) {
         string Cnt = std::string(
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(H), xmlFree)
@@ -142,27 +130,23 @@ void XmlParser::parseConstraints(xmlNode *N) {
 
 void XmlParser::parseVm(xmlNode *N) {
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
-        xmlGetProp(N, reinterpret_cast<constXmlCharPtr>("name")), xmlFree);
-    VM = std::string(reinterpret_cast<char const *>(Cnt.get()));
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, NAME),
+                                                   xmlFree);
+    VM = std::string(reinterpret_cast<char *>(Cnt.get()));
   }
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
-        xmlGetProp(N, reinterpret_cast<constXmlCharPtr>("root")), xmlFree);
-    RootPath =
-        Cnt ? std::filesystem::path(reinterpret_cast<char const *>(Cnt.get()))
-            : std::filesystem::current_path();
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, ROOT),
+                                                   xmlFree);
+    RootPath = Cnt ? std::filesystem::path(reinterpret_cast<char *>(Cnt.get()))
+                   : std::filesystem::current_path();
   }
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name,
-                     reinterpret_cast<constXmlCharPtr>("binaryOptions"))) {
+      if (!xmlStrcmp(H->name, BINARYOPTIONS)) {
         parseOptions(H);
-      } else if (!xmlStrcmp(H->name, reinterpret_cast<constXmlCharPtr>(
-                                         "numericOptions"))) {
+      } else if (!xmlStrcmp(H->name, NUMERICOPTIONS)) {
         parseOptions(H, true);
-      } else if (!xmlStrcmp(H->name, reinterpret_cast<constXmlCharPtr>(
-                                         "booleanConstraints"))) {
+      } else if (!xmlStrcmp(H->name, BOOLEANCONSTRAINTS)) {
         parseConstraints(H);
       }
     }
@@ -174,13 +158,12 @@ Location::TableEntry XmlParser::createTableEntry(xmlNode *N) {
   int Column = 0;
   for (xmlNode *Head = N->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(Head->name, reinterpret_cast<constXmlCharPtr>("line"))) {
+      if (!xmlStrcmp(Head->name, LINE)) {
         Line = atoi(
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(Head), xmlFree)
                                          .get()));
-      } else if (!xmlStrcmp(Head->name,
-                            reinterpret_cast<constXmlCharPtr>("col"))) {
+      } else if (!xmlStrcmp(Head->name, COLUMN)) {
         Column = atoi(
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(Head), xmlFree)

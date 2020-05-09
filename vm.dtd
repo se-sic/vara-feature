@@ -24,7 +24,7 @@
 <!ELEMENT stepFunction (#PCDATA)>
 <!ELEMENT location (path, start?, end?)>
 <!ELEMENT path (#PCDATA)>
-<!ELEMENT start (line, col)>
-<!ELEMENT end (line, col)>
+<!ELEMENT start (line, column)>
+<!ELEMENT end (line, column)>
 <!ELEMENT line (#PCDATA)>
-<!ELEMENT col (#PCDATA)>
+<!ELEMENT column (#PCDATA)>

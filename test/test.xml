@@ -14,11 +14,11 @@
         <path>main.c</path>
         <start>
           <line>6</line>
-          <col>3</col>
+          <column>3</column>
         </start>
         <end>
           <line>6</line>
-          <col>26</col>
+          <column>26</column>
         </end>
       </location>
     </configurationOption>
