@@ -15,6 +15,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+add_compile_options(-fPIC)  # TODO: only for pybind?
 
 # CMake options
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
@@ -95,6 +96,9 @@ include_directories(${LIBXML2_INCLUDE_DIR})
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
+
+add_subdirectory(external/pybind11)
+add_subdirectory(bindings)
 
 if (VARA_FEATURE_IN_TREE)
   # Set llvm distributed includes for gtest header

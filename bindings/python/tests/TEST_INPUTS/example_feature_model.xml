@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="ABC">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>A</name>
+      <parent>root</parent>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>AA</name>
+      <parent>A</parent>
+      <excludedOptions>
+        <options>AC</options>
+        <options>C</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>AB</name>
+      <parent>A</parent>
+      <excludedOptions>
+        <options>AC</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>AC</name>
+      <parent>A</parent>
+      <excludedOptions>
+        <options>AA</options>
+        <options>AB</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>B</name>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>C</name>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions>
+    <configurationOption>
+      <name>N</name>
+      <parent>B</parent>
+      <optional>True</optional>
+      <values>1;5;9</values>
+    </configurationOption>
+  </numericOptions>
+  <booleanConstraints>
+    <constraint>!N | C</constraint>
+    <constraint>!AA | !AB</constraint>
+    <constraint>!AB | B</constraint>
+    <constraint>!B | AB</constraint>
+    <constraint>AB | AC | AA</constraint>
+  </booleanConstraints>
+</vm>

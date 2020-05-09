@@ -77,6 +77,7 @@ script:
   - cmake --build . -- -j ${JOBS}
   - cmake --build . --target check-vara-feature-unittests
   - cmake --build . --target tidy-vara-feature
+  - cmake --build . --target check-vara-feature-python
 
 branches:
   only:
