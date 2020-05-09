@@ -8,13 +8,10 @@
 
 #include <iostream>
 
-void test2() { std::cout << "Testinger222...\n"; }
-
 namespace vf = vara::feature;
 namespace py = pybind11;
 
 void init_feature_model_module(py::module &M) {
-  M.def("test", &test2, R"pbdoc()pbdoc");
   py::class_<vf::FeatureModel>(M, "FeatureModel")
       .def("getName", &vf::FeatureModel::getName)
       .def("getRoot", &vf::FeatureModel::getRoot,
