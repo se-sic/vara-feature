@@ -27,6 +27,18 @@ To set the version to version 9, for instance, you can use the following command
 CC=clang CXX=clang++ cmake -DLLVM_REQUESTED_VERSION=9 ..
 ```
 
+Python bindings
+---------------
+The feature library offers python bindings for easier scripting.
+Currently, these bindings need to be installed locally like this.
+
+```bash
+  git clone https://github.com/se-passau/vara-feature.git
+  cd vara-feature
+  git submodule init && git submodule update --recursive
+  pip3 install --user .
+```
+
 
 Development
 -----------
