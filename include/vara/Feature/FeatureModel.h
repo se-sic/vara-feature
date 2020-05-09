@@ -21,16 +21,21 @@ public:
 
 private:
   string Name;
+  string Path;
   FeatureMapTy Features;
   ConstraintsTy Constraints;
   Feature *Root;
 
 public:
-  FeatureModel(string Name, FeatureMapTy Features, ConstraintsTy Constraints)
-      : Name(std::move(Name)), Features(std::move(Features)),
-        Constraints(std::move(Constraints)), Root(Features["root"].get()) {}
+  FeatureModel(string Name, string Path, FeatureMapTy Features,
+               ConstraintsTy Constraints)
+      : Name(std::move(Name)), Path(std::move(Path)),
+        Features(std::move(Features)), Constraints(std::move(Constraints)),
+        Root(Features["root"].get()) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
+
+  [[nodiscard]] llvm::StringRef getPath() const { return Path; }
 
   [[nodiscard]] Feature *getRoot() const { return Root; }
 
@@ -145,14 +150,24 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
       : DefaultDOTGraphTraits(IsSimple) {}
 
   static std::string getGraphName(const vara::feature::FeatureModel *FM) {
-    return "Feature model for " + FM->getName().str();
+    return "Feature model for " + FM->getName().str() + " (" +
+           FM->getPath().str() + ")";
   }
 
   static std::string getNodeLabel(const vara::feature::Feature *Node,
                                   const vara::feature::FeatureModel *FM) {
-    std::stringstream S;
-    S << Node->getName();
-    return S.str();
+    return Node->getName();
+  }
+
+  static std::string getNodeDescription(const vara::feature::Feature *Node,
+                                        const vara::feature::FeatureModel *FM) {
+    std::optional<std::unique_ptr<vara::feature::Location>> Loc =
+        Node->getLocation();
+    if (Loc) {
+      return Loc->get()->toString();
+    } else {
+      return "";
+    }
   }
 
   static std::string getNodeAttributes(const vara::feature::Feature *Node,

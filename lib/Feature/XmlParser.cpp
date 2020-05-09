@@ -11,6 +11,7 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
   int MinValue = 0;
   int MaxValue = 0;
   std::vector<int> Vals;
+  std::optional<std::unique_ptr<Location>> Loc = std::nullopt;
   for (xmlNode *Head = N->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       string Cnt = std::string(
@@ -30,13 +31,37 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name,
                            reinterpret_cast<constXmlCharPtr>("options"))) {
-              std::unique_ptr<xmlChar, void (*)(void *)> CContent(
+              std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
                   xmlNodeGetContent(Child), xmlFree);
-              RawExcludes.emplace_back(
-                  Name, reinterpret_cast<char *>(CContent.get()));
+              RawExcludes.emplace_back(Name,
+                                       reinterpret_cast<char *>(CCnt.get()));
             }
           }
         }
+      } else if (!xmlStrcmp(Head->name,
+                            reinterpret_cast<constXmlCharPtr>("location"))) {
+        std::string Path;
+        std::optional<std::pair<int, int>> Start = std::nullopt;
+        std::optional<std::pair<int, int>> End = std::nullopt;
+        for (xmlNode *Child = Head->children; Child; Child = Child->next) {
+          if (Child->type == XML_ELEMENT_NODE) {
+            if (!xmlStrcmp(Child->name,
+                           reinterpret_cast<constXmlCharPtr>("path"))) {
+              Path = reinterpret_cast<char *>(
+                  std::unique_ptr<xmlChar, void (*)(void *)>(
+                      xmlNodeGetContent(Child), xmlFree)
+                      .get());
+
+            } else if (!xmlStrcmp(Child->name,
+                                  reinterpret_cast<constXmlCharPtr>("start"))) {
+              Start = parseLocation(Child);
+            } else if (!xmlStrcmp(Child->name,
+                                  reinterpret_cast<constXmlCharPtr>("end"))) {
+              End = parseLocation(Child);
+            }
+          }
+        }
+        Loc = std::make_unique<Location>(Path, Start, End);
       } else if (Num) {
         if (!xmlStrcmp(Head->name,
                        reinterpret_cast<constXmlCharPtr>("minValue"))) {
@@ -62,16 +87,19 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
           Name, std::make_unique<NumericFeature>(
                     Name, Opt,
                     std::variant<std::pair<int, int>, std::vector<int>>(
-                        std::make_pair(MinValue, MaxValue))));
+                        std::make_pair(MinValue, MaxValue)),
+                    std::move(Loc)));
 
     } else {
       Features.try_emplace(
           Name, std::make_unique<NumericFeature>(
                     Name, Opt,
-                    std::variant<std::pair<int, int>, std::vector<int>>(Vals)));
+                    std::variant<std::pair<int, int>, std::vector<int>>(Vals),
+                    std::move(Loc)));
     }
   } else {
-    Features.try_emplace(Name, std::make_unique<BinaryFeature>(Name, Opt));
+    Features.try_emplace(
+        Name, std::make_unique<BinaryFeature>(Name, Opt, std::move(Loc)));
   }
 }
 
@@ -113,9 +141,18 @@ void XmlParser::parseConstraints(xmlNode *N) {
 }
 
 void XmlParser::parseVm(xmlNode *N) {
-  std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
-      xmlGetProp(N, reinterpret_cast<constXmlCharPtr>("name")), xmlFree);
-  VM = std::string(reinterpret_cast<char const *>(Cnt.get()));
+  {
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
+        xmlGetProp(N, reinterpret_cast<constXmlCharPtr>("name")), xmlFree);
+    VM = std::string(reinterpret_cast<char const *>(Cnt.get()));
+  }
+  {
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
+        xmlGetProp(N, reinterpret_cast<constXmlCharPtr>("root")), xmlFree);
+    Path = Cnt ? std::optional{std::string(
+                     reinterpret_cast<char const *>(Cnt.get()))}
+               : std::nullopt;
+  }
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name,
@@ -132,6 +169,28 @@ void XmlParser::parseVm(xmlNode *N) {
   }
 }
 
+std::pair<int, int> XmlParser::parseLocation(xmlNode *N) {
+  int Line;
+  int Col;
+  for (xmlNode *Head = N->children; Head; Head = Head->next) {
+    if (Head->type == XML_ELEMENT_NODE) {
+      if (!xmlStrcmp(Head->name, reinterpret_cast<constXmlCharPtr>("line"))) {
+        Line = atoi(
+            reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
+                                         xmlNodeGetContent(Head), xmlFree)
+                                         .get()));
+      } else if (!xmlStrcmp(Head->name,
+                            reinterpret_cast<constXmlCharPtr>("col"))) {
+        Col = atoi(
+            reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
+                                         xmlNodeGetContent(Head), xmlFree)
+                                         .get()));
+      }
+    }
+  }
+  return std::make_pair(Line, Col);
+}
+
 std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
   if (!Doc) {
     return nullptr;
@@ -139,8 +198,8 @@ std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
   Features.clear();
   parseVm(xmlDocGetRootElement(Doc.get()));
   if (Features.find("root") == Features.end()) {
-    Features.try_emplace("root",
-                         std::make_unique<BinaryFeature>("root", false));
+    Features.try_emplace(
+        "root", std::make_unique<BinaryFeature>("root", false, std::nullopt));
   }
 
   for (const auto &P : RawEdges) {
@@ -217,7 +276,7 @@ std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
     }
     // TODO (se-passau/VaRA#42): relationships or and xor
   }
-  return std::make_unique<FeatureModel>(VM, std::move(Features), Constraints);
+  return std::make_unique<FeatureModel>(VM, Path ? (*Path) : ".", std::move(Features), Constraints);
 }
 
 bool XmlParser::parseDtd(const string &Filename) {

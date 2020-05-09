@@ -25,6 +25,7 @@ private:
   std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd;
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc;
   std::string VM;
+  std::optional<std::string> Path = std::nullopt;
   FeatureModel::FeatureMapTy Features;
   FeatureModel::ConstraintsTy Constraints;
   std::vector<std::pair<std::string, std::string>> RawEdges;
@@ -34,6 +35,7 @@ private:
   void parseOptions(xmlNode *N, bool Num);
   void parseConstraints(xmlNode *N);
   void parseVm(xmlNode *N);
+  static std::pair<int, int> parseLocation(xmlNode *N);
   bool parseDtd(const std::string &Filename);
   bool parseDoc(const std::string &Filename);
 

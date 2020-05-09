@@ -1,6 +1,7 @@
 #ifndef VARA_FEATURE_FEATURE_H
 #define VARA_FEATURE_FEATURE_H
 
+#include "vara/Feature/Location.h"
 #include "vara/Feature/Relationship.h"
 
 #include "llvm/ADT/SmallVector.h"
@@ -34,9 +35,11 @@ private:
   FeatureListType Alternatives;
   RelationshipListTy Relationships;
   bool Opt;
+  std::optional<std::unique_ptr<Location>> Loc;
 
 protected:
-  Feature(string Name, bool Opt) : Name(std::move(Name)), Opt(Opt) {}
+  Feature(string Name, bool Opt, std::optional<std::unique_ptr<Location>> Loc)
+      : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)) {}
 
 public:
   virtual ~Feature() = default;
@@ -105,6 +108,13 @@ public:
     Relationships.push_back(std::move(Relationship));
   }
 
+  [[nodiscard]] std::optional<std::unique_ptr<Location>> getLocation() const {
+    return Loc ? std::optional{std::make_unique<Location>(
+                     Loc->get()->getPath(), Loc->get()->getStart(),
+                     Loc->get()->getEnd())}
+               : std::nullopt;
+  }
+
   [[nodiscard]] virtual std::string toString() const;
 };
 
@@ -112,7 +122,9 @@ public:
 class BinaryFeature : public Feature {
 
 public:
-  BinaryFeature(string Name, bool Opt) : Feature(std::move(Name), Opt) {}
+  BinaryFeature(string Name, bool Opt,
+                std::optional<std::unique_ptr<Location>> Loc)
+      : Feature(std::move(Name), Opt, std::move(Loc)) {}
 
   [[nodiscard]] string toString() const override;
 };
@@ -124,8 +136,9 @@ private:
 
 public:
   NumericFeature(string Name, bool Opt,
-                 std::variant<std::pair<int, int>, std::vector<int>> Vals)
-      : Feature(std::move(Name), Opt), Vals(std::move(Vals)) {}
+                 std::variant<std::pair<int, int>, std::vector<int>> Vals,
+                 std::optional<std::unique_ptr<Location>> Loc)
+      : Feature(std::move(Name), Opt, std::move(Loc)), Vals(std::move(Vals)) {}
 
   [[nodiscard]] string toString() const override;
 };

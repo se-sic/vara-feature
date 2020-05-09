@@ -5,7 +5,11 @@ namespace vara::feature {
 std::string Feature::toString() const {
   std::stringstream StrS;
   StrS << "name: \"" << Name << "\",\n  optional: " << (Opt ? "true" : "false")
-       << ",\n  parents: [";
+       << ",\n  ";
+  if(Loc) {
+    StrS << "location: " <<  Loc->get()->toString() << ",\n  ";
+  }
+  StrS << "parents: [";
   for (const auto &Parent : Parents) {
     StrS << Parent->Name;
     if (Parent != Parents.back()) {
