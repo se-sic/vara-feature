@@ -11,7 +11,7 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
   int MinValue = 0;
   int MaxValue = 0;
   std::vector<int> Vals;
-  std::optional<std::unique_ptr<Location>> Loc = std::nullopt;
+  std::optional<Location> Loc;
   for (xmlNode *Head = N->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       string Cnt = std::string(
@@ -41,8 +41,8 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
       } else if (!xmlStrcmp(Head->name,
                             reinterpret_cast<constXmlCharPtr>("location"))) {
         std::string Path;
-        std::optional<std::pair<int, int>> Start = std::nullopt;
-        std::optional<std::pair<int, int>> End = std::nullopt;
+        std::optional<Location::TableEntry> Start;
+        std::optional<Location::TableEntry> End;
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name,
@@ -54,14 +54,14 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
 
             } else if (!xmlStrcmp(Child->name,
                                   reinterpret_cast<constXmlCharPtr>("start"))) {
-              Start = parseLocation(Child);
+              Start = createTableEntry(Child);
             } else if (!xmlStrcmp(Child->name,
                                   reinterpret_cast<constXmlCharPtr>("end"))) {
-              End = parseLocation(Child);
+              End = createTableEntry(Child);
             }
           }
         }
-        Loc = std::make_unique<Location>(Path, Start, End);
+        Loc = Location(Path, Start, End);
       } else if (Num) {
         if (!xmlStrcmp(Head->name,
                        reinterpret_cast<constXmlCharPtr>("minValue"))) {
@@ -149,9 +149,9 @@ void XmlParser::parseVm(xmlNode *N) {
   {
     std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
         xmlGetProp(N, reinterpret_cast<constXmlCharPtr>("root")), xmlFree);
-    Path = Cnt ? std::optional{std::string(
-                     reinterpret_cast<char const *>(Cnt.get()))}
-               : std::nullopt;
+    RootPath =
+        Cnt ? std::filesystem::path(reinterpret_cast<char const *>(Cnt.get()))
+            : std::filesystem::current_path();
   }
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
@@ -169,9 +169,9 @@ void XmlParser::parseVm(xmlNode *N) {
   }
 }
 
-std::pair<int, int> XmlParser::parseLocation(xmlNode *N) {
-  int Line;
-  int Col;
+Location::TableEntry XmlParser::createTableEntry(xmlNode *N) {
+  int Line = 0;
+  int Column = 0;
   for (xmlNode *Head = N->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(Head->name, reinterpret_cast<constXmlCharPtr>("line"))) {
@@ -181,14 +181,14 @@ std::pair<int, int> XmlParser::parseLocation(xmlNode *N) {
                                          .get()));
       } else if (!xmlStrcmp(Head->name,
                             reinterpret_cast<constXmlCharPtr>("col"))) {
-        Col = atoi(
+        Column = atoi(
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(Head), xmlFree)
                                          .get()));
       }
     }
   }
-  return std::make_pair(Line, Col);
+  return Location::TableEntry(Line, Column);
 }
 
 std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
@@ -276,7 +276,8 @@ std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
     }
     // TODO (se-passau/VaRA#42): relationships or and xor
   }
-  return std::make_unique<FeatureModel>(VM, Path ? (*Path) : ".", std::move(Features), Constraints);
+  return std::make_unique<FeatureModel>(VM, RootPath, std::move(Features),
+                                        Constraints);
 }
 
 bool XmlParser::parseDtd(const string &Filename) {

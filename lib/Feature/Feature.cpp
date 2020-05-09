@@ -7,7 +7,7 @@ std::string Feature::toString() const {
   StrS << "name: \"" << Name << "\",\n  optional: " << (Opt ? "true" : "false")
        << ",\n  ";
   if(Loc) {
-    StrS << "location: " <<  Loc->get()->toString() << ",\n  ";
+    StrS << "location: " <<  Loc->toString() << ",\n  ";
   }
   StrS << "parents: [";
   for (const auto &Parent : Parents) {

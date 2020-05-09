@@ -35,10 +35,10 @@ private:
   FeatureListType Alternatives;
   RelationshipListTy Relationships;
   bool Opt;
-  std::optional<std::unique_ptr<Location>> Loc;
+  std::optional<Location> Loc;
 
 protected:
-  Feature(string Name, bool Opt, std::optional<std::unique_ptr<Location>> Loc)
+  Feature(string Name, bool Opt, std::optional<Location> Loc)
       : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)) {}
 
 public:
@@ -108,10 +108,9 @@ public:
     Relationships.push_back(std::move(Relationship));
   }
 
-  [[nodiscard]] std::optional<std::unique_ptr<Location>> getLocation() const {
-    return Loc ? std::optional{std::make_unique<Location>(
-                     Loc->get()->getPath(), Loc->get()->getStart(),
-                     Loc->get()->getEnd())}
+  [[nodiscard]] std::optional<Location> getLocation() const {
+    return Loc ? std::optional{Location(Loc->getPath(), Loc->getStart(),
+                                        Loc->getEnd())}
                : std::nullopt;
   }
 
@@ -123,7 +122,7 @@ class BinaryFeature : public Feature {
 
 public:
   BinaryFeature(string Name, bool Opt,
-                std::optional<std::unique_ptr<Location>> Loc)
+                std::optional<Location> Loc = std::nullopt)
       : Feature(std::move(Name), Opt, std::move(Loc)) {}
 
   [[nodiscard]] string toString() const override;
@@ -137,7 +136,7 @@ private:
 public:
   NumericFeature(string Name, bool Opt,
                  std::variant<std::pair<int, int>, std::vector<int>> Vals,
-                 std::optional<std::unique_ptr<Location>> Loc)
+                 std::optional<Location> Loc = std::nullopt)
       : Feature(std::move(Name), Opt, std::move(Loc)), Vals(std::move(Vals)) {}
 
   [[nodiscard]] string toString() const override;

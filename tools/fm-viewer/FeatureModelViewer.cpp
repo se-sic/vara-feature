@@ -5,7 +5,7 @@ int main(int argc, char **argv) {
     auto P = vara::feature::XmlParser(argv[1], argv[2]);
     if (P.parse()) {
       std::unique_ptr<vara::feature::FeatureModel> FM = P.buildFeatureModel();
-      FM->dump();
+      //      FM->dump();
       llvm::ViewGraph(FM.get(), llvm::Twine(FM->getName()));
       return 0;
     }

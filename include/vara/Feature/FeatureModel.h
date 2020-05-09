@@ -6,6 +6,8 @@
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
 
+#include <filesystem>
+
 using std::string;
 
 namespace vara::feature {
@@ -21,21 +23,21 @@ public:
 
 private:
   string Name;
-  string Path;
+  std::filesystem::path RootPath;
   FeatureMapTy Features;
   ConstraintsTy Constraints;
   Feature *Root;
 
 public:
-  FeatureModel(string Name, string Path, FeatureMapTy Features,
-               ConstraintsTy Constraints)
-      : Name(std::move(Name)), Path(std::move(Path)),
+  FeatureModel(string Name, std::filesystem::path RootPath,
+               FeatureMapTy Features, ConstraintsTy Constraints)
+      : Name(std::move(Name)), RootPath(std::move(RootPath)),
         Features(std::move(Features)), Constraints(std::move(Constraints)),
         Root(Features["root"].get()) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
-  [[nodiscard]] llvm::StringRef getPath() const { return Path; }
+  [[nodiscard]] std::filesystem::path getPath() const { return RootPath; }
 
   [[nodiscard]] Feature *getRoot() const { return Root; }
 
@@ -150,8 +152,8 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
       : DefaultDOTGraphTraits(IsSimple) {}
 
   static std::string getGraphName(const vara::feature::FeatureModel *FM) {
-    return "Feature model for " + FM->getName().str() + " (" +
-           FM->getPath().str() + ")";
+    return "Feature model for " + FM->getName().str() + "\n" +
+           FM->getPath().string();
   }
 
   static std::string getNodeLabel(const vara::feature::Feature *Node,
@@ -161,10 +163,9 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
 
   static std::string getNodeDescription(const vara::feature::Feature *Node,
                                         const vara::feature::FeatureModel *FM) {
-    std::optional<std::unique_ptr<vara::feature::Location>> Loc =
-        Node->getLocation();
+    auto Loc = Node->getLocation();
     if (Loc) {
-      return Loc->get()->toString();
+      return Loc->toString();
     } else {
       return "";
     }
