@@ -7,5 +7,7 @@
 namespace py = pybind11;
 
 void init_llvm(py::module &M) {
-  py::class_<llvm::StringRef>(M, "StringRef").def("str", &llvm::StringRef::str);
+  py::class_<llvm::StringRef>(M, "StringRef")
+      .def("str", &llvm::StringRef::str,
+           R"pbdoc(Convert the StringRef to a string.)pbdoc");
 }

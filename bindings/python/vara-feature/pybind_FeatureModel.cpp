@@ -13,10 +13,13 @@ namespace py = pybind11;
 
 void init_feature_model_module(py::module &M) {
   py::class_<vf::FeatureModel>(M, "FeatureModel")
-      .def("getName", &vf::FeatureModel::getName)
+      .def("getName", &vf::FeatureModel::getName,
+           R"pbdoc(Returns the name of the FeatureModel.)pbdoc")
       .def("getRoot", &vf::FeatureModel::getRoot,
-           py::return_value_policy::reference)
-      .def("size", &vf::FeatureModel::size)
+           py::return_value_policy::reference,
+           R"pbdoc(Returns the root Feature.)pbdoc")
+      .def("size", &vf::FeatureModel::size,
+           R"pbdoc(Returns the amount of Features in the Model.)pbdoc")
       .def(
           "__iter__",
           [](vf::FeatureModel &FM) {
