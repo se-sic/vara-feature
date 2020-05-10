@@ -4,12 +4,7 @@ os: linux
 dist: bionic
 
 before_install:
-  - sudo apt-get -y install libxml2-dev python3.6-dev python3.6-venv
-  - python --version
-  - python3 --version
-    #- pyenv install --list
-    #- pyenv install 3.6.3
-    # - pyenv global system python3.8
+  - sudo apt-get -y install libxml2-dev
 
 jobs:
   include:
@@ -78,8 +73,6 @@ jobs:
 script:
   - mkdir build
   - cd build
-  - echo $PYTHON
-  - python-config --help
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION} -DPYTHON_EXECUTABLE=$(which python3)
   - cmake --build . -- -j ${JOBS}
   - cmake --build . --target check-vara-feature-unittests
