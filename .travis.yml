@@ -5,6 +5,9 @@ dist: bionic
 
 before_install:
   - sudo apt-get -y install libxml2-dev
+  - pyenv global $(pyenv whence 3)
+  - PY_CMD=python3
+  - $PY_CMD -m pip install --user --upgrade pip wheel setuptools
 
 jobs:
   include:
