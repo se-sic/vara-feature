@@ -78,9 +78,10 @@ script:
   - cmake .. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} \
     -DLLVM_REQUESTED_VERSION=${LLVM_VERSION} \
-    -DPYTHON_EXECUTABLE=$(python-config --prefix)/bin/python3.6
-    -DPYTHON_LIBRARY=$(python-config --prefix)/lib/libpython3.6m.so
-    -DPYTHON_INCLUDE_DIR=$(python-config --prefix)/include/python3.6m
+    -DPYTHON_EXECUTABLE=which python3
+    #-DPYTHON_EXECUTABLE=$(python-config --prefix)/bin/python3.6
+    #-DPYTHON_LIBRARY=$(python-config --prefix)/lib/libpython3.6m.so
+    #-DPYTHON_INCLUDE_DIR=$(python-config --prefix)/include/python3.6m
   - cmake --build . -- -j ${JOBS}
   - cmake --build . --target check-vara-feature-unittests
   - cmake --build . --target tidy-vara-feature
