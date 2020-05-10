@@ -4,7 +4,7 @@ os: linux
 dist: bionic
 
 before_install:
-  - sudo apt-get -y install libxml2-dev
+  - sudo apt-get -y install libxml2-dev python3.6-dev python3.6-venv
   - pyenv global system python3.6
 
 jobs:
@@ -28,8 +28,6 @@ jobs:
             - clang-9
             - llvm-9-dev
             - clang-tidy-10
-            - python3.6-dev
-            - python3.6-venv
     - name: Clang-9 Release
       stage: Legacy
       env: CXX=clang++-9 BUILD_TYPE=Release LLVM_VERSION=9
