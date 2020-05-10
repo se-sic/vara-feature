@@ -15,7 +15,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-add_compile_options(-fPIC)  # TODO: only for pybind?
 
 # CMake options
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
@@ -29,6 +28,11 @@ if (${VARA_FEATURE_COLORED_OUTPUT})
        add_compile_options (-fcolor-diagnostics)
     endif ()
 endif ()
+
+option(VARA_FEATURE_BUILD_PYTHON_BINDINGS "Build vara-features python bindings" TRUE)
+if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
+  add_compile_options(-fPIC)
+endif()
 
 # Setup git submodules (external projects)
 find_package(Git QUIET)
@@ -97,8 +101,10 @@ add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
 
-add_subdirectory(external/pybind11)
-add_subdirectory(bindings)
+if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
+  add_subdirectory(external/pybind11)
+  add_subdirectory(bindings)
+endif()
 
 if (VARA_FEATURE_IN_TREE)
   # Set llvm distributed includes for gtest header
