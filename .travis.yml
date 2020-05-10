@@ -4,9 +4,9 @@ os: linux
 dist: bionic
 
 before_install:
-  - sudo apt-get -y install libxml2-dev python3.8-dev python3.8-venv
-  - pyenv install python3.8
-  - pyenv global system python3.8
+  - sudo apt-get -y install libxml2-dev python3.6-dev python3.6-venv
+    # - pyenv install python3.8
+    # - pyenv global system python3.8
 
 jobs:
   include:
@@ -17,7 +17,7 @@ jobs:
     # Clang legacy
     - name: Clang-9 Debug
       stage: Legacy
-      env: CXX=clang++-9 BUILD_TYPE=Debug LLVM_VERSION=9 PYTHON=3.6
+      env: CXX=clang++-9 BUILD_TYPE=Debug LLVM_VERSION=9
       addons: &clang9
         apt:
           sources:
@@ -75,7 +75,12 @@ jobs:
 script:
   - mkdir build
   - cd build
-  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION}
+  - cmake .. \
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} \
+    -DLLVM_REQUESTED_VERSION=${LLVM_VERSION} \
+    -DPYTHON_EXECUTABLE=$(python-config --prefix)/bin/python3.6
+    -DPYTHON_LIBRARY=$(python-config --prefix)/lib/libpython3.6m.so
+    -DPYTHON_INCLUDE_DIR=$(python-config --prefix)/include/python3.6m
   - cmake --build . -- -j ${JOBS}
   - cmake --build . --target check-vara-feature-unittests
   - cmake --build . --target tidy-vara-feature
