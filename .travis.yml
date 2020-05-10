@@ -15,7 +15,7 @@ jobs:
     # Clang legacy
     - name: Clang-9 Debug
       stage: Legacy
-      env: CXX=clang++-9 BUILD_TYPE=Debug LLVM_VERSION=9
+      env: CXX=clang++-9 BUILD_TYPE=Debug LLVM_VERSION=9 PYTHON=3.6
       addons: &clang9
         apt:
           sources:
@@ -27,6 +27,8 @@ jobs:
             - clang-9
             - llvm-9-dev
             - clang-tidy-10
+            - python3.6-dev
+            - python3.6-venv
     - name: Clang-9 Release
       stage: Legacy
       env: CXX=clang++-9 BUILD_TYPE=Release LLVM_VERSION=9
