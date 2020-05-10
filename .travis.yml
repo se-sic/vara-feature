@@ -78,7 +78,9 @@ jobs:
 script:
   - mkdir build
   - cd build
-  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION}
+  - echo $PYTHON
+  - python-config --help
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION} -DPYTHON_EXECUTABLE=$(which python3)
   - cmake --build . -- -j ${JOBS}
   - cmake --build . --target check-vara-feature-unittests
   - cmake --build . --target tidy-vara-feature
