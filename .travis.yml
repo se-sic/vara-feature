@@ -4,9 +4,11 @@ os: linux
 dist: bionic
 
 before_install:
-  - sudo apt-get -y install libxml2-dev python3.7-dev python3.7-venv python3.7
+  - sudo apt-get -y install libxml2-dev python3.6-dev python3.6-venv
+  - python --version
+  - python3 --version
   - pyenv install --list
-  - pyenv install python3.7
+  - pyenv install python3.6.3
     # - pyenv global system python3.8
 
 jobs:
@@ -76,8 +78,6 @@ jobs:
 script:
   - mkdir build
   - cd build
-  - python --version
-  - python3 --version
   - cmake .. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} \
     -DLLVM_REQUESTED_VERSION=${LLVM_VERSION}
