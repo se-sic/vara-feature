@@ -4,7 +4,7 @@ os: linux
 dist: bionic
 
 before_install:
-  - sudo apt-get -y install libxml2-dev python3.6-dev python3.6-venv
+  - sudo apt-get -y install libxml2-dev python3.6-dev python3.6-venv python3
     # - pyenv install python3.8
     # - pyenv global system python3.8
 
