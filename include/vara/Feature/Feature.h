@@ -127,6 +127,8 @@ public:
                  std::variant<std::pair<int, int>, std::vector<int>> Vals)
       : Feature(std::move(Name), Opt), Vals(std::move(Vals)) {}
 
+  std::variant<std::pair<int, int>, std::vector<int>> getVals() { return Vals; }
+
   [[nodiscard]] string toString() const override;
 };
 
