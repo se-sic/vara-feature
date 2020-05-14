@@ -1,2 +1,6 @@
 build/
 .*.*.swp
+.clangd/
+__pycache__/
+compile_commands.json
+vara_feature.egg-info
