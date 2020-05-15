@@ -135,6 +135,8 @@ public:
                  std::optional<Location> Loc = std::nullopt)
       : Feature(std::move(Name), Opt, std::move(Loc)), Vals(std::move(Vals)) {}
 
+  std::variant<std::pair<int, int>, std::vector<int>> getVals() { return Vals; }
+
   [[nodiscard]] string toString() const override;
 };
 
