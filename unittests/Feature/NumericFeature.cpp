@@ -31,7 +31,7 @@ TEST(NumericFeature, NumericFeatureRoot) {
   B.addParent(&A);
   EXPECT_TRUE(A.isRoot());
   EXPECT_FALSE(B.isRoot());
-  for (auto F : B.parents()) {
+  for (auto *F : B.parents()) {
     EXPECT_EQ("A", F->getName());
   }
 }
@@ -41,7 +41,7 @@ TEST(NumericFeature, NumericFeatureChildren) {
   NumericFeature B("B", false, std::pair<int, int>(0, 1));
   B.addChild(&A);
   EXPECT_EQ(std::distance(B.begin(), B.end()), 1);
-  for (auto F : B.children()) {
+  for (auto *F : B.children()) {
     EXPECT_EQ("A", F->getName());
   }
 }
@@ -51,7 +51,7 @@ TEST(NumericFeature, NumericFeatureExclude) {
   NumericFeature B("B", false, std::pair<int, int>(0, 1));
   B.addExclude(&A);
   EXPECT_EQ(std::distance(B.excludes_begin(), B.excludes_end()), 1);
-  for (auto F : B.excludes()) {
+  for (auto *F : B.excludes()) {
     EXPECT_EQ("A", F->getName());
   }
 }
@@ -61,7 +61,7 @@ TEST(NumericFeature, NumericFeatureImplications) {
   NumericFeature B("B", false, std::pair<int, int>(0, 1));
   B.addImplication(&A);
   EXPECT_EQ(std::distance(B.implications_begin(), B.implications_end()), 1);
-  for (auto F : B.implications()) {
+  for (auto *F : B.implications()) {
     EXPECT_EQ("A", F->getName());
   }
 }
@@ -71,7 +71,7 @@ TEST(NumericFeature, NumericFeatureAlternatives) {
   NumericFeature B("B", false, std::pair<int, int>(0, 1));
   B.addAlternative(&A);
   EXPECT_EQ(std::distance(B.alternatives_begin(), B.alternatives_end()), 1);
-  for (auto F : B.alternatives()) {
+  for (auto *F : B.alternatives()) {
     EXPECT_EQ("A", F->getName());
   }
 }
