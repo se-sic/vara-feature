@@ -1,6 +1,6 @@
 set(FEATURE_LIB_SRC
   Feature.cpp
-  XmlParser.cpp
+  FeatureModelParser.cpp
 )
 
 set(LLVM_LINK_COMPONENTS

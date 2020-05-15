@@ -108,11 +108,7 @@ public:
     Relationships.push_back(std::move(Relationship));
   }
 
-  [[nodiscard]] std::optional<Location> getLocation() const {
-    return Loc ? std::optional{Location(Loc->getPath(), Loc->getStart(),
-                                        Loc->getEnd())}
-               : std::nullopt;
-  }
+  [[nodiscard]] std::optional<Location> getLocation() const { return Loc; }
 
   [[nodiscard]] virtual std::string toString() const;
 };

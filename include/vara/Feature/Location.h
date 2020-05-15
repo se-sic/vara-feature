@@ -9,39 +9,43 @@ namespace vara::feature {
 
 class Location {
 public:
-  class TableEntry : private std::pair<int, int> {
+  class LineColumnOffset : private std::pair<int, int> {
   public:
-    TableEntry(int Line, int Column) : std::pair<int, int>(Line, Column) {}
+    LineColumnOffset(int Line, int Column)
+        : std::pair<int, int>(Line, Column) {}
 
-    [[nodiscard]] int getLine() const { return this->first; }
+    [[nodiscard]] int getLineNumber() const { return this->first; }
 
-    [[nodiscard]] int getColumn() const { return this->second; }
+    [[nodiscard]] int getColumnOffset() const { return this->second; }
   };
 
 private:
   std::string Path;
-  std::optional<TableEntry> Start;
-  std::optional<TableEntry> End;
+  std::optional<LineColumnOffset> Start;
+  std::optional<LineColumnOffset> End;
 
 public:
-  Location(std::string Path, std::optional<TableEntry> Start,
-           std::optional<TableEntry> End)
+  Location(std::string Path, std::optional<LineColumnOffset> Start,
+           std::optional<LineColumnOffset> End)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)) {}
 
   [[nodiscard]] std::string getPath() const { return Path; }
 
-  [[nodiscard]] std::optional<TableEntry> getStart() const { return Start; }
+  [[nodiscard]] std::optional<LineColumnOffset> getStart() const {
+    return Start;
+  }
 
-  [[nodiscard]] std::optional<TableEntry> getEnd() const { return End; }
+  [[nodiscard]] std::optional<LineColumnOffset> getEnd() const { return End; }
 
   [[nodiscard]] std::string toString() const {
     std::stringstream StrS;
     StrS << Path;
     if (Start) {
-      StrS << ":" << (*Start).getLine() << ":" << (*Start).getColumn();
+      StrS << ":" << (*Start).getLineNumber() << ":"
+           << (*Start).getColumnOffset();
     }
     if (End) {
-      StrS << "->" << (*End).getLine() << ":" << (*End).getColumn();
+      StrS << "->" << (*End).getLineNumber() << ":" << (*End).getColumnOffset();
     }
     return StrS.str();
   }

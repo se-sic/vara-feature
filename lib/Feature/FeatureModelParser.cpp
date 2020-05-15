@@ -1,11 +1,12 @@
-#include "vara/Feature/XmlParser.h"
+#include "vara/Feature/FeatureModelParser.h"
 
 #include <iostream>
 #include <regex>
 
 namespace vara::feature {
 
-void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
+void FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
+                                                     bool Num = false) {
   string Name;
   bool Opt = false;
   int MinValue = 0;
@@ -37,8 +38,8 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
         }
       } else if (!xmlStrcmp(Head->name, LOCATION)) {
         std::string Path;
-        std::optional<Location::TableEntry> Start;
-        std::optional<Location::TableEntry> End;
+        std::optional<Location::LineColumnOffset> Start;
+        std::optional<Location::LineColumnOffset> End;
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, PATH)) {
@@ -48,9 +49,9 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
                       .get());
 
             } else if (!xmlStrcmp(Child->name, START)) {
-              Start = createTableEntry(Child);
+              Start = createLineColumnOffset(Child);
             } else if (!xmlStrcmp(Child->name, END)) {
-              End = createTableEntry(Child);
+              End = createLineColumnOffset(Child);
             }
           }
         }
@@ -71,29 +72,40 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
       }
     }
   }
+  bool Emplaced;
   if (Num) {
     if (Vals.empty()) {
-      Features.try_emplace(
-          Name, std::make_unique<NumericFeature>(
-                    Name, Opt,
-                    std::variant<std::pair<int, int>, std::vector<int>>(
-                        std::make_pair(MinValue, MaxValue)),
-                    std::move(Loc)));
+      Emplaced =
+          Features
+              .try_emplace(
+                  Name, std::make_unique<NumericFeature>(
+                            Name, Opt,
+                            std::variant<std::pair<int, int>, std::vector<int>>(
+                                std::make_pair(MinValue, MaxValue)),
+                            std::move(Loc)))
+              .second;
 
     } else {
-      Features.try_emplace(
-          Name, std::make_unique<NumericFeature>(
-                    Name, Opt,
-                    std::variant<std::pair<int, int>, std::vector<int>>(Vals),
-                    std::move(Loc)));
+      Emplaced =
+          Features
+              .try_emplace(
+                  Name,
+                  std::make_unique<NumericFeature>(
+                      Name, Opt,
+                      std::variant<std::pair<int, int>, std::vector<int>>(Vals),
+                      std::move(Loc)))
+              .second;
     }
   } else {
-    Features.try_emplace(
-        Name, std::make_unique<BinaryFeature>(Name, Opt, std::move(Loc)));
+    Emplaced = Features
+                   .try_emplace(Name, std::make_unique<BinaryFeature>(
+                                          Name, Opt, std::move(Loc)))
+                   .second;
   }
+  assert(Emplaced && "Feature could not be inserted, key was already present.");
 }
 
-void XmlParser::parseOptions(xmlNode *N, bool Num = false) {
+void FeatureModelXmlParser::parseOptions(xmlNode *N, bool Num = false) {
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, CONFIGURATIONOPTION)) {
@@ -103,7 +115,7 @@ void XmlParser::parseOptions(xmlNode *N, bool Num = false) {
   }
 }
 
-void XmlParser::parseConstraints(xmlNode *N) {
+void FeatureModelXmlParser::parseConstraints(xmlNode *N) {
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, CONSTRAINT)) {
@@ -128,7 +140,7 @@ void XmlParser::parseConstraints(xmlNode *N) {
   }
 }
 
-void XmlParser::parseVm(xmlNode *N) {
+void FeatureModelXmlParser::parseVm(xmlNode *N) {
   {
     std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, NAME),
                                                    xmlFree);
@@ -153,7 +165,8 @@ void XmlParser::parseVm(xmlNode *N) {
   }
 }
 
-Location::TableEntry XmlParser::createTableEntry(xmlNode *N) {
+Location::LineColumnOffset
+FeatureModelXmlParser::createLineColumnOffset(xmlNode *N) {
   int Line = 0;
   int Column = 0;
   for (xmlNode *Head = N->children; Head; Head = Head->next) {
@@ -171,10 +184,11 @@ Location::TableEntry XmlParser::createTableEntry(xmlNode *N) {
       }
     }
   }
-  return Location::TableEntry(Line, Column);
+  return Location::LineColumnOffset(Line, Column);
 }
 
-std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
+std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
+  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc = parseDoc();
   if (!Doc) {
     return nullptr;
   }
@@ -263,48 +277,55 @@ std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
                                         Constraints);
 }
 
-bool XmlParser::parseDtd(const string &Filename) {
-  std::unique_ptr<FILE, int (*)(FILE *)> File(fopen(Filename.c_str(), "r"),
-                                              fclose);
-  if (!File) {
-    return false;
-  }
-  xmlParserInputBufferPtr Buf =
-      xmlParserInputBufferCreateFile(File.get(), XML_CHAR_ENCODING_UTF8);
-  Dtd = std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>(
-      xmlIOParseDTD(nullptr, Buf, XML_CHAR_ENCODING_UTF8), xmlFreeDtd);
-  if (!Dtd) {
-    std::cerr << "Failed to parse \'" << Filename << "\'." << std::endl;
-  }
+std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> FeatureModelXmlParser::parseDtd() {
+  assert(DtdRaw);
+  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
+      xmlIOParseDTD(nullptr,
+                    xmlParserInputBufferCreateMem((*DtdRaw).c_str(),
+                                                  (*DtdRaw).length(),
+                                                  XML_CHAR_ENCODING_UTF8),
+                    XML_CHAR_ENCODING_UTF8),
+      xmlFreeDtd);
   xmlCleanupParser();
-  return Dtd.get();
+  if (!Dtd) {
+    std::cerr << "Failed to parse DTD." << std::endl;
+  }
+  return std::move(Dtd);
 }
 
-bool XmlParser::parseDoc(const string &Filename) {
+std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
-  if (!Ctxt) {
-    return false;
-  }
-  Doc = std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(
-      xmlCtxtReadFile(Ctxt.get(), Filename.c_str(), nullptr,
-                      XML_PARSE_NOBLANKS),
+  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc(
+      xmlCtxtReadMemory(Ctxt.get(), DocRaw.c_str(), DocRaw.length(), nullptr,
+                        nullptr, XML_PARSE_NOBLANKS),
       xmlFreeDoc);
-  if (!Doc) {
-    std::cerr << "Failed to parse \'" << Filename << "\'." << std::endl;
-  } else if (!Ctxt->valid) {
-    std::cerr << "Failed to validate \'" << Filename << "\'." << std::endl;
-    Doc = nullptr;
-  } else if (Dtd) {
-    xmlValidateDtd(&Ctxt->vctxt, Doc.get(), Dtd.get());
-    if (!Ctxt->vctxt.valid) {
-      std::cerr << "Failed to validate Dtd for \'" << Filename << "\'."
-                << std::endl;
-      Doc = nullptr;
-    }
-  }
   xmlCleanupParser();
-  return Doc.get();
+  if (Doc && Ctxt->valid) {
+    if (DtdRaw) {
+      std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd = parseDtd();
+      if (Dtd) {
+        xmlValidateDtd(&Ctxt->vctxt, Doc.get(), Dtd.get());
+        if (Ctxt->vctxt.valid) {
+          return std::move(Doc);
+        } else {
+          std::cerr << "Failed to validate DTD." << std::endl;
+        }
+      }
+    } else {
+      return std::move(Doc);
+    }
+  } else {
+    std::cerr << "Failed to parse / validate XML." << std::endl;
+  }
+  return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
+}
+
+bool FeatureModelXmlParser::verifyFeatureModel() {
+  if (!DtdRaw) {
+    std::cerr << "Failed to load DTD." << std::endl;
+  }
+  return parseDoc().get();
 }
 
 } // namespace vara::feature

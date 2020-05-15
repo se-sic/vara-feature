@@ -1,5 +1,5 @@
-#ifndef VARA_FEATURE_XMLPARSER_H
-#define VARA_FEATURE_XMLPARSER_H
+#ifndef VARA_FEATURE_FEATUREMODELPARSER_H
+#define VARA_FEATURE_FEATUREMODELPARSER_H
 
 #include "vara/Feature/FeatureModel.h"
 
@@ -11,10 +11,30 @@
 namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
-//                               XmlParser Class
+//                               FeatureModelParser Class
 //===----------------------------------------------------------------------===//
 
-class XmlParser {
+class FeatureModelParser {
+protected:
+  explicit FeatureModelParser() = default;
+
+public:
+  /// Build \a FeatureModel after parsing.
+  ///
+  /// \returns an instance of \a FeatureModel
+  virtual std::unique_ptr<FeatureModel> buildFeatureModel() = 0;
+
+  /// Verify \a FeatureModel.
+  ///
+  /// \returns if \a FeatureModel is valid
+  virtual bool verifyFeatureModel() = 0;
+};
+
+//===----------------------------------------------------------------------===//
+//                               FeatureModelXmlParser Class
+//===----------------------------------------------------------------------===//
+
+class FeatureModelXmlParser : public FeatureModelParser {
   static constexpr xmlChar NAME[] = "name";
   static constexpr xmlChar OPTIONAL[] = "optional";
   static constexpr xmlChar PARENT[] = "parent";
@@ -39,10 +59,8 @@ class XmlParser {
   using constXmlCharPtr = const xmlChar *;
 
 private:
-  std::string DocPath;
-  std::string DtdPath;
-  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd;
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc;
+  std::string DocRaw;
+  std::optional<std::string> DtdRaw;
   std::string VM;
   std::filesystem::path RootPath;
   FeatureModel::FeatureMapTy Features;
@@ -56,28 +74,21 @@ private:
   void parseConstraints(xmlNode *N);
   void parseVm(xmlNode *N);
 
-  static Location::TableEntry createTableEntry(xmlNode *N);
+  static Location::LineColumnOffset createLineColumnOffset(xmlNode *N);
 
-  bool parseDtd(const std::string &Filename);
-  bool parseDoc(const std::string &Filename);
+  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
+  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> parseDtd();
 
 public:
-  explicit XmlParser(std::string DocPath, std::string DtdPath)
-      : DocPath(std::move(DocPath)), DtdPath(std::move(DtdPath)),
-        Dtd(nullptr, nullptr), Doc(nullptr, nullptr) {}
+  explicit FeatureModelXmlParser(
+      std::string DocRaw, std::optional<std::string> DtdRaw = std::nullopt)
+      : DocRaw(std::move(DocRaw)), DtdRaw(std::move(DtdRaw)) {}
 
-  /// Parse xml representation of feature model (optional validation with dtd).
-  ///
-  /// \returns true if successful
-  bool parse() {
-    return (!DtdPath.empty() ? parseDtd(DtdPath) : true) && parseDoc(DocPath);
-  }
+  std::unique_ptr<FeatureModel> buildFeatureModel() override;
 
-  /// Build \a FeatureModel after parsing.
-  ///
-  /// \returns an instance of \a FeatureModel
-  std::unique_ptr<FeatureModel> buildFeatureModel();
+  bool verifyFeatureModel() override;
 };
+
 } // namespace vara::feature
 
-#endif // VARA_FEATURE_XMLPARSER_H
+#endif // VARA_FEATURE_FEATUREMODELPARSER_H
