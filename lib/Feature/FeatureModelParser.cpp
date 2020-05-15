@@ -72,37 +72,28 @@ void FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
       }
     }
   }
-  bool Emplaced;
+  assert(Features.find(Name) == Features.end() &&
+         "Feature could not be inserted, key was already present.");
   if (Num) {
     if (Vals.empty()) {
-      Emplaced =
-          Features
-              .try_emplace(
-                  Name, std::make_unique<NumericFeature>(
-                            Name, Opt,
-                            std::variant<std::pair<int, int>, std::vector<int>>(
-                                std::make_pair(MinValue, MaxValue)),
-                            std::move(Loc)))
-              .second;
+      Features.try_emplace(
+          Name, std::make_unique<NumericFeature>(
+                    Name, Opt,
+                    std::variant<std::pair<int, int>, std::vector<int>>(
+                        std::make_pair(MinValue, MaxValue)),
+                    std::move(Loc)));
 
     } else {
-      Emplaced =
-          Features
-              .try_emplace(
-                  Name,
-                  std::make_unique<NumericFeature>(
-                      Name, Opt,
-                      std::variant<std::pair<int, int>, std::vector<int>>(Vals),
-                      std::move(Loc)))
-              .second;
+      Features.try_emplace(
+          Name, std::make_unique<NumericFeature>(
+                    Name, Opt,
+                    std::variant<std::pair<int, int>, std::vector<int>>(Vals),
+                    std::move(Loc)));
     }
   } else {
-    Emplaced = Features
-                   .try_emplace(Name, std::make_unique<BinaryFeature>(
-                                          Name, Opt, std::move(Loc)))
-                   .second;
+    Features.try_emplace(
+        Name, std::make_unique<BinaryFeature>(Name, Opt, std::move(Loc)));
   }
-  assert(Emplaced && "Feature could not be inserted, key was already present.");
 }
 
 void FeatureModelXmlParser::parseOptions(xmlNode *N, bool Num = false) {

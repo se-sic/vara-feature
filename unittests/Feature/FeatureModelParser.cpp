@@ -58,6 +58,8 @@ TEST(FeatureModelXmlParser, BuildFeatureModel) {
   ASSERT_NE(FM, nullptr);
   EXPECT_EQ(FM->getName(), "Test");
   EXPECT_EQ(FM->getPath(), std::filesystem::current_path());
+  ASSERT_NE(FM->getRoot(), nullptr);
+  EXPECT_EQ(FM->getRoot()->getName(), "root");
   EXPECT_EQ(std::distance(FM->begin(), FM->end()), 4);
   for (auto *F : *FM) {
     std::string Name = F->getName();

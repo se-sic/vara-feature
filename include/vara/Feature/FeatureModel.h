@@ -33,13 +33,16 @@ public:
                FeatureMapTy Features, ConstraintsTy Constraints)
       : Name(std::move(Name)), RootPath(std::move(RootPath)),
         Features(std::move(Features)), Constraints(std::move(Constraints)),
-        Root(Features["root"].get()) {}
+        Root(this->Features["root"].get()) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
   [[nodiscard]] std::filesystem::path getPath() const { return RootPath; }
 
-  [[nodiscard]] Feature *getRoot() const { return Root; }
+  [[nodiscard]] Feature *getRoot() const {
+    assert(Root);
+    return Root;
+  }
 
   [[nodiscard]] unsigned int size() { return Features.size(); }
 
