@@ -40,7 +40,7 @@ public:
 
   [[nodiscard]] std::string toString() const {
     std::stringstream StrS;
-    StrS << Path;
+    StrS << Path.string();
     if (Start) {
       StrS << ":" << (*Start).getLineNumber() << ":"
            << (*Start).getColumnOffset();
