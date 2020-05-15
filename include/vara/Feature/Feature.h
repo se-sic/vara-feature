@@ -128,16 +128,20 @@ public:
 
 /// Options with numeric values.
 class NumericFeature : public Feature {
+public:
+  using ValuesVariantType =
+      typename std::variant<std::pair<int, int>, std::vector<int>>;
+
 private:
-  std::variant<std::pair<int, int>, std::vector<int>> Vals;
+  ValuesVariantType Values;
 
 public:
-  NumericFeature(string Name, bool Opt,
-                 std::variant<std::pair<int, int>, std::vector<int>> Vals,
+  NumericFeature(string Name, bool Opt, ValuesVariantType Values,
                  std::optional<Location> Loc = std::nullopt)
-      : Feature(std::move(Name), Opt, std::move(Loc)), Vals(std::move(Vals)) {}
+      : Feature(std::move(Name), Opt, std::move(Loc)),
+        Values(std::move(Values)) {}
 
-  std::variant<std::pair<int, int>, std::vector<int>> getVals() { return Vals; }
+  ValuesVariantType getVals() { return Values; }
 
   [[nodiscard]] string toString() const override;
 };

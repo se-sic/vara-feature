@@ -6,8 +6,8 @@ std::string Feature::toString() const {
   std::stringstream StrS;
   StrS << "name: \"" << Name << "\",\n  optional: " << (Opt ? "true" : "false")
        << ",\n  ";
-  if(Loc) {
-    StrS << "location: " <<  Loc->toString() << ",\n  ";
+  if (Loc) {
+    StrS << "location: " << Loc->toString() << ",\n  ";
   }
   StrS << "parents: [";
   for (const auto &Parent : Parents) {
@@ -60,14 +60,14 @@ std::string Feature::toString() const {
 std::string NumericFeature::toString() const {
   std::stringstream StrS;
   StrS << Feature::toString();
-  if (std::holds_alternative<std::pair<int, int>>(Vals)) {
-    std::pair<int, int> Pair = std::get<std::pair<int, int>>(Vals);
+  if (std::holds_alternative<std::pair<int, int>>(Values)) {
+    std::pair<int, int> Pair = std::get<std::pair<int, int>>(Values);
     StrS << ",\n  minValue: " << Pair.first << ",\n  maxValue: " << Pair.second;
   } else {
     StrS << ",\n  values: [";
-    for (const auto &Val : std::get<std::vector<int>>(Vals)) {
+    for (const auto &Val : std::get<std::vector<int>>(Values)) {
       StrS << Val;
-      if (Val != std::get<std::vector<int>>(Vals).back()) {
+      if (Val != std::get<std::vector<int>>(Values).back()) {
         StrS << ", ";
       }
     }
