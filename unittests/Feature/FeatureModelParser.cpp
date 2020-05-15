@@ -58,19 +58,7 @@ TEST(FeatureModelXmlParser, BuildFeatureModel) {
   ASSERT_NE(FM, nullptr);
   EXPECT_EQ(FM->getName(), "Test");
   EXPECT_EQ(FM->getPath(), std::filesystem::current_path());
-  switch (0)
-  case 0:
-  default:
-    if (const ::testing::AssertionResult gtest_ar =
-            (::testing::internal::EqHelper::Compare(
-                "std::distance((*FM).begin(), (*FM).end())", "4",
-                std::distance(FM->begin(), FM->end()), 4)))
-      ;
-    else
-      ::testing::internal::AssertHelper(
-          ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 64,
-          gtest_ar.failure_message()) = ::testing::Message();
-  ;
+  EXPECT_EQ(std::distance(FM->begin(), FM->end()), 4);
   for (auto F : *FM) {
     std::string Name = F->getName();
     F->dump();
@@ -79,125 +67,31 @@ TEST(FeatureModelXmlParser, BuildFeatureModel) {
       for (auto C : F->children()) {
         ASSERT_THAT(C->getName(), testing::AnyOfArray({"A", "B"}));
       }
-
     } else if (Name == "A") {
       EXPECT_FALSE(F->isOptional());
       EXPECT_EQ(F->children().begin(), F->children().end());
-      switch (0)
-      case 0:
-      default:
-        if (const ::testing::AssertionResult gtest_ar =
-                (::testing::internal::EqHelper::Compare(
-                    "std::distance((F->parents()).begin(), "
-                    "(F->parents()).end())",
-                    "1",
-                    std::distance((F->parents()).begin(), (F->parents()).end()),
-                    1)))
-          ;
-        else
-          ::testing::internal::AssertHelper(
-              ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 77,
-              gtest_ar.failure_message()) = ::testing::Message();
-      ;
+      EXPECT_EQ(std::distance(F->parents().begin(), F->parents().end()), 1);
       for (auto P : F->parents()) {
         ASSERT_THAT(P->getName(), testing::AnyOfArray({"root"}));
       }
-      switch (0)
-      case 0:
-      default:
-        if (const ::testing::AssertionResult gtest_ar =
-                (::testing::internal::EqHelper::Compare(
-                    "std::distance((F->children()).begin(), "
-                    "(F->children()).end())",
-                    "0",
-                    std::distance((F->children()).begin(),
-                                  (F->children()).end()),
-                    0)))
-          ;
-        else
-          ::testing::internal::AssertHelper(
-              ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 81,
-              gtest_ar.failure_message()) = ::testing::Message();
-      ;
-      switch (0)
-      case 0:
-      default:
-        if (const ::testing::AssertionResult gtest_ar =
-                (::testing::internal::EqHelper::Compare(
-                    "std::distance((F->alternatives()).begin(), "
-                    "(F->alternatives()).end())",
-                    "1",
-                    std::distance((F->alternatives()).begin(),
-                                  (F->alternatives()).end()),
-                    1)))
-          ;
-        else
-          ::testing::internal::AssertHelper(
-              ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 82,
-              gtest_ar.failure_message()) = ::testing::Message();
-      ;
+      EXPECT_EQ(std::distance(F->children().begin(), F->children().end()), 0);
+      EXPECT_EQ(
+          std::distance(F->alternatives().begin(), F->alternatives().end()), 1);
       for (auto A : F->alternatives()) {
         ASSERT_THAT(A->getName(), testing::AnyOfArray({"B"}));
       }
-
     } else if (Name == "B") {
       EXPECT_TRUE(F->isOptional());
-      switch (0)
-      case 0:
-      default:
-        if (const ::testing::AssertionResult gtest_ar =
-                (::testing::internal::EqHelper::Compare(
-                    "std::distance((F->parents()).begin(), "
-                    "(F->parents()).end())",
-                    "1",
-                    std::distance((F->parents()).begin(), (F->parents()).end()),
-                    1)))
-          ;
-        else
-          ::testing::internal::AssertHelper(
-              ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 89,
-              gtest_ar.failure_message()) = ::testing::Message();
-      ;
+      EXPECT_EQ(std::distance(F->parents().begin(), F->parents().end()), 1);
       for (auto P : F->parents()) {
         ASSERT_THAT(P->getName(), testing::AnyOfArray({"root"}));
       }
-      switch (0)
-      case 0:
-      default:
-        if (const ::testing::AssertionResult gtest_ar =
-                (::testing::internal::EqHelper::Compare(
-                    "std::distance((F->children()).begin(), "
-                    "(F->children()).end())",
-                    "1",
-                    std::distance((F->children()).begin(),
-                                  (F->children()).end()),
-                    1)))
-          ;
-        else
-          ::testing::internal::AssertHelper(
-              ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 93,
-              gtest_ar.failure_message()) = ::testing::Message();
-      ;
+      EXPECT_EQ(std::distance(F->children().begin(), F->children().end()), 1);
       for (auto C : F->children()) {
         ASSERT_THAT(C->getName(), testing::AnyOfArray({"C"}));
       }
-      switch (0)
-      case 0:
-      default:
-        if (const ::testing::AssertionResult gtest_ar =
-                (::testing::internal::EqHelper::Compare(
-                    "std::distance((F->alternatives()).begin(), "
-                    "(F->alternatives()).end())",
-                    "1",
-                    std::distance((F->alternatives()).begin(),
-                                  (F->alternatives()).end()),
-                    1)))
-          ;
-        else
-          ::testing::internal::AssertHelper(
-              ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 97,
-              gtest_ar.failure_message()) = ::testing::Message();
-      ;
+      EXPECT_EQ(
+          std::distance(F->alternatives().begin(), F->alternatives().end()), 1);
       for (auto A : F->alternatives()) {
         ASSERT_THAT(A->getName(), testing::AnyOfArray({"A"}));
       }
@@ -208,59 +102,13 @@ TEST(FeatureModelXmlParser, BuildFeatureModel) {
                   testing::ElementsAre(1, 5, 9));
     } else if (Name == "C") {
       EXPECT_FALSE(F->isOptional());
-      switch (0)
-      case 0:
-      default:
-        if (const ::testing::AssertionResult gtest_ar =
-                (::testing::internal::EqHelper::Compare(
-                    "std::distance((F->parents()).begin(), "
-                    "(F->parents()).end())",
-                    "1",
-                    std::distance((F->parents()).begin(), (F->parents()).end()),
-                    1)))
-          ;
-        else
-          ::testing::internal::AssertHelper(
-              ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 107,
-              gtest_ar.failure_message()) = ::testing::Message();
-      ;
+      EXPECT_EQ(std::distance(F->parents().begin(), F->parents().end()), 1);
       for (auto P : F->parents()) {
         ASSERT_THAT(P->getName(), testing::AnyOfArray({"B"}));
       }
-      switch (0)
-      case 0:
-      default:
-        if (const ::testing::AssertionResult gtest_ar =
-                (::testing::internal::EqHelper::Compare(
-                    "std::distance((F->children()).begin(), "
-                    "(F->children()).end())",
-                    "0",
-                    std::distance((F->children()).begin(),
-                                  (F->children()).end()),
-                    0)))
-          ;
-        else
-          ::testing::internal::AssertHelper(
-              ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 111,
-              gtest_ar.failure_message()) = ::testing::Message();
-      ;
-      switch (0)
-      case 0:
-      default:
-        if (const ::testing::AssertionResult gtest_ar =
-                (::testing::internal::EqHelper::Compare(
-                    "std::distance((F->alternatives()).begin(), "
-                    "(F->alternatives()).end())",
-                    "0",
-                    std::distance((F->alternatives()).begin(),
-                                  (F->alternatives()).end()),
-                    0)))
-          ;
-        else
-          ::testing::internal::AssertHelper(
-              ::testing::TestPartResult::kNonFatalFailure, "_file_name_", 112,
-              gtest_ar.failure_message()) = ::testing::Message();
-      ;
+      EXPECT_EQ(std::distance(F->children().begin(), F->children().end()), 0);
+      EXPECT_EQ(
+          std::distance(F->alternatives().begin(), F->alternatives().end()), 0);
     } else {
       FAIL();
     }
