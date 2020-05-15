@@ -29,6 +29,11 @@ if (${VARA_FEATURE_COLORED_OUTPUT})
     endif ()
 endif ()
 
+option(VARA_FEATURE_BUILD_PYTHON_BINDINGS "Build vara-features python bindings" TRUE)
+if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
+  add_compile_options(-fPIC)
+endif()
+
 # Setup git submodules (external projects)
 find_package(Git QUIET)
 if (GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
@@ -95,6 +100,11 @@ include_directories(${LIBXML2_INCLUDE_DIR})
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
+
+if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
+  add_subdirectory(external/pybind11)
+  add_subdirectory(bindings)
+endif()
 
 if (VARA_FEATURE_IN_TREE)
   # Set llvm distributed includes for gtest header
