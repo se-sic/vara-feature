@@ -59,43 +59,43 @@ TEST(FeatureModelXmlParser, BuildFeatureModel) {
   EXPECT_EQ(FM->getName(), "Test");
   EXPECT_EQ(FM->getPath(), std::filesystem::current_path());
   EXPECT_EQ(std::distance(FM->begin(), FM->end()), 4);
-  for (auto F : *FM) {
+  for (auto *F : *FM) {
     std::string Name = F->getName();
     F->dump();
     if (Name == "root") {
       EXPECT_FALSE(F->isOptional());
-      for (auto C : F->children()) {
+      for (auto *C : F->children()) {
         ASSERT_THAT(C->getName(), testing::AnyOfArray({"A", "B"}));
       }
     } else if (Name == "A") {
       EXPECT_FALSE(F->isOptional());
       EXPECT_EQ(F->children().begin(), F->children().end());
       EXPECT_EQ(std::distance(F->parents().begin(), F->parents().end()), 1);
-      for (auto P : F->parents()) {
+      for (auto *P : F->parents()) {
         ASSERT_THAT(P->getName(), testing::AnyOfArray({"root"}));
       }
       EXPECT_EQ(std::distance(F->children().begin(), F->children().end()), 0);
       EXPECT_EQ(
           std::distance(F->alternatives().begin(), F->alternatives().end()), 1);
-      for (auto A : F->alternatives()) {
+      for (auto *A : F->alternatives()) {
         ASSERT_THAT(A->getName(), testing::AnyOfArray({"B"}));
       }
     } else if (Name == "B") {
       EXPECT_TRUE(F->isOptional());
       EXPECT_EQ(std::distance(F->parents().begin(), F->parents().end()), 1);
-      for (auto P : F->parents()) {
+      for (auto *P : F->parents()) {
         ASSERT_THAT(P->getName(), testing::AnyOfArray({"root"}));
       }
       EXPECT_EQ(std::distance(F->children().begin(), F->children().end()), 1);
-      for (auto C : F->children()) {
+      for (auto *C : F->children()) {
         ASSERT_THAT(C->getName(), testing::AnyOfArray({"C"}));
       }
       EXPECT_EQ(
           std::distance(F->alternatives().begin(), F->alternatives().end()), 1);
-      for (auto A : F->alternatives()) {
+      for (auto *A : F->alternatives()) {
         ASSERT_THAT(A->getName(), testing::AnyOfArray({"A"}));
       }
-      auto NF = dynamic_cast<NumericFeature *>(F);
+      auto *NF = dynamic_cast<NumericFeature *>(F);
       ASSERT_NE(NF, nullptr);
       EXPECT_TRUE(std::holds_alternative<std::vector<int>>(NF->getVals()));
       EXPECT_THAT(std::get<std::vector<int>>(NF->getVals()),
@@ -103,7 +103,7 @@ TEST(FeatureModelXmlParser, BuildFeatureModel) {
     } else if (Name == "C") {
       EXPECT_FALSE(F->isOptional());
       EXPECT_EQ(std::distance(F->parents().begin(), F->parents().end()), 1);
-      for (auto P : F->parents()) {
+      for (auto *P : F->parents()) {
         ASSERT_THAT(P->getName(), testing::AnyOfArray({"B"}));
       }
       EXPECT_EQ(std::distance(F->children().begin(), F->children().end()), 0);

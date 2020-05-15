@@ -16,7 +16,7 @@ TEST(BinaryFeature, BinaryFeatureRoot) {
   B.addParent(&A);
   EXPECT_TRUE(A.isRoot());
   EXPECT_FALSE(B.isRoot());
-  for (auto F : B.parents()) {
+  for (auto *F : B.parents()) {
     EXPECT_EQ("A", F->getName());
   }
 }
@@ -26,7 +26,7 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
   BinaryFeature B("B", false);
   B.addChild(&A);
   EXPECT_EQ(std::distance(B.begin(), B.end()), 1);
-  for (auto F : B.children()) {
+  for (auto *F : B.children()) {
     EXPECT_EQ("A", F->getName());
   }
 }
@@ -36,7 +36,7 @@ TEST(BinaryFeature, BinaryFeatureExclude) {
   BinaryFeature B("B", false);
   B.addExclude(&A);
   EXPECT_EQ(std::distance(B.excludes_begin(), B.excludes_end()), 1);
-  for (auto F : B.excludes()) {
+  for (auto *F : B.excludes()) {
     EXPECT_EQ("A", F->getName());
   }
 }
@@ -46,7 +46,7 @@ TEST(BinaryFeature, BinaryFeatureImplications) {
   BinaryFeature B("B", false);
   B.addImplication(&A);
   EXPECT_EQ(std::distance(B.implications_begin(), B.implications_end()), 1);
-  for (auto F : B.implications()) {
+  for (auto *F : B.implications()) {
     EXPECT_EQ("A", F->getName());
   }
 }
@@ -56,7 +56,7 @@ TEST(BinaryFeature, BinaryFeatureAlternatives) {
   BinaryFeature B("B", false);
   B.addAlternative(&A);
   EXPECT_EQ(std::distance(B.alternatives_begin(), B.alternatives_end()), 1);
-  for (auto F : B.alternatives()) {
+  for (auto *F : B.alternatives()) {
     EXPECT_EQ("A", F->getName());
   }
 }
