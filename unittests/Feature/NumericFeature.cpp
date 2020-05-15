@@ -1,6 +1,6 @@
 #include "vara/Feature/Feature.h"
-#include <gmock/gmock-matchers.h>
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 namespace vara::feature {
@@ -13,19 +13,16 @@ TEST(NumericFeature, NumericFeatureBasics) {
 
 TEST(NumericFeature, NumericFeaturePair) {
   NumericFeature A("A", false, std::pair<int, int>(0, 1));
-  bool Cond = std::holds_alternative<std::pair<int, int>>(A.getVals());
-  EXPECT_TRUE(Cond);
-  std::pair<int, int> Vals = std::get<std::pair<int, int>>(A.getVals());
-  EXPECT_EQ(Vals.first, 0);
-  EXPECT_EQ(Vals.second, 1);
+  EXPECT_TRUE((std::holds_alternative<std::pair<int, int>>(A.getVals())));
+  EXPECT_EQ((std::get<std::pair<int, int>>(A.getVals())).first, 0);
+  EXPECT_EQ((std::get<std::pair<int, int>>(A.getVals())).second, 1);
 }
 
 TEST(NumericFeature, NumericFeatureVector) {
   NumericFeature A("A", false, std::vector<int>{0, 1, 2, 3});
-  bool Cond = std::holds_alternative<std::vector<int>>(A.getVals());
-  EXPECT_TRUE(Cond);
-  std::vector<int> Vals = std::get<std::vector<int>>(A.getVals());
-  EXPECT_THAT(Vals, testing::ElementsAre(0, 1, 2, 3));
+  EXPECT_TRUE(std::holds_alternative<std::vector<int>>(A.getVals()));
+  EXPECT_THAT(std::get<std::vector<int>>(A.getVals()),
+              testing::ElementsAre(0, 1, 2, 3));
 }
 
 TEST(NumericFeature, NumericFeatureRoot) {

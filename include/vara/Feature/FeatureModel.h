@@ -43,7 +43,8 @@ public:
 
   [[nodiscard]] unsigned int size() { return Features.size(); }
 
-  struct FeatureModelIter {
+  struct FeatureModelIter : std::iterator<std::forward_iterator_tag, Feature &,
+                                          ptrdiff_t, Feature *, Feature &> {
     FeatureMapTy::iterator It;
 
     explicit FeatureModelIter(FeatureMapTy::iterator It) : It(It) {}

@@ -37,16 +37,16 @@ void FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
           }
         }
       } else if (!xmlStrcmp(Head->name, LOCATION)) {
-        std::string Path;
+        std::filesystem::path Path;
         std::optional<Location::LineColumnOffset> Start;
         std::optional<Location::LineColumnOffset> End;
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, PATH)) {
-              Path = reinterpret_cast<char *>(
+              Path = std::filesystem::path(reinterpret_cast<char *>(
                   std::unique_ptr<xmlChar, void (*)(void *)>(
                       xmlNodeGetContent(Child), xmlFree)
-                      .get());
+                      .get()));
 
             } else if (!xmlStrcmp(Child->name, START)) {
               Start = createLineColumnOffset(Child);

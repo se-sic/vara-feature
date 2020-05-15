@@ -1,6 +1,7 @@
 #ifndef VARA_FEATURE_LOCATION_H
 #define VARA_FEATURE_LOCATION_H
 
+#include <filesystem>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -20,12 +21,12 @@ public:
   };
 
 private:
-  std::string Path;
+  std::filesystem::path Path;
   std::optional<LineColumnOffset> Start;
   std::optional<LineColumnOffset> End;
 
 public:
-  Location(std::string Path, std::optional<LineColumnOffset> Start,
+  Location(std::filesystem::path Path, std::optional<LineColumnOffset> Start,
            std::optional<LineColumnOffset> End)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)) {}
 
