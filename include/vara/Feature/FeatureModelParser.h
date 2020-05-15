@@ -35,6 +35,43 @@ public:
 //===----------------------------------------------------------------------===//
 
 class FeatureModelXmlParser : public FeatureModelParser {
+
+  inline static const std::string DtdRaw =
+      "<!ELEMENT vm (binaryOptions, numericOptions?, booleanConstraints?, "
+      "nonBooleanConstraints?, mixedConstraints?)>\n"
+      "<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED>\n"
+      "<!ELEMENT binaryOptions (configurationOption*)>\n"
+      "<!ELEMENT numericOptions (configurationOption*)>\n"
+      "<!ELEMENT booleanConstraints (constraint*)>\n"
+      "<!ELEMENT nonBooleanConstraints (constraint*)>\n"
+      "<!ELEMENT mixedConstraints (constraint*)>\n"
+      "<!ELEMENT configurationOption (name, outputString?, prefix?, "
+      "postfix?, parent?, Children?, impliedOptions?, excludedOptions?, "
+      "optional?, ((minValue, maxValue)  |  values)?, stepFunction?, "
+      "location?)>\n"
+      "<!ELEMENT constraint (#PCDATA)>\n"
+      "<!ATTLIST constraint req CDATA #IMPLIED exprKind CDATA #IMPLIED>\n"
+      "<!ELEMENT name (#PCDATA)>\n"
+      "<!ELEMENT outputString (#PCDATA)>\n"
+      "<!ELEMENT prefix (#PCDATA)>\n"
+      "<!ELEMENT postfix (#PCDATA)>\n"
+      "<!ELEMENT parent (#PCDATA)>\n"
+      "<!ELEMENT Children (#PCDATA)>\n"
+      "<!ELEMENT impliedOptions (options*)>\n"
+      "<!ELEMENT excludedOptions (options*)>\n"
+      "<!ELEMENT options (#PCDATA)>\n"
+      "<!ELEMENT optional (#PCDATA)>\n"
+      "<!ELEMENT minValue (#PCDATA)>\n"
+      "<!ELEMENT maxValue (#PCDATA)>\n"
+      "<!ELEMENT values (#PCDATA)>\n"
+      "<!ELEMENT stepFunction (#PCDATA)>\n"
+      "<!ELEMENT location (path, start?, end?)>\n"
+      "<!ELEMENT path (#PCDATA)>\n"
+      "<!ELEMENT start (line, column)>\n"
+      "<!ELEMENT end (line, column)>\n"
+      "<!ELEMENT line (#PCDATA)>\n"
+      "<!ELEMENT column (#PCDATA)>";
+
   static constexpr xmlChar NAME[] = "name";
   static constexpr xmlChar OPTIONAL[] = "optional";
   static constexpr xmlChar PARENT[] = "parent";
@@ -59,9 +96,8 @@ class FeatureModelXmlParser : public FeatureModelParser {
   using constXmlCharPtr = const xmlChar *;
 
 private:
-  std::string DocRaw;
-  std::optional<std::string> DtdRaw;
-  std::string VM;
+  std::string Xml;
+  std::string VmName;
   std::filesystem::path RootPath;
   FeatureModel::FeatureMapTy Features;
   FeatureModel::ConstraintsTy Constraints;
@@ -77,12 +113,10 @@ private:
   static Location::LineColumnOffset createLineColumnOffset(xmlNode *N);
 
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
-  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> parseDtd();
+  static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
 
 public:
-  explicit FeatureModelXmlParser(
-      std::string DocRaw, std::optional<std::string> DtdRaw = std::nullopt)
-      : DocRaw(std::move(DocRaw)), DtdRaw(std::move(DtdRaw)) {}
+  explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
 
   std::unique_ptr<FeatureModel> buildFeatureModel() override;
 

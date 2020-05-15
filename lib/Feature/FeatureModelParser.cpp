@@ -144,7 +144,7 @@ void FeatureModelXmlParser::parseVm(xmlNode *N) {
   {
     std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, NAME),
                                                    xmlFree);
-    VM = std::string(reinterpret_cast<char *>(Cnt.get()));
+    VmName = std::string(reinterpret_cast<char *>(Cnt.get()));
   }
   {
     std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, ROOT),
@@ -188,7 +188,7 @@ FeatureModelXmlParser::createLineColumnOffset(xmlNode *N) {
 }
 
 std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc = parseDoc();
+  auto Doc = parseDoc();
   if (!Doc) {
     return nullptr;
   }
@@ -273,23 +273,21 @@ std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
     }
     // TODO (se-passau/VaRA#42): relationships or and xor
   }
-  return std::make_unique<FeatureModel>(VM, RootPath, std::move(Features),
+  return std::make_unique<FeatureModel>(VmName, RootPath, std::move(Features),
                                         Constraints);
 }
 
-std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> FeatureModelXmlParser::parseDtd() {
-  assert(DtdRaw);
+std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
+FeatureModelXmlParser::createDtd() {
   std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
       xmlIOParseDTD(nullptr,
-                    xmlParserInputBufferCreateMem((*DtdRaw).c_str(),
-                                                  (*DtdRaw).length(),
+                    xmlParserInputBufferCreateMem(DtdRaw.c_str(),
+                                                  DtdRaw.length(),
                                                   XML_CHAR_ENCODING_UTF8),
                     XML_CHAR_ENCODING_UTF8),
       xmlFreeDtd);
   xmlCleanupParser();
-  if (!Dtd) {
-    std::cerr << "Failed to parse DTD." << std::endl;
-  }
+  assert(Dtd && "Failed to parse DTD.");
   return std::move(Dtd);
 }
 
@@ -297,23 +295,16 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc(
-      xmlCtxtReadMemory(Ctxt.get(), DocRaw.c_str(), DocRaw.length(), nullptr,
-                        nullptr, XML_PARSE_NOBLANKS),
+      xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(), Xml.length(), nullptr, nullptr,
+                        XML_PARSE_NOBLANKS),
       xmlFreeDoc);
   xmlCleanupParser();
   if (Doc && Ctxt->valid) {
-    if (DtdRaw) {
-      std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd = parseDtd();
-      if (Dtd) {
-        xmlValidateDtd(&Ctxt->vctxt, Doc.get(), Dtd.get());
-        if (Ctxt->vctxt.valid) {
-          return std::move(Doc);
-        } else {
-          std::cerr << "Failed to validate DTD." << std::endl;
-        }
-      }
-    } else {
+    xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
+    if (Ctxt->vctxt.valid) {
       return std::move(Doc);
+    } else {
+      std::cerr << "Failed to validate DTD." << std::endl;
     }
   } else {
     std::cerr << "Failed to parse / validate XML." << std::endl;
@@ -321,11 +312,6 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
 }
 
-bool FeatureModelXmlParser::verifyFeatureModel() {
-  if (!DtdRaw) {
-    std::cerr << "Failed to load DTD." << std::endl;
-  }
-  return parseDoc().get();
-}
+bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 } // namespace vara::feature
