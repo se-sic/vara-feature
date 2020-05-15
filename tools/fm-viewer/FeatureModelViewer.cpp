@@ -4,7 +4,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  if (argc == 1) {
+  if (argc == 2) {
     std::ifstream DocFile(argv[1]);
     if (DocFile.is_open()) {
       std::string DocRaw((std::istreambuf_iterator<char>(DocFile)),
