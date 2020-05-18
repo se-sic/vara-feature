@@ -80,9 +80,9 @@ script:
   - cd build
   - cmake .. -GNinja -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION} -DPYTHON_EXECUTABLE=$(which python3)
   - cmake --build . -- -v
-#  - cmake --build . --target check-vara-feature-unittests
-#  - cmake --build . --target tidy-vara-feature
-#  - cmake --build . --target check-vara-feature-python
+  - cmake --build . --target check-vara-feature-unittests
+  - cmake --build . --target tidy-vara-feature
+  - cmake --build . --target check-vara-feature-python
 
 #branches:
 #  only:
