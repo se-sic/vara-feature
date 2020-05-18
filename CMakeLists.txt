@@ -26,6 +26,7 @@ if (${VARA_FEATURE_COLORED_OUTPUT})
        add_compile_options (-fdiagnostics-color=always)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
        add_compile_options (-fcolor-diagnostics)
+       add_compile_options (-stdlib=libstdc++)
     endif ()
 endif ()
 

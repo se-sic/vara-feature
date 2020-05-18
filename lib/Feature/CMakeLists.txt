@@ -16,4 +16,5 @@ add_vara_library(VaRAFeature
 target_link_libraries(VaRAFeature
   LINK_PUBLIC
   ${LIBXML2_LIBRARIES}
+  stdc++fs
 )
