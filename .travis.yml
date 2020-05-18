@@ -81,7 +81,7 @@ script:
   - cmake --build . --target tidy-vara-feature
   - cmake --build . --target check-vara-feature-python
 
-branches:
-  only:
-    - vara
-    - vara-dev
+#branches:
+#  only:
+#    - vara
+#    - vara-dev
