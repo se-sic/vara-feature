@@ -62,9 +62,8 @@ jobs:
             - sourceline:  ppa:ubuntu-toolchain-r/test
           packages:
             - llvm-10-dev
-            - clang++-10
-            - clang-tidy-10
             - g++-9
+            - clang-tidy-10
       env: CXX=g++-9 BUILD_TYPE=Debug
     - name: GCC-9 Release
       stage: Latest
