@@ -1,14 +1,14 @@
 if (DEFINED LLVM_MAIN_SRC_DIR)
   set(VARA_FEATURE_IN_TREE 1)
-endif()
+endif ()
 
 if (NOT VARA_FEATURE_IN_TREE)
-  cmake_minimum_required (VERSION 3.12)
+  cmake_minimum_required(VERSION 3.12)
   project(vara-feature)
 
   file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-endif()
+endif ()
 
 # CMake CXX options
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
@@ -19,20 +19,24 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # CMake options
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  add_compile_options(-stdlib=libstdc++)
+endif ()
+
 # VARA_FEATURE options
 option(VARA_FEATURE_COLORED_OUTPUT "Produce ANSI-colored output" TRUE)
 if (${VARA_FEATURE_COLORED_OUTPUT})
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-       add_compile_options (-fdiagnostics-color=always)
-    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-       add_compile_options (-fcolor-diagnostics)
-    endif ()
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    add_compile_options(-fdiagnostics-color=always)
+  elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    add_compile_options(-fcolor-diagnostics)
+  endif ()
 endif ()
 
 option(VARA_FEATURE_BUILD_PYTHON_BINDINGS "Build vara-features python bindings" TRUE)
 if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
   add_compile_options(-fPIC)
-endif()
+endif ()
 
 # Setup git submodules (external projects)
 find_package(Git QUIET)
@@ -44,26 +48,34 @@ if (GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
       COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       RESULT_VARIABLE GIT_SUBMOD_RESULT
-      )
+    )
     if (NOT GIT_SUBMOD_RESULT EQUAL "0")
       message(
         FATAL_ERROR "git submodule update --init failed with ${VARA_FEATURE_GIT_SUBMODULE}"
-        )
-    endif()
-  endif()
-endif()
+      )
+    endif ()
+  endif ()
+endif ()
 
 # Setup custom targets
 
-find_program(VARA_FEATURE_RUN_CLANG_TIDY
-  NAMES run-clang-tidy.py run-clang-tidy-10.py run-clang-tidy
-  PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
-)
+if (${LLVM_REQUESTED_VERSION})
+  find_program(VARA_FEATURE_RUN_CLANG_TIDY
+    NAMES run-clang-tidy-${LLVM_REQUESTED_VERSION}.py run-clang-tidy-${LLVM_REQUESTED_VERSION} run-clang-tidy.py run-clang-tidy
+    PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
+    )
+else ()
+  find_program(VARA_FEATURE_RUN_CLANG_TIDY
+    NAMES run-clang-tidy-10.py run-clang-tidy-10 run-clang-tidy.py run-clang-tidy
+    PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
+    )
+endif ()
+
 add_custom_target(tidy-vara-feature
   ${VARA_FEATURE_RUN_CLANG_TIDY} -header-filter=vara/.* lib/* unittests/*
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   COMMENT "Run clang-tidy over vara-feature files"
-)
+  )
 
 # Setup the program
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -76,21 +88,21 @@ if (NOT VARA_FEATURE_IN_TREE)
   # Only search for LLVM if we build out of tree
   if (${LLVM_REQUESTED_VERSION})
     find_package(LLVM ${LLVM_REQUESTED_VERSION} REQUIRED CONFIG)
-  else()
+  else ()
     message(STATUS "Not set")
     find_package(LLVM 10 REQUIRED CONFIG)
-  endif()
+  endif ()
 
   if (NOT "${LLVM_VERSION_MAJOR}" GREATER_EQUAL "${MIN_LLVM_REQUIRED}")
     message(FATAL_ERROR "LLVM version error: minimal required LLVM-${MIN_LLVM_REQUIRED} but found LLVM-${LLVM_VERSION_MAJOR}. ")
-  endif()
+  endif ()
   find_library(LLVM_LIBRARY NAMES llvm REQUIRED)
   include_directories(${LLVM_INCLUDE_DIRS})
   link_directories(${LLVM_LIB_PATH} ${LLVM_LIBRARY_DIRS})
   add_definitions(${LLVM_DEFINITIONS})
 
   set(USE_SHARED ON)
-endif()
+endif ()
 
 include_directories(include/)
 
@@ -104,18 +116,18 @@ add_subdirectory(tools)
 if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
   add_subdirectory(external/pybind11)
   add_subdirectory(bindings)
-endif()
+endif ()
 
 if (VARA_FEATURE_IN_TREE)
   # Set llvm distributed includes for gtest header
   include_directories(${LLVM_MAIN_SRC_DIR}/utils/unittest/googletest/include)
   include_directories(${LLVM_MAIN_SRC_DIR}/utils/unittest/googlemock/include)
-else()
+else ()
   add_subdirectory(external/googletest EXCLUDE_FROM_ALL)
   include_directories(external/googletest/googletest/include)
   include_directories(external/googletest/googlemock/include)
 
   enable_testing()
-endif()
+endif ()
 
 add_subdirectory(unittests)

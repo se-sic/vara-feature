@@ -6,8 +6,6 @@
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
 
-#include <filesystem>
-
 using std::string;
 
 namespace vara::feature {
@@ -23,21 +21,21 @@ public:
 
 private:
   string Name;
-  std::filesystem::path RootPath;
+  fs::path RootPath;
   FeatureMapTy Features;
   ConstraintsTy Constraints;
   Feature *Root;
 
 public:
-  FeatureModel(string Name, std::filesystem::path RootPath,
-               FeatureMapTy Features, ConstraintsTy Constraints)
+  FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
+               ConstraintsTy Constraints)
       : Name(std::move(Name)), RootPath(std::move(RootPath)),
         Features(std::move(Features)), Constraints(std::move(Constraints)),
         Root(this->Features["root"].get()) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
-  [[nodiscard]] std::filesystem::path getPath() const { return RootPath; }
+  [[nodiscard]] fs::path getPath() const { return RootPath; }
 
   [[nodiscard]] Feature *getRoot() const {
     assert(Root);

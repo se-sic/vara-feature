@@ -37,13 +37,13 @@ void FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
           }
         }
       } else if (!xmlStrcmp(Head->name, LOCATION)) {
-        std::filesystem::path Path;
+        fs::path Path;
         std::optional<Location::LineColumnOffset> Start;
         std::optional<Location::LineColumnOffset> End;
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, PATH)) {
-              Path = std::filesystem::path(reinterpret_cast<char *>(
+              Path = fs::path(reinterpret_cast<char *>(
                   std::unique_ptr<xmlChar, void (*)(void *)>(
                       xmlNodeGetContent(Child), xmlFree)
                       .get()));
@@ -140,8 +140,8 @@ void FeatureModelXmlParser::parseVm(xmlNode *N) {
   {
     std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, ROOT),
                                                    xmlFree);
-    RootPath = Cnt ? std::filesystem::path(reinterpret_cast<char *>(Cnt.get()))
-                   : std::filesystem::current_path();
+    RootPath = Cnt ? fs::path(reinterpret_cast<char *>(Cnt.get()))
+                   : fs::current_path();
   }
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {

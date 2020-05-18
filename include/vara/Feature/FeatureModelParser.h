@@ -98,7 +98,7 @@ class FeatureModelXmlParser : public FeatureModelParser {
 private:
   std::string Xml;
   std::string VmName;
-  std::filesystem::path RootPath;
+  fs::path RootPath;
   FeatureModel::FeatureMapTy Features;
   FeatureModel::ConstraintsTy Constraints;
   std::vector<std::pair<std::string, std::string>> RawEdges;
