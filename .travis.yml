@@ -25,7 +25,7 @@ jobs:
             - g++-9
             - clang-9
             - llvm-9-dev
-#            - clang-tidy-10
+            - clang-tidy-10
             - libxml2-dev
     - name: Clang-9 Release
       stage: Legacy
@@ -45,7 +45,7 @@ jobs:
             - ninja-build
             - g++-9
             - clang-10
-#            - clang-tidy-10
+            - clang-tidy-10
             - llvm-10-dev
             - libxml2-dev
     - name: Clang-10 Release
@@ -69,7 +69,7 @@ jobs:
             - ninja-build
             - g++-9
             - llvm-10-dev
-#            - clang-tidy-10
+            - clang-tidy-10
             - libxml2-dev
     - name: GCC-9 Release
       env: CXX=g++-9 BUILD_TYPE=Release
@@ -81,7 +81,7 @@ script:
   - cmake .. -GNinja -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION} -DPYTHON_EXECUTABLE=$(which python3)
   - cmake --build .
   - cmake --build . --target check-vara-feature-unittests
-#  - cmake --build . --target tidy-vara-feature
+  - cmake --build . --target tidy-vara-feature
   - cmake --build . --target check-vara-feature-python
 
 #branches:
