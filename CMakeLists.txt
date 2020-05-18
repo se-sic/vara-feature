@@ -59,17 +59,10 @@ endif ()
 
 # Setup custom targets
 
-if (${LLVM_REQUESTED_VERSION})
-  find_program(VARA_FEATURE_RUN_CLANG_TIDY
-    NAMES run-clang-tidy-${LLVM_REQUESTED_VERSION}.py run-clang-tidy-${LLVM_REQUESTED_VERSION} run-clang-tidy.py run-clang-tidy
-    PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
-    )
-else ()
-  find_program(VARA_FEATURE_RUN_CLANG_TIDY
-    NAMES run-clang-tidy-10.py run-clang-tidy-10 run-clang-tidy.py run-clang-tidy
-    PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
-    )
-endif ()
+find_program(VARA_FEATURE_RUN_CLANG_TIDY
+  NAMES run-clang-tidy-10.py run-clang-tidy-10 run-clang-tidy.py run-clang-tidy
+  PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
+  )
 
 add_custom_target(tidy-vara-feature
   ${VARA_FEATURE_RUN_CLANG_TIDY} -header-filter=vara/.* lib/* unittests/*
