@@ -73,6 +73,7 @@ jobs:
       addons: *gcc9
 
 script:
+  - ldconfig -p
   - mkdir build
   - cd build
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE:?} -DLLVM_REQUESTED_VERSION=${LLVM_VERSION} -DPYTHON_EXECUTABLE=$(which python3)
