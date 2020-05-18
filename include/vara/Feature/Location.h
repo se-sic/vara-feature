@@ -1,10 +1,12 @@
 #ifndef VARA_FEATURE_LOCATION_H
 #define VARA_FEATURE_LOCATION_H
 
-#include <experimental/filesystem>
+#include <filesystem>
 #include <optional>
 #include <sstream>
 #include <string>
+
+namespace fs = std::filesystem;
 
 namespace vara::feature {
 
@@ -21,12 +23,12 @@ public:
   };
 
 private:
-  std::filesystem::path Path;
+  fs::path Path;
   std::optional<LineColumnOffset> Start;
   std::optional<LineColumnOffset> End;
 
 public:
-  Location(std::filesystem::path Path, std::optional<LineColumnOffset> Start,
+  Location(fs::path Path, std::optional<LineColumnOffset> Start,
            std::optional<LineColumnOffset> End)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)) {}
 
