@@ -22,7 +22,6 @@ jobs:
               key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
           packages:
             - build-essential
-            - gcc-9
             - g++-9
             - libstdc++6
             - clang-9
