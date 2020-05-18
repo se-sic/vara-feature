@@ -1,12 +1,12 @@
 #ifndef VARA_FEATURE_LOCATION_H
 #define VARA_FEATURE_LOCATION_H
 
-#include <filesystem>
+#include <experimental/filesystem> // TODO (s9latimm): remove experimental
 #include <optional>
 #include <sstream>
 #include <string>
 
-namespace fs = std::filesystem;
+namespace fs = std::experimental::filesystem;
 
 namespace vara::feature {
 
