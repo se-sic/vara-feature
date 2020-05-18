@@ -1,8 +1,8 @@
 #ifndef VARA_FEATURE_LOCATION_H
 #define VARA_FEATURE_LOCATION_H
 
-#if defined(STD_EXPERIMENTAL_FILESYSTEM)
-#warning "using std::experimental::filesystem"
+#ifdef STD_EXPERIMENTAL_FILESYSTEM
+#warning "using std::experimental::filesystem" // NOLINT
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #else
