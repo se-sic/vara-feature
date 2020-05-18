@@ -1,5 +1,4 @@
-build/
-build-clion/
+build*/
 .idea/
 .*.*.swp
 .clangd/
