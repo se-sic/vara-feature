@@ -6,8 +6,6 @@
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
 
-#include <filesystem>
-
 using std::string;
 
 namespace vara::feature {
