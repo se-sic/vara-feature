@@ -15,6 +15,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(LIBCXX_ENABLE_FILESYSTEM ON)
 
 # CMake options
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
@@ -26,7 +27,7 @@ if (${VARA_FEATURE_COLORED_OUTPUT})
        add_compile_options (-fdiagnostics-color=always)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
        add_compile_options (-fcolor-diagnostics)
-       add_compile_options (-std=c++17)
+       add_compile_options (-stdlib=libstdc++)
     endif ()
 endif ()
 

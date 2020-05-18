@@ -57,7 +57,7 @@ TEST(FeatureModelXmlParser, BuildFeatureModel) {
       vara::feature::FeatureModelXmlParser(TestDoc).buildFeatureModel();
   ASSERT_NE(FM, nullptr);
   EXPECT_EQ(FM->getName(), "Test");
-  EXPECT_EQ(FM->getPath(), std::filesystem::current_path());
+  EXPECT_EQ(FM->getPath(), fs::current_path());
   ASSERT_NE(FM->getRoot(), nullptr);
   EXPECT_EQ(FM->getRoot()->getName(), "root");
   EXPECT_EQ(std::distance(FM->begin(), FM->end()), 4);

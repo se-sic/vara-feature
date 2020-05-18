@@ -32,7 +32,7 @@ public:
            std::optional<LineColumnOffset> End)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)) {}
 
-  [[nodiscard]] std::string getPath() const { return Path; }
+  [[nodiscard]] fs::path getPath() const { return Path; }
 
   [[nodiscard]] std::optional<LineColumnOffset> getStart() const {
     return Start;
