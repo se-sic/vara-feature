@@ -1,12 +1,20 @@
-#include "vara/Feature/XmlParser.h"
+#include "vara/Feature/FeatureModelParser.h"
 
-int main(/*int argc, char **argv*/) {
-  auto P = vara::feature::XmlParser("../test/test.xml", "../vm.dtd");
-  if (P.parse()) {
-    std::unique_ptr<vara::feature::FeatureModel> FM = P.buildFeatureModel();
-    FM->dump();
-    llvm::ViewGraph(FM.get(), llvm::Twine(FM->getName()));
-    return 0;
+#include <fstream>
+#include <iostream>
+
+int main(int argc, char **argv) {
+  if (argc == 2) {
+    std::ifstream DocFile(argv[1]);
+    if (DocFile.is_open()) {
+      std::string DocRaw((std::istreambuf_iterator<char>(DocFile)),
+                         std::istreambuf_iterator<char>());
+      DocFile.close();
+      std::unique_ptr<vara::feature::FeatureModel> FM =
+          vara::feature::FeatureModelXmlParser(DocRaw).buildFeatureModel();
+      llvm::ViewGraph(FM.get(), llvm::Twine(FM->getName()));
+      return 0;
+    }
   }
   return 1;
 }

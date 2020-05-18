@@ -21,22 +21,31 @@ public:
 
 private:
   string Name;
+  fs::path RootPath;
   FeatureMapTy Features;
   ConstraintsTy Constraints;
   Feature *Root;
 
 public:
-  FeatureModel(string Name, FeatureMapTy Features, ConstraintsTy Constraints)
-      : Name(std::move(Name)), Features(std::move(Features)),
-        Constraints(std::move(Constraints)), Root(this->Features["root"].get()) {}
+  FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
+               ConstraintsTy Constraints)
+      : Name(std::move(Name)), RootPath(std::move(RootPath)),
+        Features(std::move(Features)), Constraints(std::move(Constraints)),
+        Root(this->Features["root"].get()) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
-  [[nodiscard]] Feature *getRoot() const { return Root; }
+  [[nodiscard]] fs::path getPath() const { return RootPath; }
+
+  [[nodiscard]] Feature *getRoot() const {
+    assert(Root);
+    return Root;
+  }
 
   [[nodiscard]] unsigned int size() { return Features.size(); }
 
-  struct FeatureModelIter {
+  struct FeatureModelIter : std::iterator<std::forward_iterator_tag, Feature &,
+                                          ptrdiff_t, Feature *, Feature &> {
     FeatureMapTy::iterator It;
 
     explicit FeatureModelIter(FeatureMapTy::iterator It) : It(It) {}
@@ -145,14 +154,23 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
       : DefaultDOTGraphTraits(IsSimple) {}
 
   static std::string getGraphName(const vara::feature::FeatureModel *FM) {
-    return "Feature model for " + FM->getName().str();
+    return "Feature model for " + FM->getName().str() + "\n" +
+           FM->getPath().string();
   }
 
   static std::string getNodeLabel(const vara::feature::Feature *Node,
                                   const vara::feature::FeatureModel *FM) {
-    std::stringstream S;
-    S << Node->getName();
-    return S.str();
+    return Node->getName();
+  }
+
+  static std::string getNodeDescription(const vara::feature::Feature *Node,
+                                        const vara::feature::FeatureModel *FM) {
+    auto Loc = Node->getLocation();
+    if (Loc) {
+      return Loc->toString();
+    } else {
+      return "";
+    }
   }
 
   static std::string getNodeAttributes(const vara::feature::Feature *Node,

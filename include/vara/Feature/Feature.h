@@ -1,6 +1,7 @@
 #ifndef VARA_FEATURE_FEATURE_H
 #define VARA_FEATURE_FEATURE_H
 
+#include "vara/Feature/Location.h"
 #include "vara/Feature/Relationship.h"
 
 #include "llvm/ADT/SmallVector.h"
@@ -34,9 +35,11 @@ private:
   FeatureListType Alternatives;
   RelationshipListTy Relationships;
   bool Opt;
+  std::optional<Location> Loc;
 
 protected:
-  Feature(string Name, bool Opt) : Name(std::move(Name)), Opt(Opt) {}
+  Feature(string Name, bool Opt, std::optional<Location> Loc)
+      : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)) {}
 
 public:
   Feature(const Feature &) = delete;
@@ -107,6 +110,8 @@ public:
     Relationships.push_back(std::move(Relationship));
   }
 
+  [[nodiscard]] std::optional<Location> getLocation() const { return Loc; }
+
   [[nodiscard]] virtual std::string toString() const;
 };
 
@@ -114,20 +119,29 @@ public:
 class BinaryFeature : public Feature {
 
 public:
-  BinaryFeature(string Name, bool Opt) : Feature(std::move(Name), Opt) {}
+  BinaryFeature(string Name, bool Opt,
+                std::optional<Location> Loc = std::nullopt)
+      : Feature(std::move(Name), Opt, std::move(Loc)) {}
 
   [[nodiscard]] string toString() const override;
 };
 
 /// Options with numeric values.
 class NumericFeature : public Feature {
+public:
+  using ValuesVariantType =
+      typename std::variant<std::pair<int, int>, std::vector<int>>;
+
 private:
-  std::variant<std::pair<int, int>, std::vector<int>> Vals;
+  ValuesVariantType Values;
 
 public:
-  NumericFeature(string Name, bool Opt,
-                 std::variant<std::pair<int, int>, std::vector<int>> Vals)
-      : Feature(std::move(Name), Opt), Vals(std::move(Vals)) {}
+  NumericFeature(string Name, bool Opt, ValuesVariantType Values,
+                 std::optional<Location> Loc = std::nullopt)
+      : Feature(std::move(Name), Opt, std::move(Loc)),
+        Values(std::move(Values)) {}
+
+  ValuesVariantType getVals() { return Values; }
 
   [[nodiscard]] string toString() const override;
 };

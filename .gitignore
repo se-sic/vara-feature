@@ -1,4 +1,5 @@
-build/
+build*/
+.idea/
 .*.*.swp
 .clangd/
 __pycache__/

@@ -19,11 +19,9 @@ class TestFeatureModel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Parse and load a FeatureModel for testing."""
-        parser = xml_p.XmlParser(
-            str(TEST_INPUTS_DIR / "example_feature_model.xml"),
-            str(TEST_INPUTS_DIR / "vm.dtd"))
-        parser.parse()
-        cls.fm = parser.build_feature_model()
+        with open(f'{TEST_INPUTS_DIR}/example_feature_model.xml', 'r') as file:
+            parser = xml_p.FeatureModelXmlParser(file.read())
+            cls.fm = parser.build_feature_model()
 
     def test_fm_name(self):
         """ Check if the name of the feature model was correctly set. """

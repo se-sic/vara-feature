@@ -1,51 +1,67 @@
-#include "vara/Feature/XmlParser.h"
+#include "vara/Feature/FeatureModelParser.h"
 
 #include <iostream>
 #include <regex>
 
 namespace vara::feature {
 
-void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
+void FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
+                                                     bool Num = false) {
   string Name;
   bool Opt = false;
   int MinValue = 0;
   int MaxValue = 0;
   std::vector<int> Vals;
+  std::optional<Location> Loc;
   for (xmlNode *Head = N->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       string Cnt = std::string(
           reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                        xmlNodeGetContent(Head), xmlFree)
                                        .get()));
-      if (!xmlStrcmp(Head->name, reinterpret_cast<constXmlCharPtr>("name"))) {
+      if (!xmlStrcmp(Head->name, NAME)) {
         Name = Cnt;
       } else if (!xmlStrcmp(Head->name, OPTIONAL)) {
         Opt = Cnt == "True";
-      } else if (!xmlStrcmp(Head->name,
-                            reinterpret_cast<constXmlCharPtr>("parent"))) {
+      } else if (!xmlStrcmp(Head->name, PARENT)) {
         RawEdges.emplace_back(Cnt, Name);
-      } else if (!xmlStrcmp(Head->name, reinterpret_cast<constXmlCharPtr>(
-                                            "excludedOptions"))) {
+      } else if (!xmlStrcmp(Head->name, EXCLUDEDOPTIONS)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
-            if (!xmlStrcmp(Child->name,
-                           reinterpret_cast<constXmlCharPtr>("options"))) {
-              std::unique_ptr<xmlChar, void (*)(void *)> CContent(
+            if (!xmlStrcmp(Child->name, OPTIONS)) {
+              std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
                   xmlNodeGetContent(Child), xmlFree);
-              RawExcludes.emplace_back(
-                  Name, reinterpret_cast<char *>(CContent.get()));
+              RawExcludes.emplace_back(Name,
+                                       reinterpret_cast<char *>(CCnt.get()));
             }
           }
         }
+      } else if (!xmlStrcmp(Head->name, LOCATION)) {
+        fs::path Path;
+        std::optional<Location::LineColumnOffset> Start;
+        std::optional<Location::LineColumnOffset> End;
+        for (xmlNode *Child = Head->children; Child; Child = Child->next) {
+          if (Child->type == XML_ELEMENT_NODE) {
+            if (!xmlStrcmp(Child->name, PATH)) {
+              Path = fs::path(reinterpret_cast<char *>(
+                  std::unique_ptr<xmlChar, void (*)(void *)>(
+                      xmlNodeGetContent(Child), xmlFree)
+                      .get()));
+
+            } else if (!xmlStrcmp(Child->name, START)) {
+              Start = createLineColumnOffset(Child);
+            } else if (!xmlStrcmp(Child->name, END)) {
+              End = createLineColumnOffset(Child);
+            }
+          }
+        }
+        Loc = Location(Path, Start, End);
       } else if (Num) {
-        if (!xmlStrcmp(Head->name,
-                       reinterpret_cast<constXmlCharPtr>("minValue"))) {
+        if (!xmlStrcmp(Head->name, MINVALUE)) {
           MinValue = std::stoi(Cnt);
-        } else if (!xmlStrcmp(Head->name,
-                              reinterpret_cast<constXmlCharPtr>("maxValue"))) {
+        } else if (!xmlStrcmp(Head->name, MAXVALUE)) {
           MaxValue = std::stoi(Cnt);
-        } else if (!xmlStrcmp(Head->name,
-                              reinterpret_cast<constXmlCharPtr>("values"))) {
+        } else if (!xmlStrcmp(Head->name, VALUES)) {
           const std::regex Regex(R"(\d+)");
           std::smatch Matches;
           for (string Suffix = Cnt; regex_search(Suffix, Matches, Regex);
@@ -56,41 +72,44 @@ void XmlParser::parseConfigurationOption(xmlNode *N, bool Num = false) {
       }
     }
   }
+  assert(Features.find(Name) == Features.end() &&
+         "Feature could not be inserted, key was already present.");
   if (Num) {
     if (Vals.empty()) {
       Features.try_emplace(
           Name, std::make_unique<NumericFeature>(
                     Name, Opt,
                     std::variant<std::pair<int, int>, std::vector<int>>(
-                        std::make_pair(MinValue, MaxValue))));
+                        std::make_pair(MinValue, MaxValue)),
+                    std::move(Loc)));
 
     } else {
       Features.try_emplace(
           Name, std::make_unique<NumericFeature>(
                     Name, Opt,
-                    std::variant<std::pair<int, int>, std::vector<int>>(Vals)));
+                    std::variant<std::pair<int, int>, std::vector<int>>(Vals),
+                    std::move(Loc)));
     }
   } else {
-    Features.try_emplace(Name, std::make_unique<BinaryFeature>(Name, Opt));
+    Features.try_emplace(
+        Name, std::make_unique<BinaryFeature>(Name, Opt, std::move(Loc)));
   }
 }
 
-void XmlParser::parseOptions(xmlNode *N, bool Num = false) {
+void FeatureModelXmlParser::parseOptions(xmlNode *N, bool Num = false) {
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name, reinterpret_cast<constXmlCharPtr>(
-                                  "configurationOption"))) {
+      if (!xmlStrcmp(H->name, CONFIGURATIONOPTION)) {
         parseConfigurationOption(H, Num);
       }
     }
   }
 }
 
-void XmlParser::parseConstraints(xmlNode *N) {
+void FeatureModelXmlParser::parseConstraints(xmlNode *N) {
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name,
-                     reinterpret_cast<constXmlCharPtr>("constraint"))) {
+      if (!xmlStrcmp(H->name, CONSTRAINT)) {
         string Cnt = std::string(
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(H), xmlFree)
@@ -112,35 +131,63 @@ void XmlParser::parseConstraints(xmlNode *N) {
   }
 }
 
-void XmlParser::parseVm(xmlNode *N) {
-  std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
-      xmlGetProp(N, reinterpret_cast<constXmlCharPtr>("name")), xmlFree);
-  VM = std::string(reinterpret_cast<char const *>(Cnt.get()));
+void FeatureModelXmlParser::parseVm(xmlNode *N) {
+  {
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, NAME),
+                                                   xmlFree);
+    VmName = std::string(reinterpret_cast<char *>(Cnt.get()));
+  }
+  {
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, ROOT),
+                                                   xmlFree);
+    RootPath = Cnt ? fs::path(reinterpret_cast<char *>(Cnt.get()))
+                   : fs::current_path();
+  }
   for (xmlNode *H = N->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name,
-                     reinterpret_cast<constXmlCharPtr>("binaryOptions"))) {
+      if (!xmlStrcmp(H->name, BINARYOPTIONS)) {
         parseOptions(H);
-      } else if (!xmlStrcmp(H->name, reinterpret_cast<constXmlCharPtr>(
-                                         "numericOptions"))) {
+      } else if (!xmlStrcmp(H->name, NUMERICOPTIONS)) {
         parseOptions(H, true);
-      } else if (!xmlStrcmp(H->name, reinterpret_cast<constXmlCharPtr>(
-                                         "booleanConstraints"))) {
+      } else if (!xmlStrcmp(H->name, BOOLEANCONSTRAINTS)) {
         parseConstraints(H);
       }
     }
   }
 }
 
-std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
+Location::LineColumnOffset
+FeatureModelXmlParser::createLineColumnOffset(xmlNode *N) {
+  int Line = 0;
+  int Column = 0;
+  for (xmlNode *Head = N->children; Head; Head = Head->next) {
+    if (Head->type == XML_ELEMENT_NODE) {
+      if (!xmlStrcmp(Head->name, LINE)) {
+        Line = atoi(
+            reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
+                                         xmlNodeGetContent(Head), xmlFree)
+                                         .get()));
+      } else if (!xmlStrcmp(Head->name, COLUMN)) {
+        Column = atoi(
+            reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
+                                         xmlNodeGetContent(Head), xmlFree)
+                                         .get()));
+      }
+    }
+  }
+  return Location::LineColumnOffset(Line, Column);
+}
+
+std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
+  auto Doc = parseDoc();
   if (!Doc) {
     return nullptr;
   }
   Features.clear();
   parseVm(xmlDocGetRootElement(Doc.get()));
   if (Features.find("root") == Features.end()) {
-    Features.try_emplace("root",
-                         std::make_unique<BinaryFeature>("root", false));
+    Features.try_emplace(
+        "root", std::make_unique<BinaryFeature>("root", false, std::nullopt));
   }
 
   for (const auto &P : RawEdges) {
@@ -217,51 +264,45 @@ std::unique_ptr<FeatureModel> XmlParser::buildFeatureModel() {
     }
     // TODO (se-passau/VaRA#42): relationships or and xor
   }
-  return std::make_unique<FeatureModel>(VM, std::move(Features), Constraints);
+  return std::make_unique<FeatureModel>(VmName, RootPath, std::move(Features),
+                                        Constraints);
 }
 
-bool XmlParser::parseDtd(const string &Filename) {
-  std::unique_ptr<FILE, int (*)(FILE *)> File(fopen(Filename.c_str(), "r"),
-                                              fclose);
-  if (!File) {
-    return false;
-  }
-  xmlParserInputBufferPtr Buf =
-      xmlParserInputBufferCreateFile(File.get(), XML_CHAR_ENCODING_UTF8);
-  Dtd = std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>(
-      xmlIOParseDTD(nullptr, Buf, XML_CHAR_ENCODING_UTF8), xmlFreeDtd);
-  if (!Dtd) {
-    std::cerr << "Failed to parse \'" << Filename << "\'." << std::endl;
-  }
+std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
+FeatureModelXmlParser::createDtd() {
+  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
+      xmlIOParseDTD(nullptr,
+                    xmlParserInputBufferCreateMem(DtdRaw.c_str(),
+                                                  DtdRaw.length(),
+                                                  XML_CHAR_ENCODING_UTF8),
+                    XML_CHAR_ENCODING_UTF8),
+      xmlFreeDtd);
   xmlCleanupParser();
-  return Dtd.get();
+  assert(Dtd && "Failed to parse DTD.");
+  return std::move(Dtd);
 }
 
-bool XmlParser::parseDoc(const string &Filename) {
+std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
-  if (!Ctxt) {
-    return false;
-  }
-  Doc = std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(
-      xmlCtxtReadFile(Ctxt.get(), Filename.c_str(), nullptr,
-                      XML_PARSE_NOBLANKS),
+  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc(
+      xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(), Xml.length(), nullptr, nullptr,
+                        XML_PARSE_NOBLANKS),
       xmlFreeDoc);
-  if (!Doc) {
-    std::cerr << "Failed to parse \'" << Filename << "\'." << std::endl;
-  } else if (!Ctxt->valid) {
-    std::cerr << "Failed to validate \'" << Filename << "\'." << std::endl;
-    Doc = nullptr;
-  } else if (Dtd) {
-    xmlValidateDtd(&Ctxt->vctxt, Doc.get(), Dtd.get());
-    if (!Ctxt->vctxt.valid) {
-      std::cerr << "Failed to validate Dtd for \'" << Filename << "\'."
-                << std::endl;
-      Doc = nullptr;
-    }
-  }
   xmlCleanupParser();
-  return Doc.get();
+  if (Doc && Ctxt->valid) {
+    xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
+    if (Ctxt->vctxt.valid) {
+      return std::move(Doc);
+    } else {
+      std::cerr << "Failed to validate DTD." << std::endl;
+    }
+  } else {
+    std::cerr << "Failed to parse / validate XML." << std::endl;
+  }
+  return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
 }
+
+bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 } // namespace vara::feature
