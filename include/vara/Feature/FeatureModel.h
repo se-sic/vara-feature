@@ -210,7 +210,7 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
           W.emitEdge(Node, -1, Exclude, -1, "color=red dir=both");
           SkipE.insert(std::make_pair<>(Exclude, Node));
         } else {
-          W.emitEdge(Node, 0, Exclude, 0, "color=red");
+          W.emitEdge(Node, -1, Exclude, -1, "color=red");
         }
         SkipE.insert(std::make_pair<>(Node, Exclude));
       }
@@ -225,7 +225,7 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
           W.emitEdge(Node, -1, Implication, -1, "color=blue dir=both");
           SkipI.insert(std::make_pair<>(Implication, Node));
         } else {
-          W.emitEdge(Node, 0, Implication, 0, "color=blue");
+          W.emitEdge(Node, -1, Implication, -1, "color=blue");
         }
         SkipI.insert(std::make_pair<>(Node, Implication));
       }
