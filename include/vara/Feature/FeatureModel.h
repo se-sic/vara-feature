@@ -159,40 +159,44 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
   }
 
   static std::string getGraphProperties(const vara::feature::FeatureModel *FM) {
-    return "\tgraph[pad=0.5,nodesep=2,ranksep=2,splines=true,newrank=true]";
+    return "\tgraph[pad=0.5,nodesep=2,ranksep=2,splines=true,newrank=true,"
+           "fontname=\"CMU Typewriter\"]";
   }
 
   static std::string
   getEdgeAttributes(const vara::feature::Feature *Node,
                     vara::feature::Feature::feature_iterator I,
                     const vara::feature::FeatureModel *FM) {
-    std::stringstream S;
-    S << "arrowhead=\"";
-    if ((*I)->isOptional()) {
-      S << 'o';
-    }
-    S << "dot\" ";
-    return S.str();
+    return std::string("arrowhead=")
+        .append((*I)->isOptional() ? "odot" : "dot");
   }
 
-  static void buildCluster(llvm::raw_ostream &O, vara::feature::Feature *Node,
-                           int L = 1) {
+  static void addCustomGraphCluster(llvm::raw_ostream &O,
+                                    vara::feature::Feature *Node, int L = 1) {
     std::string Indent = std::string(L, '\t');
-    O << Indent << "Node" << Node << "[shape=box,label=\"" << Node->getName()
-      << (Node->getLocation() ? "\\n" + Node->getLocation()->toString() : "")
-      << "\"];\n"
-      << Indent << "subgraph cluster_" << Node << " {\n"
-      << Indent << "\tlabel=\"\";\n"
-      << Indent << "\tmargin=0;\n"
-      << Indent << "\tstyle=invis;\n";
-    for (auto *C : *Node) {
-      buildCluster(O, C, L + 1);
+    O << Indent << "Node" << Node
+      << "[shape=box,margin=.1,fontsize=12,fontname=\"CMU "
+         "Typewriter\",label=<<table align=\"center\" valign=\"middle\" "
+         "border=\"0\" cellborder=\"0\" cellpadding=\"5\"><tr><td>"
+      << Node->getName()
+      << (Node->getLocation()
+              ? "</td></tr><hr/><tr><td>" + Node->getLocation()->toString()
+              : "")
+      << "</td></tr></table>>];\n";
+    if (Node->begin() != Node->end()) {
+      O << Indent << "subgraph cluster_" << Node << " {\n"
+        << Indent << "\tlabel=\"\";\n"
+        << Indent << "\tmargin=0;\n"
+        << Indent << "\tstyle=invis;\n";
+      for (auto *C : *Node) {
+        addCustomGraphCluster(O, C, L + 1);
+      }
+      O << Indent << "\t{\n" << Indent << "\t\trank=same;\n";
+      for (auto *C : *Node) {
+        O << Indent << "\t\tNode" << C << ";\n";
+      }
+      O << Indent << "\t}\n" << Indent << "}\n";
     }
-    O << Indent << "\t{rank=same;";
-    for (auto *C : *Node) {
-      O << " Node" << C << ';';
-    }
-    O << "}\n" << Indent << "}\n";
   }
 
   template <typename GraphWriter>
@@ -246,7 +250,7 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
         SkipA.insert(std::make_pair<>(Node, Alternative));
       }
     }
-    buildCluster(W.getOStream(), FM->getRoot());
+    addCustomGraphCluster(W.getOStream(), FM->getRoot());
   }
 };
 } // namespace llvm

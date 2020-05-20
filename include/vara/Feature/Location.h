@@ -53,7 +53,7 @@ public:
            << (*Start).getColumnOffset();
     }
     if (End) {
-      StrS << "->" << (*End).getLineNumber() << ":" << (*End).getColumnOffset();
+      StrS << "-" << (*End).getLineNumber() << ":" << (*End).getColumnOffset();
     }
     return StrS.str();
   }
