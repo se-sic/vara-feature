@@ -183,6 +183,7 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
       << "\"];\n"
       << Indent << "subgraph cluster_" << Node << " {\n"
       << Indent << "\tlabel=\"\";\n"
+      << Indent << "\tmargin=0;\n"
       << Indent << "\tstyle=invis;\n";
     for (auto *C : *Node) {
       buildCluster(O, C, L + 1);
@@ -210,7 +211,8 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
         }
         if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
                       Node) != Exclude->excludes_end()) {
-          W.emitEdge(Node, -1, Exclude, -1, "color=red,dir=both");
+          W.emitEdge(Node, -1, Exclude, -1,
+                     "color=red,dir=both,constraint=false");
           SkipE.insert(std::make_pair<>(Exclude, Node));
         } else {
           W.emitEdge(Node, -1, Exclude, -1, "color=red");
@@ -225,10 +227,11 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
         if (std::find(Implication->implications_begin(),
                       Implication->implications_end(),
                       Node) != Implication->implications_end()) {
-          W.emitEdge(Node, -1, Implication, -1, "color=blue,dir=both");
+          W.emitEdge(Node, -1, Implication, -1,
+                     "color=blue,dir=both,constraint=false");
           SkipI.insert(std::make_pair<>(Implication, Node));
         } else {
-          W.emitEdge(Node, -1, Implication, -1, "color=blue");
+          W.emitEdge(Node, -1, Implication, -1, "color=blue,constraint=false");
         }
         SkipI.insert(std::make_pair<>(Node, Implication));
       }
@@ -237,7 +240,8 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
                                               SkipA)) {
           continue;
         }
-        W.emitEdge(Node, -1, Alternative, -1, "color=green,dir=none");
+        W.emitEdge(Node, -1, Alternative, -1,
+                   "color=green,dir=none,constraint=false");
         SkipA.insert(std::make_pair<>(Alternative, Node));
         SkipA.insert(std::make_pair<>(Node, Alternative));
       }
