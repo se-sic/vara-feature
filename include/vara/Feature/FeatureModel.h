@@ -89,17 +89,6 @@ public:
       llvm::outs() << "\n";
     }
   }
-
-  static bool
-  skip(std::pair<Feature *, Feature *> Edge,
-       const llvm::SmallSet<std::pair<Feature *, Feature *>, 10> &Visited) {
-    for (const auto &P : Visited) {
-      if (P.first == Edge.first && P.second == Edge.second) {
-        return true;
-      }
-    }
-    return false;
-  }
 };
 } // namespace vara::feature
 
@@ -171,6 +160,9 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
         .append((*I)->isOptional() ? "odot" : "dot");
   }
 
+  /// Clusters nodes into subgraphs to enforce hierarchical ordering.
+  ///
+  /// \param L Indentation level (incremented recursively).
   static void addCustomGraphCluster(llvm::raw_ostream &O,
                                     vara::feature::Feature *Node, int L = 1) {
     std::string Indent = std::string(L, '\t');
@@ -199,33 +191,69 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
     }
   }
 
+  using FeatureEdgeSetTy = llvm::SmallSet<
+      std::pair<vara::feature::Feature *, vara::feature::Feature *>, 10>;
+
+  /// Checks whether an edge would be a duplicate.
+  ///
+  /// \param Skip Contains existing edges.
+  static bool
+  visited(std::pair<vara::feature::Feature *, vara::feature::Feature *> Edge,
+          const FeatureEdgeSetTy &Skip) {
+    for (const auto &P : Skip) {
+      if (P.first == Edge.first && P.second == Edge.second) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   template <typename GraphWriter>
-  static void addCustomGraphFeatures(vara::feature::FeatureModel *FM,
-                                     GraphWriter &W) {
-    using FeatureSetTy = llvm::SmallSet<
-        std::pair<vara::feature::Feature *, vara::feature::Feature *>, 10>;
-    FeatureSetTy SkipE;
-    FeatureSetTy SkipI;
-    FeatureSetTy SkipA;
+  static void addCustomExcludeEdges(vara::feature::FeatureModel *FM,
+                                    GraphWriter &W) {
+    FeatureEdgeSetTy Skip;
     for (auto *Node : *FM) {
       for (auto &Exclude : Node->excludes()) {
-        if (vara::feature::FeatureModel::skip(std::make_pair(Node, Exclude),
-                                              SkipE)) {
+        if (visited(std::make_pair(Node, Exclude), Skip)) {
           continue;
         }
         if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
                       Node) != Exclude->excludes_end()) {
           W.emitEdge(Node, -1, Exclude, -1,
                      "color=red,dir=both,constraint=false");
-          SkipE.insert(std::make_pair<>(Exclude, Node));
+          Skip.insert(std::make_pair<>(Exclude, Node));
         } else {
           W.emitEdge(Node, -1, Exclude, -1, "color=red");
         }
-        SkipE.insert(std::make_pair<>(Node, Exclude));
+        Skip.insert(std::make_pair<>(Node, Exclude));
       }
+    }
+  }
+
+  template <typename GraphWriter>
+  static void addCustomAlternativeEdges(vara::feature::FeatureModel *FM,
+                                        GraphWriter &W) {
+    FeatureEdgeSetTy Skip;
+    for (auto *Node : *FM) {
+      for (auto &Alternative : Node->alternatives()) {
+        if (visited(std::make_pair(Node, Alternative), Skip)) {
+          continue;
+        }
+        W.emitEdge(Node, -1, Alternative, -1,
+                   "color=green,dir=none,constraint=false");
+        Skip.insert(std::make_pair<>(Alternative, Node));
+        Skip.insert(std::make_pair<>(Node, Alternative));
+      }
+    }
+  }
+
+  template <typename GraphWriter>
+  static void addCustomImplicationEdges(vara::feature::FeatureModel *FM,
+                                        GraphWriter &W) {
+    FeatureEdgeSetTy Skip;
+    for (auto *Node : *FM) {
       for (auto &Implication : Node->implications()) {
-        if (vara::feature::FeatureModel::skip(std::make_pair(Node, Implication),
-                                              SkipI)) {
+        if (visited(std::make_pair(Node, Implication), Skip)) {
           continue;
         }
         if (std::find(Implication->implications_begin(),
@@ -233,23 +261,21 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
                       Node) != Implication->implications_end()) {
           W.emitEdge(Node, -1, Implication, -1,
                      "color=blue,dir=both,constraint=false");
-          SkipI.insert(std::make_pair<>(Implication, Node));
+          Skip.insert(std::make_pair<>(Implication, Node));
         } else {
           W.emitEdge(Node, -1, Implication, -1, "color=blue,constraint=false");
         }
-        SkipI.insert(std::make_pair<>(Node, Implication));
-      }
-      for (auto &Alternative : Node->alternatives()) {
-        if (vara::feature::FeatureModel::skip(std::make_pair(Node, Alternative),
-                                              SkipA)) {
-          continue;
-        }
-        W.emitEdge(Node, -1, Alternative, -1,
-                   "color=green,dir=none,constraint=false");
-        SkipA.insert(std::make_pair<>(Alternative, Node));
-        SkipA.insert(std::make_pair<>(Node, Alternative));
+        Skip.insert(std::make_pair<>(Node, Implication));
       }
     }
+  }
+
+  template <typename GraphWriter>
+  static void addCustomGraphFeatures(vara::feature::FeatureModel *FM,
+                                     GraphWriter &W) {
+    addCustomExcludeEdges(FM, W);
+    addCustomImplicationEdges(FM, W);
+    addCustomAlternativeEdges(FM, W);
     addCustomGraphCluster(W.getOStream(), FM->getRoot());
   }
 };
