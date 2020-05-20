@@ -158,24 +158,8 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
            FM->getPath().string();
   }
 
-  static std::string getNodeLabel(const vara::feature::Feature *Node,
-                                  const vara::feature::FeatureModel *FM) {
-    return Node->getName();
-  }
-
-  static std::string getNodeDescription(const vara::feature::Feature *Node,
-                                        const vara::feature::FeatureModel *FM) {
-    auto Loc = Node->getLocation();
-    if (Loc) {
-      return Loc->toString();
-    } else {
-      return "";
-    }
-  }
-
-  static std::string getNodeAttributes(const vara::feature::Feature *Node,
-                                       const vara::feature::FeatureModel *FM) {
-    return "";
+  static std::string getGraphProperties(const vara::feature::FeatureModel *FM) {
+    return "\tgraph[pad=0.5,nodesep=2,ranksep=2,splines=true,newrank=true]";
   }
 
   static std::string
@@ -189,6 +173,25 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
     }
     S << "dot\" ";
     return S.str();
+  }
+
+  static void buildCluster(llvm::raw_ostream &O, vara::feature::Feature *Node,
+                           int L = 1) {
+    std::string Indent = std::string(L, '\t');
+    O << Indent << "Node" << Node << "[shape=box,label=\"" << Node->getName()
+      << (Node->getLocation() ? "\\n" + Node->getLocation()->toString() : "")
+      << "\"];\n"
+      << Indent << "subgraph cluster_" << Node << " {\n"
+      << Indent << "\tlabel=\"\";\n"
+      << Indent << "\tstyle=invis;\n";
+    for (auto *C : *Node) {
+      buildCluster(O, C, L + 1);
+    }
+    O << Indent << "\t{rank=same;";
+    for (auto *C : *Node) {
+      O << " Node" << C << ';';
+    }
+    O << "}\n" << Indent << "}\n";
   }
 
   template <typename GraphWriter>
@@ -207,7 +210,7 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
         }
         if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
                       Node) != Exclude->excludes_end()) {
-          W.emitEdge(Node, -1, Exclude, -1, "color=red dir=both");
+          W.emitEdge(Node, -1, Exclude, -1, "color=red,dir=both");
           SkipE.insert(std::make_pair<>(Exclude, Node));
         } else {
           W.emitEdge(Node, -1, Exclude, -1, "color=red");
@@ -222,7 +225,7 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
         if (std::find(Implication->implications_begin(),
                       Implication->implications_end(),
                       Node) != Implication->implications_end()) {
-          W.emitEdge(Node, -1, Implication, -1, "color=blue dir=both");
+          W.emitEdge(Node, -1, Implication, -1, "color=blue,dir=both");
           SkipI.insert(std::make_pair<>(Implication, Node));
         } else {
           W.emitEdge(Node, -1, Implication, -1, "color=blue");
@@ -234,11 +237,12 @@ struct DOTGraphTraits<vara::feature::FeatureModel *>
                                               SkipA)) {
           continue;
         }
-        W.emitEdge(Node, -1, Alternative, -1, "color=green dir=none");
+        W.emitEdge(Node, -1, Alternative, -1, "color=green,dir=none");
         SkipA.insert(std::make_pair<>(Alternative, Node));
         SkipA.insert(std::make_pair<>(Node, Alternative));
       }
     }
+    buildCluster(W.getOStream(), FM->getRoot());
   }
 };
 } // namespace llvm
