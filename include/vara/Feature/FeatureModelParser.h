@@ -105,6 +105,14 @@ private:
   std::vector<std::pair<std::string, std::string>> RawExcludes;
   std::vector<std::vector<std::pair<std::string, bool>>> RawConstraints;
 
+  void clear() {
+    Features.clear();
+    Constraints.clear();
+    RawEdges.clear();
+    RawExcludes.clear();
+    RawConstraints.clear();
+  }
+
   void parseConfigurationOption(xmlNode *N, bool Num);
   void parseOptions(xmlNode *N, bool Num);
   void parseConstraints(xmlNode *N);
