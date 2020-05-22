@@ -4,6 +4,7 @@
 #include "vara/Feature/Location.h"
 #include "vara/Feature/Relationship.h"
 
+#include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
