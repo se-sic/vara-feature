@@ -5,11 +5,10 @@
 #include "vara/Feature/Relationship.h"
 
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <variant>
-
-using std::string;
 
 namespace vara::feature {
 
@@ -27,36 +26,53 @@ public:
   using relationship_iterator = RelationshipListTy ::iterator;
 
 private:
-  string Name;
+  std::string Name;
+  llvm::SetVector<llvm::Value *> Values;
+  size_t ID;
+  bool Opt;
+  std::optional<Location> Loc;
   llvm::SmallVector<Feature *, 1> Parents;
   FeatureListType Children;
   FeatureListType Excludes;
   FeatureListType Implications;
   FeatureListType Alternatives;
   RelationshipListTy Relationships;
-  bool Opt;
-  std::optional<Location> Loc;
 
 protected:
-  Feature(string Name, bool Opt, std::optional<Location> Loc)
-      : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)) {}
+  Feature(std::string Name, bool Opt, std::optional<Location> Loc)
+      : Name(std::move(Name)), ID(std::hash<std::string>{}(Name)), Opt(Opt),
+        Loc(std::move(Loc)) {}
 
 public:
+  Feature(const std::string &Name, llvm::Value *Val)
+      : Name(Name), ID(std::hash<std::string>{}(Name)), Opt(false) {
+    Values.insert(Val);
+  }
+
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
   virtual ~Feature() = default;
 
-  [[nodiscard]] string getName() const { return Name; }
+  [[nodiscard]] std::string getName() const { return Name; }
 
   [[nodiscard]] bool isOptional() const { return Opt; }
 
   [[nodiscard]] bool isRoot() const { return Parents.empty(); }
 
-  void print(std::ostream &Out) const { Out << toString() << std::endl; }
-  void print(llvm::raw_ostream &Out) const { Out << toString() << '\n'; }
+  void print(llvm::raw_ostream &OS) const {
+    OS << getName() << " (";
+    for (auto *Val : Values) {
+      OS << Val << " ";
+    }
+    OS << ")"
+       << " ID: " << getID();
+  }
 
   LLVM_DUMP_METHOD
-  void dump() const { llvm::outs() << toString() << "\n"; }
+  void dump() const {
+    print(llvm::outs());
+    llvm::outs() << '\n';
+  }
 
   feature_iterator begin() { return Children.begin(); }
   feature_iterator end() { return Children.end(); }
@@ -113,17 +129,45 @@ public:
   [[nodiscard]] std::optional<Location> getLocation() const { return Loc; }
 
   [[nodiscard]] virtual std::string toString() const;
+
+  using value_iterator = llvm::SetVector<llvm::Value *>::iterator;
+  using const_value_iterator = llvm::SetVector<llvm::Value *>::const_iterator;
+
+  inline void addValue(llvm::Value *Val) { Values.insert(Val); }
+
+  value_iterator values_begin() { return Values.begin(); }
+  [[nodiscard]] const_value_iterator values_begin() const {
+    return Values.begin();
+  }
+
+  value_iterator values_end() { return Values.end(); }
+  [[nodiscard]] const_value_iterator values_end() const { return Values.end(); }
+
+  llvm::iterator_range<value_iterator> values() {
+    return make_range(values_begin(), values_end());
+  }
+  [[nodiscard]] llvm::iterator_range<const_value_iterator> values() const {
+    return make_range(values_begin(), values_end());
+  }
+
+  inline bool hasVal(llvm::Value *Val) { return Values.count(Val); }
+
+  [[nodiscard]] inline std::size_t getID() const { return ID; }
+
+  bool operator==(const Feature &Other) const { return Name == Other.Name; }
+
+  bool operator!=(const Feature &Other) const { return Name != Other.Name; }
 };
 
 /// Options without arguments.
 class BinaryFeature : public Feature {
 
 public:
-  BinaryFeature(string Name, bool Opt,
+  BinaryFeature(std::string Name, bool Opt,
                 std::optional<Location> Loc = std::nullopt)
       : Feature(std::move(Name), Opt, std::move(Loc)) {}
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 /// Options with numeric values.
@@ -133,17 +177,16 @@ public:
       typename std::variant<std::pair<int, int>, std::vector<int>>;
 
 private:
-  ValuesVariantType Values;
+  ValuesVariantType V;
 
 public:
-  NumericFeature(string Name, bool Opt, ValuesVariantType Values,
+  NumericFeature(std::string Name, bool Opt, ValuesVariantType V,
                  std::optional<Location> Loc = std::nullopt)
-      : Feature(std::move(Name), Opt, std::move(Loc)),
-        Values(std::move(Values)) {}
+      : Feature(std::move(Name), Opt, std::move(Loc)), V(std::move(V)) {}
 
-  ValuesVariantType getVals() { return Values; }
+  ValuesVariantType getVals() { return V; }
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 } // namespace vara::feature

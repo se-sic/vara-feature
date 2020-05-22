@@ -60,14 +60,14 @@ std::string Feature::toString() const {
 std::string NumericFeature::toString() const {
   std::stringstream StrS;
   StrS << Feature::toString();
-  if (std::holds_alternative<std::pair<int, int>>(Values)) {
-    std::pair<int, int> Pair = std::get<std::pair<int, int>>(Values);
+  if (std::holds_alternative<std::pair<int, int>>(V)) {
+    std::pair<int, int> Pair = std::get<std::pair<int, int>>(V);
     StrS << ",\n  minValue: " << Pair.first << ",\n  maxValue: " << Pair.second;
   } else {
     StrS << ",\n  values: [";
-    for (const auto &Val : std::get<std::vector<int>>(Values)) {
+    for (const auto &Val : std::get<std::vector<int>>(V)) {
       StrS << Val;
-      if (Val != std::get<std::vector<int>>(Values).back()) {
+      if (Val != std::get<std::vector<int>>(V).back()) {
         StrS << ", ";
       }
     }

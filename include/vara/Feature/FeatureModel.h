@@ -105,7 +105,7 @@ public:
 
 inline std::ostream &operator<<(std::ostream &Out,
                                 const vara::feature::Feature *Feature) {
-  Feature->print(Out);
+  Out << Feature->toString() << std::endl;
   return Out;
 }
 
