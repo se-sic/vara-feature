@@ -23,6 +23,52 @@ class TestFeature(unittest.TestCase):
         test_feature = feature.BinaryFeature("Foo", False)
         self.assertFalse(test_feature.is_optional())
 
+    def test_is_root(self):
+        """ Checks if a feature is root if it has no parents. """
+        test_feature = feature.BinaryFeature("root", False)
+        self.assertTrue(test_feature.is_root())
+
+    def test_is_not_root(self):
+        """ Checks if a feature is not root if it has children. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        root_feature.add_child(test_feature)
+        test_feature.add_parent(root_feature)
+
+        self.assertFalse(test_feature.is_root())
+
+    def test_add_child(self):
+        """ Checks if a feature is correctly added as a child. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        root_feature.add_child(test_feature)
+
+        self.assertTrue(root_feature.is_child(test_feature))
+
+    def test_iter_children(self):
+        """ Checks if we can iterate over a features children. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature_1 = feature.BinaryFeature("Test1", False)
+        test_feature_2 = feature.BinaryFeature("Test2", True)
+
+        root_feature.add_child(test_feature_1)
+        root_feature.add_child(test_feature_2)
+
+        child_iter = iter(root_feature)
+        self.assertEqual(test_feature_1, next(child_iter))
+        self.assertEqual(test_feature_2, next(child_iter))
+
+    def test_add_parent(self):
+        """ Checks if a feature is correctly added as a parent. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        test_feature.add_parent(root_feature)
+
+        self.assertTrue(test_feature.is_parent(root_feature))
+
 
 class TestBinaryFeature(unittest.TestCase):
     """ Test BinaryFeature functionality.  """

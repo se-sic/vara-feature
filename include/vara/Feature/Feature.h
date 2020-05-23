@@ -5,6 +5,7 @@
 #include "vara/Feature/Relationship.h"
 
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <variant>
@@ -24,6 +25,7 @@ public:
   using RelationshipListTy =
       typename llvm::SmallVector<std::unique_ptr<Relationship<Feature>>, 3>;
   using feature_iterator = typename FeatureListType::iterator;
+  using const_feature_iterator = typename FeatureListType::const_iterator;
   using relationship_iterator = RelationshipListTy ::iterator;
 
 private:
@@ -58,24 +60,57 @@ public:
   LLVM_DUMP_METHOD
   void dump() const { llvm::outs() << toString() << "\n"; }
 
+  //===--------------------------------------------------------------------===//
+  // Children
   feature_iterator begin() { return Children.begin(); }
   feature_iterator end() { return Children.end(); }
+  [[nodiscard]] const_feature_iterator begin() const {
+    return Children.begin();
+  }
+  [[nodiscard]] const_feature_iterator end() const { return Children.end(); }
   llvm::iterator_range<feature_iterator> children() {
     return llvm::make_range(begin(), end());
   }
+  [[nodiscard]] llvm::iterator_range<const_feature_iterator> children() const {
+    return llvm::make_range(begin(), end());
+  }
   void addChild(Feature *Child) { Children.push_back(Child); }
+  bool isChild(Feature *PosChild) const {
+    return std::find(begin(), end(), PosChild) != end();
+  }
 
+  //===--------------------------------------------------------------------===//
+  // Parents
   llvm::SmallVector<Feature *, 1>::iterator parents_begin() {
     return Parents.begin();
   }
   llvm::SmallVector<Feature *, 1>::iterator parents_end() {
     return Parents.end();
   }
+  [[nodiscard]] llvm::SmallVector<Feature *, 1>::const_iterator
+  parents_begin() const {
+    return Parents.begin();
+  }
+  [[nodiscard]] llvm::SmallVector<Feature *, 1>::const_iterator
+  parents_end() const {
+    return Parents.end();
+  }
   llvm::iterator_range<llvm::SmallVector<Feature *, 1>::iterator> parents() {
     return llvm::make_range(parents_begin(), parents_end());
   }
+  [[nodiscard]] llvm::iterator_range<
+      llvm::SmallVector<Feature *, 1>::const_iterator>
+  parents() const {
+    return llvm::make_range(parents_begin(), parents_end());
+  }
   void addParent(Feature *Parent) { Parents.push_back(Parent); }
+  [[nodiscard]] bool isParent(Feature *PosParent) const {
+    return std::find(parents_begin(), parents_end(), PosParent) !=
+           parents_end();
+  }
 
+  //===--------------------------------------------------------------------===//
+  // Excludes
   feature_iterator excludes_begin() { return Excludes.begin(); }
   feature_iterator excludes_end() { return Excludes.end(); }
   llvm::iterator_range<feature_iterator> excludes() {
@@ -83,6 +118,8 @@ public:
   }
   void addExclude(Feature *Exclude) { Excludes.push_back(Exclude); }
 
+  //===--------------------------------------------------------------------===//
+  // Implications
   feature_iterator implications_begin() { return Implications.begin(); }
   feature_iterator implications_end() { return Implications.end(); }
   llvm::iterator_range<feature_iterator> implications() {
