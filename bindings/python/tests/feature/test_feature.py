@@ -69,6 +69,34 @@ class TestFeature(unittest.TestCase):
 
         self.assertTrue(test_feature.is_parent(root_feature))
 
+    def test_add_exclude(self):
+        """ Checks if a feature is correctly excluded from another. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        test_feature.add_exclude(root_feature)
+
+        self.assertTrue(test_feature.is_excluded(root_feature))
+
+    def test_add_implication(self):
+        """ Checks if a feature is correctly can implicate another. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        test_feature.add_implication(root_feature)
+
+        self.assertTrue(test_feature.implicates(root_feature))
+
+    def test_add_alternative(self):
+        """ Checks if a feature is correctly added as an alternative from
+        another. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        test_feature.add_alternative(root_feature)
+
+        self.assertTrue(test_feature.is_alternative(root_feature))
+
 
 class TestBinaryFeature(unittest.TestCase):
     """ Test BinaryFeature functionality.  """

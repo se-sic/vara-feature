@@ -3,7 +3,22 @@
 #include "gtest/gtest.h"
 
 namespace vara::feature {
-TEST(Location, LocationBasics) {
+
+TEST(LineColumnOffset, basicAccessors) {
+  auto TestLCO = Location::LineColumnOffset(3, 4);
+
+  EXPECT_EQ(TestLCO.getLineNumber(), 3);
+  EXPECT_EQ(TestLCO.getColumnOffset(), 4);
+}
+
+TEST(LineColumnOffset, comparison) {
+  auto SelfLCO = Location::LineColumnOffset(3, 4);
+  auto OtherLCO = Location::LineColumnOffset(3, 4);
+
+  EXPECT_EQ(SelfLCO, OtherLCO);
+}
+
+TEST(Location, basicAccessors) {
   auto L = Location(fs::current_path(), Location::LineColumnOffset(1, 4),
                     Location::LineColumnOffset(3, 5));
 

@@ -7,6 +7,7 @@ namespace py = pybind11;
 
 void init_llvm(py::module &M);
 void init_feature_module(py::module &M);
+void init_feature_module_location(py::module &M);
 void init_feature_model_module(py::module &M);
 void init_xml_parser(py::module &M);
 
@@ -15,6 +16,7 @@ PYBIND11_MODULE(vara_feature, M) {
   init_llvm(M);
   auto FeatureModule = M.def_submodule("feature");
   init_feature_module(FeatureModule);
+  init_feature_module_location(FeatureModule);
   auto FeatureModelModule = M.def_submodule("feature_model");
   init_feature_model_module(FeatureModelModule);
   auto XmlParserModule = M.def_submodule("xml_parser");

@@ -66,6 +66,16 @@ TEST(BinaryFeature, addExclude) {
   EXPECT_EQ("A", (*B.excludes().begin())->getName());
 }
 
+TEST(BinaryFeature, isExcluded) {
+  BinaryFeature A("A", false);
+  BinaryFeature B("B", false);
+
+  B.addExclude(&A);
+
+  EXPECT_TRUE(B.isExcluded(&A));
+  EXPECT_FALSE(A.isExcluded(&B));
+}
+
 TEST(BinaryFeature, addImplication) {
   BinaryFeature A("A", false);
   BinaryFeature B("B", false);
@@ -76,6 +86,16 @@ TEST(BinaryFeature, addImplication) {
   EXPECT_EQ("A", (*B.implications().begin())->getName());
 }
 
+TEST(BinaryFeature, implicates) {
+  BinaryFeature A("A", false);
+  BinaryFeature B("B", false);
+
+  B.addImplication(&A);
+
+  EXPECT_TRUE(B.implies(&A));
+  EXPECT_FALSE(A.implies(&B));
+}
+
 TEST(BinaryFeature, addAlternative) {
   BinaryFeature A("A", false);
   BinaryFeature B("B", false);
@@ -84,5 +104,15 @@ TEST(BinaryFeature, addAlternative) {
 
   EXPECT_EQ(std::distance(B.alternatives_begin(), B.alternatives_end()), 1);
   EXPECT_EQ("A", (*B.alternatives().begin())->getName());
+}
+
+TEST(BinaryFeature, isAlternative) {
+  BinaryFeature A("A", false);
+  BinaryFeature B("B", false);
+
+  B.addAlternative(&A);
+
+  EXPECT_TRUE(B.isAlternative(&A));
+  EXPECT_FALSE(A.isAlternative(&B));
 }
 } // namespace vara::feature
