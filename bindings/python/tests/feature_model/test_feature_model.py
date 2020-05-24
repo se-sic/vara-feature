@@ -19,13 +19,18 @@ class TestFeatureModel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Parse and load a FeatureModel for testing."""
-        with open(f'{TEST_INPUTS_DIR}/example_feature_model.xml', 'r') as file:
-            parser = xml_p.FeatureModelXmlParser(file.read())
+        with open(TEST_INPUTS_DIR / "example_feature_model.xml",
+                  'r') as fm_file:
+            parser = xml_p.FeatureModelXmlParser(fm_file.read())
             cls.fm = parser.build_feature_model()
 
     def test_fm_name(self):
         """ Check if the name of the feature model was correctly set. """
-        self.assertEqual(self.fm.getName().str(), "ABC")
+        self.assertEqual(self.fm.name.str(), "ABC")
+
+    def test_path(self):
+        """ Check if path accessor is correctly mapped. """
+        self.assertEqual(self.fm.path, "test/path/to/root/")
 
     def test_fm_root(self):
         """ Check if the root of the feature model was correctly set. """

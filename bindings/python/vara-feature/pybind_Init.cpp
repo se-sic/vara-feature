@@ -19,6 +19,6 @@ PYBIND11_MODULE(vara_feature, M) {
   init_feature_module_location(FeatureModule);
   auto FeatureModelModule = M.def_submodule("feature_model");
   init_feature_model_module(FeatureModelModule);
-  auto XmlParserModule = M.def_submodule("xml_parser");
-  init_xml_parser(XmlParserModule);
+  auto FMParserModule = M.def_submodule("fm_parsers");
+  init_xml_parser(FMParserModule);
 }
