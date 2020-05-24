@@ -92,7 +92,9 @@ void init_feature_module_feature(py::module &M) {
 
       //===----------------------------------------------------------------===//
       // Utility functions
-      .def("__str__", &vf::Feature::toString);
+      .def("__str__", &vf::Feature::toString)
+      .def("__eq__", &vf::Feature::operator==)
+      .def("__lt__", &vf::Feature::operator<);
 }
 
 void init_feature_module_binary_feature(py::module &M) {

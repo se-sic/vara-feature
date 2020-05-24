@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 import vara_feature.feature_model as FM
-import vara_feature.xml_parser as xml_p
+import vara_feature.fm_parsers as fm_parsers
 
 TEST_INPUTS_DIR = Path(
     os.path.join(Path(os.path.dirname(__file__)).parent, 'TEST_INPUTS'))
@@ -21,7 +21,7 @@ class TestFeatureModel(unittest.TestCase):
         """Parse and load a FeatureModel for testing."""
         with open(TEST_INPUTS_DIR / "example_feature_model.xml",
                   'r') as fm_file:
-            parser = xml_p.FeatureModelXmlParser(fm_file.read())
+            parser = fm_parsers.FeatureModelXmlParser(fm_file.read())
             cls.fm = parser.build_feature_model()
 
     def test_fm_name(self):

@@ -197,6 +197,16 @@ public:
   //===--------------------------------------------------------------------===//
   // Utility
   [[nodiscard]] virtual std::string toString() const;
+
+  bool operator==(const Feature &F) const {
+    return llvm::StringRef(this->getName()).lower() ==
+           llvm::StringRef(F.getName()).lower();
+  }
+
+  bool operator<(const Feature &F) const {
+    return llvm::StringRef(this->getName()).lower() <
+           llvm::StringRef(F.getName()).lower();
+  }
 };
 
 /// Options without arguments.

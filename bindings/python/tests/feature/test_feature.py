@@ -97,6 +97,27 @@ class TestFeature(unittest.TestCase):
 
         self.assertTrue(test_feature.is_alternative(root_feature))
 
+    def test_feature_equal(self):
+        """ Checks if Feature equality comparison operator is correctly
+        mapped."""
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature_0 = feature.BinaryFeature("Test", False)
+        test_feature_1 = feature.BinaryFeature("Test", False)
+
+        self.assertTrue(test_feature_0 == test_feature_1)
+        self.assertFalse(test_feature_0 == root_feature)
+
+    def test_feature_less_than(self):
+        """ Checks if Feature less than comparison operator is correctly
+        mapped."""
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature_0 = feature.BinaryFeature("Test", False)
+        test_feature_1 = feature.BinaryFeature("Test1", False)
+
+        self.assertTrue(root_feature < test_feature_0)
+        self.assertTrue(test_feature_0 < test_feature_1)
+        self.assertTrue(root_feature < test_feature_1)
+
 
 class TestBinaryFeature(unittest.TestCase):
     """ Test BinaryFeature functionality.  """
