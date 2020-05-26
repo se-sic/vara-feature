@@ -34,8 +34,8 @@ class TestFeatureModel(unittest.TestCase):
 
     def test_fm_root(self):
         """ Check if the root of the feature model was correctly set. """
-        self.assertIsNotNone(self.fm.getRoot())
-        self.assertEqual(self.fm.getRoot().name, "root")
+        self.assertIsNotNone(self.fm.get_root())
+        self.assertEqual(self.fm.get_root().name, "root")
 
     def test_fm_size(self):
         """ Check if the size of the loaded feature model matches. """
