@@ -19,7 +19,7 @@ void init_feature_model_module(py::module &M) {
       .def_property_readonly(
           "path",
           [](const vf::FeatureModel &FM) { return FM.getPath().string(); })
-      .def("getRoot", &vf::FeatureModel::getRoot,
+      .def("get_root", &vf::FeatureModel::getRoot,
            py::return_value_policy::reference,
            R"pbdoc(Returns the root Feature.)pbdoc")
       .def("size", &vf::FeatureModel::size,
