@@ -279,7 +279,7 @@ FeatureModelXmlParser::createDtd() {
       xmlFreeDtd);
   xmlCleanupParser();
   assert(Dtd && "Failed to parse DTD.");
-  return std::move(Dtd);
+  return Dtd;
 }
 
 std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
@@ -293,7 +293,7 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   if (Doc && Ctxt->valid) {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
     if (Ctxt->vctxt.valid) {
-      return std::move(Doc);
+      return Doc;
     } else {
       std::cerr << "Failed to validate DTD." << std::endl;
     }
