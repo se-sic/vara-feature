@@ -38,8 +38,6 @@ private:
   FeatureListType Implications;
   FeatureListType Alternatives;
   RelationshipListTy Relationships;
-  bool Opt;
-  std::optional<Location> Loc;
 
 protected:
   Feature(string Name, bool Opt, std::optional<Location> Loc)
@@ -64,21 +62,23 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Children
-  feature_iterator begin() { return Children.begin(); }
-  feature_iterator end() { return Children.end(); }
-  [[nodiscard]] const_feature_iterator begin() const {
+  feature_iterator children_begin() { return Children.begin(); }
+  feature_iterator children_end() { return Children.end(); }
+  [[nodiscard]] const_feature_iterator children_begin() const {
     return Children.begin();
   }
-  [[nodiscard]] const_feature_iterator end() const { return Children.end(); }
+  [[nodiscard]] const_feature_iterator children_end() const {
+    return Children.end();
+  }
   llvm::iterator_range<feature_iterator> children() {
-    return llvm::make_range(begin(), end());
+    return llvm::make_range(children_begin(), children_end());
   }
   [[nodiscard]] llvm::iterator_range<const_feature_iterator> children() const {
-    return llvm::make_range(begin(), end());
+    return llvm::make_range(children_begin(), children_end());
   }
   void addChild(Feature *Child) { Children.push_back(Child); }
   bool isChild(Feature *PosChild) const {
-    return std::find(begin(), end(), PosChild) != end();
+    return std::find(children_begin(), children_end(), PosChild) != end();
   }
 
   //===--------------------------------------------------------------------===//
@@ -194,8 +194,14 @@ public:
     Relationships.push_back(std::move(Relationship));
   }
 
+  //===--------------------------------------------------------------------===//
+  // Default
   feature_iterator begin() { return children_begin(); }
   feature_iterator end() { return children_end(); }
+  [[nodiscard]] const_feature_iterator begin() const {
+    return children_begin();
+  }
+  [[nodiscard]] const_feature_iterator end() const { return children_end(); }
 
   [[nodiscard]] std::optional<Location> getLocation() const { return Loc; }
 
