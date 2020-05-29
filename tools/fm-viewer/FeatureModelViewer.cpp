@@ -40,26 +40,21 @@ int main(int Argc, char **Argv) {
   const char *Overview = R"(View feature model as graph.)";
 
   llvm::cl::ParseCommandLineOptions(Argc, Argv, Overview, nullptr, FlagsEnvVar);
-
   if (FileNames.size() != 1) {
     llvm::errs() << "error: Expected single file.\n";
     return 1;
   }
 
   auto FS = llvm::MemoryBuffer::getFileAsStream(FileNames[0]);
-
   if (std::error_code EC = FS.getError()) {
     llvm::errs() << EC.message() << '\n';
     return 1;
   }
-
   std::unique_ptr<vara::feature::FeatureModel> FM;
-
   if (Xml) {
     FM = vara::feature::FeatureModelXmlParser(FS.get()->getBuffer())
              .buildFeatureModel();
   }
-
   if (!FM) {
     llvm::errs() << "error: Could not build feature model.\n";
     return 1;
@@ -82,7 +77,7 @@ int main(int Argc, char **Argv) {
             Viewer.empty() ? llvm::errc::invalid_argument
                            : llvm::sys::findProgramByName(Viewer)) {
       llvm::errs() << "Trying '" << *P << "' program... \n";
-      llvm::sys::ExecuteAndWait(*P, {*P, Filename});
+      llvm::sys::ExecuteNoWait(*P, {*P, Filename}, {});
     } else {
       llvm::DisplayGraph(Filename);
     }

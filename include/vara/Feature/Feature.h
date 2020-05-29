@@ -28,14 +28,14 @@ public:
 
 private:
   string Name;
+  std::optional<Location> Loc;
+  bool Opt;
   llvm::SmallVector<Feature *, 1> Parents;
   FeatureListType Children;
   FeatureListType Excludes;
   FeatureListType Implications;
   FeatureListType Alternatives;
   RelationshipListTy Relationships;
-  bool Opt;
-  std::optional<Location> Loc;
 
 protected:
   Feature(string Name, bool Opt, std::optional<Location> Loc)
@@ -46,7 +46,7 @@ public:
   Feature &operator=(const Feature &) = delete;
   virtual ~Feature() = default;
 
-  [[nodiscard]] string getName() const { return Name; }
+  [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
   [[nodiscard]] bool isOptional() const { return Opt; }
 
