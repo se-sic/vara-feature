@@ -33,7 +33,7 @@ public:
   explicit Mandatory(T *F) : Relationship<T>(F) {}
 
   [[nodiscard]] std::string toString() const override {
-    return "mandatory " + std::get<T *>(this->F)->getName();
+    return "mandatory " + std::get<T *>(this->F)->getName().str();
   }
 };
 
@@ -42,7 +42,7 @@ public:
   explicit Optional(T *F) : Relationship<T>(F) {}
 
   [[nodiscard]] std::string toString() const override {
-    return "optional " + std::get<T *>(this->F)->getName();
+    return "optional " + std::get<T *>(this->F)->getName().str();
   }
 };
 
