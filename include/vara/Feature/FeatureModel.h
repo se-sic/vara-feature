@@ -279,7 +279,6 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     O << ";\n";
   }
 };
-
 } // namespace llvm
 
 #endif // VARA_FEATURE_FEATUREMODEL_H
