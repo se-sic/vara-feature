@@ -23,6 +23,101 @@ class TestFeature(unittest.TestCase):
         test_feature = feature.BinaryFeature("Foo", False)
         self.assertFalse(test_feature.is_optional())
 
+    def test_is_root(self):
+        """ Checks if a feature is root if it has no parents. """
+        test_feature = feature.BinaryFeature("root", False)
+        self.assertTrue(test_feature.is_root())
+
+    def test_is_not_root(self):
+        """ Checks if a feature is not root if it has children. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        root_feature.add_child(test_feature)
+        test_feature.add_parent(root_feature)
+
+        self.assertFalse(test_feature.is_root())
+
+    def test_add_child(self):
+        """ Checks if a feature is correctly added as a child. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        root_feature.add_child(test_feature)
+
+        self.assertTrue(root_feature.is_child(test_feature))
+
+    def test_iter_children(self):
+        """ Checks if we can iterate over a features children. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature_1 = feature.BinaryFeature("Test1", False)
+        test_feature_2 = feature.BinaryFeature("Test2", True)
+
+        root_feature.add_child(test_feature_1)
+        root_feature.add_child(test_feature_2)
+
+        child_iter = iter(root_feature)
+        self.assertEqual(test_feature_1, next(child_iter))
+        self.assertEqual(test_feature_2, next(child_iter))
+
+    def test_add_parent(self):
+        """ Checks if a feature is correctly added as a parent. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        test_feature.add_parent(root_feature)
+
+        self.assertTrue(test_feature.is_parent(root_feature))
+
+    def test_add_exclude(self):
+        """ Checks if a feature is correctly excluded from another. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        test_feature.add_exclude(root_feature)
+
+        self.assertTrue(test_feature.is_excluded(root_feature))
+
+    def test_add_implication(self):
+        """ Checks if a feature is correctly can implicate another. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        test_feature.add_implication(root_feature)
+
+        self.assertTrue(test_feature.implicates(root_feature))
+
+    def test_add_alternative(self):
+        """ Checks if a feature is correctly added as an alternative from
+        another. """
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature = feature.BinaryFeature("Test", False)
+
+        test_feature.add_alternative(root_feature)
+
+        self.assertTrue(test_feature.is_alternative(root_feature))
+
+    def test_feature_equal(self):
+        """ Checks if Feature equality comparison operator is correctly
+        mapped."""
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature_0 = feature.BinaryFeature("Test", False)
+        test_feature_1 = feature.BinaryFeature("Test", False)
+
+        self.assertTrue(test_feature_0 == test_feature_1)
+        self.assertFalse(test_feature_0 == root_feature)
+
+    def test_feature_less_than(self):
+        """ Checks if Feature less than comparison operator is correctly
+        mapped."""
+        root_feature = feature.BinaryFeature("root", False)
+        test_feature_0 = feature.BinaryFeature("Test", False)
+        test_feature_1 = feature.BinaryFeature("Test1", False)
+
+        self.assertTrue(root_feature < test_feature_0)
+        self.assertTrue(test_feature_0 < test_feature_1)
+        self.assertTrue(root_feature < test_feature_1)
+
 
 class TestBinaryFeature(unittest.TestCase):
     """ Test BinaryFeature functionality.  """
