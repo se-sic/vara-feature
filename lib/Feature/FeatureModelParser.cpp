@@ -307,6 +307,7 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
 }
 
+// TODO(s9latimm): replace with builder err
 bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 } // namespace vara::feature

@@ -67,7 +67,7 @@ jobs:
             - g++-9
             - clang-tidy-10
       env: CXX=g++-9 BUILD_TYPE=Debug
-    - name: GCC-9 Release\
+    - name: GCC-9 Release
       stage: Latest
       addons: *gcc9
       env: CXX=g++-9 BUILD_TYPE=Release
@@ -81,7 +81,7 @@ script:
   - cmake --build . --target tidy-vara-feature
   - cmake --build . --target check-vara-feature-python
   - cmake --build . --target check-vara-fm-viewer
-  -
+
 branches:
   only:
     - vara

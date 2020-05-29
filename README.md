@@ -6,7 +6,7 @@ Installation
 Installing the feature library simple.
 First, install the required dependencies:
 ```bash
-sudo apt install llvm-dev libxml2-dev
+sudo apt install llvm-dev libxml2-dev graphviz
 ```
 Note: We advice to use newer version of LLVM to stay up-to-date with our improvements. If `apt` on your system does not support these out of the box visit [apt.llvm.org](https://apt.llvm.org).
 

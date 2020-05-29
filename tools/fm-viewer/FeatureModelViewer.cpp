@@ -18,6 +18,11 @@ static llvm::cl::opt<bool> Xml("xml",
                                llvm::cl::init(true),
                                llvm::cl::cat(FMViewerCategory));
 
+static llvm::cl::opt<bool> Verify("verify",
+                                  llvm::cl::desc("Verify input and exit."),
+                                  llvm::cl::init(false),
+                                  llvm::cl::cat(FMViewerCategory));
+
 static llvm::cl::opt<std::string>
     Viewer("viewer", llvm::cl::desc("Use <executable> to view DOT file."),
            llvm::cl::value_desc("<executable>"), llvm::cl::init(""),
@@ -50,11 +55,22 @@ int main(int Argc, char **Argv) {
     llvm::errs() << EC.message() << '\n';
     return 1;
   }
+
+  if (Verify && !vara::feature::FeatureModelXmlParser(FS.get()->getBuffer())
+                     .verifyFeatureModel()) {
+    llvm::errs() << "error: Invalid feature model.\n";
+    return 1;
+  }
+
   std::unique_ptr<vara::feature::FeatureModel> FM;
+
   if (Xml) {
     FM = vara::feature::FeatureModelXmlParser(FS.get()->getBuffer())
              .buildFeatureModel();
+  } else {
+    assert(FM && "No matching parser.");
   }
+
   if (!FM) {
     llvm::errs() << "error: Could not build feature model.\n";
     return 1;
