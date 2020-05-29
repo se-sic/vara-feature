@@ -58,10 +58,10 @@ public:
   LLVM_DUMP_METHOD
   void dump() const { llvm::outs() << toString() << "\n"; }
 
-  feature_iterator begin() { return Children.begin(); }
-  feature_iterator end() { return Children.end(); }
+  feature_iterator children_begin() { return Children.begin(); }
+  feature_iterator children_end() { return Children.end(); }
   llvm::iterator_range<feature_iterator> children() {
-    return llvm::make_range(begin(), end());
+    return llvm::make_range(children_begin(), children_end());
   }
   void addChild(Feature *Child) { Children.push_back(Child); }
 
@@ -109,6 +109,9 @@ public:
   void addRelationship(std::unique_ptr<Relationship<Feature>> Relationship) {
     Relationships.push_back(std::move(Relationship));
   }
+
+  feature_iterator begin() { return children_begin(); }
+  feature_iterator end() { return children_end(); }
 
   [[nodiscard]] std::optional<Location> getLocation() const { return Loc; }
 

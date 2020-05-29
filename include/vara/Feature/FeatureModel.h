@@ -141,9 +141,10 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
       O << "digraph graph_" << static_cast<void *>(G) << " {\n";
     }
 
-    O << "\tgraph [pad=.5,nodesep=2,ranksep=2,splines=true,newrank=true,"
-         "fontname=cmu,bgcolor=white,rankdir=tb,overlap=false,label=\""
-      << DOT::EscapeString(GraphName) << "\"];\n\n";
+    O.indent(2) << "graph [pad=.5 nodesep=2 ranksep=2 splines=true "
+                   "newrank=true bgcolor=white rankdir=tb overlap=false "
+                   "fontname=\"CMU Typewriter\" label=\""
+                << DOT::EscapeString(GraphName) << "\"];\n";
   }
 
   void writeNodes() {
@@ -181,7 +182,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
         }
         if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
                       Node) != Exclude->excludes_end()) {
-          emitEdge(Node, Exclude, "color=red,dir=both,constraint=false");
+          emitEdge(Node, Exclude, "color=red dir=both constraint=false");
           Skip.insert(std::make_pair<>(Exclude, Node));
         } else {
           emitEdge(Node, Exclude, "color=red");
@@ -198,7 +199,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
         if (visited(std::make_pair(Node, Alternative), Skip)) {
           continue;
         }
-        emitEdge(Node, Alternative, "color=green,dir=none,constraint=false");
+        emitEdge(Node, Alternative, "color=green dir=none constraint=false");
         Skip.insert(std::make_pair<>(Alternative, Node));
         Skip.insert(std::make_pair<>(Node, Alternative));
       }
@@ -215,10 +216,10 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
         if (std::find(Implication->implications_begin(),
                       Implication->implications_end(),
                       Node) != Implication->implications_end()) {
-          emitEdge(Node, Implication, "color=blue,dir=both,constraint=false");
+          emitEdge(Node, Implication, "color=blue dir=both constraint=false");
           Skip.insert(std::make_pair<>(Implication, Node));
         } else {
-          emitEdge(Node, Implication, "color=blue,constraint=false");
+          emitEdge(Node, Implication, "color=blue constraint=false");
         }
         Skip.insert(std::make_pair<>(Node, Implication));
       }
@@ -226,50 +227,52 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   }
 
   void emitClusterRecursively(const NodeRef Node, const int Indent = 0) {
-    std::string I = std::string(Indent, '\t');
-
-    O << I;
+    O.indent(Indent);
     emitNode(Node);
-
-    if (Node->begin() != Node->end()) {
-      O << I << "\tsubgraph cluster_" << static_cast<void *>(Node) << " {\n"
-        << I << "\t\tlabel=\"\";\n"
-        << I << "\t\tmargin=0;\n"
-        << I << "\t\tstyle=invis;\n";
+    if (Node->children_begin() != Node->children_end()) {
+      O.indent(Indent + 2) << "subgraph cluster_" << static_cast<void *>(Node)
+                           << " {\n";
+      O.indent(Indent + 4) << "label=\"\";\n";
+      O.indent(Indent + 4) << "margin=0;\n";
+      O.indent(Indent + 4) << "style=invis;\n";
       for (auto *Child : *Node) {
-        emitClusterRecursively(Child, Indent + 1);
-        O << I << '\t';
-        emitEdge(Node, Child);
+        emitClusterRecursively(Child, Indent + 2);
+        O.indent(Indent + 2);
+        // TODO (s9latimm): C++20 -> use std::format
+        emitEdge(Node, Child,
+                 std::string("arrowhead=")
+                     .append(Child->isOptional() ? "odot" : "dot"));
       }
-      O << I << "\t\t{\n" << I << "\t\trank=same;\n";
+      O.indent(Indent + 4) << "{\n";
+      O.indent(Indent + 6) << "rank=same;\n";
       for (auto *Child : *Node) {
-        O << I << "\t\t\tnode_" << static_cast<void *>(Child) << ";\n";
+        O.indent(Indent + 6) << "node_" << static_cast<void *>(Child) << ";\n";
       }
-      O << I << "\t\t}\n" << I << "\t}\n";
+      O.indent(Indent + 4) << "}\n";
+      O.indent(Indent + 2) << "}\n";
     }
   }
 
   void emitNode(const NodeRef Node) {
-    std::string NodeAttributes =
-        "shape=box,margin=.1,fontsize=12,fontname=\"CMU Typewriter\",";
-
     std::string Label =
-        "<<table align=\"center\" valign=\"middle\" "
-        "border=\"0\" cellborder=\"0\" cellpadding=\"5\"><tr><td>" +
-        Node->getName() +
+        "<<table align=\"center\" valign=\"middle\" border=\"0\" "
+        "cellborder=\"0\" cellpadding=\"5\"><tr><td>" +
+        Node->getName().str() +
         (Node->getLocation()
              ? "</td></tr><hr/><tr><td>" + Node->getLocation()->toString()
              : "") +
         "</td></tr></table>>";
 
-    O << "\tnode_" << static_cast<void *>(Node) << " [" << NodeAttributes
-      << "label=" << Label << "];\n";
+    O.indent(2) << "node_" << static_cast<void *>(Node) << " ["
+                << "shape=box margin=.1 fontsize=12 fontname=\"CMU "
+                   "Typewriter\" label="
+                << Label << "];\n";
   }
 
   void emitEdge(const NodeRef SrcNode, const NodeRef DestNode,
                 const std::string &Attrs = "") {
-    O << "\tnode_" << static_cast<void *>(SrcNode) << " -> node_"
-      << static_cast<void *>(DestNode);
+    O.indent(2) << "node_" << static_cast<void *>(SrcNode) << " -> node_"
+                << static_cast<void *>(DestNode);
     if (!Attrs.empty()) {
       O << " [" << Attrs << "]";
     }
