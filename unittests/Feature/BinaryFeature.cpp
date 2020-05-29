@@ -19,9 +19,9 @@ TEST(BinaryFeature, addParent) {
 
   EXPECT_TRUE(A.isRoot());
   EXPECT_FALSE(B.isRoot());
-  EXPECT_EQ(std::distance(A.parents().begin(), A.parents().end()), 0);
-  EXPECT_EQ(std::distance(B.parents().begin(), B.parents().end()), 1);
-  EXPECT_EQ("A", (*B.parents().begin())->getName());
+  EXPECT_EQ(std::distance(A.parents_begin(), A.parents_end()), 0);
+  EXPECT_EQ(std::distance(B.parents_begin(), B.parents_end()), 1);
+  EXPECT_EQ("A", (*B.parents_begin())->getName());
 }
 
 TEST(BinaryFeature, isParent) {
@@ -40,10 +40,10 @@ TEST(BinaryFeature, addChild) {
 
   B.addChild(&A);
 
-  EXPECT_EQ(std::distance(B.begin(), B.end()), 1);
-  EXPECT_EQ("A", (*B.begin())->getName());
-  EXPECT_EQ(std::distance(B.children().begin(), B.children().end()), 1);
-  EXPECT_EQ("A", (*B.children().begin())->getName());
+  EXPECT_EQ(std::distance(B.children_begin(), B.children_end()), 1);
+  EXPECT_EQ("A", (*B.children_begin())->getName());
+  EXPECT_EQ(std::distance(B.children_begin(), B.children_end()), 1);
+  EXPECT_EQ("A", (*B.children_begin())->getName());
 }
 
 TEST(BinaryFeature, isChild) {
@@ -63,7 +63,7 @@ TEST(BinaryFeature, addExclude) {
   B.addExclude(&A);
 
   EXPECT_EQ(std::distance(B.excludes_begin(), B.excludes_end()), 1);
-  EXPECT_EQ("A", (*B.excludes().begin())->getName());
+  EXPECT_EQ("A", (*B.excludes_begin())->getName());
 }
 
 TEST(BinaryFeature, isExcluded) {
@@ -83,7 +83,7 @@ TEST(BinaryFeature, addImplication) {
   B.addImplication(&A);
 
   EXPECT_EQ(std::distance(B.implications_begin(), B.implications_end()), 1);
-  EXPECT_EQ("A", (*B.implications().begin())->getName());
+  EXPECT_EQ("A", (*B.implications_begin())->getName());
 }
 
 TEST(BinaryFeature, implicates) {
@@ -103,7 +103,7 @@ TEST(BinaryFeature, addAlternative) {
   B.addAlternative(&A);
 
   EXPECT_EQ(std::distance(B.alternatives_begin(), B.alternatives_end()), 1);
-  EXPECT_EQ("A", (*B.alternatives().begin())->getName());
+  EXPECT_EQ("A", (*B.alternatives_begin())->getName());
 }
 
 TEST(BinaryFeature, isAlternative) {

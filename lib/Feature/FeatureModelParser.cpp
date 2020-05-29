@@ -180,11 +180,15 @@ FeatureModelXmlParser::createLineColumnOffset(xmlNode *N) {
 
 std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
   auto Doc = parseDoc();
+
   if (!Doc) {
     return nullptr;
   }
-  Features.clear();
+
+  clear();
+
   parseVm(xmlDocGetRootElement(Doc.get()));
+
   if (Features.find("root") == Features.end()) {
     Features.try_emplace(
         "root", std::make_unique<BinaryFeature>("root", false, std::nullopt));
@@ -303,6 +307,7 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
 }
 
+// TODO(s9latimm): replace with builder err
 bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 } // namespace vara::feature

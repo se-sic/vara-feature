@@ -91,17 +91,6 @@ public:
       llvm::outs() << "\n";
     }
   }
-
-  static bool
-  skip(std::pair<Feature *, Feature *> Edge,
-       const llvm::SmallSet<std::pair<Feature *, Feature *>, 10> &Visited) {
-    for (const auto &P : Visited) {
-      if (P.first == Edge.first && P.second == Edge.second) {
-        return true;
-      }
-    }
-    return false;
-  }
 };
 } // namespace vara::feature
 
@@ -120,127 +109,186 @@ inline llvm::raw_ostream &operator<<(llvm::raw_ostream &Out,
 namespace llvm {
 
 //===----------------------------------------------------------------------===//
-//                     (Dot)GraphTraits for FeatureModel
+//                     GraphWriter for FeatureModel
 //===----------------------------------------------------------------------===//
 
-template <> struct GraphTraits<vara::feature::FeatureModel *> {
+template <> struct GraphWriter<vara::feature::FeatureModel *> {
+  using GraphType = typename vara::feature::FeatureModel *;
+
+  raw_ostream &O;
+  const GraphType &G;
+
   using NodeRef = typename vara::feature::Feature *;
 
-  static NodeRef getEntryNode(const vara::feature::FeatureModel *FM) {
-    return FM->getRoot();
+  GraphWriter(raw_ostream &O, const GraphType &G, bool SN) : O(O), G(G) {}
+
+  void writeGraph(const std::string &Title = "") {
+    // Output the header for the graph...
+    writeHeader(Title);
+
+    // Emit all of the nodes in the graph...
+    writeNodes();
+
+    // Output the end of the graph
+    writeFooter();
   }
 
-  using nodes_iterator = typename vara::feature::FeatureModel::FeatureModelIter;
-
-  static nodes_iterator nodes_begin(vara::feature::FeatureModel *FM) {
-    return FM->begin();
-  }
-
-  static nodes_iterator nodes_end(vara::feature::FeatureModel *FM) {
-    return FM->end();
-  }
-
-  using ChildIteratorType = typename vara::feature::Feature::feature_iterator;
-
-  static ChildIteratorType child_begin(NodeRef N) { return N->begin(); }
-
-  static ChildIteratorType child_end(NodeRef N) { return N->end(); }
-
-  static size_t size(vara::feature::FeatureModel *FM) { return FM->size(); }
-};
-
-template <>
-struct DOTGraphTraits<vara::feature::FeatureModel *>
-    : public DefaultDOTGraphTraits {
-  explicit DOTGraphTraits(bool IsSimple = false)
-      : DefaultDOTGraphTraits(IsSimple) {}
-
-  static std::string getGraphName(const vara::feature::FeatureModel *FM) {
-    return "Feature model for " + FM->getName().str() + "\n" +
-           FM->getPath().string();
-  }
-
-  static std::string getNodeLabel(const vara::feature::Feature *Node,
-                                  const vara::feature::FeatureModel *FM) {
-    return Node->getName();
-  }
-
-  static std::string getNodeDescription(const vara::feature::Feature *Node,
-                                        const vara::feature::FeatureModel *FM) {
-    auto Loc = Node->getLocation();
-    if (Loc) {
-      return Loc->toString();
+  void writeHeader(const std::string &Title) {
+    if (!Title.empty()) {
+      O << "digraph \"" << DOT::EscapeString(Title) << "\" {\n";
     } else {
-      return "";
+      O << "digraph graph_" << static_cast<void *>(G) << " {\n";
     }
+    std::string GraphName =
+        llvm::formatv("Feature model for {0}\n{1}", G->getName().str(),
+                      G->getPath().string());
+
+    O.indent(2) << "graph [pad=.5 nodesep=2 ranksep=2 splines=true "
+                   "newrank=true bgcolor=white rankdir=tb overlap=false "
+                   "fontname=\"CMU Typewriter\" label=\""
+                << DOT::EscapeString(GraphName) << "\"];\n\n";
   }
 
-  static std::string getNodeAttributes(const vara::feature::Feature *Node,
-                                       const vara::feature::FeatureModel *FM) {
-    return "";
+  /// Output tree structure of feature model and additional edges.
+  void writeNodes() {
+    emitClusterRecursively(G->getRoot());
+    (O << '\n').indent(2) << "// Excludes\n";
+    emitExcludeEdges();
+    (O << '\n').indent(2) << "// Implications\n";
+    emitImplicationEdges();
+    (O << '\n').indent(2) << "// Alternatives\n";
+    emitAlternativeEdges();
   }
 
-  static std::string
-  getEdgeAttributes(const vara::feature::Feature *Node,
-                    vara::feature::Feature::feature_iterator I,
-                    const vara::feature::FeatureModel *FM) {
-    std::stringstream S;
-    S << "arrowhead=\"";
-    if ((*I)->isOptional()) {
-      S << 'o';
+  void writeFooter() { O << "}\n"; }
+
+  using FeatureEdgeSetTy = llvm::SmallSet<
+      std::pair<vara::feature::Feature *, vara::feature::Feature *>, 10>;
+
+  /// Checks whether an edge would be a duplicate.
+  ///
+  /// \param Edge may be already visited.
+  /// \param Skip contains existing edges.
+  static bool
+  visited(std::pair<vara::feature::Feature *, vara::feature::Feature *> Edge,
+          const FeatureEdgeSetTy &Skip) {
+    for (const auto &P : Skip) {
+      if (P.first == Edge.first && P.second == Edge.second) {
+        return true;
+      }
     }
-    S << "dot\" ";
-    return S.str();
+    return false;
   }
 
-  template <typename GraphWriter>
-  static void addCustomGraphFeatures(vara::feature::FeatureModel *FM,
-                                     GraphWriter &W) {
-    using FeatureSetTy = llvm::SmallSet<
-        std::pair<vara::feature::Feature *, vara::feature::Feature *>, 10>;
-    FeatureSetTy SkipE;
-    FeatureSetTy SkipI;
-    FeatureSetTy SkipA;
-    for (auto *Node : *FM) {
+  void emitExcludeEdges() {
+    FeatureEdgeSetTy Skip;
+    for (auto *Node : *G) {
       for (auto &Exclude : Node->excludes()) {
-        if (vara::feature::FeatureModel::skip(std::make_pair(Node, Exclude),
-                                              SkipE)) {
+        if (visited(std::make_pair(Node, Exclude), Skip)) {
           continue;
         }
         if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
                       Node) != Exclude->excludes_end()) {
-          W.emitEdge(Node, -1, Exclude, -1, "color=red dir=both");
-          SkipE.insert(std::make_pair<>(Exclude, Node));
+          emitEdge(Node, Exclude, "color=red dir=both constraint=false");
+          Skip.insert(std::make_pair<>(Exclude, Node));
         } else {
-          W.emitEdge(Node, 0, Exclude, 0, "color=red");
+          emitEdge(Node, Exclude, "color=red");
         }
-        SkipE.insert(std::make_pair<>(Node, Exclude));
+        Skip.insert(std::make_pair<>(Node, Exclude));
       }
+    }
+  }
+
+  void emitAlternativeEdges() {
+    FeatureEdgeSetTy Skip;
+    for (auto *Node : *G) {
+      for (auto &Alternative : Node->alternatives()) {
+        if (visited(std::make_pair(Node, Alternative), Skip)) {
+          continue;
+        }
+        emitEdge(Node, Alternative, "color=green dir=none constraint=false");
+        Skip.insert(std::make_pair<>(Alternative, Node));
+        Skip.insert(std::make_pair<>(Node, Alternative));
+      }
+    }
+  }
+
+  void emitImplicationEdges() {
+    FeatureEdgeSetTy Skip;
+    for (auto *Node : *G) {
       for (auto &Implication : Node->implications()) {
-        if (vara::feature::FeatureModel::skip(std::make_pair(Node, Implication),
-                                              SkipI)) {
+        if (visited(std::make_pair(Node, Implication), Skip)) {
           continue;
         }
         if (std::find(Implication->implications_begin(),
                       Implication->implications_end(),
                       Node) != Implication->implications_end()) {
-          W.emitEdge(Node, -1, Implication, -1, "color=blue dir=both");
-          SkipI.insert(std::make_pair<>(Implication, Node));
+          emitEdge(Node, Implication, "color=blue dir=both constraint=false");
+          Skip.insert(std::make_pair<>(Implication, Node));
         } else {
-          W.emitEdge(Node, 0, Implication, 0, "color=blue");
+          emitEdge(Node, Implication, "color=blue constraint=false");
         }
-        SkipI.insert(std::make_pair<>(Node, Implication));
-      }
-      for (auto &Alternative : Node->alternatives()) {
-        if (vara::feature::FeatureModel::skip(std::make_pair(Node, Alternative),
-                                              SkipA)) {
-          continue;
-        }
-        W.emitEdge(Node, -1, Alternative, -1, "color=green dir=none");
-        SkipA.insert(std::make_pair<>(Alternative, Node));
-        SkipA.insert(std::make_pair<>(Node, Alternative));
+        Skip.insert(std::make_pair<>(Node, Implication));
       }
     }
+  }
+
+  /// Output feature model (tree) recursively.
+  ///
+  /// \param Node Root of subtree.
+  /// \param Indent Value to indent statements in dot file.
+  void emitClusterRecursively(const NodeRef Node, const int Indent = 0) {
+    O.indent(Indent);
+    emitNode(Node);
+    if (Node->children_begin() != Node->children_end()) {
+      O.indent(Indent + 2) << "subgraph cluster_" << static_cast<void *>(Node)
+                           << " {\n";
+      O.indent(Indent + 4) << "label=\"\";\n";
+      O.indent(Indent + 4) << "margin=0;\n";
+      O.indent(Indent + 4) << "style=invis;\n";
+      for (auto *Child : *Node) {
+        emitClusterRecursively(Child, Indent + 2);
+        O.indent(Indent + 2);
+        emitEdge(Node, Child,
+                 llvm::formatv("arrowhead={0}",
+                               Child->isOptional() ? "odot" : "dot"));
+      }
+      O.indent(Indent + 4) << "{\n";
+      O.indent(Indent + 6) << "rank=same;\n";
+      for (auto *Child : *Node) {
+        O.indent(Indent + 6) << "node_" << static_cast<void *>(Child) << ";\n";
+      }
+      O.indent(Indent + 4) << "}\n";
+      O.indent(Indent + 2) << "}\n";
+    }
+  }
+
+  /// Output \a Node with custom attributes.
+  void emitNode(const NodeRef Node) {
+    std::string Label =
+        "<<table align=\"center\" valign=\"middle\" border=\"0\" "
+        "cellborder=\"0\" cellpadding=\"5\"><tr><td>" +
+        DOT::EscapeString(Node->getName().str()) +
+        (Node->getLocation()
+             ? "</td></tr><hr/><tr><td>" +
+                   DOT::EscapeString(Node->getLocation()->toString())
+             : "") +
+        "</td></tr></table>>";
+
+    O.indent(2) << "node_" << static_cast<void *>(Node) << " ["
+                << "shape=box margin=.1 fontsize=12 fontname=\"CMU "
+                   "Typewriter\" label="
+                << Label << "];\n";
+  }
+
+  void emitEdge(const NodeRef SrcNode, const NodeRef DestNode,
+                const std::string &Attrs = "") {
+    O.indent(2) << "node_" << static_cast<void *>(SrcNode) << " -> node_"
+                << static_cast<void *>(DestNode);
+    if (!Attrs.empty()) {
+      O << " [" << Attrs << "]";
+    }
+    O << ";\n";
   }
 };
 } // namespace llvm

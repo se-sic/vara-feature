@@ -23,7 +23,9 @@ void init_feature_module_feature(py::module &M) {
       // Children
       .def(
           "children",
-          [](vf::Feature &F) { return py::make_iterator(F.begin(), F.end()); },
+          [](vf::Feature &F) {
+            return py::make_iterator(F.children_begin(), F.children_end());
+          },
           py::keep_alive<0, 1>(), R"pbdoc(Child features)pbdoc")
       .def(
           "__iter__",

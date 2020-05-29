@@ -4,7 +4,7 @@ os: linux
 dist: bionic
 
 before_install:
-  - sudo apt-get -y install libstdc++6 libxml2-dev
+  - sudo apt-get -y install libstdc++6 libxml2-dev graphviz
 
 jobs:
   include:
@@ -80,6 +80,7 @@ script:
   - cmake --build . --target check-vara-feature-unittests
   - cmake --build . --target tidy-vara-feature
   - cmake --build . --target check-vara-feature-python
+  - cmake --build . --target check-vara-fm-viewer
 
 branches:
   only:
