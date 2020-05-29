@@ -134,25 +134,29 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   }
 
   void writeHeader(const std::string &Title) {
-    std::string GraphName =
-        llvm::formatv("Feature model for {0}\n{1}", G->getName().str(),
-                      G->getPath().string());
     if (!Title.empty()) {
       O << "digraph \"" << DOT::EscapeString(Title) << "\" {\n";
     } else {
       O << "digraph graph_" << static_cast<void *>(G) << " {\n";
     }
+    std::string GraphName =
+        llvm::formatv("Feature model for {0}\n{1}", G->getName().str(),
+                      G->getPath().string());
+
     O.indent(2) << "graph [pad=.5 nodesep=2 ranksep=2 splines=true "
                    "newrank=true bgcolor=white rankdir=tb overlap=false "
                    "fontname=\"CMU Typewriter\" label=\""
-                << DOT::EscapeString(GraphName) << "\"];\n";
+                << DOT::EscapeString(GraphName) << "\"];\n\n";
   }
 
   /// Output tree structure of feature model and additional edges.
   void writeNodes() {
     emitClusterRecursively(G->getRoot());
+    (O << '\n').indent(2) << "// Excludes\n";
     emitExcludeEdges();
+    (O << '\n').indent(2) << "// Implications\n";
     emitImplicationEdges();
+    (O << '\n').indent(2) << "// Alternatives\n";
     emitAlternativeEdges();
   }
 
