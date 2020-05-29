@@ -134,15 +134,14 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   }
 
   void writeHeader(const std::string &Title) {
-    std::string GraphName = "Feature model for " + G->getName().str() + "\n" +
-                            G->getPath().string();
-
+    std::string GraphName =
+        llvm::formatv("Feature model for {0}\n{1}", G->getName().str(),
+                      G->getPath().string());
     if (!Title.empty()) {
       O << "digraph \"" << DOT::EscapeString(Title) << "\" {\n";
     } else {
       O << "digraph graph_" << static_cast<void *>(G) << " {\n";
     }
-
     O.indent(2) << "graph [pad=.5 nodesep=2 ranksep=2 splines=true "
                    "newrank=true bgcolor=white rankdir=tb overlap=false "
                    "fontname=\"CMU Typewriter\" label=\""
@@ -246,10 +245,9 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
       for (auto *Child : *Node) {
         emitClusterRecursively(Child, Indent + 2);
         O.indent(Indent + 2);
-        // TODO (s9latimm): C++20 -> use std::format
         emitEdge(Node, Child,
-                 std::string("arrowhead=")
-                     .append(Child->isOptional() ? "odot" : "dot"));
+                 llvm::formatv("arrowhead={0}",
+                               Child->isOptional() ? "odot" : "dot"));
       }
       O.indent(Indent + 4) << "{\n";
       O.indent(Indent + 6) << "rank=same;\n";
@@ -266,9 +264,10 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     std::string Label =
         "<<table align=\"center\" valign=\"middle\" border=\"0\" "
         "cellborder=\"0\" cellpadding=\"5\"><tr><td>" +
-        Node->getName().str() +
+        DOT::EscapeString(Node->getName().str()) +
         (Node->getLocation()
-             ? "</td></tr><hr/><tr><td>" + Node->getLocation()->toString()
+             ? "</td></tr><hr/><tr><td>" +
+                   DOT::EscapeString(Node->getLocation()->toString())
              : "") +
         "</td></tr></table>>";
 

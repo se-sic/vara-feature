@@ -59,7 +59,7 @@ public:
       StrS << ":" << Start->toString();
     }
     if (End) {
-      StrS << "->" << End->toString();
+      StrS << "-" << End->toString();
     }
     return StrS.str();
   }
