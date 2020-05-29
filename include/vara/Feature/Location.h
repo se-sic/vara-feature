@@ -1,6 +1,8 @@
 #ifndef VARA_FEATURE_LOCATION_H
 #define VARA_FEATURE_LOCATION_H
 
+#include "llvm/Support/FormatVariadic.h"
+
 #ifdef STD_EXPERIMENTAL_FILESYSTEM
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
@@ -12,6 +14,7 @@ namespace fs = std::filesystem;
 #include <optional>
 #include <sstream>
 #include <string>
+#include <tuple>
 
 namespace vara::feature {
 
@@ -25,6 +28,10 @@ public:
     [[nodiscard]] int getLineNumber() const { return this->first; }
 
     [[nodiscard]] int getColumnOffset() const { return this->second; }
+
+    [[nodiscard]] std::string toString() const {
+      return llvm::formatv("{0}:{1}", getLineNumber(), getColumnOffset());
+    }
   };
 
 private:
@@ -49,15 +56,20 @@ public:
     std::stringstream StrS;
     StrS << Path.string();
     if (Start) {
-      StrS << ":" << (*Start).getLineNumber() << ":"
-           << (*Start).getColumnOffset();
+      StrS << ":" << Start->toString();
     }
     if (End) {
-      StrS << "-" << (*End).getLineNumber() << ":" << (*End).getColumnOffset();
+      StrS << "->" << End->toString();
     }
     return StrS.str();
   }
 };
+
+inline bool operator==(const Location::LineColumnOffset &This,
+                       const Location::LineColumnOffset &Other) {
+  return This.getLineNumber() == Other.getLineNumber() &&
+         This.getColumnOffset() == Other.getColumnOffset();
+}
 
 } // namespace vara::feature
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE vm SYSTEM "vm.dtd">
-<vm name="ABC">
+<vm name="ABC" root="test/path/to/root/">
   <binaryOptions>
     <configurationOption>
       <name>root</name>

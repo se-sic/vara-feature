@@ -19,6 +19,8 @@ protected:
   explicit FeatureModelParser() = default;
 
 public:
+  virtual ~FeatureModelParser() = default;
+
   /// Build \a FeatureModel after parsing.
   ///
   /// \returns an instance of \a FeatureModel
