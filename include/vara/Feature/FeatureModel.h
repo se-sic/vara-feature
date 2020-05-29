@@ -147,6 +147,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
                 << DOT::EscapeString(GraphName) << "\"];\n";
   }
 
+  /// Output tree structure of feature model and additional edges.
   void writeNodes() {
     emitClusterRecursively(G->getRoot());
     emitExcludeEdges();
@@ -161,7 +162,8 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   /// Checks whether an edge would be a duplicate.
   ///
-  /// \param Skip Contains existing edges.
+  /// \param Edge may be already visited.
+  /// \param Skip contains existing edges.
   static bool
   visited(std::pair<vara::feature::Feature *, vara::feature::Feature *> Edge,
           const FeatureEdgeSetTy &Skip) {
@@ -226,6 +228,10 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     }
   }
 
+  /// Output feature model (tree) recursively.
+  ///
+  /// \param Node Root of subtree.
+  /// \param Indent Value to indent statements in dot file.
   void emitClusterRecursively(const NodeRef Node, const int Indent = 0) {
     O.indent(Indent);
     emitNode(Node);
@@ -253,6 +259,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     }
   }
 
+  /// Output \a Node with custom attributes.
   void emitNode(const NodeRef Node) {
     std::string Label =
         "<<table align=\"center\" valign=\"middle\" border=\"0\" "
