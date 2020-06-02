@@ -99,28 +99,14 @@ class FeatureModelXmlParser : public FeatureModelParser {
 
 private:
   std::string Xml;
-  std::string VmName;
-  fs::path RootPath;
-  FeatureModel::FeatureMapTy Features;
-  FeatureModel::ConstraintsTy Constraints;
-  std::vector<std::pair<std::string, std::string>> RawEdges;
-  std::vector<std::pair<std::string, std::string>> RawExcludes;
-  std::vector<std::vector<std::pair<std::string, bool>>> RawConstraints;
 
-  void clear() {
-    Features.clear();
-    Constraints.clear();
-    RawEdges.clear();
-    RawExcludes.clear();
-    RawConstraints.clear();
-  }
+  void parseConfigurationOption(FeatureModel::Builder &FMB, xmlNode *N,
+                                bool Num);
+  void parseOptions(FeatureModel::Builder &FMB, xmlNode *N, bool Num);
+  void parseConstraints(FeatureModel::Builder &FMB, xmlNode *N);
+  void parseVm(FeatureModel::Builder &FMB, xmlNode *N);
 
-  void parseConfigurationOption(xmlNode *N, bool Num);
-  void parseOptions(xmlNode *N, bool Num);
-  void parseConstraints(xmlNode *N);
-  void parseVm(xmlNode *N);
-
-  static Location::LineColumnOffset createLineColumnOffset(xmlNode *N);
+  static FeatureSourceRange::Location createLineColumnOffset(xmlNode *N);
 
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();

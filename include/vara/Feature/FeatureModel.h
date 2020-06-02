@@ -6,7 +6,22 @@
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
 
-using std::string;
+#include <algorithm>
+#include <utility>
+
+template <> struct llvm::DenseMapInfo<std::string> {
+  static inline string getEmptyKey() { return ""; }
+
+  static inline string getTombstoneKey() { return ""; }
+
+  static unsigned getHashValue(const std::string &PtrVal) {
+    return std::hash<std::string>{}(PtrVal);
+  }
+
+  static bool isEqual(const string &LHS, const string &RHS) {
+    return LHS == RHS;
+  }
+};
 
 namespace vara::feature {
 
@@ -17,21 +32,24 @@ namespace vara::feature {
 class FeatureModel {
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
-  using ConstraintsTy = std::vector<std::vector<std::pair<Feature *, bool>>>;
+  using ConstraintTy = llvm::SmallVector<std::pair<std::string, bool>, 3>;
+  using ConstraintsTy = std::vector<ConstraintTy>;
 
 private:
   string Name;
   fs::path RootPath;
   FeatureMapTy Features;
+  std::vector<std::string> DepthFirst;
   ConstraintsTy Constraints;
   Feature *Root;
 
 public:
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
-               ConstraintsTy Constraints)
+               ConstraintsTy Constraints, Feature *Root,
+               std::vector<std::string> DepthFirst = {})
       : Name(std::move(Name)), RootPath(std::move(RootPath)),
         Features(std::move(Features)), Constraints(std::move(Constraints)),
-        Root(this->Features["root"].get()) {}
+        Root(Root), DepthFirst(std::move(DepthFirst)) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
@@ -74,16 +92,16 @@ public:
 
   LLVM_DUMP_METHOD
   void dump() const {
-    for (const auto &F : this->Features) {
-      F.second->dump();
+    for (const auto &F : this->DepthFirst) {
+      Features.find(F)->second->dump();
       llvm::outs() << "\n";
     }
     for (auto C : this->Constraints) {
-      for (auto F : C) {
+      for (const auto &F : C) {
         if (!F.second) {
           llvm::outs() << "!";
         }
-        llvm::outs() << F.first->getName();
+        llvm::outs() << F.first;
         if (F != C.back()) {
           llvm::outs() << " | ";
         }
@@ -91,6 +109,157 @@ public:
       llvm::outs() << "\n";
     }
   }
+
+  class Builder {
+  public:
+    using EdgeMapType =
+        typename llvm::StringMap<llvm::SmallVector<std::string, 3>>;
+
+  public:
+    int Index;
+    std::string VmName;
+    fs::path RootPath;
+    std::string Root;
+    llvm::StringMap<Feature::Builder> FeatureBuilder;
+    FeatureMapTy Features;
+    FeatureModel::ConstraintsTy Constraints;
+    llvm::StringMap<std::string> Parents;
+    std::vector<std::string> DepthFirst;
+    EdgeMapType Children;
+    EdgeMapType Excludes;
+    EdgeMapType RawImplications;
+    EdgeMapType Alternatives;
+
+    Builder() = default;
+
+    bool addFeature(std::string Name, bool Opt,
+                    std::variant<std::pair<int, int>, std::vector<int>> Values,
+                    std::optional<FeatureSourceRange> Loc = std::nullopt) {
+      return FeatureBuilder.try_emplace(Name, Name, Opt, Values, std::move(Loc))
+          .second;
+    }
+
+    bool addFeature(std::string Name, bool Opt,
+                    std::optional<FeatureSourceRange> Loc = std::nullopt) {
+      return FeatureBuilder.try_emplace(Name, Name, Opt, std::move(Loc)).second;
+    }
+
+    void addChild(const std::string &P, const std::string &C) {
+      Children[P].push_back(C);
+      Parents[C] = P;
+    }
+
+    void addAlternative(const std::string &A, const std::string &B) {
+      Alternatives[A].push_back(B);
+      Alternatives[B].push_back(A);
+    }
+
+    void addExclude(const std::string &F, const std::string &E) {
+      Excludes[F].push_back(E);
+    }
+
+    void addImplication(const std::string &A, const std::string &B) {
+      RawImplications[A].push_back(B);
+    }
+
+    void setVmName(std::string N) { this->VmName = std::move(N); }
+
+    void setRootPath(fs::path P) { this->RootPath = std::move(P); }
+
+    void setRoot(std::string R = "root") {
+      assert(Root.empty() && "Root already set.");
+      Root = R;
+      if (FeatureBuilder.find(Root) == FeatureBuilder.end()) {
+        FeatureBuilder.try_emplace(Root, Root, false);
+      }
+      for (const auto &F : FeatureBuilder.keys()) {
+        if (F != Root && Parents.find(F) == Parents.end()) {
+          Children[Root].push_back(F);
+          Parents[F] = Root;
+        }
+      }
+    }
+
+    std::unique_ptr<FeatureModel> build() {
+      if (Root.empty()) {
+        setRoot();
+      }
+      Index = 0;
+      assert(!Root.empty() && "Root not set.");
+      buildTree(Root);
+      buildConstraints();
+      buildFeatures();
+      return std::make_unique<FeatureModel>(VmName, RootPath,
+                                            std::move(Features), Constraints,
+                                            Features[Root].get(), DepthFirst);
+    }
+
+    void addConstraint(const ConstraintTy &C) { Constraints.push_back(C); }
+
+  private:
+    void buildConstraints() {
+      for (const auto &F : FeatureBuilder.keys()) {
+        for (const auto &E : Excludes[F]) {
+          FeatureBuilder[F].addExclude(FeatureBuilder[E].get());
+        }
+      }
+
+      for (const auto &C : Constraints) {
+        if (C.size() == 2) {
+          if (C[0].second != C[1].second) {
+            if (C[0].second) { // A || !B
+              FeatureBuilder[C[1].first].addImplication(
+                  FeatureBuilder[C[0].first].get());
+            } else { // !A || B
+              FeatureBuilder[C[0].first].addImplication(
+                  FeatureBuilder[C[1].first].get());
+            }
+          } else if (!(C[0].second || C[1].second)) { // !A || !B
+            FeatureBuilder[C[0].first].addExclude(
+                FeatureBuilder[C[1].first].get());
+            FeatureBuilder[C[1].first].addExclude(
+                FeatureBuilder[C[0].first].get());
+          } else if (C[0].second && C[1].second) { // A || B
+            FeatureBuilder[C[0].first].addAlternative(
+                FeatureBuilder[C[1].first].get());
+            FeatureBuilder[C[1].first].addAlternative(
+                FeatureBuilder[C[0].first].get());
+          }
+        } else if (C.size() > 2) {
+          bool B = true;
+          for (const auto &P : C) {
+            B &= P.second;
+          }
+          if (B) {
+            for (const auto &P : C) {
+              for (const auto &PP : C) {
+                if (P.first != PP.first) {
+                  FeatureBuilder[P.first].addAlternative(
+                      FeatureBuilder[PP.first].get());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    void buildTree(const std::string &F) {
+      FeatureBuilder[F].setIndex(Index++);
+      DepthFirst.push_back(F);
+      std::sort(Children[F].begin(), Children[F].end());
+      for (const auto &C : Children[F]) {
+        buildTree(C);
+        FeatureBuilder[F].addChild(FeatureBuilder[C].get());
+      }
+    }
+
+    void buildFeatures() {
+      for (const auto &F : FeatureBuilder.keys()) {
+        Features.try_emplace(F, FeatureBuilder[F].build());
+      }
+    }
+  };
 };
 } // namespace vara::feature
 
@@ -265,15 +434,15 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   /// Output \a Node with custom attributes.
   void emitNode(const NodeRef Node) {
-    std::string Label =
+    std::string Label = llvm::formatv(
         "<<table align=\"center\" valign=\"middle\" border=\"0\" "
-        "cellborder=\"0\" cellpadding=\"5\"><tr><td>" +
-        DOT::EscapeString(Node->getName().str()) +
+        "cellborder=\"0\" cellpadding=\"5\"><tr><td>{0}: {1}{2}"
+        "</td></tr></table>>",
+        Node->getIndex(), DOT::EscapeString(Node->getName().str()),
         (Node->getLocation()
              ? "</td></tr><hr/><tr><td>" +
                    DOT::EscapeString(Node->getLocation()->toString())
-             : "") +
-        "</td></tr></table>>";
+             : ""));
 
     O.indent(2) << "node_" << static_cast<void *>(Node) << " ["
                 << "shape=box margin=.1 fontsize=12 fontname=\"CMU "

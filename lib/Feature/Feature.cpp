@@ -4,54 +4,29 @@ namespace vara::feature {
 
 std::string Feature::toString() const {
   std::stringstream StrS;
-  StrS << "name: \"" << Name << "\",\n  optional: " << (Opt ? "true" : "false")
-       << ",\n  ";
+  StrS << "name: \"" << Name << "\"\n  index: " << Index
+       << ",\n  optional: " << (Opt ? "true" : "false") << ",\n  ";
   if (Loc) {
     StrS << "location: " << Loc->toString() << ",\n  ";
   }
-  StrS << "parents: [";
-  for (const auto &Parent : Parents) {
-    StrS << Parent->Name;
-    if (Parent != Parents.back()) {
-      StrS << ", ";
-    }
+  if (Parent) {
+    StrS << "parent: " << Parent->Name << ",\n  ";
   }
-  StrS << "],\n  children: [";
+  StrS << "children: [";
   for (const auto &Child : Children) {
-    StrS << Child->Name;
-    if (Child != Children.back()) {
-      StrS << ", ";
-    }
+    StrS << Child->Name << ", ";
   }
   StrS << "],\n  excludes: [";
   for (const auto &Exclude : Excludes) {
-    StrS << Exclude->Name;
-    if (Exclude != Excludes.back()) {
-      StrS << ", ";
-    }
+    StrS << Exclude->Name << ", ";
   }
   StrS << "],\n  implies: [";
   for (const auto &Implication : Implications) {
-    StrS << Implication->Name;
-    if (Implication != Implications.back()) {
-      StrS << ", ";
-    }
+    StrS << Implication->Name << ", ";
   }
   StrS << "],\n  alternatives: [";
   for (const auto &Alternative : Alternatives) {
-    StrS << Alternative->Name;
-    if (Alternative != Alternatives.back()) {
-      StrS << ", ";
-    }
-  }
-  StrS << "],\n  relationships: [";
-  for (const auto &Relationship : Relationships) {
-    StrS << "\n    " << Relationship->toString();
-    if (Relationship == Relationships.back()) {
-      StrS << "\n  ";
-    } else {
-      StrS << ",";
-    }
+    StrS << Alternative->Name << ", ";
   }
   StrS << "]";
   return StrS.str();

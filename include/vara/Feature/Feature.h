@@ -1,13 +1,13 @@
 #ifndef VARA_FEATURE_FEATURE_H
 #define VARA_FEATURE_FEATURE_H
 
-#include "vara/Feature/Location.h"
-#include "vara/Feature/Relationship.h"
+#include "vara/Feature/FeatureSourceRange.h"
 
-#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <utility>
 #include <variant>
 
 using std::string;
@@ -21,27 +21,26 @@ namespace vara::feature {
 /// \brief Base class for components of \a FeatureModel.
 class Feature {
 public:
-  using FeatureListType = typename llvm::SmallVector<Feature *, 3>;
-  using RelationshipListTy =
-      typename llvm::SmallVector<std::unique_ptr<Relationship<Feature>>, 3>;
-  using feature_iterator = typename FeatureListType::iterator;
-  using const_feature_iterator = typename FeatureListType::const_iterator;
-  using relationship_iterator = RelationshipListTy ::iterator;
+  using FeatureSetType = typename llvm::DenseSet<Feature *>;
+  using feature_iterator = typename FeatureSetType::iterator;
+  using const_feature_iterator = typename FeatureSetType::const_iterator;
 
 private:
+  unsigned int Index;
   string Name;
-  std::optional<Location> Loc;
+  std::optional<FeatureSourceRange> Loc;
   bool Opt;
-  llvm::SmallVector<Feature *, 1> Parents;
-  FeatureListType Children;
-  FeatureListType Excludes;
-  FeatureListType Implications;
-  FeatureListType Alternatives;
-  RelationshipListTy Relationships;
+  Feature *Parent;
+  FeatureSetType Children;
+  FeatureSetType Excludes;
+  FeatureSetType Implications;
+  FeatureSetType Alternatives;
 
 protected:
-  Feature(string Name, bool Opt, std::optional<Location> Loc)
-      : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)) {}
+  Feature(int Index, string Name, bool Opt,
+          std::optional<FeatureSourceRange> Loc, Feature *Parent)
+      : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)), Parent(Parent),
+        Index(Index) {}
 
 public:
   Feature(const Feature &) = delete;
@@ -52,7 +51,11 @@ public:
 
   [[nodiscard]] bool isOptional() const { return Opt; }
 
-  [[nodiscard]] bool isRoot() const { return Parents.empty(); }
+  [[nodiscard]] virtual bool isBinary() const = 0;
+
+  [[nodiscard]] virtual bool isNumeric() const = 0;
+
+  [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
 
   void print(std::ostream &Out) const { Out << toString() << std::endl; }
   void print(llvm::raw_ostream &Out) const { Out << toString() << '\n'; }
@@ -76,39 +79,8 @@ public:
   [[nodiscard]] llvm::iterator_range<const_feature_iterator> children() const {
     return llvm::make_range(children_begin(), children_end());
   }
-  void addChild(Feature *Child) { Children.push_back(Child); }
   bool isChild(Feature *PosChild) const {
     return std::find(children_begin(), children_end(), PosChild) != end();
-  }
-
-  //===--------------------------------------------------------------------===//
-  // Parents
-  llvm::SmallVector<Feature *, 1>::iterator parents_begin() {
-    return Parents.begin();
-  }
-  llvm::SmallVector<Feature *, 1>::iterator parents_end() {
-    return Parents.end();
-  }
-  [[nodiscard]] llvm::SmallVector<Feature *, 1>::const_iterator
-  parents_begin() const {
-    return Parents.begin();
-  }
-  [[nodiscard]] llvm::SmallVector<Feature *, 1>::const_iterator
-  parents_end() const {
-    return Parents.end();
-  }
-  llvm::iterator_range<llvm::SmallVector<Feature *, 1>::iterator> parents() {
-    return llvm::make_range(parents_begin(), parents_end());
-  }
-  [[nodiscard]] llvm::iterator_range<
-      llvm::SmallVector<Feature *, 1>::const_iterator>
-  parents() const {
-    return llvm::make_range(parents_begin(), parents_end());
-  }
-  void addParent(Feature *Parent) { Parents.push_back(Parent); }
-  [[nodiscard]] bool isParent(Feature *PosParent) const {
-    return std::find(parents_begin(), parents_end(), PosParent) !=
-           parents_end();
   }
 
   //===--------------------------------------------------------------------===//
@@ -127,7 +99,6 @@ public:
   [[nodiscard]] llvm::iterator_range<const_feature_iterator> excludes() const {
     return llvm::make_range(excludes_begin(), excludes_end());
   }
-  void addExclude(Feature *Exclude) { Excludes.push_back(Exclude); }
   bool isExcluded(Feature *PosExclude) const {
     return std::find(excludes_begin(), excludes_end(), PosExclude) !=
            excludes_end();
@@ -149,9 +120,6 @@ public:
   [[nodiscard]] llvm::iterator_range<const_feature_iterator>
   implications() const {
     return llvm::make_range(implications_begin(), implications_end());
-  }
-  void addImplication(Feature *Implication) {
-    Implications.push_back(Implication);
   }
   bool implies(Feature *PosImplication) const {
     return std::find(implications_begin(), implications_end(),
@@ -175,23 +143,9 @@ public:
   alternatives() const {
     return llvm::make_range(alternatives_begin(), alternatives_end());
   }
-  void addAlternative(Feature *Alternative) {
-    Alternatives.push_back(Alternative);
-  }
   bool isAlternative(Feature *PosAlternative) const {
     return std::find(alternatives_begin(), alternatives_end(),
                      PosAlternative) != alternatives_end();
-  }
-
-  //===--------------------------------------------------------------------===//
-  // Relationships
-  relationship_iterator relationships_begin() { return Relationships.begin(); }
-  relationship_iterator relationships_end() { return Relationships.end(); }
-  llvm::iterator_range<relationship_iterator> relationships() {
-    return llvm::make_range(relationships_begin(), relationships_end());
-  }
-  void addRelationship(std::unique_ptr<Relationship<Feature>> Relationship) {
-    Relationships.push_back(std::move(Relationship));
   }
 
   //===--------------------------------------------------------------------===//
@@ -203,20 +157,46 @@ public:
   }
   [[nodiscard]] const_feature_iterator end() const { return children_end(); }
 
-  [[nodiscard]] std::optional<Location> getLocation() const { return Loc; }
+  Feature *getParent() { return Parent; }
+
+  [[nodiscard]] std::optional<FeatureSourceRange> getLocation() const {
+    return Loc;
+  }
 
   //===--------------------------------------------------------------------===//
   // Utility
   [[nodiscard]] virtual std::string toString() const;
 
+  [[nodiscard]] unsigned int getIndex() const { return Index; }
+
   bool operator==(const Feature &F) const {
-    return llvm::StringRef(this->getName()).lower() ==
-           llvm::StringRef(F.getName()).lower();
+    return this->Index == F.getIndex() &&
+           this->getName().lower() == F.getName().lower();
   }
 
   bool operator<(const Feature &F) const {
-    return llvm::StringRef(this->getName()).lower() <
-           llvm::StringRef(F.getName()).lower();
+    return this->Index < F.getIndex() ||
+           (this->Index == F.getIndex() &&
+            this->getName().lower() < F.getName().lower());
+  }
+
+  bool operator>(const Feature &F) const { return F.operator<(*this); }
+
+  class Builder;
+
+protected:
+  void setIndex(unsigned int Index) { this->Index = Index; }
+
+  void addChild(Feature *Child) { Children.insert(Child); }
+
+  void addExclude(Feature *Exclude) { Excludes.insert(Exclude); }
+
+  void addAlternative(Feature *Alternative) {
+    Alternatives.insert(Alternative);
+  }
+
+  void addImplication(Feature *Implication) {
+    Implications.insert(Implication);
   }
 };
 
@@ -225,8 +205,13 @@ class BinaryFeature : public Feature {
 
 public:
   BinaryFeature(string Name, bool Opt,
-                std::optional<Location> Loc = std::nullopt)
-      : Feature(std::move(Name), Opt, std::move(Loc)) {}
+                std::optional<FeatureSourceRange> Loc = std::nullopt,
+                Feature *Parent = nullptr, int Index = 0)
+      : Feature(Index, std::move(Name), Opt, std::move(Loc), Parent) {}
+
+  [[nodiscard]] bool isBinary() const override { return true; }
+
+  [[nodiscard]] bool isNumeric() const override { return false; }
 
   [[nodiscard]] string toString() const override;
 };
@@ -242,13 +227,47 @@ private:
 
 public:
   NumericFeature(string Name, bool Opt, ValuesVariantType Values,
-                 std::optional<Location> Loc = std::nullopt)
-      : Feature(std::move(Name), Opt, std::move(Loc)),
-        Values(std::move(Values)) {}
+                 std::optional<FeatureSourceRange> Loc = std::nullopt,
+                 Feature *Parent = nullptr, int Index = 0)
+      : Feature(Index, std::move(Name), Opt, std::move(Loc), Parent),
+        Values(Values) {}
 
   ValuesVariantType getVals() { return Values; }
 
+  [[nodiscard]] bool isBinary() const override { return false; }
+
+  [[nodiscard]] bool isNumeric() const override { return true; }
+
   [[nodiscard]] string toString() const override;
+};
+
+class Feature::Builder {
+  std::unique_ptr<Feature> F;
+
+public:
+  Builder() : F(nullptr) {}
+
+  Builder(string Name, bool Opt,
+          std::optional<FeatureSourceRange> Loc = std::nullopt)
+      : F(std::make_unique<BinaryFeature>(Name, Opt, Loc)) {}
+
+  Builder(string Name, bool Opt, NumericFeature::ValuesVariantType Values,
+          std::optional<FeatureSourceRange> Loc = std::nullopt)
+      : F(std::make_unique<NumericFeature>(Name, Opt, Values, Loc)) {}
+
+  Feature *get() { return F.get(); }
+
+  void setIndex(unsigned int Index) { F->setIndex(Index); }
+
+  void addChild(Feature *Child) { F->addChild(Child); }
+
+  void addAlternative(Feature *Alternative) { F->addAlternative(Alternative); }
+
+  void addExclude(Feature *Exclude) { F->addExclude(Exclude); }
+
+  void addImplication(Feature *Implication) { F->addImplication(Implication); }
+
+  std::unique_ptr<Feature> build() { return std::move(F); }
 };
 
 } // namespace vara::feature
