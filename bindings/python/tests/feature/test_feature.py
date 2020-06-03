@@ -118,6 +118,15 @@ class TestFeature(unittest.TestCase):
         self.assertTrue(test_feature_0 < test_feature_1)
         self.assertTrue(root_feature < test_feature_1)
 
+    def test_feature_location_accessors(self):
+        """ Checks if a feature's location is accessible."""
+        root_feature = feature.BinaryFeature("root", False)
+        start_lco = feature.LineColumnOffset(3, 4)
+        end_lco = feature.LineColumnOffset(3, 20)
+        loc = feature.Location("test", start_lco, end_lco)
+        test_feature_0 = feature.BinaryFeature("Test", False, loc)
+
+
 
 class TestBinaryFeature(unittest.TestCase):
     """ Test BinaryFeature functionality.  """

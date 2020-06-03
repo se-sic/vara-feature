@@ -16,13 +16,22 @@ class TestLineColumnOffset(unittest.TestCase):
         self.assertEqual(lc_offset_0.line_number, 3)
         self.assertEqual(lc_offset_1.line_number, 13)
 
-    def test_column_offset(self):
+    def test_column_offset_accessor(self):
         """ Checks if the column offset is correctly mapped. """
         lc_offset_0 = LineColumnOffset(3, 4)
         lc_offset_1 = LineColumnOffset(13, 20)
 
         self.assertEqual(lc_offset_0.column_offset, 4)
         self.assertEqual(lc_offset_1.column_offset, 20)
+    
+    def test_line_column_offset_setter(self):
+        """ Checks if the column offset is correctly mapped. """
+        lc_offset_0 = LineColumnOffset(3, 4)
+        lc_offset_0.line_number = 4
+        lc_offset_0.column_offset = 5
+
+        self.assertEqual(lc_offset_0.line_number, 4)
+        self.assertEqual(lc_offset_0.column_offset, 5)
 
 
 class TestLocation(unittest.TestCase):

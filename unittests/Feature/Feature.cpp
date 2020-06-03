@@ -28,4 +28,32 @@ TEST(Feature, compareLess) {
   // These features are the same, therefore, not smaller
   EXPECT_FALSE(R < RLower);
 }
+
+TEST(Feature, locationAccessors) {
+  Location::LineColumnOffset Start(3,4);
+  Location::LineColumnOffset End(3,20);
+  BinaryFeature TestLCO("TEST", false, Location("path", Start, End));
+
+  EXPECT_EQ(TestLCO.getLocation()->getStart()->getLineNumber(), 3);
+  EXPECT_EQ(TestLCO.getLocation()->getStart()->getColumnOffset(), 4);
+  EXPECT_EQ(TestLCO.getLocation()->getEnd()->getLineNumber(), 3);
+  EXPECT_EQ(TestLCO.getLocation()->getEnd()->getColumnOffset(), 20);
+}
+
+TEST(Feature, locationSetters) {
+  Location::LineColumnOffset Start(3,4);
+  Location::LineColumnOffset End(3,20);
+  BinaryFeature TestLCO("TEST", false, Location("path", Start, End));
+
+  TestLCO.getLocation()->getStart()->setLineNumber(4);
+  TestLCO.getLocation()->getStart()->setColumnOffset(2);
+  TestLCO.getLocation()->getEnd()->setLineNumber(4);
+  TestLCO.getLocation()->getEnd()->setColumnOffset(18);
+
+  EXPECT_EQ(TestLCO.getLocation()->getStart()->getLineNumber(), 4);
+  EXPECT_EQ(TestLCO.getLocation()->getStart()->getColumnOffset(), 2);
+  EXPECT_EQ(TestLCO.getLocation()->getEnd()->getLineNumber(), 4);
+  EXPECT_EQ(TestLCO.getLocation()->getEnd()->getColumnOffset(), 18);
+}
+
 } // namespace vara::feature

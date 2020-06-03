@@ -203,7 +203,12 @@ public:
   }
   [[nodiscard]] const_feature_iterator end() const { return children_end(); }
 
-  [[nodiscard]] std::optional<Location> getLocation() const { return Loc; }
+  [[nodiscard]] Location* getLocation() {
+      if (Loc.has_value())
+        return &Loc.value();
+      else
+        return nullptr;
+  }
 
   //===--------------------------------------------------------------------===//
   // Utility
