@@ -15,7 +15,6 @@ namespace fs = std::filesystem;
 #include <sstream>
 #include <string>
 #include <tuple>
-#include <iostream>
 
 namespace vara::feature {
 
@@ -30,9 +29,9 @@ public:
 
     [[nodiscard]] int getColumnOffset() const { return this->second; }
 
-    void setLineNumber(const int value) { this->first = value; }
+    void setLineNumber(int Value) { this->first = Value; }
 
-    void setColumnOffset(const int value) { this->second = value; }
+    void setColumnOffset(int Value) { this->second = Value; }
 
     [[nodiscard]] std::string toString() const {
       return llvm::formatv("{0}:{1}", getLineNumber(), getColumnOffset());
@@ -52,17 +51,11 @@ public:
   [[nodiscard]] fs::path getPath() const { return Path; }
 
   [[nodiscard]] LineColumnOffset* getStart() {
-    if (Start.has_value())
-      return &Start.value();
-    else
-      return nullptr;
+    return Start.has_value() ? &Start.value() : nullptr;
   }
 
   [[nodiscard]] LineColumnOffset* getEnd() {
-    if (End.has_value())
-      return &End.value();
-    else
-      return nullptr;
+    return End.has_value() ? &End.value() : nullptr;
   }
 
   [[nodiscard]] std::string toString() const {

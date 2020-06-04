@@ -204,10 +204,7 @@ public:
   [[nodiscard]] const_feature_iterator end() const { return children_end(); }
 
   [[nodiscard]] Location* getLocation() {
-      if (Loc.has_value())
-        return &Loc.value();
-      else
-        return nullptr;
+    return Loc.has_value() ? &Loc.value() : nullptr;
   }
 
   //===--------------------------------------------------------------------===//
