@@ -36,9 +36,9 @@ void init_feature_module_location(py::module &M) {
       .def_property_readonly(
           "path", [](vf::Location &Loc) { return Loc.getPath().string(); },
           R"pbdoc(Path to the source file)pbdoc")
-      .def("get_start", &vf::Location::getStart,
+      .def("get_start", &vf::Location::getStart, py::return_value_policy::reference,
            R"pbdoc(Get the start `LineColumnOffset` of this `Location`.)pbdoc")
-      .def("get_end", &vf::Location::getEnd,
+      .def("get_end", &vf::Location::getEnd, py::return_value_policy::reference,
            R"pbdoc(Get the end `LineColumnOffset` of this `Location`.)pbdoc")
       .def("__str__", &vf::Location::toString);
 
