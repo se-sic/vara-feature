@@ -32,24 +32,25 @@ namespace vara::feature {
 class FeatureModel {
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
+  using FeatureListType = std::vector<Feature *>;
   using ConstraintTy = llvm::SmallVector<std::pair<std::string, bool>, 3>;
   using ConstraintsTy = std::vector<ConstraintTy>;
 
 private:
   string Name;
   fs::path RootPath;
-  FeatureMapTy Features;
-  std::vector<std::string> DepthFirst;
+  FeatureMapTy FeatureMap;
+  FeatureListType Features;
   ConstraintsTy Constraints;
   Feature *Root;
 
 public:
-  FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
+  FeatureModel(string Name, fs::path RootPath, FeatureMapTy FeatureMap,
                ConstraintsTy Constraints, Feature *Root,
-               std::vector<std::string> DepthFirst = {})
+               FeatureListType Features)
       : Name(std::move(Name)), RootPath(std::move(RootPath)),
-        Features(std::move(Features)), Constraints(std::move(Constraints)),
-        Root(Root), DepthFirst(std::move(DepthFirst)) {}
+        FeatureMap(std::move(FeatureMap)), Constraints(std::move(Constraints)),
+        Root(Root), Features(std::move(Features)) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
@@ -60,77 +61,49 @@ public:
     return Root;
   }
 
-  [[nodiscard]] unsigned int size() { return Features.size(); }
+  [[nodiscard]] unsigned int size() { return FeatureMap.size(); }
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
 
-  struct FeatureModelIter : std::iterator<std::forward_iterator_tag, Feature &,
-                                          ptrdiff_t, Feature *, Feature &> {
-    FeatureMapTy::iterator It;
+  using ordered_feature_iterator = typename FeatureListType::iterator;
+  using const_ordered_feature_iterator =
+      typename FeatureListType::const_iterator;
 
-    explicit FeatureModelIter(FeatureMapTy::iterator It) : It(It) {}
-
-    Feature *operator*() const { return It->second.get(); }
-
-    FeatureModelIter &operator++() {
-      It++;
-      return *this;
-    }
-
-    bool operator==(const FeatureModelIter &Other) const {
-      return It == Other.It;
-    }
-
-    bool operator!=(const FeatureModelIter &Other) const {
-      return not operator==(Other);
-    }
-  };
-
-  FeatureModelIter begin() { return FeatureModelIter(Features.begin()); }
-
-  FeatureModelIter end() { return FeatureModelIter(Features.end()); }
-
-  LLVM_DUMP_METHOD
-  void dump() const {
-    for (const auto &F : this->DepthFirst) {
-      Features.find(F)->second->dump();
-      llvm::outs() << "\n";
-    }
-    for (auto C : this->Constraints) {
-      for (const auto &F : C) {
-        if (!F.second) {
-          llvm::outs() << "!";
-        }
-        llvm::outs() << F.first;
-        if (F != C.back()) {
-          llvm::outs() << " | ";
-        }
-      }
-      llvm::outs() << "\n";
-    }
+  ordered_feature_iterator begin() { return Features.begin(); }
+  [[nodiscard]] const_ordered_feature_iterator begin() const {
+    return Features.begin();
   }
 
+  ordered_feature_iterator end() { return Features.end(); }
+  [[nodiscard]] const_ordered_feature_iterator end() const {
+    return Features.end();
+  }
+
+  Feature *getFeature(llvm::StringRef Name) { return FeatureMap[Name].get(); }
+
+  LLVM_DUMP_METHOD
+  void dump() const;
+
   class Builder {
-  public:
     using EdgeMapType =
         typename llvm::StringMap<llvm::SmallVector<std::string, 3>>;
 
-  public:
     int Index;
     std::string VmName;
     fs::path RootPath;
     std::string Root;
     llvm::StringMap<Feature::Builder> FeatureBuilder;
-    FeatureMapTy Features;
+    FeatureMapTy FeatureMap;
+    FeatureListType Features;
     FeatureModel::ConstraintsTy Constraints;
     llvm::StringMap<std::string> Parents;
-    std::vector<std::string> DepthFirst;
     EdgeMapType Children;
     EdgeMapType Excludes;
     EdgeMapType RawImplications;
     EdgeMapType Alternatives;
 
-    Builder() = default;
+  public:
+    Builder() : Index(0) {}
 
     bool addFeature(std::string Name, bool Opt,
                     std::variant<std::pair<int, int>, std::vector<int>> Values,
@@ -162,103 +135,22 @@ public:
       RawImplications[A].push_back(B);
     }
 
+    void addConstraint(const ConstraintTy &C) { Constraints.push_back(C); }
+
     void setVmName(std::string N) { this->VmName = std::move(N); }
 
     void setRootPath(fs::path P) { this->RootPath = std::move(P); }
 
-    void setRoot(std::string R = "root") {
-      assert(Root.empty() && "Root already set.");
-      Root = R;
-      if (FeatureBuilder.find(Root) == FeatureBuilder.end()) {
-        FeatureBuilder.try_emplace(Root, Root, false);
-      }
-      for (const auto &F : FeatureBuilder.keys()) {
-        if (F != Root && Parents.find(F) == Parents.end()) {
-          Children[Root].push_back(F);
-          Parents[F] = Root;
-        }
-      }
-    }
+    void setRoot(std::string R = "root");
 
-    std::unique_ptr<FeatureModel> build() {
-      if (Root.empty()) {
-        setRoot();
-      }
-      Index = 0;
-      assert(!Root.empty() && "Root not set.");
-      buildTree(Root);
-      buildConstraints();
-      buildFeatures();
-      return std::make_unique<FeatureModel>(VmName, RootPath,
-                                            std::move(Features), Constraints,
-                                            Features[Root].get(), DepthFirst);
-    }
-
-    void addConstraint(const ConstraintTy &C) { Constraints.push_back(C); }
+    std::unique_ptr<FeatureModel> build();
 
   private:
-    void buildConstraints() {
-      for (const auto &F : FeatureBuilder.keys()) {
-        for (const auto &E : Excludes[F]) {
-          FeatureBuilder[F].addExclude(FeatureBuilder[E].get());
-        }
-      }
+    void buildConstraints();
 
-      for (const auto &C : Constraints) {
-        if (C.size() == 2) {
-          if (C[0].second != C[1].second) {
-            if (C[0].second) { // A || !B
-              FeatureBuilder[C[1].first].addImplication(
-                  FeatureBuilder[C[0].first].get());
-            } else { // !A || B
-              FeatureBuilder[C[0].first].addImplication(
-                  FeatureBuilder[C[1].first].get());
-            }
-          } else if (!(C[0].second || C[1].second)) { // !A || !B
-            FeatureBuilder[C[0].first].addExclude(
-                FeatureBuilder[C[1].first].get());
-            FeatureBuilder[C[1].first].addExclude(
-                FeatureBuilder[C[0].first].get());
-          } else if (C[0].second && C[1].second) { // A || B
-            FeatureBuilder[C[0].first].addAlternative(
-                FeatureBuilder[C[1].first].get());
-            FeatureBuilder[C[1].first].addAlternative(
-                FeatureBuilder[C[0].first].get());
-          }
-        } else if (C.size() > 2) {
-          bool B = true;
-          for (const auto &P : C) {
-            B &= P.second;
-          }
-          if (B) {
-            for (const auto &P : C) {
-              for (const auto &PP : C) {
-                if (P.first != PP.first) {
-                  FeatureBuilder[P.first].addAlternative(
-                      FeatureBuilder[PP.first].get());
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    bool buildTree(const std::string &F);
 
-    void buildTree(const std::string &F) {
-      FeatureBuilder[F].setIndex(Index++);
-      DepthFirst.push_back(F);
-      std::sort(Children[F].begin(), Children[F].end());
-      for (const auto &C : Children[F]) {
-        buildTree(C);
-        FeatureBuilder[F].addChild(FeatureBuilder[C].get());
-      }
-    }
-
-    void buildFeatures() {
-      for (const auto &F : FeatureBuilder.keys()) {
-        Features.try_emplace(F, FeatureBuilder[F].build());
-      }
-    }
+    void buildFeatures();
   };
 };
 } // namespace vara::feature
@@ -320,7 +212,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   /// Output tree structure of feature model and additional edges.
   void writeNodes() {
-    emitClusterRecursively(G->getRoot());
+    emitCluster(G->getRoot());
     (O << '\n').indent(2) << "// Excludes\n";
     emitExcludeEdges();
     (O << '\n').indent(2) << "// Implications\n";
@@ -406,7 +298,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   ///
   /// \param Node Root of subtree.
   /// \param Indent Value to indent statements in dot file.
-  void emitClusterRecursively(const NodeRef Node, const int Indent = 0) {
+  void emitCluster(const NodeRef Node, const int Indent = 0) {
     O.indent(Indent);
     emitNode(Node);
     if (Node->children_begin() != Node->children_end()) {
@@ -416,7 +308,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
       O.indent(Indent + 4) << "margin=0;\n";
       O.indent(Indent + 4) << "style=invis;\n";
       for (auto *Child : *Node) {
-        emitClusterRecursively(Child, Indent + 2);
+        emitCluster(Child, Indent + 2);
         O.indent(Indent + 2);
         emitEdge(Node, Child,
                  llvm::formatv("arrowhead={0}",
@@ -436,8 +328,9 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   void emitNode(const NodeRef Node) {
     std::string Label = llvm::formatv(
         "<<table align=\"center\" valign=\"middle\" border=\"0\" "
-        "cellborder=\"0\" cellpadding=\"5\"><tr><td>{0}: {1}{2}"
-        "</td></tr></table>>",
+        "cellborder=\"0\" "
+        "cellpadding=\"5\"><tr><td>{0}</td></tr><hr/><tr><td>{1}{2}</td></tr></"
+        "table>>",
         Node->getIndex(), DOT::EscapeString(Node->getName().str()),
         (Node->getLocation()
              ? "</td></tr><hr/><tr><td>" +

@@ -1,10 +1,12 @@
 #include "vara/Feature/Feature.h"
 
+#include <experimental/iterator>
+
 namespace vara::feature {
 
 std::string Feature::toString() const {
   std::stringstream StrS;
-  StrS << "name: \"" << Name << "\"\n  index: " << Index
+  StrS << "  name: \"" << Name << "\"\n  index: " << Index
        << ",\n  optional: " << (Opt ? "true" : "false") << ",\n  ";
   if (Loc) {
     StrS << "location: " << Loc->toString() << ",\n  ";
@@ -14,19 +16,19 @@ std::string Feature::toString() const {
   }
   StrS << "children: [";
   for (const auto &Child : Children) {
-    StrS << Child->Name << ", ";
+    StrS << Child->Name << ",";
   }
   StrS << "],\n  excludes: [";
   for (const auto &Exclude : Excludes) {
-    StrS << Exclude->Name << ", ";
+    StrS << Exclude->Name << ",";
   }
   StrS << "],\n  implies: [";
   for (const auto &Implication : Implications) {
-    StrS << Implication->Name << ", ";
+    StrS << Implication->Name << ",";
   }
   StrS << "],\n  alternatives: [";
   for (const auto &Alternative : Alternatives) {
-    StrS << Alternative->Name << ", ";
+    StrS << Alternative->Name << ",";
   }
   StrS << "]";
   return StrS.str();
@@ -41,10 +43,7 @@ std::string NumericFeature::toString() const {
   } else {
     StrS << ",\n  values: [";
     for (const auto &Val : std::get<std::vector<int>>(Values)) {
-      StrS << Val;
-      if (Val != std::get<std::vector<int>>(Values).back()) {
-        StrS << ", ";
-      }
+      StrS << Val << ",";
     }
     StrS << "]";
   }

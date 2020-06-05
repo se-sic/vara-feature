@@ -15,16 +15,16 @@ TEST(NumericFeature, NumericFeatureBasics) {
 TEST(NumericFeature, NumericFeaturePair) {
   NumericFeature A("A", false, std::pair<int, int>(0, 1));
 
-  EXPECT_TRUE((std::holds_alternative<std::pair<int, int>>(A.getVals())));
-  EXPECT_EQ((std::get<std::pair<int, int>>(A.getVals())).first, 0);
-  EXPECT_EQ((std::get<std::pair<int, int>>(A.getVals())).second, 1);
+  EXPECT_TRUE((std::holds_alternative<std::pair<int, int>>(A.getValues())));
+  EXPECT_EQ((std::get<std::pair<int, int>>(A.getValues())).first, 0);
+  EXPECT_EQ((std::get<std::pair<int, int>>(A.getValues())).second, 1);
 }
 
 TEST(NumericFeature, NumericFeatureVector) {
   NumericFeature A("A", false, std::vector<int>{0, 1, 2, 3});
 
-  EXPECT_TRUE(std::holds_alternative<std::vector<int>>(A.getVals()));
-  EXPECT_THAT(std::get<std::vector<int>>(A.getVals()),
+  EXPECT_TRUE(std::holds_alternative<std::vector<int>>(A.getValues()));
+  EXPECT_THAT(std::get<std::vector<int>>(A.getValues()),
               testing::ElementsAre(0, 1, 2, 3));
 }
 

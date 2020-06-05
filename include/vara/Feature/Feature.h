@@ -37,10 +37,10 @@ private:
   FeatureSetType Alternatives;
 
 protected:
-  Feature(int Index, string Name, bool Opt,
-          std::optional<FeatureSourceRange> Loc, Feature *Parent)
+  Feature(string Name, bool Opt, const std::optional<FeatureSourceRange> &Loc,
+          Feature *Parent)
       : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)), Parent(Parent),
-        Index(Index) {}
+        Index(0) {}
 
 public:
   Feature(const Feature &) = delete;
@@ -180,8 +180,6 @@ public:
             this->getName().lower() < F.getName().lower());
   }
 
-  bool operator>(const Feature &F) const { return F.operator<(*this); }
-
   class Builder;
 
 protected:
@@ -206,8 +204,8 @@ class BinaryFeature : public Feature {
 public:
   BinaryFeature(string Name, bool Opt,
                 std::optional<FeatureSourceRange> Loc = std::nullopt,
-                Feature *Parent = nullptr, int Index = 0)
-      : Feature(Index, std::move(Name), Opt, std::move(Loc), Parent) {}
+                Feature *Parent = nullptr)
+      : Feature(std::move(Name), Opt, std::move(Loc), Parent) {}
 
   [[nodiscard]] bool isBinary() const override { return true; }
 
@@ -228,11 +226,10 @@ private:
 public:
   NumericFeature(string Name, bool Opt, ValuesVariantType Values,
                  std::optional<FeatureSourceRange> Loc = std::nullopt,
-                 Feature *Parent = nullptr, int Index = 0)
-      : Feature(Index, std::move(Name), Opt, std::move(Loc), Parent),
-        Values(Values) {}
+                 Feature *Parent = nullptr)
+      : Feature(std::move(Name), Opt, std::move(Loc), Parent), Values(Values) {}
 
-  ValuesVariantType getVals() { return Values; }
+  ValuesVariantType getValues() { return Values; }
 
   [[nodiscard]] bool isBinary() const override { return false; }
 
