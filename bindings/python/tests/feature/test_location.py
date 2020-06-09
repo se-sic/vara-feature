@@ -59,6 +59,10 @@ class TestLocation(unittest.TestCase):
 
     def test_path(self):
         """ Checks if the path accessor is correctly mapped. """
+        path = "foo/bar/buzz"
+        loc = Location(path)
+
+        self.assertEqual(loc.path, path)
 
     def test_get_start(self):
         """ Checks if the start accessor is correctly mapped. """
