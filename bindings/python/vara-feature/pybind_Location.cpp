@@ -36,18 +36,20 @@ void init_feature_module_location(py::module &M) {
       .def_property_readonly(
           "path", [](vf::Location &Loc) { return Loc.getPath().string(); },
           R"pbdoc(Path to the source file)pbdoc")
-      .def("get_start", &vf::Location::getStart,
+      .def("get_start", &vf::Location::getStart, py::return_value_policy::reference,
            R"pbdoc(Get the start `LineColumnOffset` of this `Location`.)pbdoc")
-      .def("get_end", &vf::Location::getEnd,
+      .def("get_end", &vf::Location::getEnd, py::return_value_policy::reference,
            R"pbdoc(Get the end `LineColumnOffset` of this `Location`.)pbdoc")
       .def("__str__", &vf::Location::toString);
 
   py::class_<vf::Location::LineColumnOffset>(M, "LineColumnOffset")
       .def(py::init<int, int>())
-      .def_property_readonly("line_number",
-                             &vf::Location::LineColumnOffset::getLineNumber)
-      .def_property_readonly("column_offset",
-                             &vf::Location::LineColumnOffset::getColumnOffset)
+      .def_property("line_number",
+                             &vf::Location::LineColumnOffset::getLineNumber,
+                             &vf::Location::LineColumnOffset::setLineNumber)
+      .def_property("column_offset",
+                             &vf::Location::LineColumnOffset::getColumnOffset,
+                             &vf::Location::LineColumnOffset::setColumnOffset)
       .def("__str__", &vf::Location::LineColumnOffset::toString)
       .def("__eq__", [](const vf::Location::LineColumnOffset &Self,
                         const vf::Location::LineColumnOffset &Other) {

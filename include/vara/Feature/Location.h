@@ -29,6 +29,10 @@ public:
 
     [[nodiscard]] int getColumnOffset() const { return this->second; }
 
+    void setLineNumber(int Value) { this->first = Value; }
+
+    void setColumnOffset(int Value) { this->second = Value; }
+
     [[nodiscard]] std::string toString() const {
       return llvm::formatv("{0}:{1}", getLineNumber(), getColumnOffset());
     }
@@ -46,11 +50,13 @@ public:
 
   [[nodiscard]] fs::path getPath() const { return Path; }
 
-  [[nodiscard]] std::optional<LineColumnOffset> getStart() const {
-    return Start;
+  [[nodiscard]] LineColumnOffset* getStart() {
+    return Start.has_value() ? &Start.value() : nullptr;
   }
 
-  [[nodiscard]] std::optional<LineColumnOffset> getEnd() const { return End; }
+  [[nodiscard]] LineColumnOffset* getEnd() {
+    return End.has_value() ? &End.value() : nullptr;
+  }
 
   [[nodiscard]] std::string toString() const {
     std::stringstream StrS;

@@ -89,7 +89,7 @@ void init_feature_module_feature(py::module &M) {
           R"pbdoc(Checks if a Feature is an alternative of this Feature.)pbdoc")
 
       .def(
-          "get_location", &vf::Feature::getLocation,
+          "get_location", &vf::Feature::getLocation, py::return_value_policy::reference,
           R"pbdoc(Returns the code location of the feature variable if possible, otherwise, `None`.)pbdoc")
 
       //===----------------------------------------------------------------===//
@@ -102,6 +102,7 @@ void init_feature_module_feature(py::module &M) {
 void init_feature_module_binary_feature(py::module &M) {
   py::class_<vf::BinaryFeature, vf::Feature>(M, "BinaryFeature")
       .def(py::init<std::string, bool>())
+      .def(py::init<std::string, bool, vara::feature::Location>())
       .def(
           "to_string", &vf::BinaryFeature::toString,
           R"pbdoc(Returns the string representation of a BinaryFeature.)pbdoc");

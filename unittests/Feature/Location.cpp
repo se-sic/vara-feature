@@ -11,6 +11,15 @@ TEST(LineColumnOffset, basicAccessors) {
   EXPECT_EQ(TestLCO.getColumnOffset(), 4);
 }
 
+TEST(LineColumnOffset, basicSetter) {
+  auto TestLCO = Location::LineColumnOffset(3, 4);
+  TestLCO.setLineNumber(4);
+  TestLCO.setColumnOffset(5);
+
+  EXPECT_EQ(TestLCO.getLineNumber(), 4);
+  EXPECT_EQ(TestLCO.getColumnOffset(), 5);
+}
+
 TEST(LineColumnOffset, comparison) {
   auto SelfLCO = Location::LineColumnOffset(3, 4);
   auto OtherLCO = Location::LineColumnOffset(3, 4);

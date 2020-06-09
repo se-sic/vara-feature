@@ -118,6 +118,43 @@ class TestFeature(unittest.TestCase):
         self.assertTrue(test_feature_0 < test_feature_1)
         self.assertTrue(root_feature < test_feature_1)
 
+    def test_feature_location_accessors(self):
+        """ Checks if a feature's location is accessible."""
+        path = "test"
+        start_lco = feature.LineColumnOffset(3, 4)
+        end_lco = feature.LineColumnOffset(3, 20)
+        loc = feature.Location(path, start_lco, end_lco)
+        test_feature_0 = feature.BinaryFeature("Test", False, loc)
+
+        self.assertTrue(test_feature_0.get_location())
+        self.assertEqual(test_feature_0.get_location().path, path)
+        self.assertEqual(test_feature_0.get_location().get_start().line_number, 3)
+        self.assertEqual(test_feature_0.get_location().get_start().column_offset, 4)
+        self.assertEqual(test_feature_0.get_location().get_end().line_number, 3)
+        self.assertEqual(test_feature_0.get_location().get_end().column_offset, 20)
+
+    def test_feature_location_setters(self):
+        """ Checks if a feature's location is mutable."""
+        path = "test"
+        start_lco = feature.LineColumnOffset(3, 4)
+        end_lco = feature.LineColumnOffset(3, 20)
+        loc = feature.Location(path, start_lco, end_lco)
+        test_feature_0 = feature.BinaryFeature("Test", False, loc)
+
+        start = test_feature_0.get_location().get_start()
+        end = test_feature_0.get_location().get_end()
+        start.line_number = 4
+        end.line_number = 4
+        start.column_offset = 2
+        end.column_offset = 18
+
+        self.assertTrue(test_feature_0.get_location())
+        self.assertEqual(test_feature_0.get_location().path, path)
+        self.assertEqual(test_feature_0.get_location().get_start().line_number, 4)
+        self.assertEqual(test_feature_0.get_location().get_start().column_offset, 2)
+        self.assertEqual(test_feature_0.get_location().get_end().line_number, 4)
+        self.assertEqual(test_feature_0.get_location().get_end().column_offset, 18)
+
 
 class TestBinaryFeature(unittest.TestCase):
     """ Test BinaryFeature functionality.  """
