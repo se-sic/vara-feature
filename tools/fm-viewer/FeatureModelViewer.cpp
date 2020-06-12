@@ -94,7 +94,6 @@ int main(int Argc, char **Argv) {
                            : llvm::sys::findProgramByName(Viewer)) {
       llvm::errs() << "Trying '" << *P << "' program... \n";
       llvm::sys::ExecuteNoWait(*P, {*P, Filename}, llvm::None);
-      FM->dump();
     } else {
       llvm::DisplayGraph(Filename);
     }
