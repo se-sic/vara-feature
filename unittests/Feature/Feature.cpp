@@ -5,10 +5,10 @@
 
 namespace vara::feature {
 TEST(Feature, compareEqual) {
-  BinaryFeature A0("A", false);
-  BinaryFeature A1("A", false);
-  BinaryFeature A2("a", false);
-  BinaryFeature B("B", false);
+  BinaryFeature A0("A");
+  BinaryFeature A1("A");
+  BinaryFeature A2("a");
+  BinaryFeature B("B");
 
   EXPECT_TRUE(A0 == A1);
   EXPECT_TRUE(A0 == A2);
@@ -16,10 +16,10 @@ TEST(Feature, compareEqual) {
 }
 
 TEST(Feature, compareLess) {
-  BinaryFeature A("A", false);
-  BinaryFeature B("B", false);
-  BinaryFeature R("R", false);
-  BinaryFeature RLower("r", false);
+  BinaryFeature A("A");
+  BinaryFeature B("B");
+  BinaryFeature R("R");
+  BinaryFeature RLower("r");
 
   EXPECT_TRUE(A < B);
   EXPECT_FALSE(B < A);

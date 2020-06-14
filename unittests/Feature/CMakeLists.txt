@@ -4,4 +4,5 @@ add_vara_unittest(VaRAFeatureTests
   NumericFeature.cpp
   FeatureSourceRange.cpp
   FeatureModel.cpp
-)
+  FeatureSort.cpp
+  )

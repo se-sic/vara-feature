@@ -1,4 +1,5 @@
 #include "vara/Feature/Feature.h"
+#include <vara/Feature/FeatureModel.h>
 
 #include "gtest/gtest.h"
 
@@ -11,96 +12,70 @@ TEST(BinaryFeature, basicAccessors) {
   EXPECT_TRUE(A.isRoot());
 }
 
-// TEST(BinaryFeature, addParent) {
-//  BinaryFeature A("A", false);
-//  BinaryFeature B("B", false);
-//
-//  B.addParent(&A);
-//
-//  EXPECT_TRUE(A.isRoot());
-//  EXPECT_FALSE(B.isRoot());
-//  EXPECT_EQ("A", B.getParent()->getName());
-//}
-//
-// TEST(BinaryFeature, addChild) {
-//  BinaryFeature A("A", false);
-//  BinaryFeature B("B", false);
-//
-//  B.addChild(&A);
-//
-//  EXPECT_EQ(std::distance(B.children_begin(), B.children_end()), 1);
-//  EXPECT_EQ("A", (*B.children_begin())->getName());
-//  EXPECT_EQ(std::distance(B.children_begin(), B.children_end()), 1);
-//  EXPECT_EQ("A", (*B.children_begin())->getName());
-//}
-//
-// TEST(BinaryFeature, isChild) {
-//  BinaryFeature A("A", false);
-//  BinaryFeature B("B", false);
-//
-//  B.addChild(&A);
-//
-//  EXPECT_TRUE(B.isChild(&A));
-//  EXPECT_FALSE(A.isChild(&B));
-//}
-//
-// TEST(BinaryFeature, addExclude) {
-//  BinaryFeature A("A", false);
-//  BinaryFeature B("B", false);
-//
-//  B.addExclude(&A);
-//
-//  EXPECT_EQ(std::distance(B.excludes_begin(), B.excludes_end()), 1);
-//  EXPECT_EQ("A", (*B.excludes_begin())->getName());
-//}
-//
-// TEST(BinaryFeature, isExcluded) {
-//  BinaryFeature A("A", false);
-//  BinaryFeature B("B", false);
-//
-//  B.addExclude(&A);
-//
-//  EXPECT_TRUE(B.isExcluded(&A));
-//  EXPECT_FALSE(A.isExcluded(&B));
-//}
-//
-// TEST(BinaryFeature, addImplication) {
-//  BinaryFeature A("A", false);
-//  BinaryFeature B("B", false);
-//
-//  B.addImplication(&A);
-//
-//  EXPECT_EQ(std::distance(B.implications_begin(), B.implications_end()), 1);
-//  EXPECT_EQ("A", (*B.implications_begin())->getName());
-//}
-//
-// TEST(BinaryFeature, implicates) {
-//  BinaryFeature A("A", false);
-//  BinaryFeature B("B", false);
-//
-//  B.addImplication(&A);
-//
-//  EXPECT_TRUE(B.implies(&A));
-//  EXPECT_FALSE(A.implies(&B));
-//}
-//
-// TEST(BinaryFeature, addAlternative) {
-//  BinaryFeature A("A", false);
-//  BinaryFeature B("B", false);
-//
-//  B.addAlternative(&A);
-//
-//  EXPECT_EQ(std::distance(B.alternatives_begin(), B.alternatives_end()), 1);
-//  EXPECT_EQ("A", (*B.alternatives_begin())->getName());
-//}
-//
-// TEST(BinaryFeature, isAlternative) {
-//  BinaryFeature A("A", false);
-//  BinaryFeature B("B", false);
-//
-//  B.addAlternative(&A);
-//
-//  EXPECT_TRUE(B.isAlternative(&A));
-//  EXPECT_FALSE(A.isAlternative(&B));
-//}
+TEST(BinaryFeature, BinaryFeatureRoot) {
+  auto B = FeatureModel::FeatureModelBuilder();
+
+  B.addFeature("F");
+  B.setRoot("F");
+
+  auto FM = FeatureModel::FeatureModelBuilder().buildFeatureModel();
+
+  EXPECT_TRUE(FM->getFeature("F")->isRoot());
+  EXPECT_EQ(FM->getFeature("F"), FM->getRoot());
+}
+
+TEST(BinaryFeature, BinaryFeatureChildren) {
+  auto FM = FeatureModel::FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"F", "A"}, {"root", {"F"}}});
+
+  EXPECT_EQ(std::distance(FM->getFeature("F")->children_begin(),
+                          FM->getFeature("F")->children_end()),
+            1);
+  EXPECT_EQ("A", (*FM->getFeature("F")->children_begin())->getName());
+}
+
+TEST(BinaryFeature, BinaryFeatureExclude) {
+  auto B = FeatureModel::FeatureModelBuilder();
+
+  B.addFeature("F");
+  B.addFeature("G");
+  B.addExclude("F", "G");
+
+  auto FM = FeatureModel::FeatureModelBuilder().buildFeatureModel();
+
+  EXPECT_EQ(std::distance(FM->getFeature("F")->excludes_begin(),
+                          FM->getFeature("F")->excludes_end()),
+            1);
+  EXPECT_EQ("G", (*FM->getFeature("F")->excludes_begin())->getName());
+}
+
+TEST(BinaryFeature, BinaryFeatureImplications) {
+  auto B = FeatureModel::FeatureModelBuilder();
+
+  B.addFeature("F");
+  B.addFeature("G");
+  B.addImplication("F", "G");
+
+  auto FM = FeatureModel::FeatureModelBuilder().buildFeatureModel();
+
+  EXPECT_EQ(std::distance(FM->getFeature("F")->implications_begin(),
+                          FM->getFeature("F")->implications_end()),
+            1);
+  EXPECT_EQ("G", (*FM->getFeature("F")->implications_begin())->getName());
+}
+
+TEST(BinaryFeature, BinaryFeatureAlternatives) {
+  auto B = FeatureModel::FeatureModelBuilder();
+
+  B.addFeature("F");
+  B.addFeature("G");
+  B.addAlternative("F", "G");
+
+  auto FM = FeatureModel::FeatureModelBuilder().buildFeatureModel();
+
+  EXPECT_EQ(std::distance(FM->getFeature("F")->alternatives_begin(),
+                          FM->getFeature("F")->alternatives_end()),
+            1);
+  EXPECT_EQ("G", (*FM->getFeature("F")->alternatives_begin())->getName());
+}
 } // namespace vara::feature

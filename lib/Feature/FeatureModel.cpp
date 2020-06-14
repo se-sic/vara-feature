@@ -65,22 +65,29 @@ void FeatureModel::FeatureModelBuilder::buildConstraints() {
 bool FeatureModel::FeatureModelBuilder::buildTree(
     const string &F, std::set<std::string> &Visited) {
   if (find(Visited.begin(), Visited.end(), F) != Visited.end()) {
-    llvm::errs() << "error: Cyclic feature model in \'" << F << "\'.\n";
+    llvm::errs() << "error: Cycle or duplicate edge in \'" << F << "\'.\n";
     return false;
   }
-
   Visited.insert(F);
+
+  if (find(Features.keys().begin(), Features.keys().end(), F) ==
+      Features.keys().end()) {
+    llvm::errs() << "error: Missing feature \'\'" << F << "\'.\n";
+    return false;
+  }
 
   for (const auto &C : Children[F]) {
     if (!buildTree(C, Visited)) {
       return false;
     }
     Features[F]->addChild(Features[C].get());
+    Features[C]->setParent(Features[F].get());
   }
   return true;
 }
 
-void FeatureModel::FeatureModelBuilder::setRoot(const std::string &R) {
+FeatureModel::FeatureModelBuilder *
+FeatureModel::FeatureModelBuilder::setRoot(const std::string &R) {
   assert(this->Root == nullptr && "Root already set.");
 
   if (Features.find(R) == Features.end()) {
@@ -94,9 +101,11 @@ void FeatureModel::FeatureModelBuilder::setRoot(const std::string &R) {
       Parents[F] = R;
     }
   }
+  return this;
 }
 
-std::unique_ptr<FeatureModel> FeatureModel::FeatureModelBuilder::build() {
+std::unique_ptr<FeatureModel>
+FeatureModel::FeatureModelBuilder::buildFeatureModel() {
   if (!Root) {
     setRoot();
   }
@@ -108,5 +117,25 @@ std::unique_ptr<FeatureModel> FeatureModel::FeatureModelBuilder::build() {
   buildConstraints();
   return std::make_unique<FeatureModel>(VmName, Path, std::move(Features),
                                         Constraints, Root);
+}
+
+std::unique_ptr<FeatureModel>
+FeatureModel::FeatureModelBuilder::buildSimpleFeatureModel(
+    const std::vector<std::pair<std::string, std::string>> &B,
+    const std::vector<std::pair<
+        std::string, std::pair<std::string, NumericFeature::ValuesVariantType>>>
+        &N) {
+  init();
+  for (const auto &P : B) {
+    addFeature(P.first);
+    addFeature(P.second);
+    addChild(P.first, P.second);
+  }
+  for (const auto &P : N) {
+    addFeature(P.first);
+    addFeature(P.second.first, P.second.second);
+    addChild(P.first, P.second.first);
+  }
+  return std::move(buildFeatureModel());
 }
 } // namespace vara::feature

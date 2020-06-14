@@ -169,53 +169,34 @@ public:
   }
   [[nodiscard]] const_feature_iterator end() const { return children_end(); }
 
-  Feature *getParent() { return Parent; }
+  [[nodiscard]] Feature *getParent() const { return Parent; }
 
   [[nodiscard]] std::optional<FeatureSourceRange> getLocation() const {
     return Loc;
   }
 
+  bool operator==(const vara::feature::Feature &F) const {
+    return getName().lower() == F.getName().lower();
+  }
+
+  struct FeatureDepthFirstComparator {
+    bool operator()(vara::feature::Feature *, vara::feature::Feature *) const;
+  };
+
+  bool operator<(vara::feature::Feature &F) {
+    return FeatureDepthFirstComparator().operator()(this, &F);
+  }
+
   //===--------------------------------------------------------------------===//
   // Utility
   [[nodiscard]] virtual std::string toString() const;
-
-  bool operator==(const Feature &F) const {
-    return this->getName().lower() == F.getName().lower();
-  }
-
-  bool operator<(const Feature &F) {
-
-    std::stack<Feature *> TraceL;
-    std::stack<Feature *> TraceR;
-
-    if (this->Parent == F.Parent) {
-      return this->Name < F.Name;
-    }
-
-    for (Feature *Head = this->Parent; Head; Head = Head->getParent()) {
-      TraceL.push(Head);
-    }
-    for (Feature *Head = F.Parent; Head; Head = Head->getParent()) {
-      TraceR.push(Head);
-    }
-
-    while (!TraceL.empty() && !TraceL.empty()) {
-      llvm::outs() << TraceL.top()->getName() << '-' << TraceL.top()->getName()
-                   << '\n';
-      TraceL.pop();
-      TraceR.pop();
-    }
-    return this->Name < F.Name;
-  }
 };
-
-class FeatureComparator {};
 
 /// Options without arguments.
 class BinaryFeature : public Feature {
 
 public:
-  BinaryFeature(string Name, bool Opt,
+  BinaryFeature(string Name, bool Opt = false,
                 std::optional<FeatureSourceRange> Loc = std::nullopt,
                 Feature *Parent = nullptr)
       : Feature(std::move(Name), Opt, std::move(Loc), Parent) {}
@@ -237,12 +218,13 @@ private:
   ValuesVariantType Values;
 
 public:
-  NumericFeature(string Name, bool Opt, ValuesVariantType Values,
+  NumericFeature(string Name, ValuesVariantType Values, bool Opt = false,
                  std::optional<FeatureSourceRange> Loc = std::nullopt,
                  Feature *Parent = nullptr)
-      : Feature(std::move(Name), Opt, std::move(Loc), Parent), Values(Values) {}
+      : Feature(std::move(Name), Opt, std::move(Loc), Parent),
+        Values(std::move(Values)) {}
 
-  ValuesVariantType getValues() { return Values; }
+  [[nodiscard]] ValuesVariantType getValues() const { return Values; }
 
   [[nodiscard]] bool isBinary() const override { return false; }
 

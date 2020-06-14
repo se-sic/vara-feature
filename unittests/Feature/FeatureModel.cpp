@@ -4,10 +4,15 @@
 
 namespace vara::feature {
 
-// TEST(FeatureModel, build) {
-//
-//  FeatureModel::Builder B;
-//  B.build();
-//}
+TEST(FeatureModel, build) {
+  FeatureModel::FeatureModelBuilder B;
+  B.addChild("root", "a")->addFeature("a", true);
+  EXPECT_TRUE(B.buildFeatureModel());
+}
 
+TEST(FeatureModel, size) {
+  FeatureModel::FeatureModelBuilder B;
+  B.addChild("root", "a")->addFeature("a", true);
+  EXPECT_EQ(2, B.buildFeatureModel()->size());
+}
 } // namespace vara::feature

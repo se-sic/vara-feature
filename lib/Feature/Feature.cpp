@@ -52,4 +52,34 @@ std::string NumericFeature::toString() const {
 
 std::string BinaryFeature::toString() const { return Feature::toString(); }
 
+bool Feature::FeatureDepthFirstComparator::operator()(
+    vara::feature::Feature *A, vara::feature::Feature *B) const {
+  std::stack<vara::feature::Feature *> TraceA;
+  std::stack<vara::feature::Feature *> TraceB;
+  if (A == B || A->isRoot()) {
+    return true;
+  }
+  if (B->isRoot()) {
+    return false;
+  }
+  for (vara::feature::Feature *Head = A; Head; Head = Head->getParent()) {
+    TraceA.push(Head);
+  }
+  for (vara::feature::Feature *Head = B; Head; Head = Head->getParent()) {
+    TraceB.push(Head);
+  }
+  assert(!TraceA.empty() && !TraceB.empty());
+  while (!TraceA.empty() && !TraceB.empty() && TraceA.top() == TraceB.top()) {
+    TraceA.pop();
+    TraceB.pop();
+  }
+  assert(!TraceA.empty() || !TraceB.empty());
+  if (TraceA.empty()) { // B in subtree of A
+    return true;
+  }
+  if (TraceB.empty()) { // A in subtree of B
+    return false;
+  }
+  return TraceA.top()->getName().lower() < TraceB.top()->getName().lower();
+}
 } // namespace vara::feature

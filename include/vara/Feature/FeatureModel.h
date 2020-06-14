@@ -59,36 +59,10 @@ public:
     return Root;
   }
 
-  class FeatureModelView {
-  public:
-    using iterator = typename std::vector<Feature *>::iterator;
-    using const_iterator = typename std::vector<Feature *>::const_iterator;
-
-  private:
-    std::vector<Feature *> Features;
-
-  public:
-    FeatureModelView(std::vector<Feature *> Values)
-        : Features(std::move(Values)) {}
-
-    iterator begin() { return Features.begin(); }
-    [[nodiscard]] const_iterator begin() const { return Features.begin(); }
-
-    iterator end() { return Features.end(); }
-    [[nodiscard]] const_iterator end() const { return Features.end(); }
-  };
-
-  [[nodiscard]] std::vector<Feature *> heapify() const {
-    std::vector<Feature *> Values;
-    for (const auto &F : Features) {
-      Values.push_back(F.getValue().get());
-    }
-    std::make_heap(Values.begin(), Values.end());
-    return Values;
-  }
-
-  struct FeatureModelIter : std::iterator<std::forward_iterator_tag, Feature &,
-                                          ptrdiff_t, Feature *, Feature &> {
+private:
+  struct FeatureModelIter
+      : std::iterator<std::random_access_iterator_tag, Feature &, ptrdiff_t,
+                      Feature *, Feature &> {
     FeatureMapTy::const_iterator It;
 
     explicit FeatureModelIter(FeatureMapTy::const_iterator It) : It(It) {}
@@ -99,6 +73,7 @@ public:
       It++;
       return *this;
     }
+
     bool operator==(const FeatureModelIter &Other) const {
       return It == Other.It;
     }
@@ -108,15 +83,19 @@ public:
     }
   };
 
-  FeatureModelIter begin() { return FeatureModelIter(Features.begin()); }
+public:
+  using feature_model_iterator = FeatureModelIter;
+  using const_feature_model_iterator = FeatureModelIter;
 
-  [[nodiscard]] FeatureModelIter begin() const {
+  feature_model_iterator begin() { return FeatureModelIter(Features.begin()); }
+
+  [[nodiscard]] const_feature_model_iterator begin() const {
     return FeatureModelIter(Features.begin());
   }
 
   FeatureModelIter end() { return FeatureModelIter(Features.end()); }
 
-  [[nodiscard]] FeatureModelIter end() const {
+  [[nodiscard]] const_feature_model_iterator end() const {
     return FeatureModelIter(Features.end());
   }
 
@@ -160,50 +139,73 @@ public:
       Alternatives.clear();
     }
 
-    bool addFeature(std::string Name, bool Opt,
-                    std::variant<std::pair<int, int>, std::vector<int>> Values,
+    bool addFeature(const std::string &Key,
+                    const NumericFeature::ValuesVariantType &Values,
+                    bool Opt = false,
                     std::optional<FeatureSourceRange> Loc = std::nullopt) {
       return Features
-          .try_emplace(Name, std::make_unique<NumericFeature>(Name, Opt, Values,
-                                                              std::move(Loc)))
+          .try_emplace(Key, std::make_unique<NumericFeature>(Key, Values, Opt,
+                                                             std::move(Loc)))
           .second;
     }
 
-    bool addFeature(std::string Name, bool Opt,
+    bool addFeature(const std::string &Key, bool Opt = false,
                     std::optional<FeatureSourceRange> Loc = std::nullopt) {
       return Features
           .try_emplace(
-              Name, std::make_unique<BinaryFeature>(Name, Opt, std::move(Loc)))
+              Key, std::make_unique<BinaryFeature>(Key, Opt, std::move(Loc)))
           .second;
     }
 
-    void addChild(const std::string &P, const std::string &C) {
+    FeatureModelBuilder *addChild(const std::string &P, const std::string &C) {
       Children[P].push_back(C);
       Parents[C] = P;
+      return this;
     }
 
-    void addAlternative(const std::string &A, const std::string &B) {
+    FeatureModelBuilder *addAlternative(const std::string &A,
+                                        const std::string &B) {
       Alternatives[A].push_back(B);
       Alternatives[B].push_back(A);
+      return this;
     }
 
-    void addExclude(const std::string &F, const std::string &E) {
+    FeatureModelBuilder *addExclude(const std::string &F,
+                                    const std::string &E) {
       Excludes[F].push_back(E);
+      return this;
     }
 
-    void addImplication(const std::string &A, const std::string &B) {
+    FeatureModelBuilder *addImplication(const std::string &A,
+                                        const std::string &B) {
       Implications[A].push_back(B);
+      return this;
     }
 
-    void addConstraint(const ConstraintTy &C) { Constraints.push_back(C); }
+    FeatureModelBuilder *addConstraint(const ConstraintTy &C) {
+      Constraints.push_back(C);
+      return this;
+    }
 
-    void setVmName(std::string N) { this->VmName = std::move(N); }
+    FeatureModelBuilder *setVmName(std::string N) {
+      this->VmName = std::move(N);
+      return this;
+    }
 
-    void setPath(fs::path P) { this->Path = std::move(P); }
+    FeatureModelBuilder *setPath(fs::path P) {
+      this->Path = std::move(P);
+      return this;
+    }
 
-    void setRoot(const std::string &R = "root");
+    FeatureModelBuilder *setRoot(const std::string &R = "root");
 
-    std::unique_ptr<FeatureModel> build();
+    std::unique_ptr<FeatureModel> buildFeatureModel();
+
+    std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
+        const std::vector<std::pair<std::string, std::string>> &,
+        const std::vector<std::pair<
+            std::string,
+            std::pair<std::string, NumericFeature::ValuesVariantType>>> & = {});
 
   private:
     void buildConstraints();

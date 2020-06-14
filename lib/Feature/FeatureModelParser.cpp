@@ -73,10 +73,10 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
   }
   if (Num) {
     if (Values.empty()) {
-      return FMB.addFeature(Name, Opt, std::make_pair(MinValue, MaxValue),
+      return FMB.addFeature(Name, std::make_pair(MinValue, MaxValue), Opt,
                             std::move(Loc));
     }
-    return FMB.addFeature(Name, Opt, Values, std::move(Loc));
+    return FMB.addFeature(Name, Values, Opt, std::move(Loc));
   }
   return FMB.addFeature(Name, Opt, std::move(Loc));
 }
@@ -181,7 +181,8 @@ std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
     return nullptr;
   }
   FMB.init();
-  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.build() : nullptr;
+  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
+                                                  : nullptr;
 }
 
 std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
