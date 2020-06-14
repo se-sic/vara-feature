@@ -25,7 +25,7 @@ class Feature {
   friend class FeatureModel;
 
 public:
-  using FeatureSetType = typename std::set<Feature *>;
+  using FeatureSetType = typename llvm::DenseSet<Feature *>;
   using feature_iterator = typename FeatureSetType::iterator;
   using const_feature_iterator = typename FeatureSetType::const_iterator;
 

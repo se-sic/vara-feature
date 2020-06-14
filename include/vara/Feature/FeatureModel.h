@@ -10,20 +10,6 @@
 #include <queue>
 #include <utility>
 
-// template <> struct llvm::DenseMapInfo<std::string> {
-//  static inline string getEmptyKey() { return ""; }
-//
-//  static inline string getTombstoneKey() { return ""; }
-//
-//  static unsigned getHashValue(const std::string &PtrVal) {
-//    return std::hash<std::string>{}(PtrVal);
-//  }
-//
-//  static bool isEqual(const string &LHS, const string &RHS) {
-//    return LHS == RHS;
-//  }
-//};
-
 namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
