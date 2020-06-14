@@ -7,21 +7,22 @@
 #include "llvm/Support/GraphWriter.h"
 
 #include <algorithm>
+#include <queue>
 #include <utility>
 
-template <> struct llvm::DenseMapInfo<std::string> {
-  static inline string getEmptyKey() { return ""; }
-
-  static inline string getTombstoneKey() { return ""; }
-
-  static unsigned getHashValue(const std::string &PtrVal) {
-    return std::hash<std::string>{}(PtrVal);
-  }
-
-  static bool isEqual(const string &LHS, const string &RHS) {
-    return LHS == RHS;
-  }
-};
+// template <> struct llvm::DenseMapInfo<std::string> {
+//  static inline string getEmptyKey() { return ""; }
+//
+//  static inline string getTombstoneKey() { return ""; }
+//
+//  static unsigned getHashValue(const std::string &PtrVal) {
+//    return std::hash<std::string>{}(PtrVal);
+//  }
+//
+//  static bool isEqual(const string &LHS, const string &RHS) {
+//    return LHS == RHS;
+//  }
+//};
 
 namespace vara::feature {
 
@@ -32,25 +33,22 @@ namespace vara::feature {
 class FeatureModel {
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
-  using FeatureListType = std::vector<Feature *>;
   using ConstraintTy = llvm::SmallVector<std::pair<std::string, bool>, 3>;
   using ConstraintsTy = std::vector<ConstraintTy>;
 
 private:
   string Name;
   fs::path RootPath;
-  FeatureMapTy FeatureMap;
-  FeatureListType Features;
+  FeatureMapTy Features;
   ConstraintsTy Constraints;
   Feature *Root;
 
 public:
-  FeatureModel(string Name, fs::path RootPath, FeatureMapTy FeatureMap,
-               ConstraintsTy Constraints, Feature *Root,
-               FeatureListType Features)
+  FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
+               ConstraintsTy Constraints, Feature *Root)
       : Name(std::move(Name)), RootPath(std::move(RootPath)),
-        FeatureMap(std::move(FeatureMap)), Constraints(std::move(Constraints)),
-        Root(Root), Features(std::move(Features)) {}
+        Constraints(std::move(Constraints)), Root(Root),
+        Features(std::move(Features)) {}
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
@@ -61,60 +59,122 @@ public:
     return Root;
   }
 
-  [[nodiscard]] unsigned int size() { return FeatureMap.size(); }
+  class FeatureModelView {
+  public:
+    using iterator = typename std::vector<Feature *>::iterator;
+    using const_iterator = typename std::vector<Feature *>::const_iterator;
+
+  private:
+    std::vector<Feature *> Features;
+
+  public:
+    FeatureModelView(std::vector<Feature *> Values)
+        : Features(std::move(Values)) {}
+
+    iterator begin() { return Features.begin(); }
+    [[nodiscard]] const_iterator begin() const { return Features.begin(); }
+
+    iterator end() { return Features.end(); }
+    [[nodiscard]] const_iterator end() const { return Features.end(); }
+  };
+
+  [[nodiscard]] std::vector<Feature *> heapify() const {
+    std::vector<Feature *> Values;
+    for (const auto &F : Features) {
+      Values.push_back(F.getValue().get());
+    }
+    std::make_heap(Values.begin(), Values.end());
+    return Values;
+  }
+
+  struct FeatureModelIter : std::iterator<std::forward_iterator_tag, Feature &,
+                                          ptrdiff_t, Feature *, Feature &> {
+    FeatureMapTy::const_iterator It;
+
+    explicit FeatureModelIter(FeatureMapTy::const_iterator It) : It(It) {}
+
+    Feature *operator*() const { return It->second.get(); }
+
+    FeatureModelIter &operator++() {
+      It++;
+      return *this;
+    }
+    bool operator==(const FeatureModelIter &Other) const {
+      return It == Other.It;
+    }
+
+    bool operator!=(const FeatureModelIter &Other) const {
+      return not operator==(Other);
+    }
+  };
+
+  FeatureModelIter begin() { return FeatureModelIter(Features.begin()); }
+
+  [[nodiscard]] FeatureModelIter begin() const {
+    return FeatureModelIter(Features.begin());
+  }
+
+  FeatureModelIter end() { return FeatureModelIter(Features.end()); }
+
+  [[nodiscard]] FeatureModelIter end() const {
+    return FeatureModelIter(Features.end());
+  }
+
+  [[nodiscard]] unsigned int size() { return Features.size(); }
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
 
-  using ordered_feature_iterator = typename FeatureListType::iterator;
-  using const_ordered_feature_iterator =
-      typename FeatureListType::const_iterator;
-
-  ordered_feature_iterator begin() { return Features.begin(); }
-  [[nodiscard]] const_ordered_feature_iterator begin() const {
-    return Features.begin();
-  }
-
-  ordered_feature_iterator end() { return Features.end(); }
-  [[nodiscard]] const_ordered_feature_iterator end() const {
-    return Features.end();
-  }
-
-  Feature *getFeature(llvm::StringRef Name) { return FeatureMap[Name].get(); }
+  Feature *getFeature(llvm::StringRef Name) { return Features[Name].get(); }
 
   LLVM_DUMP_METHOD
   void dump() const;
 
-  class Builder {
+  class FeatureModelBuilder {
     using EdgeMapType =
         typename llvm::StringMap<llvm::SmallVector<std::string, 3>>;
 
-    int Index;
     std::string VmName;
-    fs::path RootPath;
-    std::string Root;
-    llvm::StringMap<Feature::Builder> FeatureBuilder;
-    FeatureMapTy FeatureMap;
-    FeatureListType Features;
+    fs::path Path;
+    Feature *Root{nullptr};
+    FeatureMapTy Features;
     FeatureModel::ConstraintsTy Constraints;
     llvm::StringMap<std::string> Parents;
     EdgeMapType Children;
     EdgeMapType Excludes;
-    EdgeMapType RawImplications;
+    EdgeMapType Implications;
     EdgeMapType Alternatives;
 
   public:
-    Builder() : Index(0) {}
+    FeatureModelBuilder() = default;
+
+    void init() {
+      VmName = "";
+      Path = "";
+      Root = nullptr;
+      Features.clear();
+      Constraints.clear();
+      Parents.clear();
+      Children.clear();
+      Excludes.clear();
+      Implications.clear();
+      Alternatives.clear();
+    }
 
     bool addFeature(std::string Name, bool Opt,
                     std::variant<std::pair<int, int>, std::vector<int>> Values,
                     std::optional<FeatureSourceRange> Loc = std::nullopt) {
-      return FeatureBuilder.try_emplace(Name, Name, Opt, Values, std::move(Loc))
+      return Features
+          .try_emplace(Name, std::make_unique<NumericFeature>(Name, Opt, Values,
+                                                              std::move(Loc)))
           .second;
     }
 
     bool addFeature(std::string Name, bool Opt,
                     std::optional<FeatureSourceRange> Loc = std::nullopt) {
-      return FeatureBuilder.try_emplace(Name, Name, Opt, std::move(Loc)).second;
+      return Features
+          .try_emplace(
+              Name, std::make_unique<BinaryFeature>(Name, Opt, std::move(Loc)))
+          .second;
     }
 
     void addChild(const std::string &P, const std::string &C) {
@@ -132,25 +192,23 @@ public:
     }
 
     void addImplication(const std::string &A, const std::string &B) {
-      RawImplications[A].push_back(B);
+      Implications[A].push_back(B);
     }
 
     void addConstraint(const ConstraintTy &C) { Constraints.push_back(C); }
 
     void setVmName(std::string N) { this->VmName = std::move(N); }
 
-    void setRootPath(fs::path P) { this->RootPath = std::move(P); }
+    void setPath(fs::path P) { this->Path = std::move(P); }
 
-    void setRoot(std::string R = "root");
+    void setRoot(const std::string &R = "root");
 
     std::unique_ptr<FeatureModel> build();
 
   private:
     void buildConstraints();
 
-    bool buildTree(const std::string &F);
-
-    void buildFeatures();
+    bool buildTree(const std::string &, std::set<std::string> &);
   };
 };
 } // namespace vara::feature
@@ -244,7 +302,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   void emitExcludeEdges() {
     FeatureEdgeSetTy Skip;
     for (auto *Node : *G) {
-      for (auto &Exclude : Node->excludes()) {
+      for (const auto &Exclude : Node->excludes()) {
         if (visited(std::make_pair(Node, Exclude), Skip)) {
           continue;
         }
@@ -263,7 +321,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   void emitAlternativeEdges() {
     FeatureEdgeSetTy Skip;
     for (auto *Node : *G) {
-      for (auto &Alternative : Node->alternatives()) {
+      for (const auto &Alternative : Node->alternatives()) {
         if (visited(std::make_pair(Node, Alternative), Skip)) {
           continue;
         }
@@ -277,7 +335,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   void emitImplicationEdges() {
     FeatureEdgeSetTy Skip;
     for (auto *Node : *G) {
-      for (auto &Implication : Node->implications()) {
+      for (const auto &Implication : Node->implications()) {
         if (visited(std::make_pair(Node, Implication), Skip)) {
           continue;
         }
@@ -329,9 +387,9 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     std::string Label = llvm::formatv(
         "<<table align=\"center\" valign=\"middle\" border=\"0\" "
         "cellborder=\"0\" "
-        "cellpadding=\"5\"><tr><td>{0}</td></tr><hr/><tr><td>{1}{2}</td></tr></"
+        "cellpadding=\"5\"><tr><td>{0}{1}</td></tr></"
         "table>>",
-        Node->getIndex(), DOT::EscapeString(Node->getName().str()),
+        DOT::EscapeString(Node->getName().str()),
         (Node->getLocation()
              ? "</td></tr><hr/><tr><td>" +
                    DOT::EscapeString(Node->getLocation()->toString())

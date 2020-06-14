@@ -4,7 +4,7 @@ namespace vara::feature {
 void FeatureModel::dump() const {
   for (const auto &F : Features) {
     llvm::outs() << "{\n";
-    F->dump();
+    F.second->dump();
     llvm::outs() << "}\n";
   }
   llvm::outs() << '\n';
@@ -22,10 +22,10 @@ void FeatureModel::dump() const {
   }
 }
 
-void FeatureModel::Builder::buildConstraints() {
-  for (const auto &F : FeatureBuilder.keys()) {
+void FeatureModel::FeatureModelBuilder::buildConstraints() {
+  for (const auto &F : Features.keys()) {
     for (const auto &E : Excludes[F]) {
-      FeatureBuilder[F].addExclude(FeatureBuilder[E].get());
+      Features[F]->addExclude(Features[E].get());
     }
   }
 
@@ -33,20 +33,16 @@ void FeatureModel::Builder::buildConstraints() {
     if (C.size() == 2) {
       if (C[0].second != C[1].second) {
         if (C[0].second) { // A || !B
-          FeatureBuilder[C[1].first].addImplication(
-              FeatureBuilder[C[0].first].get());
+          Features[C[1].first]->addImplication(Features[C[0].first].get());
         } else { // !A || B
-          FeatureBuilder[C[0].first].addImplication(
-              FeatureBuilder[C[1].first].get());
+          Features[C[0].first]->addImplication(Features[C[1].first].get());
         }
       } else if (!(C[0].second || C[1].second)) { // !A || !B
-        FeatureBuilder[C[0].first].addExclude(FeatureBuilder[C[1].first].get());
-        FeatureBuilder[C[1].first].addExclude(FeatureBuilder[C[0].first].get());
+        Features[C[0].first]->addExclude(Features[C[1].first].get());
+        Features[C[1].first]->addExclude(Features[C[0].first].get());
       } else if (C[0].second && C[1].second) { // A || B
-        FeatureBuilder[C[0].first].addAlternative(
-            FeatureBuilder[C[1].first].get());
-        FeatureBuilder[C[1].first].addAlternative(
-            FeatureBuilder[C[0].first].get());
+        Features[C[0].first]->addAlternative(Features[C[1].first].get());
+        Features[C[1].first]->addAlternative(Features[C[0].first].get());
       }
     } else if (C.size() > 2) {
       bool B = true;
@@ -57,8 +53,7 @@ void FeatureModel::Builder::buildConstraints() {
         for (const auto &P : C) {
           for (const auto &PP : C) {
             if (P.first != PP.first) {
-              FeatureBuilder[P.first].addAlternative(
-                  FeatureBuilder[PP.first].get());
+              Features[P.first]->addAlternative(Features[PP.first].get());
             }
           }
         }
@@ -67,56 +62,51 @@ void FeatureModel::Builder::buildConstraints() {
   }
 }
 
-bool FeatureModel::Builder::buildTree(const string &F) {
-  if (FeatureBuilder[F].get()->getIndex() > 0) {
+bool FeatureModel::FeatureModelBuilder::buildTree(
+    const string &F, std::set<std::string> &Visited) {
+  if (find(Visited.begin(), Visited.end(), F) != Visited.end()) {
     llvm::errs() << "error: Cyclic feature model in \'" << F << "\'.\n";
     return false;
   }
-  FeatureBuilder[F].setIndex(Index++);
-  Features.push_back(FeatureBuilder[F].get());
-  std::sort(Children[F].begin(), Children[F].end());
+
+  Visited.insert(F);
+
   for (const auto &C : Children[F]) {
-    if (!buildTree(C)) {
+    if (!buildTree(C, Visited)) {
       return false;
     }
-    FeatureBuilder[F].addChild(FeatureBuilder[C].get());
+    Features[F]->addChild(Features[C].get());
   }
   return true;
 }
 
-void FeatureModel::Builder::buildFeatures() {
-  for (const auto &F : FeatureBuilder.keys()) {
-    FeatureMap.try_emplace(F, FeatureBuilder[F].build());
-  }
-}
+void FeatureModel::FeatureModelBuilder::setRoot(const std::string &R) {
+  assert(this->Root == nullptr && "Root already set.");
 
-void FeatureModel::Builder::setRoot(std::string R) {
-  assert(Root.empty() && "Root already set.");
-  Root = R;
-  if (FeatureBuilder.find(Root) == FeatureBuilder.end()) {
-    FeatureBuilder.try_emplace(Root, Root, false);
+  if (Features.find(R) == Features.end()) {
+    addFeature(R, false);
   }
-  for (const auto &F : FeatureBuilder.keys()) {
-    if (F != Root && Parents.find(F) == Parents.end()) {
-      Children[Root].push_back(F);
-      Parents[F] = Root;
+  this->Root = Features[R].get();
+
+  for (const auto &F : Features.keys()) {
+    if (F != R && Parents.find(F) == Parents.end()) {
+      Children[R].push_back(F);
+      Parents[F] = R;
     }
   }
 }
 
-std::unique_ptr<FeatureModel> FeatureModel::Builder::build() {
-  if (Root.empty()) {
+std::unique_ptr<FeatureModel> FeatureModel::FeatureModelBuilder::build() {
+  if (!Root) {
     setRoot();
   }
-  Index = 1;
-  assert(!Root.empty() && "Root not set.");
-  if (!buildTree(Root)) {
+  assert(Root && "Root not set.");
+  std::set<std::string> Visited;
+  if (!buildTree(Root->getName(), Visited)) {
     return nullptr;
   }
   buildConstraints();
-  buildFeatures();
-  return std::make_unique<FeatureModel>(VmName, RootPath, std::move(FeatureMap),
-                                        Constraints, FeatureMap[Root].get(),
-                                        Features);
+  return std::make_unique<FeatureModel>(VmName, Path, std::move(Features),
+                                        Constraints, Root);
 }
 } // namespace vara::feature

@@ -99,14 +99,15 @@ class FeatureModelXmlParser : public FeatureModelParser {
 
 private:
   std::string Xml;
+  FeatureModel::FeatureModelBuilder FMB;
 
-  void parseConfigurationOption(FeatureModel::Builder &FMB, xmlNode *N,
-                                bool Num);
-  void parseOptions(FeatureModel::Builder &FMB, xmlNode *N, bool Num);
-  void parseConstraints(FeatureModel::Builder &FMB, xmlNode *N);
-  void parseVm(FeatureModel::Builder &FMB, xmlNode *N);
+  bool parseConfigurationOption(xmlNode *N, bool Num);
+  bool parseOptions(xmlNode *N, bool Num);
+  bool parseConstraints(xmlNode *N);
+  bool parseVm(xmlNode *N);
 
-  static FeatureSourceRange::Location createLineColumnOffset(xmlNode *N);
+  static FeatureSourceRange::FeatureSourceLocation
+  createFeatureSourceLocation(xmlNode *N);
 
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();

@@ -20,9 +20,10 @@ namespace vara::feature {
 
 class FeatureSourceRange {
 public:
-  class Location : private std::pair<int, int> {
+  class FeatureSourceLocation : private std::pair<int, int> {
   public:
-    Location(int Line, int Column) : std::pair<int, int>(Line, Column) {}
+    FeatureSourceLocation(int Line, int Column)
+        : std::pair<int, int>(Line, Column) {}
 
     [[nodiscard]] int getLineNumber() const { return this->first; }
 
@@ -35,19 +36,23 @@ public:
 
 private:
   fs::path Path;
-  std::optional<Location> Start;
-  std::optional<Location> End;
+  std::optional<FeatureSourceLocation> Start;
+  std::optional<FeatureSourceLocation> End;
 
 public:
-  FeatureSourceRange(fs::path Path, std::optional<Location> Start,
-                     std::optional<Location> End)
+  FeatureSourceRange(fs::path Path, std::optional<FeatureSourceLocation> Start,
+                     std::optional<FeatureSourceLocation> End)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)) {}
 
   [[nodiscard]] fs::path getPath() const { return Path; }
 
-  [[nodiscard]] std::optional<Location> getStart() const { return Start; }
+  [[nodiscard]] std::optional<FeatureSourceLocation> getStart() const {
+    return Start;
+  }
 
-  [[nodiscard]] std::optional<Location> getEnd() const { return End; }
+  [[nodiscard]] std::optional<FeatureSourceLocation> getEnd() const {
+    return End;
+  }
 
   [[nodiscard]] std::string toString() const {
     std::stringstream StrS;
@@ -62,21 +67,21 @@ public:
   }
 };
 
-inline bool operator==(const FeatureSourceRange::Location &This,
-                       const FeatureSourceRange::Location &Other) {
+inline bool operator==(const FeatureSourceRange::FeatureSourceLocation &This,
+                       const FeatureSourceRange::FeatureSourceLocation &Other) {
   return This.getLineNumber() == Other.getLineNumber() &&
          This.getColumnOffset() == Other.getColumnOffset();
 }
 
-inline bool operator<(const FeatureSourceRange::Location &This,
-                      const FeatureSourceRange::Location &Other) {
+inline bool operator<(const FeatureSourceRange::FeatureSourceLocation &This,
+                      const FeatureSourceRange::FeatureSourceLocation &Other) {
   return This.getLineNumber() < Other.getLineNumber() ||
          (This.getLineNumber() == Other.getLineNumber() &&
           This.getColumnOffset() < Other.getColumnOffset());
 }
 
-inline bool operator>(const FeatureSourceRange::Location &This,
-                      const FeatureSourceRange::Location &Other) {
+inline bool operator>(const FeatureSourceRange::FeatureSourceLocation &This,
+                      const FeatureSourceRange::FeatureSourceLocation &Other) {
   return operator<(Other, This);
 }
 

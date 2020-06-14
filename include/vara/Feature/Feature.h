@@ -7,6 +7,8 @@
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <set>
+#include <stack>
 #include <utility>
 #include <variant>
 
@@ -20,13 +22,14 @@ namespace vara::feature {
 
 /// \brief Base class for components of \a FeatureModel.
 class Feature {
+  friend class FeatureModel;
+
 public:
-  using FeatureSetType = typename llvm::DenseSet<Feature *>;
+  using FeatureSetType = typename std::set<Feature *>;
   using feature_iterator = typename FeatureSetType::iterator;
   using const_feature_iterator = typename FeatureSetType::const_iterator;
 
 private:
-  unsigned int Index;
   string Name;
   std::optional<FeatureSourceRange> Loc;
   bool Opt;
@@ -36,11 +39,20 @@ private:
   FeatureSetType Implications;
   FeatureSetType Alternatives;
 
+  void addChild(Feature *F) { Children.insert(F); }
+
+  void setParent(Feature *F) { Parent = F; }
+
+  void addExclude(Feature *F) { Excludes.insert(F); }
+
+  void addAlternative(Feature *F) { Alternatives.insert(F); }
+
+  void addImplication(Feature *F) { Implications.insert(F); }
+
 protected:
-  Feature(string Name, bool Opt, const std::optional<FeatureSourceRange> &Loc,
+  Feature(string Name, bool Opt, std::optional<FeatureSourceRange> Loc,
           Feature *Parent)
-      : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)), Parent(Parent),
-        Index(0) {}
+      : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)), Parent(Parent) {}
 
 public:
   Feature(const Feature &) = delete;
@@ -167,36 +179,37 @@ public:
   // Utility
   [[nodiscard]] virtual std::string toString() const;
 
-  [[nodiscard]] unsigned int getIndex() const { return Index; }
-
   bool operator==(const Feature &F) const {
-    return this->Index == F.getIndex() &&
-           this->getName().lower() == F.getName().lower();
+    return this->getName().lower() == F.getName().lower();
   }
 
-  bool operator<(const Feature &F) const {
-    return this->Index < F.getIndex() ||
-           (this->Index == F.getIndex() &&
-            this->getName().lower() < F.getName().lower());
-  }
+  bool operator<(const Feature &F) {
 
-  class Builder;
+    std::stack<Feature *> TraceL;
+    std::stack<Feature *> TraceR;
 
-protected:
-  void setIndex(unsigned int Index) { this->Index = Index; }
+    if (this->Parent == F.Parent) {
+      return this->Name < F.Name;
+    }
 
-  void addChild(Feature *Child) { Children.insert(Child); }
+    for (Feature *Head = this->Parent; Head; Head = Head->getParent()) {
+      TraceL.push(Head);
+    }
+    for (Feature *Head = F.Parent; Head; Head = Head->getParent()) {
+      TraceR.push(Head);
+    }
 
-  void addExclude(Feature *Exclude) { Excludes.insert(Exclude); }
-
-  void addAlternative(Feature *Alternative) {
-    Alternatives.insert(Alternative);
-  }
-
-  void addImplication(Feature *Implication) {
-    Implications.insert(Implication);
+    while (!TraceL.empty() && !TraceL.empty()) {
+      llvm::outs() << TraceL.top()->getName() << '-' << TraceL.top()->getName()
+                   << '\n';
+      TraceL.pop();
+      TraceR.pop();
+    }
+    return this->Name < F.Name;
   }
 };
+
+class FeatureComparator {};
 
 /// Options without arguments.
 class BinaryFeature : public Feature {
@@ -237,36 +250,6 @@ public:
 
   [[nodiscard]] string toString() const override;
 };
-
-class Feature::Builder {
-  std::unique_ptr<Feature> F;
-
-public:
-  Builder() : F(nullptr) {}
-
-  Builder(string Name, bool Opt,
-          std::optional<FeatureSourceRange> Loc = std::nullopt)
-      : F(std::make_unique<BinaryFeature>(Name, Opt, Loc)) {}
-
-  Builder(string Name, bool Opt, NumericFeature::ValuesVariantType Values,
-          std::optional<FeatureSourceRange> Loc = std::nullopt)
-      : F(std::make_unique<NumericFeature>(Name, Opt, Values, Loc)) {}
-
-  Feature *get() { return F.get(); }
-
-  void setIndex(unsigned int Index) { F->setIndex(Index); }
-
-  void addChild(Feature *Child) { F->addChild(Child); }
-
-  void addAlternative(Feature *Alternative) { F->addAlternative(Alternative); }
-
-  void addExclude(Feature *Exclude) { F->addExclude(Exclude); }
-
-  void addImplication(Feature *Implication) { F->addImplication(Implication); }
-
-  std::unique_ptr<Feature> build() { return std::move(F); }
-};
-
 } // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATURE_H

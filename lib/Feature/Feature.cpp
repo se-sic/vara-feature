@@ -6,8 +6,8 @@ namespace vara::feature {
 
 std::string Feature::toString() const {
   std::stringstream StrS;
-  StrS << "  name: \"" << Name << "\"\n  index: " << Index
-       << ",\n  optional: " << (Opt ? "true" : "false") << ",\n  ";
+  StrS << "  name: \"" << Name
+       << "\",\n  optional: " << (Opt ? "true" : "false") << ",\n  ";
   if (Loc) {
     StrS << "location: " << Loc->toString() << ",\n  ";
   }
