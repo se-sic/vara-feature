@@ -72,6 +72,13 @@ public:
     return FeatureModelIter(Features.end());
   }
 
+  llvm::iterator_range<FeatureModelIter> features() {
+    return llvm::make_range(begin(), end());
+  }
+  [[nodiscard]] llvm::iterator_range<FeatureModelIter> features() const {
+    return llvm::make_range(begin(), end());
+  }
+
   [[nodiscard]] unsigned int size() { return Features.size(); }
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
