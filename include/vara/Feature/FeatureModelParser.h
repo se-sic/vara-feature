@@ -37,6 +37,15 @@ public:
 //===----------------------------------------------------------------------===//
 
 class FeatureModelXmlParser : public FeatureModelParser {
+public:
+  explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
+
+  std::unique_ptr<FeatureModel> buildFeatureModel() override;
+
+  bool verifyFeatureModel() override;
+
+private:
+  using constXmlCharPtr = const xmlChar *;
 
   inline static const std::string DtdRaw =
       "<!ELEMENT vm (binaryOptions, numericOptions?, booleanConstraints?, "
@@ -95,11 +104,8 @@ class FeatureModelXmlParser : public FeatureModelParser {
   static constexpr xmlChar LINE[] = "line";
   static constexpr xmlChar COLUMN[] = "column";
 
-  using constXmlCharPtr = const xmlChar *;
-
-private:
   std::string Xml;
-  FeatureModel::FeatureModelBuilder FMB;
+  FeatureModelBuilder FMB;
 
   bool parseConfigurationOption(xmlNode *N, bool Num);
   bool parseOptions(xmlNode *N, bool Num);
@@ -111,13 +117,6 @@ private:
 
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
-
-public:
-  explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
-
-  std::unique_ptr<FeatureModel> buildFeatureModel() override;
-
-  bool verifyFeatureModel() override;
 };
 
 } // namespace vara::feature

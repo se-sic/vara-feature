@@ -22,14 +22,6 @@ public:
   using ConstraintTy = llvm::SmallVector<std::pair<std::string, bool>, 3>;
   using ConstraintsTy = std::vector<ConstraintTy>;
 
-private:
-  string Name;
-  fs::path RootPath;
-  FeatureMapTy Features;
-  ConstraintsTy Constraints;
-  Feature *Root;
-
-public:
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
                ConstraintsTy Constraints, Feature *Root)
       : Name(std::move(Name)), RootPath(std::move(RootPath)),
@@ -45,7 +37,6 @@ public:
     return Root;
   }
 
-private:
   struct FeatureModelIter
       : std::iterator<std::random_access_iterator_tag, Feature &, ptrdiff_t,
                       Feature *, Feature &> {
@@ -69,19 +60,15 @@ private:
     }
   };
 
-public:
-  using feature_model_iterator = FeatureModelIter;
-  using const_feature_model_iterator = FeatureModelIter;
+  FeatureModelIter begin() { return FeatureModelIter(Features.begin()); }
 
-  feature_model_iterator begin() { return FeatureModelIter(Features.begin()); }
-
-  [[nodiscard]] const_feature_model_iterator begin() const {
+  [[nodiscard]] FeatureModelIter begin() const {
     return FeatureModelIter(Features.begin());
   }
 
   FeatureModelIter end() { return FeatureModelIter(Features.end()); }
 
-  [[nodiscard]] const_feature_model_iterator end() const {
+  [[nodiscard]] FeatureModelIter end() const {
     return FeatureModelIter(Features.end());
   }
 
@@ -94,110 +81,103 @@ public:
   LLVM_DUMP_METHOD
   void dump() const;
 
-  class FeatureModelBuilder {
-    using EdgeMapType =
-        typename llvm::StringMap<llvm::SmallVector<std::string, 3>>;
+private:
+  string Name;
+  fs::path RootPath;
+  FeatureMapTy Features;
+  ConstraintsTy Constraints;
+  Feature *Root;
+};
 
-    std::string VmName;
-    fs::path Path;
-    Feature *Root{nullptr};
-    FeatureMapTy Features;
-    FeatureModel::ConstraintsTy Constraints;
-    llvm::StringMap<std::string> Parents;
-    EdgeMapType Children;
-    EdgeMapType Excludes;
-    EdgeMapType Implications;
-    EdgeMapType Alternatives;
+//===----------------------------------------------------------------------===//
+//                     Builder for FeatureModel
+//===----------------------------------------------------------------------===//
 
-  public:
-    FeatureModelBuilder() = default;
+class FeatureModelBuilder {
+public:
+  FeatureModelBuilder() = default;
 
-    void init() {
-      VmName = "";
-      Path = "";
-      Root = nullptr;
-      Features.clear();
-      Constraints.clear();
-      Parents.clear();
-      Children.clear();
-      Excludes.clear();
-      Implications.clear();
-      Alternatives.clear();
-    }
+  void init() {
+    VmName = "";
+    Path = "";
+    Root = nullptr;
+    Features.clear();
+    Constraints.clear();
+    Parents.clear();
+    Children.clear();
+    Excludes.clear();
+  }
 
-    bool addFeature(const std::string &Key,
-                    const NumericFeature::ValuesVariantType &Values,
-                    bool Opt = false,
-                    std::optional<FeatureSourceRange> Loc = std::nullopt) {
-      return Features
-          .try_emplace(Key, std::make_unique<NumericFeature>(Key, Values, Opt,
-                                                             std::move(Loc)))
-          .second;
-    }
+  bool addFeature(const std::string &Key,
+                  const NumericFeature::ValuesVariantType &Values,
+                  bool Opt = false,
+                  std::optional<FeatureSourceRange> Loc = std::nullopt) {
+    return Features
+        .try_emplace(Key, std::make_unique<NumericFeature>(Key, Values, Opt,
+                                                           std::move(Loc)))
+        .second;
+  }
 
-    bool addFeature(const std::string &Key, bool Opt = false,
-                    std::optional<FeatureSourceRange> Loc = std::nullopt) {
-      return Features
-          .try_emplace(
-              Key, std::make_unique<BinaryFeature>(Key, Opt, std::move(Loc)))
-          .second;
-    }
+  bool addFeature(const std::string &Key, bool Opt = false,
+                  std::optional<FeatureSourceRange> Loc = std::nullopt) {
+    return Features
+        .try_emplace(Key,
+                     std::make_unique<BinaryFeature>(Key, Opt, std::move(Loc)))
+        .second;
+  }
 
-    FeatureModelBuilder *addChild(const std::string &P, const std::string &C) {
-      Children[P].push_back(C);
-      Parents[C] = P;
-      return this;
-    }
+  FeatureModelBuilder *addChild(const std::string &P, const std::string &C) {
+    Children[P].push_back(C);
+    Parents[C] = P;
+    return this;
+  }
 
-    FeatureModelBuilder *addAlternative(const std::string &A,
-                                        const std::string &B) {
-      Alternatives[A].push_back(B);
-      Alternatives[B].push_back(A);
-      return this;
-    }
+  FeatureModelBuilder *addExclude(const std::string &F, const std::string &E) {
+    Excludes[F].push_back(E);
+    return this;
+  }
 
-    FeatureModelBuilder *addExclude(const std::string &F,
-                                    const std::string &E) {
-      Excludes[F].push_back(E);
-      return this;
-    }
+  FeatureModelBuilder *addConstraint(const FeatureModel::ConstraintTy &C) {
+    Constraints.push_back(C);
+    return this;
+  }
 
-    FeatureModelBuilder *addImplication(const std::string &A,
-                                        const std::string &B) {
-      Implications[A].push_back(B);
-      return this;
-    }
+  FeatureModelBuilder *setVmName(std::string N) {
+    this->VmName = std::move(N);
+    return this;
+  }
 
-    FeatureModelBuilder *addConstraint(const ConstraintTy &C) {
-      Constraints.push_back(C);
-      return this;
-    }
+  FeatureModelBuilder *setPath(fs::path P) {
+    this->Path = std::move(P);
+    return this;
+  }
 
-    FeatureModelBuilder *setVmName(std::string N) {
-      this->VmName = std::move(N);
-      return this;
-    }
+  FeatureModelBuilder *setRoot(const std::string &R = "root");
 
-    FeatureModelBuilder *setPath(fs::path P) {
-      this->Path = std::move(P);
-      return this;
-    }
+  std::unique_ptr<FeatureModel> buildFeatureModel();
 
-    FeatureModelBuilder *setRoot(const std::string &R = "root");
+  std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
+      const std::vector<std::pair<std::string, std::string>> &,
+      const std::vector<std::pair<
+          std::string,
+          std::pair<std::string, NumericFeature::ValuesVariantType>>> & = {});
 
-    std::unique_ptr<FeatureModel> buildFeatureModel();
+private:
+  using EdgeMapType =
+      typename llvm::StringMap<llvm::SmallVector<std::string, 3>>;
 
-    std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
-        const std::vector<std::pair<std::string, std::string>> &,
-        const std::vector<std::pair<
-            std::string,
-            std::pair<std::string, NumericFeature::ValuesVariantType>>> & = {});
+  std::string VmName;
+  fs::path Path;
+  Feature *Root{nullptr};
+  FeatureModel::FeatureMapTy Features;
+  FeatureModel::ConstraintsTy Constraints;
+  llvm::StringMap<std::string> Parents;
+  EdgeMapType Children;
+  EdgeMapType Excludes;
 
-  private:
-    void buildConstraints();
+  void buildConstraints();
 
-    bool buildTree(const std::string &, std::set<std::string> &);
-  };
+  bool buildTree(const std::string &, std::set<std::string> &);
 };
 } // namespace vara::feature
 

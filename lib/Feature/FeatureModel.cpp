@@ -22,7 +22,7 @@ void FeatureModel::dump() const {
   }
 }
 
-void FeatureModel::FeatureModelBuilder::buildConstraints() {
+void FeatureModelBuilder::buildConstraints() {
   for (const auto &F : Features.keys()) {
     for (const auto &E : Excludes[F]) {
       Features[F]->addExclude(Features[E].get());
@@ -62,8 +62,8 @@ void FeatureModel::FeatureModelBuilder::buildConstraints() {
   }
 }
 
-bool FeatureModel::FeatureModelBuilder::buildTree(
-    const string &F, std::set<std::string> &Visited) {
+bool FeatureModelBuilder::buildTree(const string &F,
+                                    std::set<std::string> &Visited) {
   if (find(Visited.begin(), Visited.end(), F) != Visited.end()) {
     llvm::errs() << "error: Cycle or duplicate edge in \'" << F << "\'.\n";
     return false;
@@ -86,8 +86,7 @@ bool FeatureModel::FeatureModelBuilder::buildTree(
   return true;
 }
 
-FeatureModel::FeatureModelBuilder *
-FeatureModel::FeatureModelBuilder::setRoot(const std::string &R) {
+FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &R) {
   assert(this->Root == nullptr && "Root already set.");
 
   if (Features.find(R) == Features.end()) {
@@ -104,8 +103,7 @@ FeatureModel::FeatureModelBuilder::setRoot(const std::string &R) {
   return this;
 }
 
-std::unique_ptr<FeatureModel>
-FeatureModel::FeatureModelBuilder::buildFeatureModel() {
+std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
   if (!Root) {
     setRoot();
   }
@@ -119,8 +117,7 @@ FeatureModel::FeatureModelBuilder::buildFeatureModel() {
                                         Constraints, Root);
 }
 
-std::unique_ptr<FeatureModel>
-FeatureModel::FeatureModelBuilder::buildSimpleFeatureModel(
+std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
     const std::vector<std::pair<std::string, std::string>> &B,
     const std::vector<std::pair<
         std::string, std::pair<std::string, NumericFeature::ValuesVariantType>>>

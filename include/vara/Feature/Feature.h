@@ -7,7 +7,6 @@
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include <set>
 #include <stack>
 #include <utility>
 #include <variant>
@@ -22,58 +21,23 @@ namespace vara::feature {
 
 /// \brief Base class for components of \a FeatureModel.
 class Feature {
-  friend class FeatureModel;
-
 public:
   using FeatureSetType = typename llvm::DenseSet<Feature *>;
   using feature_iterator = typename FeatureSetType::iterator;
   using const_feature_iterator = typename FeatureSetType::const_iterator;
 
-private:
-  string Name;
-  std::optional<FeatureSourceRange> Loc;
-  bool Opt;
-  Feature *Parent;
-  FeatureSetType Children;
-  FeatureSetType Excludes;
-  FeatureSetType Implications;
-  FeatureSetType Alternatives;
+  enum FeatureType { BINARY, NUMERIC };
 
-  void addChild(Feature *F) { Children.insert(F); }
-
-  void setParent(Feature *F) { Parent = F; }
-
-  void addExclude(Feature *F) { Excludes.insert(F); }
-
-  void addAlternative(Feature *F) { Alternatives.insert(F); }
-
-  void addImplication(Feature *F) { Implications.insert(F); }
-
-protected:
-  Feature(string Name, bool Opt, std::optional<FeatureSourceRange> Loc,
-          Feature *Parent)
-      : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)), Parent(Parent) {}
-
-public:
   Feature(const Feature &) = delete;
-  Feature &operator=(const Feature &) = delete;
   virtual ~Feature() = default;
+
+  [[nodiscard]] FeatureType getType() const { return T; }
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
   [[nodiscard]] bool isOptional() const { return Opt; }
 
-  [[nodiscard]] virtual bool isBinary() const = 0;
-
-  [[nodiscard]] virtual bool isNumeric() const = 0;
-
   [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
-
-  void print(std::ostream &Out) const { Out << toString() << std::endl; }
-  void print(llvm::raw_ostream &Out) const { Out << toString() << '\n'; }
-
-  LLVM_DUMP_METHOD
-  void dump() const { llvm::outs() << toString() << "\n"; }
 
   //===--------------------------------------------------------------------===//
   // Children
@@ -175,6 +139,8 @@ public:
     return Loc;
   }
 
+  Feature &operator=(const Feature &) = delete;
+
   bool operator==(const vara::feature::Feature &F) const {
     return getName().lower() == F.getName().lower();
   }
@@ -190,6 +156,42 @@ public:
   //===--------------------------------------------------------------------===//
   // Utility
   [[nodiscard]] virtual std::string toString() const;
+
+  void print(std::ostream &Out) const { Out << toString() << std::endl; }
+  void print(llvm::raw_ostream &Out) const { Out << toString() << '\n'; }
+
+  LLVM_DUMP_METHOD
+  void dump() const { llvm::outs() << toString() << "\n"; }
+
+protected:
+  Feature(FeatureType T, string Name, bool Opt,
+          std::optional<FeatureSourceRange> Loc, Feature *Parent)
+      : T(T), Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)),
+        Parent(Parent) {}
+
+private:
+  friend class FeatureModel;
+  friend class FeatureModelBuilder;
+
+  FeatureType T;
+  string Name;
+  std::optional<FeatureSourceRange> Loc;
+  bool Opt;
+  Feature *Parent;
+  FeatureSetType Children;
+  FeatureSetType Excludes;
+  FeatureSetType Implications;
+  FeatureSetType Alternatives;
+
+  void addChild(Feature *F) { Children.insert(F); }
+
+  void setParent(Feature *F) { Parent = F; }
+
+  void addExclude(Feature *F) { Excludes.insert(F); }
+
+  void addAlternative(Feature *F) { Alternatives.insert(F); }
+
+  void addImplication(Feature *F) { Implications.insert(F); }
 };
 
 /// Options without arguments.
@@ -199,13 +201,11 @@ public:
   BinaryFeature(string Name, bool Opt = false,
                 std::optional<FeatureSourceRange> Loc = std::nullopt,
                 Feature *Parent = nullptr)
-      : Feature(std::move(Name), Opt, std::move(Loc), Parent) {}
-
-  [[nodiscard]] bool isBinary() const override { return true; }
-
-  [[nodiscard]] bool isNumeric() const override { return false; }
+      : Feature(BINARY, std::move(Name), Opt, std::move(Loc), Parent) {}
 
   [[nodiscard]] string toString() const override;
+
+  static bool classof(const Feature *F) { return F->getType() == BINARY; }
 };
 
 /// Options with numeric values.
@@ -214,23 +214,20 @@ public:
   using ValuesVariantType =
       typename std::variant<std::pair<int, int>, std::vector<int>>;
 
-private:
-  ValuesVariantType Values;
-
-public:
   NumericFeature(string Name, ValuesVariantType Values, bool Opt = false,
                  std::optional<FeatureSourceRange> Loc = std::nullopt,
                  Feature *Parent = nullptr)
-      : Feature(std::move(Name), Opt, std::move(Loc), Parent),
+      : Feature(NUMERIC, std::move(Name), Opt, std::move(Loc), Parent),
         Values(std::move(Values)) {}
 
   [[nodiscard]] ValuesVariantType getValues() const { return Values; }
 
-  [[nodiscard]] bool isBinary() const override { return false; }
-
-  [[nodiscard]] bool isNumeric() const override { return true; }
-
   [[nodiscard]] string toString() const override;
+
+  static bool classof(const Feature *F) { return F->getType() == NUMERIC; }
+
+private:
+  ValuesVariantType Values;
 };
 } // namespace vara::feature
 

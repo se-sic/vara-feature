@@ -34,12 +34,6 @@ public:
     }
   };
 
-private:
-  fs::path Path;
-  std::optional<FeatureSourceLocation> Start;
-  std::optional<FeatureSourceLocation> End;
-
-public:
   FeatureSourceRange(fs::path Path, std::optional<FeatureSourceLocation> Start,
                      std::optional<FeatureSourceLocation> End)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)) {}
@@ -65,6 +59,11 @@ public:
     }
     return StrS.str();
   }
+
+private:
+  fs::path Path;
+  std::optional<FeatureSourceLocation> Start;
+  std::optional<FeatureSourceLocation> End;
 };
 
 inline bool operator==(const FeatureSourceRange::FeatureSourceLocation &This,

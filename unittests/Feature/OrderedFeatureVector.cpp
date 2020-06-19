@@ -1,11 +1,11 @@
-#include <vara/Feature/FeatureSort.h>
+#include <vara/Feature/OrderedFeatureVector.h>
 
 #include "gtest/gtest.h"
 
 namespace vara::feature {
 
 TEST(FeatureSort, sort) {
-  auto FM = FeatureModel::FeatureModelBuilder().buildSimpleFeatureModel(
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
       {{"root", "a"},
        {"b", "bb"},
        {"aa", "aaa"},
@@ -13,7 +13,7 @@ TEST(FeatureSort, sort) {
        {"a", "aa"},
        {"a", "ab"}});
   assert(FM);
-  FeatureSort H(FM.get());
+  OrderedFeatureVector H(FM.get());
   auto It = H.begin();
   EXPECT_EQ("root", (*It++)->getName());
   EXPECT_EQ("a", (*It++)->getName());

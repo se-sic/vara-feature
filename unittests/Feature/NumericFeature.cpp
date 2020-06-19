@@ -1,6 +1,8 @@
 #include "vara/Feature/Feature.h"
 #include <vara/Feature/FeatureModel.h>
 
+#include "llvm/Support/Casting.h"
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -11,6 +13,13 @@ TEST(NumericFeature, NumericFeatureBasics) {
   EXPECT_EQ("A", A.getName());
   EXPECT_TRUE(A.isOptional());
   EXPECT_TRUE(A.isRoot());
+}
+
+TEST(NumericFeature, isa) {
+  BinaryFeature A("A", true);
+
+  EXPECT_TRUE(llvm::isa<NumericFeature>(A));
+  EXPECT_FALSE(llvm::isa<BinaryFeature>(A));
 }
 
 TEST(NumericFeature, NumericFeaturePair) {
@@ -30,19 +39,19 @@ TEST(NumericFeature, NumericFeatureVector) {
 }
 
 TEST(NumericFeature, NumericFeatureRoot) {
-  auto B = FeatureModel::FeatureModelBuilder();
+  auto B = FeatureModelBuilder();
 
   B.addFeature("F", std::pair<int, int>(0, 1));
   B.setRoot("F");
 
-  auto FM = FeatureModel::FeatureModelBuilder().buildFeatureModel();
+  auto FM = B.buildFeatureModel();
 
   EXPECT_TRUE(FM->getFeature("F")->isRoot());
   EXPECT_EQ(FM->getFeature("F"), FM->getRoot());
 }
 
 TEST(NumericFeature, NumericFeatureChildren) {
-  auto FM = FeatureModel::FeatureModelBuilder().buildSimpleFeatureModel(
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
       {{"F", "A"}}, {{"root", {"F", std::pair<int, int>(0, 1)}}});
 
   EXPECT_EQ(std::distance(FM->getFeature("F")->children_begin(),
@@ -52,13 +61,13 @@ TEST(NumericFeature, NumericFeatureChildren) {
 }
 
 TEST(NumericFeature, NumericFeatureExclude) {
-  auto B = FeatureModel::FeatureModelBuilder();
+  auto B = FeatureModelBuilder();
 
   B.addFeature("F", std::pair<int, int>(0, 1));
   B.addFeature("G", std::pair<int, int>(0, 1));
   B.addExclude("F", "G");
 
-  auto FM = FeatureModel::FeatureModelBuilder().buildFeatureModel();
+  auto FM = B.buildFeatureModel();
 
   EXPECT_EQ(std::distance(FM->getFeature("F")->excludes_begin(),
                           FM->getFeature("F")->excludes_end()),
@@ -67,13 +76,13 @@ TEST(NumericFeature, NumericFeatureExclude) {
 }
 
 TEST(NumericFeature, NumericFeatureImplications) {
-  auto B = FeatureModel::FeatureModelBuilder();
+  auto B = FeatureModelBuilder();
 
   B.addFeature("F", std::pair<int, int>(0, 1));
   B.addFeature("G", std::pair<int, int>(0, 1));
-  B.addImplication("F", "G");
+  B.addConstraint({{"F", false}, {"G", true}});
 
-  auto FM = FeatureModel::FeatureModelBuilder().buildFeatureModel();
+  auto FM = B.buildFeatureModel();
 
   EXPECT_EQ(std::distance(FM->getFeature("F")->implications_begin(),
                           FM->getFeature("F")->implications_end()),
@@ -82,13 +91,13 @@ TEST(NumericFeature, NumericFeatureImplications) {
 }
 
 TEST(NumericFeature, NumericFeatureAlternatives) {
-  auto B = FeatureModel::FeatureModelBuilder();
+  auto B = FeatureModelBuilder();
 
   B.addFeature("F", std::pair<int, int>(0, 1));
   B.addFeature("G", std::pair<int, int>(0, 1));
-  B.addAlternative("F", "G");
+  B.addConstraint({{"F", true}, {"G", true}});
 
-  auto FM = FeatureModel::FeatureModelBuilder().buildFeatureModel();
+  auto FM = B.buildFeatureModel();
 
   EXPECT_EQ(std::distance(FM->getFeature("F")->alternatives_begin(),
                           FM->getFeature("F")->alternatives_end()),
