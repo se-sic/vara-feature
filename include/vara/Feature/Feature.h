@@ -133,11 +133,8 @@ public:
   }
   [[nodiscard]] const_feature_iterator end() const { return children_end(); }
 
+  bool isParent() { return Parent != nullptr; }
   [[nodiscard]] Feature *getParent() const { return Parent; }
-
-  [[nodiscard]] std::optional<FeatureSourceRange> getLocation() const {
-    return Loc;
-  }
 
   Feature &operator=(const Feature &) = delete;
 
@@ -149,6 +146,10 @@ public:
 
   bool operator>(const vara::feature::Feature &F) const {
     return F.operator<(*this);
+  }
+
+  [[nodiscard]] FeatureSourceRange *getFeatureSourceRange() {
+    return Loc.has_value() ? &Loc.value() : nullptr;
   }
 
   //===--------------------------------------------------------------------===//

@@ -20,32 +20,57 @@ namespace vara::feature {
 
 class FeatureSourceRange {
 public:
-  class FeatureSourceLocation : private std::pair<int, int> {
+  class FeatureSourceLocation {
+
   public:
-    FeatureSourceLocation(int Line, int Column)
-        : std::pair<int, int>(Line, Column) {}
+    FeatureSourceLocation(int Line, int Column) : Line(Line), Column(Column) {}
 
-    [[nodiscard]] int getLineNumber() const { return this->first; }
+    void setLineNumber(int L) { this->Line = L; }
+    [[nodiscard]] int getLineNumber() const { return this->Line; }
 
-    [[nodiscard]] int getColumnOffset() const { return this->second; }
+    void setColumnOffset(int C) { this->Column = C; }
+    [[nodiscard]] int getColumnOffset() const { return this->Column; }
 
     [[nodiscard]] std::string toString() const {
       return llvm::formatv("{0}:{1}", getLineNumber(), getColumnOffset());
     }
+
+    inline bool operator==(const FeatureSourceLocation &Other) const {
+      return getLineNumber() == Other.getLineNumber() &&
+             getColumnOffset() == Other.getColumnOffset();
+    }
+
+    inline bool operator<(const FeatureSourceLocation &Other) const {
+      return getLineNumber() < Other.getLineNumber() ||
+             (getLineNumber() == Other.getLineNumber() &&
+              getColumnOffset() < Other.getColumnOffset());
+    }
+
+    inline bool operator>(const FeatureSourceLocation &Other) const {
+      return Other.operator<(*this);
+    }
+
+  private:
+    int Line;
+    int Column;
   };
 
-  FeatureSourceRange(fs::path Path, std::optional<FeatureSourceLocation> Start,
-                     std::optional<FeatureSourceLocation> End)
-      : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)) {}
+  FeatureSourceRange(fs::path Path,
+                     std::optional<FeatureSourceLocation> Start = std::nullopt,
+                     std::optional<FeatureSourceLocation> End = std::nullopt)
+      : Path(std::move(Path)), Start(Start), End(End) {}
 
   [[nodiscard]] fs::path getPath() const { return Path; }
 
-  [[nodiscard]] std::optional<FeatureSourceLocation> getStart() const {
-    return Start;
+  [[nodiscard]] bool hasStart() const { return Start.has_value(); }
+  [[nodiscard]] FeatureSourceLocation *getStart() {
+    return Start.has_value() ? &Start.value() : nullptr;
   }
 
-  [[nodiscard]] std::optional<FeatureSourceLocation> getEnd() const {
-    return End;
+  [[nodiscard]] bool hasEnd() const { return End.has_value(); }
+  [[nodiscard]] FeatureSourceLocation *getEnd() {
+    return End.has_value() ? &End.value() : nullptr;
+    ;
   }
 
   [[nodiscard]] std::string toString() const {
@@ -65,25 +90,6 @@ private:
   std::optional<FeatureSourceLocation> Start;
   std::optional<FeatureSourceLocation> End;
 };
-
-inline bool operator==(const FeatureSourceRange::FeatureSourceLocation &This,
-                       const FeatureSourceRange::FeatureSourceLocation &Other) {
-  return This.getLineNumber() == Other.getLineNumber() &&
-         This.getColumnOffset() == Other.getColumnOffset();
-}
-
-inline bool operator<(const FeatureSourceRange::FeatureSourceLocation &This,
-                      const FeatureSourceRange::FeatureSourceLocation &Other) {
-  return This.getLineNumber() < Other.getLineNumber() ||
-         (This.getLineNumber() == Other.getLineNumber() &&
-          This.getColumnOffset() < Other.getColumnOffset());
-}
-
-inline bool operator>(const FeatureSourceRange::FeatureSourceLocation &This,
-                      const FeatureSourceRange::FeatureSourceLocation &Other) {
-  return operator<(Other, This);
-}
-
 } // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATURESOURCERANGE_H

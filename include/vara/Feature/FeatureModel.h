@@ -357,9 +357,9 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
         "cellpadding=\"5\"><tr><td>{0}{1}</td></tr></"
         "table>>",
         DOT::EscapeString(Node->getName().str()),
-        (Node->getLocation()
+        (Node->getFeatureSourceRange()
              ? "</td></tr><hr/><tr><td>" +
-                   DOT::EscapeString(Node->getLocation()->toString())
+                   DOT::EscapeString(Node->getFeatureSourceRange()->toString())
              : ""));
 
     O.indent(2) << "node_" << static_cast<void *>(Node) << " ["

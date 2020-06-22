@@ -26,14 +26,15 @@ void init_feature_module_location(py::module &M) {
       }))
       .def(py::init(
           [](std::string Path,
-             std::optional<vf::FeatureSourceRange::LineColumnOffset> Start) {
+             std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 Start) {
             return vf::FeatureSourceRange(fs::path(std::move(Path)), Start,
                                           std::nullopt);
           }))
       .def(py::init(
           [](std::string Path,
-             std::optional<vf::FeatureSourceRange::LineColumnOffset> Start,
-             std::optional<vf::FeatureSourceRange::LineColumnOffset> End) {
+             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> Start,
+             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End) {
             return vf::FeatureSourceRange(fs::path(std::move(Path)), Start,
                                           End);
           }))
@@ -42,22 +43,28 @@ void init_feature_module_location(py::module &M) {
           [](vf::FeatureSourceRange &Loc) { return Loc.getPath().string(); },
           R"pbdoc(Path to the source file)pbdoc")
       .def("get_start", &vf::FeatureSourceRange::getStart,
+           py::return_value_policy::reference,
            R"pbdoc(Get the start `LineColumnOffset` of this `Location`.)pbdoc")
       .def("get_end", &vf::FeatureSourceRange::getEnd,
+           py::return_value_policy::reference,
            R"pbdoc(Get the end `LineColumnOffset` of this `Location`.)pbdoc")
       .def("__str__", &vf::FeatureSourceRange::toString);
 
-  py::class_<vf::FeatureSourceRange::LineColumnOffset>(M, "LineColumnOffset")
+  py::class_<vf::FeatureSourceRange::FeatureSourceLocation>(M,
+                                                            "LineColumnOffset")
       .def(py::init<int, int>())
-      .def_property_readonly(
+      .def_property(
           "line_number",
-          &vf::FeatureSourceRange::LineColumnOffset::getLineNumber)
-      .def_property_readonly(
+          &vf::FeatureSourceRange::FeatureSourceLocation::getLineNumber,
+          &vf::FeatureSourceRange::FeatureSourceLocation::setLineNumber)
+      .def_property(
           "column_offset",
-          &vf::FeatureSourceRange::LineColumnOffset::getColumnOffset)
-      .def("__str__", &vf::FeatureSourceRange::LineColumnOffset::toString)
-      .def("__eq__", [](const vf::FeatureSourceRange::LineColumnOffset &Self,
-                        const vf::FeatureSourceRange::LineColumnOffset &Other) {
-        return Self == Other;
-      });
+          &vf::FeatureSourceRange::FeatureSourceLocation::getColumnOffset,
+          &vf::FeatureSourceRange::FeatureSourceLocation::setColumnOffset)
+      .def("__str__", &vf::FeatureSourceRange::FeatureSourceLocation::toString)
+      .def("__eq__",
+           [](const vf::FeatureSourceRange::FeatureSourceLocation &Self,
+              const vf::FeatureSourceRange::FeatureSourceLocation &Other) {
+             return Self == Other;
+           });
 }

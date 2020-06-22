@@ -4,7 +4,7 @@ import sys
 import platform
 import subprocess
 
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
@@ -72,14 +72,15 @@ class CMakeBuild(build_ext):
                               cwd=self.build_temp)
 
 
-setup(
-    name='vara_feature',
-    version='0.0.1',
-    author='Florian Sattler',
-    author_email='sattlerf@cs.uni-saarland.de',
-    description='Python bindings for vara-feature library',
-    long_description='',
-    ext_modules=[CMakeExtension('vara_feature')],
-    cmdclass=dict(build_ext=CMakeBuild),
-    zip_safe=False,
-)
+setup(name='vara_feature',
+      version='0.0.2',
+      author='Florian Sattler',
+      author_email='sattlerf@cs.uni-saarland.de',
+      description='Python bindings for vara-feature library',
+      long_description='',
+      packages=find_packages(),
+      ext_modules=[CMakeExtension('vara_feature')],
+      cmdclass=dict(build_ext=CMakeBuild),
+      license='LICENSE.TXT',
+      zip_safe=False,
+      python_requires='>=3.6')

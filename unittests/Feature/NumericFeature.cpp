@@ -16,7 +16,7 @@ TEST(NumericFeature, NumericFeatureBasics) {
 }
 
 TEST(NumericFeature, isa) {
-  BinaryFeature A("A", true);
+  NumericFeature A("A", std::pair<int, int>(0, 1));
 
   EXPECT_TRUE(llvm::isa<NumericFeature>(A));
   EXPECT_FALSE(llvm::isa<BinaryFeature>(A));
