@@ -1,5 +1,5 @@
-#ifndef VARA_FEATURE_LOCATION_H
-#define VARA_FEATURE_LOCATION_H
+#ifndef VARA_FEATURE_FEATURESOURCERANGE_H
+#define VARA_FEATURE_FEATURESOURCERANGE_H
 
 #include "llvm/Support/FormatVariadic.h"
 
@@ -86,4 +86,4 @@ inline bool operator>(const FeatureSourceRange::FeatureSourceLocation &This,
 
 } // namespace vara::feature
 
-#endif // VARA_FEATURE_LOCATION_H
+#endif // VARA_FEATURE_FEATURESOURCERANGE_H

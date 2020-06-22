@@ -156,10 +156,10 @@ public:
   std::unique_ptr<FeatureModel> buildFeatureModel();
 
   std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
-      const std::vector<std::pair<std::string, std::string>> &,
+      const std::vector<std::pair<std::string, std::string>> &B,
       const std::vector<std::pair<
           std::string,
-          std::pair<std::string, NumericFeature::ValuesVariantType>>> & = {});
+          std::pair<std::string, NumericFeature::ValuesVariantType>>> &N = {});
 
 private:
   using EdgeMapType =
@@ -176,7 +176,7 @@ private:
 
   void buildConstraints();
 
-  bool buildTree(const std::string &, std::set<std::string> &);
+  bool buildTree(const std::string &F, std::set<std::string> &Visited);
 };
 } // namespace vara::feature
 
