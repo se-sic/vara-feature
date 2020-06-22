@@ -1,7 +1,7 @@
 #ifndef VARA_FEATURE_FEATUREMODEL_H
 #define VARA_FEATURE_FEATUREMODEL_H
 
-#include "vara/Feature/Feature.h"
+#include "vara/Feature/OrderedFeatureVector.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
@@ -19,6 +19,7 @@ namespace vara::feature {
 class FeatureModel {
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
+  using OrderedFeatureTy = OrderedFeatureVector;
   using ConstraintTy = llvm::SmallVector<std::pair<std::string, bool>, 3>;
   using ConstraintsTy = std::vector<ConstraintTy>;
 
@@ -26,7 +27,11 @@ public:
                ConstraintsTy Constraints, Feature *Root)
       : Name(std::move(Name)), RootPath(std::move(RootPath)),
         Constraints(std::move(Constraints)), Root(Root),
-        Features(std::move(Features)) {}
+        Features(std::move(Features)) {
+    for (const auto &KV : this->Features) {
+      OrderedFeatures.insert(KV.getValue().get());
+    }
+  }
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
@@ -37,45 +42,31 @@ public:
     return Root;
   }
 
-  struct FeatureModelIter
-      : std::iterator<std::random_access_iterator_tag, Feature &, ptrdiff_t,
-                      Feature *, Feature &> {
-    FeatureMapTy::const_iterator It;
-
-    explicit FeatureModelIter(FeatureMapTy::const_iterator It) : It(It) {}
-
-    Feature *operator*() const { return It->second.get(); }
-
-    FeatureModelIter &operator++() {
-      It++;
-      return *this;
-    }
-
-    bool operator==(const FeatureModelIter &Other) const {
-      return It == Other.It;
-    }
-
-    bool operator!=(const FeatureModelIter &Other) const {
-      return not operator==(Other);
-    }
-  };
-
-  FeatureModelIter begin() { return FeatureModelIter(Features.begin()); }
-
-  [[nodiscard]] FeatureModelIter begin() const {
-    return FeatureModelIter(Features.begin());
+  OrderedFeatureVector::ordered_feature_iterator begin() {
+    return OrderedFeatures.begin();
   }
 
-  FeatureModelIter end() { return FeatureModelIter(Features.end()); }
-
-  [[nodiscard]] FeatureModelIter end() const {
-    return FeatureModelIter(Features.end());
+  [[nodiscard]] OrderedFeatureVector::const_ordered_feature_iterator
+  begin() const {
+    return OrderedFeatures.begin();
   }
 
-  llvm::iterator_range<FeatureModelIter> features() {
+  OrderedFeatureVector::ordered_feature_iterator end() {
+    return OrderedFeatures.end();
+  }
+
+  [[nodiscard]] OrderedFeatureVector::const_ordered_feature_iterator
+  end() const {
+    return OrderedFeatures.end();
+  }
+
+  llvm::iterator_range<OrderedFeatureVector::ordered_feature_iterator>
+  features() {
     return llvm::make_range(begin(), end());
   }
-  [[nodiscard]] llvm::iterator_range<FeatureModelIter> features() const {
+  [[nodiscard]] llvm::iterator_range<
+      OrderedFeatureVector::const_ordered_feature_iterator>
+  features() const {
     return llvm::make_range(begin(), end());
   }
 
@@ -83,7 +74,7 @@ public:
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
 
-  Feature *getFeature(llvm::StringRef Name) { return Features[Name].get(); }
+  Feature *getFeature(llvm::StringRef F) { return Features[F].get(); }
 
   LLVM_DUMP_METHOD
   void dump() const;
@@ -92,6 +83,7 @@ private:
   string Name;
   fs::path RootPath;
   FeatureMapTy Features;
+  OrderedFeatureTy OrderedFeatures;
   ConstraintsTy Constraints;
   Feature *Root;
 };
