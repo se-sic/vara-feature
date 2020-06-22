@@ -145,12 +145,10 @@ public:
     return getName().lower() == F.getName().lower();
   }
 
-  struct FeatureDepthFirstComparator {
-    bool operator()(vara::feature::Feature *, vara::feature::Feature *) const;
-  };
+  bool operator<(const vara::feature::Feature &F) const;
 
-  bool operator<(vara::feature::Feature &F) {
-    return FeatureDepthFirstComparator().operator()(this, &F);
+  bool operator>(const vara::feature::Feature &F) const {
+    return F.operator<(*this);
   }
 
   //===--------------------------------------------------------------------===//

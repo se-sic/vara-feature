@@ -4,7 +4,7 @@
 
 namespace vara::feature {
 
-TEST(FeatureSort, sort) {
+TEST(OrderedFeatureVector, sort) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"},
                                                            {"b", "bb"},
                                                            {"aa", "aaa"},

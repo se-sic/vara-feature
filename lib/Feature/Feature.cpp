@@ -52,20 +52,19 @@ std::string NumericFeature::toString() const {
 
 std::string BinaryFeature::toString() const { return Feature::toString(); }
 
-bool Feature::FeatureDepthFirstComparator::operator()(
-    vara::feature::Feature *A, vara::feature::Feature *B) const {
-  std::stack<vara::feature::Feature *> TraceA;
-  std::stack<vara::feature::Feature *> TraceB;
-  if (A == B || A->isRoot()) {
-    return true;
-  }
-  if (B->isRoot()) {
+bool Feature::operator<(const vara::feature::Feature &F) const {
+  std::stack<const vara::feature::Feature *> TraceA;
+  std::stack<const vara::feature::Feature *> TraceB;
+  if (*this == F || F.isRoot()) {
     return false;
   }
-  for (vara::feature::Feature *Head = A; Head; Head = Head->getParent()) {
+  if (this->isRoot()) {
+    return true;
+  }
+  for (const auto *Head = this; Head; Head = Head->getParent()) {
     TraceA.push(Head);
   }
-  for (vara::feature::Feature *Head = B; Head; Head = Head->getParent()) {
+  for (const auto *Head = &F; Head; Head = Head->getParent()) {
     TraceB.push(Head);
   }
   assert(!TraceA.empty() && !TraceB.empty());
