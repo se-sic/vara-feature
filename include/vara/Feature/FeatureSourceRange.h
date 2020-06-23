@@ -18,6 +18,10 @@ namespace fs = std::filesystem;
 
 namespace vara::feature {
 
+//===----------------------------------------------------------------------===//
+//                               FeatureSourceRange Class
+//===----------------------------------------------------------------------===//
+
 class FeatureSourceRange {
 public:
   class FeatureSourceLocation {
@@ -58,7 +62,7 @@ public:
   FeatureSourceRange(fs::path Path,
                      std::optional<FeatureSourceLocation> Start = std::nullopt,
                      std::optional<FeatureSourceLocation> End = std::nullopt)
-      : Path(std::move(Path)), Start(Start), End(End) {}
+      : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)) {}
 
   [[nodiscard]] fs::path getPath() const { return Path; }
 

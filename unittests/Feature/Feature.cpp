@@ -9,9 +9,18 @@ TEST(Feature, equal) {
   BinaryFeature A2("a");
   BinaryFeature B("B");
 
-  EXPECT_TRUE(A0 == A1);
-  EXPECT_TRUE(A0 == A2);
-  EXPECT_FALSE(A0 == B);
+  EXPECT_EQ(A0, A1);
+  EXPECT_EQ(A0, A2);
+  EXPECT_NE(A0, B);
+}
+
+TEST(Feature, disjunct) {
+  BinaryFeature A("A");
+  BinaryFeature B("B");
+
+  EXPECT_NE(A, B);
+  EXPECT_LT(A, B);
+  EXPECT_GT(B, A);
 }
 
 TEST(Feature, lt) {

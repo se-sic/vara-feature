@@ -5,6 +5,12 @@
 
 namespace vara::feature {
 
+//===----------------------------------------------------------------------===//
+//                            OrderedFeatureVector Class
+//===----------------------------------------------------------------------===//
+
+/// \brief Always ordered vector of features comparing with \a
+/// Feature::operator<.
 class OrderedFeatureVector {
 public:
   using ordered_feature_iterator = typename std::vector<Feature *>::iterator;
@@ -13,6 +19,7 @@ public:
 
   OrderedFeatureVector() = default;
 
+  /// Insert feature while preserving ordering.
   void insert(Feature *F) {
     Features.insert(
         std::upper_bound(Features.begin(), Features.end(), F,
@@ -22,13 +29,11 @@ public:
   }
 
   ordered_feature_iterator begin() { return Features.begin(); }
-
   [[nodiscard]] const_ordered_feature_iterator begin() const {
     return Features.begin();
   }
 
   ordered_feature_iterator end() { return Features.end(); }
-
   [[nodiscard]] const_ordered_feature_iterator end() const {
     return Features.end();
   }

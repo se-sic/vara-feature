@@ -10,6 +10,28 @@ void FeatureModel::dump() const {
   llvm::outs() << '\n';
 }
 
+bool FeatureModel::addFeature(std::unique_ptr<Feature> F) {
+  std::string K = F->getName();
+  if (!Features.try_emplace(K, std::move(F)).second) {
+    return false;
+  }
+  Feature *V = Features[K].get();
+  for (auto *C : V->children()) {
+    C->setParent(V);
+  }
+  if (V->isRoot()) {
+    if (*Root->getParent() == *V) {
+      Root = V;
+    } else {
+      V->setParent(Root);
+    }
+  } else {
+    V->getParent()->addChild(V);
+  }
+  OrderedFeatures.insert(V);
+  return true;
+}
+
 void FeatureModelBuilder::buildConstraints() {
   for (const auto &F : Features.keys()) {
     for (const auto &E : Excludes[F]) {

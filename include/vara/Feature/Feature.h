@@ -39,6 +39,9 @@ public:
 
   [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
 
+  bool isParent() { return Parent != nullptr; }
+  [[nodiscard]] Feature *getParent() const { return Parent; }
+
   //===--------------------------------------------------------------------===//
   // Children
   feature_iterator children_begin() { return Children.begin(); }
@@ -133,17 +136,21 @@ public:
   }
   [[nodiscard]] const_feature_iterator end() const { return children_end(); }
 
-  bool isParent() { return Parent != nullptr; }
-  [[nodiscard]] Feature *getParent() const { return Parent; }
-
+  //===--------------------------------------------------------------------===//
+  // Operators
   Feature &operator=(const Feature &) = delete;
 
+  /// Compare lowercase name assuming those are unique.
   bool operator==(const vara::feature::Feature &F) const {
+    // TODO(s9latimm): keys in FM are case sensitive
     return getName().lower() == F.getName().lower();
   }
+  bool operator!=(const vara::feature::Feature &F) const {
+    return !operator==(F);
+  }
 
+  /// Compare in depth first ordering.
   bool operator<(const vara::feature::Feature &F) const;
-
   bool operator>(const vara::feature::Feature &F) const {
     return F.operator<(*this);
   }

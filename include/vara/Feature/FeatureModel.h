@@ -16,6 +16,7 @@ namespace vara::feature {
 //                               FeatureModel
 //===----------------------------------------------------------------------===//
 
+/// \brief Tree like representation of features and dependencies.
 class FeatureModel {
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
@@ -27,10 +28,13 @@ public:
                Feature *Root)
       : Name(std::move(Name)), RootPath(std::move(RootPath)), Root(Root),
         Features(std::move(Features)) {
+    // Insert all values into ordered data structure.
     for (const auto &KV : this->Features) {
       OrderedFeatures.insert(KV.getValue().get());
     }
   }
+
+  [[nodiscard]] unsigned int size() { return Features.size(); }
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
@@ -41,32 +45,18 @@ public:
     return Root;
   }
 
-  bool addFeature(std::unique_ptr<Feature> B) {
-    std::string Key = B->getName();
-    if (!Features.try_emplace(Key, std::move(B)).second) {
-      return false;
-    }
-    Feature *F = Features[Key].get();
-    for (auto *C : F->children()) {
-      C->setParent(F);
-    }
-    if (F->isRoot()) {
-      if (*Root->getParent() == *F) {
-        Root = F;
-      } else {
-        F->setParent(Root);
-      }
-    } else {
-      F->getParent()->addChild(F);
-    }
-    OrderedFeatures.insert(F);
-    return true;
-  }
+  /// Insert a \a Feature into existing model while keeping consistency and
+  /// ordering.
+  ///
+  /// \param F feature to be inserted
+  /// \return if feature was inserted successfully
+  bool addFeature(std::unique_ptr<Feature> F);
 
+  //===--------------------------------------------------------------------===//
+  // Ordered feature iterator
   OrderedFeatureVector::ordered_feature_iterator begin() {
     return OrderedFeatures.begin();
   }
-
   [[nodiscard]] OrderedFeatureVector::const_ordered_feature_iterator
   begin() const {
     return OrderedFeatures.begin();
@@ -75,7 +65,6 @@ public:
   OrderedFeatureVector::ordered_feature_iterator end() {
     return OrderedFeatures.end();
   }
-
   [[nodiscard]] OrderedFeatureVector::const_ordered_feature_iterator
   end() const {
     return OrderedFeatures.end();
@@ -91,7 +80,8 @@ public:
     return llvm::make_range(begin(), end());
   }
 
-  [[nodiscard]] unsigned int size() { return Features.size(); }
+  //===--------------------------------------------------------------------===//
+  // Utility
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
 
@@ -114,6 +104,7 @@ private:
 //                     Builder for FeatureModel
 //===----------------------------------------------------------------------===//
 
+/// \brief Builder for \a FeatureModel which can be used while parsing.
 class FeatureModelBuilder : private FeatureModel {
 public:
   FeatureModelBuilder() : FeatureModel("", "", {}, nullptr){};
@@ -129,6 +120,16 @@ public:
     Excludes.clear();
   }
 
+  /// Try to add \a BinaryFeature.
+  bool addFeature(const std::string &Key, bool Opt = false,
+                  std::optional<FeatureSourceRange> Loc = std::nullopt) {
+    return Features
+        .try_emplace(Key,
+                     std::make_unique<BinaryFeature>(Key, Opt, std::move(Loc)))
+        .second;
+  }
+
+  /// Try to add \a NumericFeature.
   bool addFeature(const std::string &Key,
                   const NumericFeature::ValuesVariantType &Values,
                   bool Opt = false,
@@ -136,14 +137,6 @@ public:
     return Features
         .try_emplace(Key, std::make_unique<NumericFeature>(Key, Values, Opt,
                                                            std::move(Loc)))
-        .second;
-  }
-
-  bool addFeature(const std::string &Key, bool Opt = false,
-                  std::optional<FeatureSourceRange> Loc = std::nullopt) {
-    return Features
-        .try_emplace(Key,
-                     std::make_unique<BinaryFeature>(Key, Opt, std::move(Loc)))
         .second;
   }
 
@@ -175,8 +168,17 @@ public:
 
   FeatureModelBuilder *setRoot(const std::string &R = "root");
 
+  /// Build \a FeatureModel.
+  ///
+  /// @return instance of \a FeatureModel
+
   std::unique_ptr<FeatureModel> buildFeatureModel();
 
+  /// Build simple \a FeatureModel from given edges.
+  ///
+  /// \param B edges with \a BinaryFeature
+  /// \param N edges with \a NumericFeature
+  /// \return instance of \a FeatureModel
   std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
       const std::vector<std::pair<std::string, std::string>> &B,
       const std::vector<std::pair<
@@ -227,10 +229,10 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   GraphWriter(raw_ostream &O, const GraphType &G, bool SN) : O(O), G(G) {}
 
   void writeGraph(const std::string &Title = "") {
-    // Output the header for the graph...
+    // Output the header for the graph
     writeHeader(Title);
 
-    // Emit all of the nodes in the graph...
+    // Emit all of the nodes in the graph
     writeNodes();
 
     // Output the end of the graph

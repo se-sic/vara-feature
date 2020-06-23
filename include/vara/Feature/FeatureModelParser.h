@@ -14,6 +14,7 @@ namespace vara::feature {
 //                               FeatureModelParser Class
 //===----------------------------------------------------------------------===//
 
+/// \brief Base class for parsers with different input formats.
 class FeatureModelParser {
 protected:
   explicit FeatureModelParser() = default;
@@ -21,14 +22,14 @@ protected:
 public:
   virtual ~FeatureModelParser() = default;
 
-  /// Build \a FeatureModel after parsing.
+  /// Build \a FeatureModel after parsing. May return null if parsing or
+  /// building failed.
   ///
-  /// \returns an instance of \a FeatureModel
+  /// \returns an instance of \a FeatureModel or \a nullptr
   virtual std::unique_ptr<FeatureModel> buildFeatureModel() = 0;
 
-  /// Verify \a FeatureModel.
-  ///
-  /// \returns if \a FeatureModel is valid
+  /// Checks whether input is a valid feature model as acyclic graph with unique
+  /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.
   virtual bool verifyFeatureModel() = 0;
 };
 
@@ -36,6 +37,7 @@ public:
 //                               FeatureModelXmlParser Class
 //===----------------------------------------------------------------------===//
 
+/// \brief Parsers for feature models in XML.
 class FeatureModelXmlParser : public FeatureModelParser {
 public:
   explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
