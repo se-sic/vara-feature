@@ -60,11 +60,12 @@ public:
     int Column;
   };
 
-  FeatureSourceRange(
-      fs::path Path,
-      const std::optional<FeatureSourceLocation> &Start = std::nullopt,
-      const std::optional<FeatureSourceLocation> &End = std::nullopt)
-      : Path(std::move(Path)), Start(Start), End(End) {}
+  // TODO(s9latimm): remove NOLINT
+  FeatureSourceRange(fs::path Path,
+                     std::optional<FeatureSourceLocation> Start = std::nullopt,
+                     std::optional<FeatureSourceLocation> End = std::nullopt)
+      : Path(std::move(Path)), Start(Start), End(End) { // NOLINT
+  }
 
   [[nodiscard]] fs::path getPath() const { return Path; }
 
