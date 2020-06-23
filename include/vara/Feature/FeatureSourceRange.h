@@ -15,6 +15,7 @@ namespace fs = std::filesystem;
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <utility>
 
 namespace vara::feature {
 
@@ -62,7 +63,7 @@ public:
   FeatureSourceRange(fs::path Path,
                      std::optional<FeatureSourceLocation> Start = std::nullopt,
                      std::optional<FeatureSourceLocation> End = std::nullopt)
-      : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)) {}
+      : Path(std::move(Path)), Start(Start), End(End) {}
 
   [[nodiscard]] fs::path getPath() const { return Path; }
 
