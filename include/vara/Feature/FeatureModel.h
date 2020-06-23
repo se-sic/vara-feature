@@ -24,9 +24,8 @@ public:
   using ConstraintsTy = std::vector<ConstraintTy>;
 
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
-               ConstraintsTy Constraints, Feature *Root)
-      : Name(std::move(Name)), RootPath(std::move(RootPath)),
-        Constraints(std::move(Constraints)), Root(Root),
+               Feature *Root)
+      : Name(std::move(Name)), RootPath(std::move(RootPath)), Root(Root),
         Features(std::move(Features)) {
     for (const auto &KV : this->Features) {
       OrderedFeatures.insert(KV.getValue().get());
@@ -40,6 +39,28 @@ public:
   [[nodiscard]] Feature *getRoot() const {
     assert(Root);
     return Root;
+  }
+
+  bool addFeature(std::unique_ptr<Feature> B) {
+    std::string Key = B->getName();
+    if (!Features.try_emplace(Key, std::move(B)).second) {
+      return false;
+    }
+    Feature *F = Features[Key].get();
+    for (auto *C : F->children()) {
+      C->setParent(F);
+    }
+    if (F->isRoot()) {
+      if (*Root->getParent() == *F) {
+        Root = F;
+      } else {
+        F->setParent(Root);
+      }
+    } else {
+      F->getParent()->addChild(F);
+    }
+    OrderedFeatures.insert(F);
+    return true;
   }
 
   OrderedFeatureVector::ordered_feature_iterator begin() {
@@ -79,26 +100,27 @@ public:
   LLVM_DUMP_METHOD
   void dump() const;
 
-private:
+protected:
   string Name;
   fs::path RootPath;
   FeatureMapTy Features;
-  OrderedFeatureTy OrderedFeatures;
-  ConstraintsTy Constraints;
   Feature *Root;
+
+private:
+  OrderedFeatureTy OrderedFeatures;
 };
 
 //===----------------------------------------------------------------------===//
 //                     Builder for FeatureModel
 //===----------------------------------------------------------------------===//
 
-class FeatureModelBuilder {
+class FeatureModelBuilder : private FeatureModel {
 public:
-  FeatureModelBuilder() = default;
+  FeatureModelBuilder() : FeatureModel("", "", {}, nullptr){};
 
   void init() {
-    VmName = "";
-    Path = "";
+    Name = "";
+    RootPath = "";
     Root = nullptr;
     Features.clear();
     Constraints.clear();
@@ -142,12 +164,12 @@ public:
   }
 
   FeatureModelBuilder *setVmName(std::string N) {
-    this->VmName = std::move(N);
+    this->Name = std::move(N);
     return this;
   }
 
   FeatureModelBuilder *setPath(fs::path P) {
-    this->Path = std::move(P);
+    this->RootPath = std::move(P);
     return this;
   }
 
@@ -165,10 +187,6 @@ private:
   using EdgeMapType =
       typename llvm::StringMap<llvm::SmallVector<std::string, 3>>;
 
-  std::string VmName;
-  fs::path Path;
-  Feature *Root{nullptr};
-  FeatureModel::FeatureMapTy Features;
   FeatureModel::ConstraintsTy Constraints;
   llvm::StringMap<std::string> Parents;
   EdgeMapType Children;

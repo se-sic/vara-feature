@@ -8,18 +8,6 @@ void FeatureModel::dump() const {
     llvm::outs() << "}\n";
   }
   llvm::outs() << '\n';
-  for (auto C : this->Constraints) {
-    for (const auto &F : C) {
-      if (!F.second) {
-        llvm::outs() << "!";
-      }
-      llvm::outs() << F.first;
-      if (F != C.back()) {
-        llvm::outs() << " | ";
-      }
-    }
-    llvm::outs() << "\n";
-  }
 }
 
 void FeatureModelBuilder::buildConstraints() {
@@ -113,8 +101,8 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
     return nullptr;
   }
   buildConstraints();
-  return std::make_unique<FeatureModel>(VmName, Path, std::move(Features),
-                                        Constraints, Root);
+  return std::make_unique<FeatureModel>(Name, RootPath, std::move(Features),
+                                        Root);
 }
 
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(

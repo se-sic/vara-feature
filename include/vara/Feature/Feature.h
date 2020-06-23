@@ -164,9 +164,13 @@ public:
 
 protected:
   Feature(FeatureType T, string Name, bool Opt,
-          std::optional<FeatureSourceRange> Loc, Feature *Parent)
+          std::optional<FeatureSourceRange> Loc, Feature *Parent,
+          FeatureSetType Children, FeatureSetType Excludes,
+          FeatureSetType Implications, FeatureSetType Alternatives)
       : T(T), Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)),
-        Parent(Parent) {}
+        Parent(Parent), Children(std::move(Children)),
+        Excludes(std::move(Excludes)), Implications(std::move(Implications)),
+        Alternatives(std::move(Alternatives)) {}
 
 private:
   friend class FeatureModel;
@@ -174,8 +178,8 @@ private:
 
   FeatureType T;
   string Name;
-  std::optional<FeatureSourceRange> Loc;
   bool Opt;
+  std::optional<FeatureSourceRange> Loc;
   Feature *Parent;
   FeatureSetType Children;
   FeatureSetType Excludes;
@@ -199,8 +203,12 @@ class BinaryFeature : public Feature {
 public:
   BinaryFeature(string Name, bool Opt = false,
                 std::optional<FeatureSourceRange> Loc = std::nullopt,
-                Feature *Parent = nullptr)
-      : Feature(BINARY, std::move(Name), Opt, std::move(Loc), Parent) {}
+                Feature *Parent = nullptr, FeatureSetType Children = {},
+                FeatureSetType Excludes = {}, FeatureSetType Implications = {},
+                FeatureSetType Alternatives = {})
+      : Feature(BINARY, std::move(Name), Opt, std::move(Loc), Parent,
+                std::move(Children), std::move(Excludes),
+                std::move(Implications), std::move(Alternatives)) {}
 
   [[nodiscard]] string toString() const override;
 
@@ -215,8 +223,12 @@ public:
 
   NumericFeature(string Name, ValuesVariantType Values, bool Opt = false,
                  std::optional<FeatureSourceRange> Loc = std::nullopt,
-                 Feature *Parent = nullptr)
-      : Feature(NUMERIC, std::move(Name), Opt, std::move(Loc), Parent),
+                 Feature *Parent = nullptr, FeatureSetType Children = {},
+                 FeatureSetType Excludes = {}, FeatureSetType Implications = {},
+                 FeatureSetType Alternatives = {})
+      : Feature(NUMERIC, std::move(Name), Opt, std::move(Loc), Parent,
+                std::move(Children), std::move(Excludes),
+                std::move(Implications), std::move(Alternatives)),
         Values(std::move(Values)) {}
 
   [[nodiscard]] ValuesVariantType getValues() const { return Values; }
