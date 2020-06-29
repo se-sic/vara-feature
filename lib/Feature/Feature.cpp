@@ -52,20 +52,10 @@ std::string NumericFeature::toString() const {
 
 std::string BinaryFeature::toString() const { return Feature::toString(); }
 
+/// Find roots of subtrees containing either A (this) or B (Other) which have a
+/// common parent and compare them lexicographically. If no such node can be
+/// found compare names directly.
 bool Feature::operator<(const vara::feature::Feature &Other) const {
-  if (*this == Other || (this->isRoot() && Other.isRoot())) { // not a tree
-    return this->getName().lower() < Other.getName().lower();
-  }
-  if (this->isRoot()) {
-    return true;
-  }
-  if (Other.isRoot()) {
-    return false;
-  }
-
-  // Find roots of subtrees containing either A (this) or B (F)  which have a
-  // common parent and compare them lexicographically.
-
   std::stack<const vara::feature::Feature *> TraceA;
   std::stack<const vara::feature::Feature *> TraceB;
 
@@ -75,22 +65,23 @@ bool Feature::operator<(const vara::feature::Feature &Other) const {
   for (const auto *Head = &Other; Head; Head = Head->getParent()) {
     TraceB.push(Head); // path from B to root
   }
-
   assert(!TraceA.empty() && !TraceB.empty());
+
+  if (TraceA.top() != TraceB.top()) { // different roots
+    return this->getName().lower() < Other.getName().lower();
+  }
   while (!TraceA.empty() && !TraceB.empty() &&
          TraceA.top() == TraceB.top()) { // skip common ancestors
     TraceA.pop();
     TraceB.pop();
   }
 
-  assert(!TraceA.empty() || !TraceB.empty());
-  if (TraceA.empty()) { // B in subtree of A
-    return true;
+  if (TraceA.empty()) {     // B in subtree of A
+    return !TraceB.empty(); // B not equal A
   }
   if (TraceB.empty()) { // A in subtree of B
     return false;
   }
-
   return TraceA.top()->getName().lower() < TraceB.top()->getName().lower();
 }
 } // namespace vara::feature
