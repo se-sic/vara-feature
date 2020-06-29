@@ -15,6 +15,16 @@ TEST(Feature, equal) {
 }
 
 TEST(Feature, disjunct) {
+  auto FMA = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
+  auto FMB = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "b"}});
+  assert(FMA && FMB);
+
+  EXPECT_NE(*FMA->getFeature("a"), *FMB->getFeature("b"));
+  EXPECT_LT(*FMA->getFeature("a"), *FMB->getFeature("b"));
+  EXPECT_GT(*FMB->getFeature("b"), *FMA->getFeature("a"));
+}
+
+TEST(Feature, disjunctRaw) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
   assert(FM);
   BinaryFeature B("B");
@@ -22,6 +32,16 @@ TEST(Feature, disjunct) {
   EXPECT_NE(*FM->getFeature("a"), B);
   EXPECT_LT(*FM->getFeature("a"), B);
   EXPECT_GT(B, *FM->getFeature("a"));
+}
+
+TEST(Feature, ltSameName) {
+  auto FMA = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
+  auto FMB = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
+  assert(FMA && FMB);
+
+  EXPECT_EQ(*FMA->getFeature("a"), *FMB->getFeature("a"));
+  EXPECT_FALSE(*FMA->getFeature("a") < *FMB->getFeature("a"));
+  EXPECT_FALSE(*FMB->getFeature("a") < *FMA->getFeature("a"));
 }
 
 TEST(Feature, ltEqual) {
