@@ -5,7 +5,7 @@
 
 namespace vara::feature {
 
-bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
+bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                      bool Num = false) {
   string Name;
   bool Opt = false;
@@ -13,7 +13,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
   int MaxValue = 0;
   std::vector<int> Values;
   std::optional<FeatureSourceRange> Loc;
-  for (xmlNode *Head = N->children; Head; Head = Head->next) {
+  for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       string Cnt = std::string(
           reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
@@ -24,7 +24,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
       } else if (!xmlStrcmp(Head->name, OPTIONAL)) {
         Opt = Cnt == "True";
       } else if (!xmlStrcmp(Head->name, PARENT)) {
-        FMB.addChild(Cnt, Name);
+        FMB.addParent(Name, Cnt);
       } else if (!xmlStrcmp(Head->name, EXCLUDEDOPTIONS)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
@@ -81,8 +81,8 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *N,
   return FMB.addFeature(Name, Opt, std::move(Loc));
 }
 
-bool FeatureModelXmlParser::parseOptions(xmlNode *N, bool Num = false) {
-  for (xmlNode *H = N->children; H; H = H->next) {
+bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
+  for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, CONFIGURATIONOPTION)) {
         if (!parseConfigurationOption(H, Num)) {
@@ -94,8 +94,8 @@ bool FeatureModelXmlParser::parseOptions(xmlNode *N, bool Num = false) {
   return true;
 }
 
-bool FeatureModelXmlParser::parseConstraints(xmlNode *N) {
-  for (xmlNode *H = N->children; H; H = H->next) {
+bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
+  for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, CONSTRAINT)) {
         string Cnt = std::string(
@@ -121,19 +121,19 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *N) {
   return true;
 }
 
-bool FeatureModelXmlParser::parseVm(xmlNode *N) {
+bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, NAME),
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, NAME),
                                                    xmlFree);
     FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
   }
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(N, ROOT),
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, ROOT),
                                                    xmlFree);
     FMB.setPath(Cnt ? fs::path(reinterpret_cast<char *>(Cnt.get()))
                     : fs::current_path());
   }
-  for (xmlNode *H = N->children; H; H = H->next) {
+  for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, BINARYOPTIONS)) {
         if (!parseOptions(H)) {
@@ -154,10 +154,10 @@ bool FeatureModelXmlParser::parseVm(xmlNode *N) {
 }
 
 FeatureSourceRange::FeatureSourceLocation
-FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *N) {
+FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
   int Line = 0;
   int Column = 0;
-  for (xmlNode *Head = N->children; Head; Head = Head->next) {
+  for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(Head->name, LINE)) {
         Line = atoi(

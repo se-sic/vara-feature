@@ -8,8 +8,8 @@ std::string Feature::toString() const {
   std::stringstream StrS;
   StrS << "  name: \"" << Name
        << "\",\n  optional: " << (Opt ? "true" : "false") << ",\n  ";
-  if (Loc) {
-    StrS << "location: " << Loc->toString() << ",\n  ";
+  if (Source) {
+    StrS << "location: " << Source->toString() << ",\n  ";
   }
   if (Parent) {
     StrS << "parent: " << Parent->Name << ",\n  ";
@@ -52,14 +52,14 @@ std::string NumericFeature::toString() const {
 
 std::string BinaryFeature::toString() const { return Feature::toString(); }
 
-bool Feature::operator<(const vara::feature::Feature &F) const {
-  if (*this == F || (this->isRoot() && F.isRoot())) { // not a tree
-    return this->getName().lower() < F.getName().lower();
+bool Feature::operator<(const vara::feature::Feature &Other) const {
+  if (*this == Other || (this->isRoot() && Other.isRoot())) { // not a tree
+    return this->getName().lower() < Other.getName().lower();
   }
   if (this->isRoot()) {
     return true;
   }
-  if (F.isRoot()) {
+  if (Other.isRoot()) {
     return false;
   }
 
@@ -72,7 +72,7 @@ bool Feature::operator<(const vara::feature::Feature &F) const {
   for (const auto *Head = this; Head; Head = Head->getParent()) {
     TraceA.push(Head); // path from A to root
   }
-  for (const auto *Head = &F; Head; Head = Head->getParent()) {
+  for (const auto *Head = &Other; Head; Head = Head->getParent()) {
     TraceB.push(Head); // path from B to root
   }
 

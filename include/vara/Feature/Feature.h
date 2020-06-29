@@ -26,12 +26,12 @@ public:
   using feature_iterator = typename FeatureSetType::iterator;
   using const_feature_iterator = typename FeatureSetType::const_iterator;
 
-  enum FeatureType { BINARY, NUMERIC };
+  enum FeatureKind { FK_BINARY, FK_NUMERIC };
 
   Feature(const Feature &) = delete;
   virtual ~Feature() = default;
 
-  [[nodiscard]] FeatureType getType() const { return T; }
+  [[nodiscard]] FeatureKind getKind() const { return T; }
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
@@ -141,22 +141,22 @@ public:
   Feature &operator=(const Feature &) = delete;
 
   /// Compare lowercase name assuming those are unique.
-  bool operator==(const vara::feature::Feature &F) const {
+  bool operator==(const vara::feature::Feature &Other) const {
     // TODO(s9latimm): keys in FM are case sensitive
-    return getName().lower() == F.getName().lower();
+    return getName().lower() == Other.getName().lower();
   }
-  bool operator!=(const vara::feature::Feature &F) const {
-    return !operator==(F);
+  bool operator!=(const vara::feature::Feature &Other) const {
+    return !operator==(Other);
   }
 
   /// Compare in depth first ordering.
-  bool operator<(const vara::feature::Feature &F) const;
-  bool operator>(const vara::feature::Feature &F) const {
-    return F.operator<(*this);
+  bool operator<(const vara::feature::Feature &Other) const;
+  bool operator>(const vara::feature::Feature &Other) const {
+    return Other.operator<(*this);
   }
 
   [[nodiscard]] FeatureSourceRange *getFeatureSourceRange() {
-    return Loc.has_value() ? &Loc.value() : nullptr;
+    return Source.has_value() ? &Source.value() : nullptr;
   }
 
   //===--------------------------------------------------------------------===//
@@ -170,11 +170,11 @@ public:
   void dump() const { llvm::outs() << toString() << "\n"; }
 
 protected:
-  Feature(FeatureType T, string Name, bool Opt,
-          std::optional<FeatureSourceRange> Loc, Feature *Parent,
+  Feature(FeatureKind Kind, string Name, bool Opt,
+          std::optional<FeatureSourceRange> Source, Feature *Parent,
           FeatureSetType Children, FeatureSetType Excludes,
           FeatureSetType Implications, FeatureSetType Alternatives)
-      : T(T), Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)),
+      : T(Kind), Name(std::move(Name)), Opt(Opt), Source(std::move(Source)),
         Parent(Parent), Children(std::move(Children)),
         Excludes(std::move(Excludes)), Implications(std::move(Implications)),
         Alternatives(std::move(Alternatives)) {}
@@ -183,19 +183,19 @@ private:
   friend class FeatureModel;
   friend class FeatureModelBuilder;
 
-  FeatureType T;
+  FeatureKind T;
   string Name;
   bool Opt;
-  std::optional<FeatureSourceRange> Loc;
+  std::optional<FeatureSourceRange> Source;
   Feature *Parent;
   FeatureSetType Children;
   FeatureSetType Excludes;
   FeatureSetType Implications;
   FeatureSetType Alternatives;
 
-  void addChild(Feature *F) { Children.insert(F); }
+  void addChild(Feature *Feature) { Children.insert(Feature); }
 
-  void setParent(Feature *F) { Parent = F; }
+  void setParent(Feature *Feature) { Parent = Feature; }
 
   void addExclude(Feature *F) { Excludes.insert(F); }
 
@@ -213,13 +213,13 @@ public:
                 Feature *Parent = nullptr, FeatureSetType Children = {},
                 FeatureSetType Excludes = {}, FeatureSetType Implications = {},
                 FeatureSetType Alternatives = {})
-      : Feature(BINARY, std::move(Name), Opt, std::move(Loc), Parent,
+      : Feature(FK_BINARY, std::move(Name), Opt, std::move(Loc), Parent,
                 std::move(Children), std::move(Excludes),
                 std::move(Implications), std::move(Alternatives)) {}
 
   [[nodiscard]] string toString() const override;
 
-  static bool classof(const Feature *F) { return F->getType() == BINARY; }
+  static bool classof(const Feature *F) { return F->getKind() == FK_BINARY; }
 };
 
 /// Options with numeric values.
@@ -233,7 +233,7 @@ public:
                  Feature *Parent = nullptr, FeatureSetType Children = {},
                  FeatureSetType Excludes = {}, FeatureSetType Implications = {},
                  FeatureSetType Alternatives = {})
-      : Feature(NUMERIC, std::move(Name), Opt, std::move(Loc), Parent,
+      : Feature(FK_NUMERIC, std::move(Name), Opt, std::move(Loc), Parent,
                 std::move(Children), std::move(Excludes),
                 std::move(Implications), std::move(Alternatives)),
         Values(std::move(Values)) {}
@@ -242,7 +242,7 @@ public:
 
   [[nodiscard]] string toString() const override;
 
-  static bool classof(const Feature *F) { return F->getType() == NUMERIC; }
+  static bool classof(const Feature *F) { return F->getKind() == FK_NUMERIC; }
 
 private:
   ValuesVariantType Values;

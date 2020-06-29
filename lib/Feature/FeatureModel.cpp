@@ -2,112 +2,127 @@
 
 namespace vara::feature {
 void FeatureModel::dump() const {
-  for (const auto &F : Features) {
+  for (const auto &Feature : Features) {
     llvm::outs() << "{\n";
-    F.second->dump();
+    Feature.second->dump();
     llvm::outs() << "}\n";
   }
   llvm::outs() << '\n';
 }
 
-bool FeatureModel::addFeature(std::unique_ptr<Feature> F) {
-  std::string K = F->getName();
-  if (!Features.try_emplace(K, std::move(F)).second) {
+bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
+  std::string Key = Feature->getName();
+  if (!Features.try_emplace(Key, std::move(Feature)).second) {
     return false;
   }
-  Feature *V = Features[K].get();
-  for (auto *C : V->children()) {
-    C->setParent(V);
+  auto *Value = Features[Key].get();
+  for (auto *Child : Value->children()) {
+    Child->setParent(Value);
   }
-  if (V->isRoot()) {
-    if (*Root->getParent() == *V) {
-      Root = V;
+  if (Value->isRoot()) {
+    if (*Root->getParent() == *Value) {
+      Root = Value;
     } else {
-      V->setParent(Root);
+      Value->setParent(Root);
     }
   } else {
-    V->getParent()->addChild(V);
+    Value->getParent()->addChild(Value);
   }
-  OrderedFeatures.insert(V);
+  OrderedFeatures.insert(Value);
   return true;
 }
 
-void FeatureModelBuilder::buildConstraints() {
-  for (const auto &F : Features.keys()) {
-    for (const auto &E : Excludes[F]) {
-      Features[F]->addExclude(Features[E].get());
+bool FeatureModelBuilder::buildConstraints() {
+  for (const auto &Feature : Features.keys()) {
+    for (const auto &Exclude : Excludes[Feature]) {
+      Features[Feature]->addExclude(Features[Exclude].get());
     }
   }
 
-  for (const auto &C : Constraints) {
-    if (C.size() == 2) {
-      if (C[0].second != C[1].second) {
-        if (C[0].second) { // A || !B
-          Features[C[1].first]->addImplication(Features[C[0].first].get());
-        } else { // !A || B
-          Features[C[0].first]->addImplication(Features[C[1].first].get());
-        }
-      } else if (!(C[0].second || C[1].second)) { // !A || !B
-        Features[C[0].first]->addExclude(Features[C[1].first].get());
-        Features[C[1].first]->addExclude(Features[C[0].first].get());
-      } else if (C[0].second && C[1].second) { // A || B
-        Features[C[0].first]->addAlternative(Features[C[1].first].get());
-        Features[C[1].first]->addAlternative(Features[C[0].first].get());
+  for (const ConstraintTy &Clause : Constraints) {
+    if (Clause.size() > 2) {
+      // TODO(s9latimm): add missing constraint handling
+      bool NoNegation = true;
+      for (const auto &Literal : Clause) {
+        NoNegation &= Literal.second;
       }
-    } else if (C.size() > 2) {
-      bool B = true;
-      for (const auto &P : C) {
-        B &= P.second;
-      }
-      if (B) {
-        for (const auto &P : C) {
-          for (const auto &PP : C) {
-            if (P.first != PP.first) {
-              Features[P.first]->addAlternative(Features[PP.first].get());
+      if (NoNegation) {
+        for (const auto &Literal : Clause) {
+          for (const auto &OtherLiteral : Clause) {
+            if (Literal.first != OtherLiteral.first) {
+              Features[Literal.first]->addAlternative(
+                  Features[OtherLiteral.first].get());
             }
           }
         }
+      } else {
+        llvm::errs() << "warning: Unrecognized clause.\n";
       }
-    }
-  }
-}
-
-bool FeatureModelBuilder::buildTree(const string &F,
-                                    std::set<std::string> &Visited) {
-  if (find(Visited.begin(), Visited.end(), F) != Visited.end()) {
-    llvm::errs() << "error: Cycle or duplicate edge in \'" << F << "\'.\n";
-    return false;
-  }
-  Visited.insert(F);
-
-  if (find(Features.keys().begin(), Features.keys().end(), F) ==
-      Features.keys().end()) {
-    llvm::errs() << "error: Missing feature \'\'" << F << "\'.\n";
-    return false;
-  }
-
-  for (const auto &C : Children[F]) {
-    if (!buildTree(C, Visited)) {
+    } else if (Clause.size() == 2) {
+      if (Clause[0].second != Clause[1].second) {
+        if (Clause[0].second) { // A || !B
+          Features[Clause[1].first]->addImplication(
+              Features[Clause[0].first].get());
+        } else { // !A || B
+          Features[Clause[0].first]->addImplication(
+              Features[Clause[1].first].get());
+        }
+      } else if (!(Clause[0].second || Clause[1].second)) { // !A || !B
+        Features[Clause[0].first]->addExclude(Features[Clause[1].first].get());
+        Features[Clause[1].first]->addExclude(Features[Clause[0].first].get());
+      } else if (Clause[0].second && Clause[1].second) { // A || B
+        Features[Clause[0].first]->addAlternative(
+            Features[Clause[1].first].get());
+        Features[Clause[1].first]->addAlternative(
+            Features[Clause[0].first].get());
+      }
+    } else if (Clause.size() == 1 && !Clause.front().second) {
+      llvm::errs() << "error: Clause \'!" << Clause.front().first
+                   << "\' invalidates feature.\n";
       return false;
+    } else {
+      llvm::errs() << "warning: Empty or trivial clause.\n";
     }
-    Features[F]->addChild(Features[C].get());
-    Features[C]->setParent(Features[F].get());
   }
   return true;
 }
 
-FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &R) {
+bool FeatureModelBuilder::buildTree(const string &Key,
+                                    std::set<std::string> &Visited) {
+  if (find(Visited.begin(), Visited.end(), Key) != Visited.end()) {
+    llvm::errs() << "error: Cycle or duplicate edge in \'" << Key << "\'.\n";
+    return false;
+  }
+  Visited.insert(Key);
+
+  if (find(Features.keys().begin(), Features.keys().end(), Key) ==
+      Features.keys().end()) {
+    llvm::errs() << "error: Missing feature \'\'" << Key << "\'.\n";
+    return false;
+  }
+
+  for (const auto &Child : Children[Key]) {
+    if (!buildTree(Child, Visited)) {
+      return false;
+    }
+    Features[Key]->addChild(Features[Child].get());
+    Features[Child]->setParent(Features[Key].get());
+  }
+  return true;
+}
+
+FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &RootKey) {
   assert(this->Root == nullptr && "Root already set.");
 
-  if (Features.find(R) == Features.end()) {
-    addFeature(R, false);
+  if (Features.find(RootKey) == Features.end()) {
+    addFeature(RootKey, false);
   }
-  this->Root = Features[R].get();
+  this->Root = Features[RootKey].get();
 
-  for (const auto &F : Features.keys()) {
-    if (F != R && Parents.find(F) == Parents.end()) {
-      Children[R].push_back(F);
-      Parents[F] = R;
+  for (const auto &Key : Features.keys()) {
+    if (Key != RootKey && Parents.find(Key) == Parents.end()) {
+      Children[RootKey].push_back(Key);
+      Parents[Key] = RootKey;
     }
   }
   return this;
@@ -119,12 +134,10 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
   }
   assert(Root && "Root not set.");
   std::set<std::string> Visited;
-  if (!buildTree(Root->getName(), Visited)) {
+  if (!buildTree(Root->getName(), Visited) || !buildConstraints()) {
     return nullptr;
   }
-  buildConstraints();
-  return std::make_unique<FeatureModel>(Name, RootPath, std::move(Features),
-                                        Root);
+  return std::make_unique<FeatureModel>(Name, Path, std::move(Features), Root);
 }
 
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
@@ -133,15 +146,15 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
         std::string, std::pair<std::string, NumericFeature::ValuesVariantType>>>
         &N) {
   init();
-  for (const auto &P : B) {
-    addFeature(P.first);
-    addFeature(P.second);
-    addChild(P.first, P.second);
+  for (const auto &Binary : B) {
+    addFeature(Binary.first);
+    addFeature(Binary.second);
+    addParent(Binary.second, Binary.first);
   }
-  for (const auto &P : N) {
-    addFeature(P.first);
-    addFeature(P.second.first, P.second.second);
-    addChild(P.first, P.second.first);
+  for (const auto &Numeric : N) {
+    addFeature(Numeric.first);
+    addFeature(Numeric.second.first, Numeric.second.second);
+    addParent(Numeric.second.first, Numeric.first);
   }
   return std::move(buildFeatureModel());
 }

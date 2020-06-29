@@ -113,13 +113,13 @@ private:
   std::string Xml;
   FeatureModelBuilder FMB;
 
-  bool parseConfigurationOption(xmlNode *N, bool Num);
-  bool parseOptions(xmlNode *N, bool Num);
-  bool parseConstraints(xmlNode *N);
-  bool parseVm(xmlNode *N);
+  bool parseConfigurationOption(xmlNode *Node, bool Num);
+  bool parseOptions(xmlNode *Node, bool Num);
+  bool parseConstraints(xmlNode *Node);
+  bool parseVm(xmlNode *Node);
 
   static FeatureSourceRange::FeatureSourceLocation
-  createFeatureSourceLocation(xmlNode *N);
+  createFeatureSourceLocation(xmlNode *Node);
 
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();

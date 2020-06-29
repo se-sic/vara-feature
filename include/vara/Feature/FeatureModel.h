@@ -26,7 +26,7 @@ public:
 
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
                Feature *Root)
-      : Name(std::move(Name)), RootPath(std::move(RootPath)), Root(Root),
+      : Name(std::move(Name)), Path(std::move(RootPath)), Root(Root),
         Features(std::move(Features)) {
     // Insert all values into ordered data structure.
     for (const auto &KV : this->Features) {
@@ -38,7 +38,7 @@ public:
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
-  [[nodiscard]] fs::path getPath() const { return RootPath; }
+  [[nodiscard]] fs::path getPath() const { return Path; }
 
   [[nodiscard]] Feature *getRoot() const {
     assert(Root);
@@ -48,9 +48,9 @@ public:
   /// Insert a \a Feature into existing model while keeping consistency and
   /// ordering.
   ///
-  /// \param F feature to be inserted
+  /// \param Feature feature to be inserted
   /// \return if feature was inserted successfully
-  bool addFeature(std::unique_ptr<Feature> F);
+  bool addFeature(std::unique_ptr<Feature> Feature);
 
   //===--------------------------------------------------------------------===//
   // Ordered feature iterator
@@ -92,7 +92,7 @@ public:
 
 protected:
   string Name;
-  fs::path RootPath;
+  fs::path Path;
   FeatureMapTy Features;
   Feature *Root;
 
@@ -111,7 +111,7 @@ public:
 
   void init() {
     Name = "";
-    RootPath = "";
+    Path = "";
     Root = nullptr;
     Features.clear();
     Constraints.clear();
@@ -140,33 +140,36 @@ public:
         .second;
   }
 
-  FeatureModelBuilder *addChild(const std::string &P, const std::string &C) {
-    Children[P].push_back(C);
-    Parents[C] = P;
+  FeatureModelBuilder *addParent(const std::string &Key,
+                                 const std::string &ParentKey) {
+    Children[ParentKey].push_back(Key);
+    Parents[Key] = ParentKey;
     return this;
   }
 
-  FeatureModelBuilder *addExclude(const std::string &F, const std::string &E) {
-    Excludes[F].push_back(E);
+  FeatureModelBuilder *addExclude(const std::string &Key,
+                                  const std::string &ExcludeKey) {
+    Excludes[Key].push_back(ExcludeKey);
     return this;
   }
 
-  FeatureModelBuilder *addConstraint(const FeatureModel::ConstraintTy &C) {
-    Constraints.push_back(C);
+  FeatureModelBuilder *
+  addConstraint(const FeatureModel::ConstraintTy &Constraint) {
+    Constraints.push_back(Constraint);
     return this;
   }
 
-  FeatureModelBuilder *setVmName(std::string N) {
-    this->Name = std::move(N);
+  FeatureModelBuilder *setVmName(std::string Name) {
+    this->Name = std::move(Name);
     return this;
   }
 
-  FeatureModelBuilder *setPath(fs::path P) {
-    this->RootPath = std::move(P);
+  FeatureModelBuilder *setPath(fs::path Path) {
+    this->Path = std::move(Path);
     return this;
   }
 
-  FeatureModelBuilder *setRoot(const std::string &R = "root");
+  FeatureModelBuilder *setRoot(const std::string &RootKey = "root");
 
   /// Build \a FeatureModel.
   ///
@@ -194,9 +197,9 @@ private:
   EdgeMapType Children;
   EdgeMapType Excludes;
 
-  void buildConstraints();
+  bool buildConstraints();
 
-  bool buildTree(const std::string &F, std::set<std::string> &Visited);
+  bool buildTree(const std::string &Key, std::set<std::string> &Visited);
 };
 } // namespace vara::feature
 
