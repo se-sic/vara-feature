@@ -11,6 +11,7 @@ void FeatureModel::dump() const {
 }
 
 bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
+  // TODO(s9latimm): check consistency
   std::string Key = Feature->getName();
   if (!Features.try_emplace(Key, std::move(Feature)).second) {
     return false;

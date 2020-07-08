@@ -62,6 +62,17 @@ TEST(Feature, ltSimple) {
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("b"));
 }
 
+/// root(a, b, c)
+TEST(Feature, ternary) {
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"root", "b"}, {"root", "a"}, {"root", "c"}});
+  assert(FM);
+
+  EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("b"));
+  EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("c"));
+  EXPECT_LT(*FM->getFeature("b"), *FM->getFeature("c"));
+}
+
 /// root(a(aa), b)
 TEST(Feature, ltSubtreeAA) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
