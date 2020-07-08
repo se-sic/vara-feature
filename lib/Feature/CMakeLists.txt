@@ -2,6 +2,7 @@ set(FEATURE_LIB_SRC
   Feature.cpp
   FeatureModel.cpp
   FeatureModelParser.cpp
+  OrderedFeatureVector.cpp
   )
 
 set(LLVM_LINK_COMPONENTS

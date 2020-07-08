@@ -29,6 +29,7 @@ public:
   enum FeatureKind { FK_BINARY, FK_NUMERIC };
 
   Feature(const Feature &) = delete;
+  Feature &operator=(const Feature &) = delete;
   virtual ~Feature() = default;
 
   [[nodiscard]] FeatureKind getKind() const { return T; }
@@ -138,7 +139,6 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Operators
-  Feature &operator=(const Feature &) = delete;
 
   /// Compare lowercase name assuming those are unique.
   bool operator==(const vara::feature::Feature &Other) const {
@@ -183,16 +183,6 @@ private:
   friend class FeatureModel;
   friend class FeatureModelBuilder;
 
-  FeatureKind T;
-  string Name;
-  bool Opt;
-  std::optional<FeatureSourceRange> Source;
-  Feature *Parent;
-  FeatureSetType Children;
-  FeatureSetType Excludes;
-  FeatureSetType Implications;
-  FeatureSetType Alternatives;
-
   void addChild(Feature *Feature) { Children.insert(Feature); }
 
   void setParent(Feature *Feature) { Parent = Feature; }
@@ -202,6 +192,16 @@ private:
   void addAlternative(Feature *F) { Alternatives.insert(F); }
 
   void addImplication(Feature *F) { Implications.insert(F); }
+
+  FeatureKind T;
+  string Name;
+  bool Opt;
+  std::optional<FeatureSourceRange> Source;
+  Feature *Parent;
+  FeatureSetType Children;
+  FeatureSetType Excludes;
+  FeatureSetType Implications;
+  FeatureSetType Alternatives;
 };
 
 /// Options without arguments.

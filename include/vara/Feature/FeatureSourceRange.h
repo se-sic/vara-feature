@@ -30,10 +30,10 @@ public:
   public:
     FeatureSourceLocation(int Line, int Column) : Line(Line), Column(Column) {}
 
-    void setLineNumber(int L) { this->Line = L; }
+    void setLineNumber(int LineNumber) { this->Line = LineNumber; }
     [[nodiscard]] int getLineNumber() const { return this->Line; }
 
-    void setColumnOffset(int C) { this->Column = C; }
+    void setColumnOffset(int ColumnOffset) { this->Column = ColumnOffset; }
     [[nodiscard]] int getColumnOffset() const { return this->Column; }
 
     [[nodiscard]] std::string toString() const {

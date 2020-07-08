@@ -20,13 +20,18 @@ public:
   OrderedFeatureVector() = default;
 
   /// Insert feature while preserving ordering.
-  void insert(Feature *F) {
-    Features.insert(
-        std::upper_bound(Features.begin(), Features.end(), F,
-                         [](vara::feature::Feature *A,
-                            vara::feature::Feature *B) { return *A < *B; }),
-        F);
+  void insert(Feature *F);
+  template <typename... Args> void insert(Feature *F, Args... FF) {
+    insert(F);
+    insert(FF...);
   }
+  template <typename T> void insert(llvm::iterator_range<T> FF) {
+    for (const auto &F : FF) {
+      insert(F);
+    }
+  }
+
+  [[nodiscard]] unsigned int size() { return Features.size(); }
 
   ordered_feature_iterator begin() { return Features.begin(); }
   [[nodiscard]] const_ordered_feature_iterator begin() const {
@@ -41,6 +46,6 @@ public:
 private:
   std::vector<Feature *> Features;
 };
-
 } // namespace vara::feature
+
 #endif // VARA_FEATURE_ORDEREDFEATUREVECTOR_H

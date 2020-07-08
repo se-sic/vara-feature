@@ -4,24 +4,38 @@
 
 namespace vara::feature {
 
-TEST(OrderedFeatureVector, sort) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"},
-                                                           {"b", "bb"},
-                                                           {"aa", "aaa"},
-                                                           {"root", "b"},
-                                                           {"a", "aa"},
-                                                           {"a", "ab"}});
-  assert(FM);
+TEST(OrderedFeatureVector, insert) {
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"root", "a"}, {"root", "b"}});
+  OrderedFeatureVector OFV;
 
-  auto It = FM->begin();
+  OFV.insert(FM->getFeature("a"));
+  OFV.insert(FM->getFeature("root"));
+  OFV.insert(FM->getFeature("b"));
 
-  EXPECT_EQ("root", (*It++)->getName());
-  EXPECT_EQ("a", (*It++)->getName());
-  EXPECT_EQ("aa", (*It++)->getName());
-  EXPECT_EQ("aaa", (*It++)->getName());
-  EXPECT_EQ("ab", (*It++)->getName());
-  EXPECT_EQ("b", (*It++)->getName());
-  EXPECT_EQ("bb", (*It++)->getName());
-  EXPECT_EQ(FM->end(), It);
+  EXPECT_EQ(OFV.size(), FM->size());
+  EXPECT_EQ(*OFV.begin(), FM->getFeature("root"));
+}
+
+TEST(OrderedFeatureVector, insertFM) {
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"root", "a"}, {"root", "b"}});
+  OrderedFeatureVector OFV;
+
+  OFV.insert(FM->features());
+
+  EXPECT_EQ(OFV.size(), FM->size());
+  EXPECT_EQ(*OFV.begin(), FM->getFeature("root"));
+}
+
+TEST(OrderedFeatureVector, insertVariadic) {
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"root", "a"}, {"root", "b"}});
+  OrderedFeatureVector OFV;
+
+  OFV.insert(FM->getFeature("a"), FM->getFeature("root"), FM->getFeature("b"));
+
+  EXPECT_EQ(OFV.size(), FM->size());
+  EXPECT_EQ(*OFV.begin(), FM->getFeature("root"));
 }
 } // namespace vara::feature
