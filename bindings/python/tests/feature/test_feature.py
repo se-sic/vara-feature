@@ -70,7 +70,7 @@ class TestFeature(unittest.TestCase):
 
         self.assertEqual({test_feature_1, test_feature_2},
                          set(root_feature.implications()))
-        self.assertTrue(root_feature.is_implied(test_feature_1))
+        self.assertTrue(root_feature.is_implied_by(test_feature_1))
 
     def test_parent(self):
         """ Checks if we can iterate over a features children. """

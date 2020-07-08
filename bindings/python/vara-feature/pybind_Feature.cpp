@@ -58,7 +58,7 @@ void init_feature_module_feature(py::module &M) {
                                      F.implications_end());
           },
           py::keep_alive<0, 1>(), R"pbdoc(Implicated features)pbdoc")
-      .def("is_implied", &vf::Feature::isImplied,
+      .def("is_implied_by", &vf::Feature::isImplied,
            R"pbdoc(Checks if a Feature is implicated by this Feature.)pbdoc")
 
       //===----------------------------------------------------------------===//

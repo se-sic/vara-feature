@@ -12,11 +12,11 @@ void FeatureModel::dump() const {
 
 bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   // TODO(s9latimm): check consistency
-  std::string Key = Feature->getName();
-  if (!Features.try_emplace(Key, std::move(Feature)).second) {
+  std::string FeatureName = Feature->getName();
+  if (!Features.try_emplace(FeatureName, std::move(Feature)).second) {
     return false;
   }
-  auto *Value = Features[Key].get();
+  auto *Value = Features[FeatureName].get();
   for (auto *Child : Value->children()) {
     Child->setParent(Value);
   }
@@ -88,42 +88,43 @@ bool FeatureModelBuilder::buildConstraints() {
   return true;
 }
 
-bool FeatureModelBuilder::buildTree(const string &Key,
+bool FeatureModelBuilder::buildTree(const string &FeatureName,
                                     std::set<std::string> &Visited) {
-  if (find(Visited.begin(), Visited.end(), Key) != Visited.end()) {
-    llvm::errs() << "error: Cycle or duplicate edge in \'" << Key << "\'.\n";
+  if (find(Visited.begin(), Visited.end(), FeatureName) != Visited.end()) {
+    llvm::errs() << "error: Cycle or duplicate edge in \'" << FeatureName
+                 << "\'.\n";
     return false;
   }
-  Visited.insert(Key);
+  Visited.insert(FeatureName);
 
-  if (find(Features.keys().begin(), Features.keys().end(), Key) ==
+  if (find(Features.keys().begin(), Features.keys().end(), FeatureName) ==
       Features.keys().end()) {
-    llvm::errs() << "error: Missing feature \'\'" << Key << "\'.\n";
+    llvm::errs() << "error: Missing feature \'\'" << FeatureName << "\'.\n";
     return false;
   }
 
-  for (const auto &Child : Children[Key]) {
+  for (const auto &Child : Children[FeatureName]) {
     if (!buildTree(Child, Visited)) {
       return false;
     }
-    Features[Key]->addChild(Features[Child].get());
-    Features[Child]->setParent(Features[Key].get());
+    Features[FeatureName]->addChild(Features[Child].get());
+    Features[Child]->setParent(Features[FeatureName].get());
   }
   return true;
 }
 
-FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &RootKey) {
+FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &RootName) {
   assert(this->Root == nullptr && "Root already set.");
 
-  if (Features.find(RootKey) == Features.end()) {
-    addFeature(RootKey, false);
+  if (Features.find(RootName) == Features.end()) {
+    addFeature(RootName, false);
   }
-  this->Root = Features[RootKey].get();
+  this->Root = Features[RootName].get();
 
-  for (const auto &Key : Features.keys()) {
-    if (Key != RootKey && Parents.find(Key) == Parents.end()) {
-      Children[RootKey].insert(Key);
-      Parents[Key] = RootKey;
+  for (const auto &FeatureName : Features.keys()) {
+    if (FeatureName != RootName && Parents.find(FeatureName) == Parents.end()) {
+      Children[RootName].insert(FeatureName);
+      Parents[FeatureName] = RootName;
     }
   }
   return this;
@@ -165,12 +166,12 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
           ? std::make_optional(FeatureSourceRange(*F.getFeatureSourceRange()))
           : std::nullopt;
   switch (F.getKind()) {
-  case Feature::FK_BINARY:
+  case Feature::FeatureKind::FK_BINARY:
     if (!addFeature(F.getName(), F.isOptional(), Loc)) {
       return false;
     }
     break;
-  case Feature::FK_NUMERIC:
+  case Feature::FeatureKind::FK_NUMERIC:
     NumericFeature::ValuesVariantType Values =
         dynamic_cast<NumericFeature *>(&F)->getValues();
     if (!addFeature(F.getName(), Values, F.isOptional(), Loc)) {

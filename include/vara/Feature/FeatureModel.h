@@ -120,38 +120,56 @@ public:
     Excludes.clear();
   }
 
+  /// Try to create and add a new \a Feature to the \a FeatureModel.
+  ///
+  /// \param[in] FeatureName name of the \a Feature
+  /// \param[in] FurtherArgs further arguments that should be passed to the
+  ///                        \a Feature constructor
+  ///
+  /// \returns true, if the feature could be inserted into the \a FeatureModel
+  template <
+      typename FeatureTy, typename... Args,
+      typename std::enable_if_t<std::is_base_of_v<Feature, FeatureTy>, int>>
+  bool makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
+    return Features
+        .try_emplace(FeatureName,
+                     std::make_unique<FeatureTy>(FeatureName,
+                                                 std::forward(FurtherArgs)...))
+        .second;
+  }
+
   /// Try to add \a BinaryFeature.
-  bool addFeature(const std::string &Key, bool Opt = false,
+  bool addFeature(const std::string &FeatureName, bool Opt = false,
                   std::optional<FeatureSourceRange> Loc = std::nullopt) {
     return Features
-        .try_emplace(Key,
-                     std::make_unique<BinaryFeature>(Key, Opt, std::move(Loc)))
+        .try_emplace(FeatureName, std::make_unique<BinaryFeature>(
+                                      FeatureName, Opt, std::move(Loc)))
         .second;
   }
 
   /// Try to add \a NumericFeature.
-  bool addFeature(const std::string &Key,
+  bool addFeature(const std::string &FeatureName,
                   const NumericFeature::ValuesVariantType &Values,
                   bool Opt = false,
                   std::optional<FeatureSourceRange> Loc = std::nullopt) {
     return Features
-        .try_emplace(Key, std::make_unique<NumericFeature>(Key, Values, Opt,
-                                                           std::move(Loc)))
+        .try_emplace(FeatureName, std::make_unique<NumericFeature>(
+                                      FeatureName, Values, Opt, std::move(Loc)))
         .second;
   }
 
   bool addFeature(Feature &F);
 
-  FeatureModelBuilder *addParent(const std::string &Key,
-                                 const std::string &ParentKey) {
-    Children[ParentKey].insert(Key);
-    Parents[Key] = ParentKey;
+  FeatureModelBuilder *addParent(const std::string &FeatureName,
+                                 const std::string &ParentName) {
+    Children[ParentName].insert(FeatureName);
+    Parents[FeatureName] = ParentName;
     return this;
   }
 
-  FeatureModelBuilder *addExclude(const std::string &Key,
-                                  const std::string &ExcludeKey) {
-    Excludes[Key].insert(ExcludeKey);
+  FeatureModelBuilder *addExclude(const std::string &FeatureName,
+                                  const std::string &ExcludeName) {
+    Excludes[FeatureName].insert(ExcludeName);
     return this;
   }
 
@@ -171,7 +189,7 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *setRoot(const std::string &RootKey = "root");
+  FeatureModelBuilder *setRoot(const std::string &RootName = "root");
 
   /// Build \a FeatureModel.
   ///
@@ -200,7 +218,8 @@ private:
 
   bool buildConstraints();
 
-  bool buildTree(const std::string &Key, std::set<std::string> &Visited);
+  bool buildTree(const std::string &FeatureName,
+                 std::set<std::string> &Visited);
 };
 } // namespace vara::feature
 

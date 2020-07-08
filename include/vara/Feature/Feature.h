@@ -27,7 +27,7 @@ public:
   using feature_iterator = typename FeatureSetType::iterator;
   using const_feature_iterator = typename FeatureSetType::const_iterator;
 
-  enum FeatureKind { FK_BINARY, FK_NUMERIC };
+  enum class FeatureKind { FK_BINARY, FK_NUMERIC };
 
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
@@ -214,13 +214,15 @@ public:
                 Feature *Parent = nullptr, FeatureSetType Children = {},
                 FeatureSetType Excludes = {}, FeatureSetType Implications = {},
                 FeatureSetType Alternatives = {})
-      : Feature(FK_BINARY, std::move(Name), Opt, std::move(Loc), Parent,
-                std::move(Children), std::move(Excludes),
+      : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc),
+                Parent, std::move(Children), std::move(Excludes),
                 std::move(Implications), std::move(Alternatives)) {}
 
   [[nodiscard]] string toString() const override;
 
-  static bool classof(const Feature *F) { return F->getKind() == FK_BINARY; }
+  static bool classof(const Feature *F) {
+    return F->getKind() == FeatureKind::FK_BINARY;
+  }
 };
 
 /// Options with numeric values.
@@ -234,8 +236,8 @@ public:
                  Feature *Parent = nullptr, FeatureSetType Children = {},
                  FeatureSetType Excludes = {}, FeatureSetType Implications = {},
                  FeatureSetType Alternatives = {})
-      : Feature(FK_NUMERIC, std::move(Name), Opt, std::move(Loc), Parent,
-                std::move(Children), std::move(Excludes),
+      : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc),
+                Parent, std::move(Children), std::move(Excludes),
                 std::move(Implications), std::move(Alternatives)),
         Values(std::move(Values)) {}
 
@@ -243,7 +245,9 @@ public:
 
   [[nodiscard]] string toString() const override;
 
-  static bool classof(const Feature *F) { return F->getKind() == FK_NUMERIC; }
+  static bool classof(const Feature *F) {
+    return F->getKind() == FeatureKind::FK_NUMERIC;
+  }
 
 private:
   ValuesVariantType Values;
