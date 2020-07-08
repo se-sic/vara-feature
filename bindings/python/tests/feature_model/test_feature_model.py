@@ -44,11 +44,11 @@ class TestFeatureModel(unittest.TestCase):
     def test_iter(self):
         """ Check if we can iterate throught the Features. """
         fm_iter = iter(self.fm)
+        self.assertEqual(next(fm_iter).name.str(), "root")
         self.assertEqual(next(fm_iter).name.str(), "A")
         self.assertEqual(next(fm_iter).name.str(), "AA")
         self.assertEqual(next(fm_iter).name.str(), "AB")
-        self.assertEqual(next(fm_iter).name.str(), "root")
         self.assertEqual(next(fm_iter).name.str(), "AC")
-        self.assertEqual(next(fm_iter).name.str(), "C")
         self.assertEqual(next(fm_iter).name.str(), "B")
         self.assertEqual(next(fm_iter).name.str(), "N")
+        self.assertEqual(next(fm_iter).name.str(), "C")

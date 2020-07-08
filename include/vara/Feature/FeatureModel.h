@@ -1,12 +1,14 @@
 #ifndef VARA_FEATURE_FEATUREMODEL_H
 #define VARA_FEATURE_FEATUREMODEL_H
 
-#include "vara/Feature/Feature.h"
+#include "vara/Feature/OrderedFeatureVector.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
 
-using std::string;
+#include <algorithm>
+#include <queue>
+#include <utility>
 
 namespace vara::feature {
 
@@ -14,83 +16,189 @@ namespace vara::feature {
 //                               FeatureModel
 //===----------------------------------------------------------------------===//
 
+/// \brief Tree like representation of features and dependencies.
 class FeatureModel {
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
-  using ConstraintsTy = std::vector<std::vector<std::pair<Feature *, bool>>>;
+  using OrderedFeatureTy = OrderedFeatureVector;
+  using ConstraintTy = llvm::SmallVector<std::pair<std::string, bool>, 3>;
+  using ConstraintsTy = std::vector<ConstraintTy>;
 
-private:
-  string Name;
-  fs::path RootPath;
-  FeatureMapTy Features;
-  ConstraintsTy Constraints;
-  Feature *Root;
-
-public:
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
-               ConstraintsTy Constraints)
-      : Name(std::move(Name)), RootPath(std::move(RootPath)),
-        Features(std::move(Features)), Constraints(std::move(Constraints)),
-        Root(this->Features["root"].get()) {}
+               Feature *Root)
+      : Name(std::move(Name)), Path(std::move(RootPath)), Root(Root),
+        Features(std::move(Features)) {
+    // Insert all values into ordered data structure.
+    for (const auto &KV : this->Features) {
+      OrderedFeatures.insert(KV.getValue().get());
+    }
+  }
+
+  [[nodiscard]] unsigned int size() { return Features.size(); }
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
-  [[nodiscard]] fs::path getPath() const { return RootPath; }
+  [[nodiscard]] fs::path getPath() const { return Path; }
 
   [[nodiscard]] Feature *getRoot() const {
     assert(Root);
     return Root;
   }
 
-  [[nodiscard]] unsigned int size() { return Features.size(); }
+  /// Insert a \a Feature into existing model while keeping consistency and
+  /// ordering.
+  ///
+  /// \param[in] Feature feature to be inserted
+  /// \return if feature was inserted successfully
+  bool addFeature(std::unique_ptr<Feature> Feature);
+
+  //===--------------------------------------------------------------------===//
+  // Ordered feature iterator
+  OrderedFeatureVector::ordered_feature_iterator begin() {
+    return OrderedFeatures.begin();
+  }
+  [[nodiscard]] OrderedFeatureVector::const_ordered_feature_iterator
+  begin() const {
+    return OrderedFeatures.begin();
+  }
+
+  OrderedFeatureVector::ordered_feature_iterator end() {
+    return OrderedFeatures.end();
+  }
+  [[nodiscard]] OrderedFeatureVector::const_ordered_feature_iterator
+  end() const {
+    return OrderedFeatures.end();
+  }
+
+  llvm::iterator_range<OrderedFeatureVector::ordered_feature_iterator>
+  features() {
+    return llvm::make_range(begin(), end());
+  }
+  [[nodiscard]] llvm::iterator_range<
+      OrderedFeatureVector::const_ordered_feature_iterator>
+  features() const {
+    return llvm::make_range(begin(), end());
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Utility
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
 
-  struct FeatureModelIter : std::iterator<std::forward_iterator_tag, Feature &,
-                                          ptrdiff_t, Feature *, Feature &> {
-    FeatureMapTy::iterator It;
-
-    explicit FeatureModelIter(FeatureMapTy::iterator It) : It(It) {}
-
-    Feature *operator*() const { return It->second.get(); }
-
-    FeatureModelIter &operator++() {
-      It++;
-      return *this;
-    }
-
-    bool operator==(const FeatureModelIter &Other) const {
-      return It == Other.It;
-    }
-
-    bool operator!=(const FeatureModelIter &Other) const {
-      return not operator==(Other);
-    }
-  };
-
-  FeatureModelIter begin() { return FeatureModelIter(Features.begin()); }
-
-  FeatureModelIter end() { return FeatureModelIter(Features.end()); }
+  Feature *getFeature(llvm::StringRef F) { return Features[F].get(); }
 
   LLVM_DUMP_METHOD
-  void dump() const {
-    for (const auto &F : this->Features) {
-      F.second->dump();
-      llvm::outs() << "\n";
-    }
-    for (auto C : this->Constraints) {
-      for (auto F : C) {
-        if (!F.second) {
-          llvm::outs() << "!";
-        }
-        llvm::outs() << F.first->getName();
-        if (F != C.back()) {
-          llvm::outs() << " | ";
-        }
-      }
-      llvm::outs() << "\n";
-    }
+  void dump() const;
+
+protected:
+  string Name;
+  fs::path Path;
+  FeatureMapTy Features;
+  Feature *Root;
+
+private:
+  OrderedFeatureTy OrderedFeatures;
+};
+
+//===----------------------------------------------------------------------===//
+//                     Builder for FeatureModel
+//===----------------------------------------------------------------------===//
+
+/// \brief Builder for \a FeatureModel which can be used while parsing.
+class FeatureModelBuilder : private FeatureModel {
+public:
+  FeatureModelBuilder() : FeatureModel("", "", {}, nullptr){};
+
+  void init() {
+    Name = "";
+    Path = "";
+    Root = nullptr;
+    Features.clear();
+    Constraints.clear();
+    Parents.clear();
+    Children.clear();
+    Excludes.clear();
   }
+
+  /// Try to create and add a new \a Feature to the \a FeatureModel.
+  ///
+  /// \param[in] FeatureName name of the \a Feature
+  /// \param[in] FurtherArgs further arguments that should be passed to the
+  ///                        \a Feature constructor
+  ///
+  /// \returns true, if the feature could be inserted into the \a FeatureModel
+  template <typename FeatureTy, typename... Args,
+            typename = typename std::enable_if_t<
+                std::is_base_of_v<Feature, FeatureTy>, int>>
+  bool makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
+    return Features
+        .try_emplace(FeatureName, std::make_unique<FeatureTy>(
+                                      FeatureName, std::move(FurtherArgs)...))
+        .second;
+  }
+
+  bool addFeature(Feature &F);
+
+  FeatureModelBuilder *addParent(const std::string &FeatureName,
+                                 const std::string &ParentName) {
+    Children[ParentName].insert(FeatureName);
+    Parents[FeatureName] = ParentName;
+    return this;
+  }
+
+  FeatureModelBuilder *addExclude(const std::string &FeatureName,
+                                  const std::string &ExcludeName) {
+    Excludes[FeatureName].insert(ExcludeName);
+    return this;
+  }
+
+  FeatureModelBuilder *
+  addConstraint(const FeatureModel::ConstraintTy &Constraint) {
+    Constraints.push_back(Constraint);
+    return this;
+  }
+
+  FeatureModelBuilder *setVmName(std::string Name) {
+    this->Name = std::move(Name);
+    return this;
+  }
+
+  FeatureModelBuilder *setPath(fs::path Path) {
+    this->Path = std::move(Path);
+    return this;
+  }
+
+  FeatureModelBuilder *setRoot(const std::string &RootName = "root");
+
+  /// Build \a FeatureModel.
+  ///
+  /// @return instance of \a FeatureModel
+
+  std::unique_ptr<FeatureModel> buildFeatureModel();
+
+  /// Build simple \a FeatureModel from given edges.
+  ///
+  /// \param[in] B edges with \a BinaryFeature
+  /// \param[in] N edges with \a NumericFeature
+  /// \return instance of \a FeatureModel
+  std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
+      const std::vector<std::pair<std::string, std::string>> &B,
+      const std::vector<std::pair<
+          std::string,
+          std::pair<std::string, NumericFeature::ValuesVariantType>>> &N = {});
+
+private:
+  using EdgeMapType = typename llvm::StringMap<llvm::SmallSet<std::string, 3>>;
+
+  FeatureModel::ConstraintsTy Constraints;
+  llvm::StringMap<std::string> Parents;
+  EdgeMapType Children;
+  EdgeMapType Excludes;
+
+  bool buildConstraints();
+
+  bool buildTree(const std::string &FeatureName,
+                 std::set<std::string> &Visited);
 };
 } // namespace vara::feature
 
@@ -123,10 +231,10 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   GraphWriter(raw_ostream &O, const GraphType &G, bool SN) : O(O), G(G) {}
 
   void writeGraph(const std::string &Title = "") {
-    // Output the header for the graph...
+    // Output the header for the graph
     writeHeader(Title);
 
-    // Emit all of the nodes in the graph...
+    // Emit all of the nodes in the graph
     writeNodes();
 
     // Output the end of the graph
@@ -151,7 +259,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   /// Output tree structure of feature model and additional edges.
   void writeNodes() {
-    emitClusterRecursively(G->getRoot());
+    emitCluster(G->getRoot());
     (O << '\n').indent(2) << "// Excludes\n";
     emitExcludeEdges();
     (O << '\n').indent(2) << "// Implications\n";
@@ -167,8 +275,8 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   /// Checks whether an edge would be a duplicate.
   ///
-  /// \param Edge may be already visited.
-  /// \param Skip contains existing edges.
+  /// \param[in] Edge may be already visited.
+  /// \param[in] Skip contains existing edges.
   static bool
   visited(std::pair<vara::feature::Feature *, vara::feature::Feature *> Edge,
           const FeatureEdgeSetTy &Skip) {
@@ -183,7 +291,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   void emitExcludeEdges() {
     FeatureEdgeSetTy Skip;
     for (auto *Node : *G) {
-      for (auto &Exclude : Node->excludes()) {
+      for (const auto &Exclude : Node->excludes()) {
         if (visited(std::make_pair(Node, Exclude), Skip)) {
           continue;
         }
@@ -202,7 +310,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   void emitAlternativeEdges() {
     FeatureEdgeSetTy Skip;
     for (auto *Node : *G) {
-      for (auto &Alternative : Node->alternatives()) {
+      for (const auto &Alternative : Node->alternatives()) {
         if (visited(std::make_pair(Node, Alternative), Skip)) {
           continue;
         }
@@ -216,7 +324,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   void emitImplicationEdges() {
     FeatureEdgeSetTy Skip;
     for (auto *Node : *G) {
-      for (auto &Implication : Node->implications()) {
+      for (const auto &Implication : Node->implications()) {
         if (visited(std::make_pair(Node, Implication), Skip)) {
           continue;
         }
@@ -235,9 +343,9 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   /// Output feature model (tree) recursively.
   ///
-  /// \param Node Root of subtree.
-  /// \param Indent Value to indent statements in dot file.
-  void emitClusterRecursively(const NodeRef Node, const int Indent = 0) {
+  /// \param[in] Node Root of subtree.
+  /// \param[in] Indent Value to indent statements in dot file.
+  void emitCluster(const NodeRef Node, const int Indent = 0) {
     O.indent(Indent);
     emitNode(Node);
     if (Node->children_begin() != Node->children_end()) {
@@ -247,7 +355,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
       O.indent(Indent + 4) << "margin=0;\n";
       O.indent(Indent + 4) << "style=invis;\n";
       for (auto *Child : *Node) {
-        emitClusterRecursively(Child, Indent + 2);
+        emitCluster(Child, Indent + 2);
         O.indent(Indent + 2);
         emitEdge(Node, Child,
                  llvm::formatv("arrowhead={0}",
@@ -265,15 +373,16 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   /// Output \a Node with custom attributes.
   void emitNode(const NodeRef Node) {
-    std::string Label =
+    std::string Label = llvm::formatv(
         "<<table align=\"center\" valign=\"middle\" border=\"0\" "
-        "cellborder=\"0\" cellpadding=\"5\"><tr><td>" +
-        DOT::EscapeString(Node->getName().str()) +
-        (Node->getLocation()
+        "cellborder=\"0\" "
+        "cellpadding=\"5\"><tr><td>{0}{1}</td></tr></"
+        "table>>",
+        DOT::EscapeString(Node->getName().str()),
+        (Node->getFeatureSourceRange()
              ? "</td></tr><hr/><tr><td>" +
-                   DOT::EscapeString(Node->getLocation()->toString())
-             : "") +
-        "</td></tr></table>>";
+                   DOT::EscapeString(Node->getFeatureSourceRange()->toString())
+             : ""));
 
     O.indent(2) << "node_" << static_cast<void *>(Node) << " ["
                 << "shape=box margin=.1 fontsize=12 fontname=\"CMU "

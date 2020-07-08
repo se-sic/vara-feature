@@ -31,20 +31,12 @@ void init_feature_module_feature(py::module &M) {
           "__iter__",
           [](vf::Feature &F) { return py::make_iterator(F.begin(), F.end()); },
           py::keep_alive<0, 1>())
-      .def("add_child", &vf::Feature::addChild,
-           R"pbdoc(Add a sub feature below this feature.)pbdoc")
       .def("is_child", &vf::Feature::isChild,
            R"pbdoc(Checks if a Feature is a child of this one.)pbdoc")
       //===----------------------------------------------------------------===//
-      // Parents
-      .def(
-          "parents",
-          [](vf::Feature &F) {
-            return py::make_iterator(F.parents_begin(), F.parents_end());
-          },
-          py::keep_alive<0, 1>(), R"pbdoc(Parent features)pbdoc")
-      .def("add_parent", &vf::Feature::addParent,
-           R"pbdoc(Add a parent feature to this feature.)pbdoc")
+      // Parent
+      .def("parent", &vf::Feature::getParent,
+           py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
       .def("is_parent", &vf::Feature::isParent,
            R"pbdoc(Checks if a Feature is a parent of this one.)pbdoc")
       //===----------------------------------------------------------------===//
@@ -55,9 +47,6 @@ void init_feature_module_feature(py::module &M) {
             return py::make_iterator(F.excludes_begin(), F.excludes_end());
           },
           py::keep_alive<0, 1>(), R"pbdoc(Excluded features)pbdoc")
-      .def(
-          "add_exclude", &vf::Feature::addExclude,
-          R"pbdoc(Exclude a Feature, i.e., it can not be pressent when this Feature is present.)pbdoc")
       .def("is_excluded", &vf::Feature::isExcluded,
            R"pbdoc(Checks if a Feature is excluded by this Feature.)pbdoc")
       //===----------------------------------------------------------------===//
@@ -65,13 +54,11 @@ void init_feature_module_feature(py::module &M) {
       .def(
           "implications",
           [](vf::Feature &F) {
-            return py::make_iterator(F.excludes_begin(), F.excludes_end());
+            return py::make_iterator(F.implications_begin(),
+                                     F.implications_end());
           },
           py::keep_alive<0, 1>(), R"pbdoc(Implicated features)pbdoc")
-      .def(
-          "add_implication", &vf::Feature::addImplication,
-          R"pbdoc(Implicate another Feature, i.e., selecting this feature implies the otherone.)pbdoc")
-      .def("implicates", &vf::Feature::implies,
+      .def("is_implied_by", &vf::Feature::isImplied,
            R"pbdoc(Checks if a Feature is implicated by this Feature.)pbdoc")
 
       //===----------------------------------------------------------------===//
@@ -79,18 +66,18 @@ void init_feature_module_feature(py::module &M) {
       .def(
           "alternatives",
           [](vf::Feature &F) {
-            return py::make_iterator(F.excludes_begin(), F.excludes_end());
+            return py::make_iterator(F.alternatives_begin(),
+                                     F.alternatives_end());
           },
           py::keep_alive<0, 1>(), R"pbdoc(Alternative features)pbdoc")
-      .def("add_alternative", &vf::Feature::addAlternative,
-           R"pbdoc(Add a Feature as an alternative to this Feature.)pbdoc")
       .def(
           "is_alternative", &vf::Feature::isAlternative,
           R"pbdoc(Checks if a Feature is an alternative of this Feature.)pbdoc")
 
-      .def(
-          "get_location", &vf::Feature::getLocation, py::return_value_policy::reference,
-          R"pbdoc(Returns the code location of the feature variable if possible, otherwise, `None`.)pbdoc")
+      .def("get_location", &vf::Feature::getFeatureSourceRange,
+           py::return_value_policy::reference,
+           R"pbdoc(Returns the code location of the feature variable if
+                possible, otherwise, `None`.)pbdoc")
 
       //===----------------------------------------------------------------===//
       // Utility functions
@@ -102,7 +89,27 @@ void init_feature_module_feature(py::module &M) {
 void init_feature_module_binary_feature(py::module &M) {
   py::class_<vf::BinaryFeature, vf::Feature>(M, "BinaryFeature")
       .def(py::init<std::string, bool>())
-      .def(py::init<std::string, bool, vara::feature::Location>())
+      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange>())
+      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
+                    vara::feature::Feature *>())
+      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
+                    vara::feature::Feature *,
+                    vara::feature::Feature::FeatureSetType>())
+      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
+                    vara::feature::Feature *,
+                    vara::feature::Feature::FeatureSetType,
+                    vara::feature::Feature::FeatureSetType>())
+      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
+                    vara::feature::Feature *,
+                    vara::feature::Feature::FeatureSetType,
+                    vara::feature::Feature::FeatureSetType,
+                    vara::feature::Feature::FeatureSetType>())
+      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
+                    vara::feature::Feature *,
+                    vara::feature::Feature::FeatureSetType,
+                    vara::feature::Feature::FeatureSetType,
+                    vara::feature::Feature::FeatureSetType,
+                    vara::feature::Feature::FeatureSetType>())
       .def(
           "to_string", &vf::BinaryFeature::toString,
           R"pbdoc(Returns the string representation of a BinaryFeature.)pbdoc");
@@ -110,8 +117,12 @@ void init_feature_module_binary_feature(py::module &M) {
 
 void init_feature_module_numeric_feature(py::module &M) {
   py::class_<vf::NumericFeature, vf::Feature>(M, "NumericFeature")
-      .def(py::init<std::string, bool,
-                    std::variant<std::pair<int, int>, std::vector<int>>>())
+      .def(
+          py::init<std::string,
+                   std::variant<std::pair<int, int>, std::vector<int>>, bool>())
+      .def(py::init<std::string,
+                    std::variant<std::pair<int, int>, std::vector<int>>, bool,
+                    vara::feature::FeatureSourceRange>())
       .def(
           "to_string", &vf::NumericFeature::toString,
           R"pbdoc(Returns the string representation of a NumericFeature.)pbdoc");

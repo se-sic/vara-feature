@@ -1,13 +1,15 @@
 #ifndef VARA_FEATURE_FEATURE_H
 #define VARA_FEATURE_FEATURE_H
 
-#include "vara/Feature/Location.h"
-#include "vara/Feature/Relationship.h"
+#include "vara/Feature/FeatureSourceRange.h"
 
-#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <set>
+#include <stack>
+#include <utility>
 #include <variant>
 
 using std::string;
@@ -21,44 +23,26 @@ namespace vara::feature {
 /// \brief Base class for components of \a FeatureModel.
 class Feature {
 public:
-  using FeatureListType = typename llvm::SmallVector<Feature *, 3>;
-  using RelationshipListTy =
-      typename llvm::SmallVector<std::unique_ptr<Relationship<Feature>>, 3>;
-  using feature_iterator = typename FeatureListType::iterator;
-  using const_feature_iterator = typename FeatureListType::const_iterator;
-  using relationship_iterator = RelationshipListTy ::iterator;
+  using FeatureSetType = typename std::set<Feature *>;
+  using feature_iterator = typename FeatureSetType::iterator;
+  using const_feature_iterator = typename FeatureSetType::const_iterator;
 
-private:
-  string Name;
-  std::optional<Location> Loc;
-  bool Opt;
-  llvm::SmallVector<Feature *, 1> Parents;
-  FeatureListType Children;
-  FeatureListType Excludes;
-  FeatureListType Implications;
-  FeatureListType Alternatives;
-  RelationshipListTy Relationships;
+  enum class FeatureKind { FK_BINARY, FK_NUMERIC };
 
-protected:
-  Feature(string Name, bool Opt, std::optional<Location> Loc)
-      : Name(std::move(Name)), Opt(Opt), Loc(std::move(Loc)) {}
-
-public:
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
   virtual ~Feature() = default;
+
+  [[nodiscard]] FeatureKind getKind() const { return T; }
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
   [[nodiscard]] bool isOptional() const { return Opt; }
 
-  [[nodiscard]] bool isRoot() const { return Parents.empty(); }
+  [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
 
-  void print(std::ostream &Out) const { Out << toString() << std::endl; }
-  void print(llvm::raw_ostream &Out) const { Out << toString() << '\n'; }
-
-  LLVM_DUMP_METHOD
-  void dump() const { llvm::outs() << toString() << "\n"; }
+  [[nodiscard]] Feature *getParent() const { return Parent; }
+  bool isParent(Feature *PosParent) const { return Parent == PosParent; }
 
   //===--------------------------------------------------------------------===//
   // Children
@@ -76,39 +60,8 @@ public:
   [[nodiscard]] llvm::iterator_range<const_feature_iterator> children() const {
     return llvm::make_range(children_begin(), children_end());
   }
-  void addChild(Feature *Child) { Children.push_back(Child); }
   bool isChild(Feature *PosChild) const {
     return std::find(children_begin(), children_end(), PosChild) != end();
-  }
-
-  //===--------------------------------------------------------------------===//
-  // Parents
-  llvm::SmallVector<Feature *, 1>::iterator parents_begin() {
-    return Parents.begin();
-  }
-  llvm::SmallVector<Feature *, 1>::iterator parents_end() {
-    return Parents.end();
-  }
-  [[nodiscard]] llvm::SmallVector<Feature *, 1>::const_iterator
-  parents_begin() const {
-    return Parents.begin();
-  }
-  [[nodiscard]] llvm::SmallVector<Feature *, 1>::const_iterator
-  parents_end() const {
-    return Parents.end();
-  }
-  llvm::iterator_range<llvm::SmallVector<Feature *, 1>::iterator> parents() {
-    return llvm::make_range(parents_begin(), parents_end());
-  }
-  [[nodiscard]] llvm::iterator_range<
-      llvm::SmallVector<Feature *, 1>::const_iterator>
-  parents() const {
-    return llvm::make_range(parents_begin(), parents_end());
-  }
-  void addParent(Feature *Parent) { Parents.push_back(Parent); }
-  [[nodiscard]] bool isParent(Feature *PosParent) const {
-    return std::find(parents_begin(), parents_end(), PosParent) !=
-           parents_end();
   }
 
   //===--------------------------------------------------------------------===//
@@ -127,7 +80,6 @@ public:
   [[nodiscard]] llvm::iterator_range<const_feature_iterator> excludes() const {
     return llvm::make_range(excludes_begin(), excludes_end());
   }
-  void addExclude(Feature *Exclude) { Excludes.push_back(Exclude); }
   bool isExcluded(Feature *PosExclude) const {
     return std::find(excludes_begin(), excludes_end(), PosExclude) !=
            excludes_end();
@@ -150,10 +102,7 @@ public:
   implications() const {
     return llvm::make_range(implications_begin(), implications_end());
   }
-  void addImplication(Feature *Implication) {
-    Implications.push_back(Implication);
-  }
-  bool implies(Feature *PosImplication) const {
+  bool isImplied(Feature *PosImplication) const {
     return std::find(implications_begin(), implications_end(),
                      PosImplication) != implications_end();
   }
@@ -175,23 +124,9 @@ public:
   alternatives() const {
     return llvm::make_range(alternatives_begin(), alternatives_end());
   }
-  void addAlternative(Feature *Alternative) {
-    Alternatives.push_back(Alternative);
-  }
   bool isAlternative(Feature *PosAlternative) const {
     return std::find(alternatives_begin(), alternatives_end(),
                      PosAlternative) != alternatives_end();
-  }
-
-  //===--------------------------------------------------------------------===//
-  // Relationships
-  relationship_iterator relationships_begin() { return Relationships.begin(); }
-  relationship_iterator relationships_end() { return Relationships.end(); }
-  llvm::iterator_range<relationship_iterator> relationships() {
-    return llvm::make_range(relationships_begin(), relationships_end());
-  }
-  void addRelationship(std::unique_ptr<Relationship<Feature>> Relationship) {
-    Relationships.push_back(std::move(Relationship));
   }
 
   //===--------------------------------------------------------------------===//
@@ -203,34 +138,91 @@ public:
   }
   [[nodiscard]] const_feature_iterator end() const { return children_end(); }
 
-  [[nodiscard]] Location* getLocation() {
-    return Loc.has_value() ? &Loc.value() : nullptr;
+  //===--------------------------------------------------------------------===//
+  // Operators
+
+  /// Compare lowercase name assuming those are unique.
+  bool operator==(const vara::feature::Feature &Other) const {
+    // TODO(s9latimm): keys in FM are case sensitive
+    return getName().lower() == Other.getName().lower();
+  }
+  bool operator!=(const vara::feature::Feature &Other) const {
+    return !operator==(Other);
+  }
+
+  /// Compare in depth first ordering.
+  bool operator<(const vara::feature::Feature &Other) const;
+  bool operator>(const vara::feature::Feature &Other) const {
+    return Other.operator<(*this);
+  }
+
+  [[nodiscard]] FeatureSourceRange *getFeatureSourceRange() {
+    return Source.has_value() ? &Source.value() : nullptr;
   }
 
   //===--------------------------------------------------------------------===//
   // Utility
   [[nodiscard]] virtual std::string toString() const;
 
-  bool operator==(const Feature &F) const {
-    return llvm::StringRef(this->getName()).lower() ==
-           llvm::StringRef(F.getName()).lower();
-  }
+  void print(std::ostream &Out) const { Out << toString() << std::endl; }
+  void print(llvm::raw_ostream &Out) const { Out << toString() << '\n'; }
 
-  bool operator<(const Feature &F) const {
-    return llvm::StringRef(this->getName()).lower() <
-           llvm::StringRef(F.getName()).lower();
-  }
+  LLVM_DUMP_METHOD
+  void dump() const { llvm::outs() << toString() << "\n"; }
+
+protected:
+  Feature(FeatureKind Kind, string Name, bool Opt,
+          std::optional<FeatureSourceRange> Source, Feature *Parent,
+          FeatureSetType Children, FeatureSetType Excludes,
+          FeatureSetType Implications, FeatureSetType Alternatives)
+      : T(Kind), Name(std::move(Name)), Opt(Opt), Source(std::move(Source)),
+        Parent(Parent), Children(std::move(Children)),
+        Excludes(std::move(Excludes)), Implications(std::move(Implications)),
+        Alternatives(std::move(Alternatives)) {}
+
+private:
+  friend class FeatureModel;
+  friend class FeatureModelBuilder;
+
+  void addChild(Feature *Feature) { Children.insert(Feature); }
+
+  void setParent(Feature *Feature) { Parent = Feature; }
+
+  void addExclude(Feature *F) { Excludes.insert(F); }
+
+  void addAlternative(Feature *F) { Alternatives.insert(F); }
+
+  void addImplication(Feature *F) { Implications.insert(F); }
+
+  FeatureKind T;
+  string Name;
+  bool Opt;
+  std::optional<FeatureSourceRange> Source;
+  Feature *Parent;
+  FeatureSetType Children;
+  FeatureSetType Excludes;
+  FeatureSetType Implications;
+  FeatureSetType Alternatives;
 };
 
 /// Options without arguments.
 class BinaryFeature : public Feature {
 
 public:
-  BinaryFeature(string Name, bool Opt,
-                std::optional<Location> Loc = std::nullopt)
-      : Feature(std::move(Name), Opt, std::move(Loc)) {}
+  BinaryFeature(string Name, bool Opt = false,
+                std::optional<FeatureSourceRange> Loc = std::nullopt,
+                Feature *Parent = nullptr, FeatureSetType Children = {},
+                FeatureSetType Excludes = {}, FeatureSetType Implications = {},
+                FeatureSetType Alternatives = {})
+      : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc),
+                Parent, std::move(Children), std::move(Excludes),
+                std::move(Implications), std::move(Alternatives)) {}
 
   [[nodiscard]] string toString() const override;
+
+  static bool classof(const Feature *F) {
+    return F->getKind() == FeatureKind::FK_BINARY;
+  }
 };
 
 /// Options with numeric values.
@@ -239,20 +231,27 @@ public:
   using ValuesVariantType =
       typename std::variant<std::pair<int, int>, std::vector<int>>;
 
-private:
-  ValuesVariantType Values;
-
-public:
-  NumericFeature(string Name, bool Opt, ValuesVariantType Values,
-                 std::optional<Location> Loc = std::nullopt)
-      : Feature(std::move(Name), Opt, std::move(Loc)),
+  NumericFeature(string Name, ValuesVariantType Values, bool Opt = false,
+                 std::optional<FeatureSourceRange> Loc = std::nullopt,
+                 Feature *Parent = nullptr, FeatureSetType Children = {},
+                 FeatureSetType Excludes = {}, FeatureSetType Implications = {},
+                 FeatureSetType Alternatives = {})
+      : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc),
+                Parent, std::move(Children), std::move(Excludes),
+                std::move(Implications), std::move(Alternatives)),
         Values(std::move(Values)) {}
 
-  ValuesVariantType getVals() { return Values; }
+  [[nodiscard]] ValuesVariantType getValues() const { return Values; }
 
   [[nodiscard]] string toString() const override;
-};
 
+  static bool classof(const Feature *F) {
+    return F->getKind() == FeatureKind::FK_NUMERIC;
+  }
+
+private:
+  ValuesVariantType Values;
+};
 } // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATURE_H

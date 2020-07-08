@@ -14,6 +14,7 @@ namespace vara::feature {
 //                               FeatureModelParser Class
 //===----------------------------------------------------------------------===//
 
+/// \brief Base class for parsers with different input formats.
 class FeatureModelParser {
 protected:
   explicit FeatureModelParser() = default;
@@ -21,14 +22,14 @@ protected:
 public:
   virtual ~FeatureModelParser() = default;
 
-  /// Build \a FeatureModel after parsing.
+  /// Build \a FeatureModel after parsing. May return null if parsing or
+  /// building failed.
   ///
-  /// \returns an instance of \a FeatureModel
+  /// \returns an instance of \a FeatureModel or \a nullptr
   virtual std::unique_ptr<FeatureModel> buildFeatureModel() = 0;
 
-  /// Verify \a FeatureModel.
-  ///
-  /// \returns if \a FeatureModel is valid
+  /// Checks whether input is a valid feature model as acyclic graph with unique
+  /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.
   virtual bool verifyFeatureModel() = 0;
 };
 
@@ -36,7 +37,17 @@ public:
 //                               FeatureModelXmlParser Class
 //===----------------------------------------------------------------------===//
 
+/// \brief Parsers for feature models in XML.
 class FeatureModelXmlParser : public FeatureModelParser {
+public:
+  explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
+
+  std::unique_ptr<FeatureModel> buildFeatureModel() override;
+
+  bool verifyFeatureModel() override;
+
+private:
+  using constXmlCharPtr = const xmlChar *;
 
   inline static const std::string DtdRaw =
       "<!ELEMENT vm (binaryOptions, numericOptions?, booleanConstraints?, "
@@ -99,42 +110,19 @@ class FeatureModelXmlParser : public FeatureModelParser {
   static constexpr xmlChar LINE[] = "line";
   static constexpr xmlChar COLUMN[] = "column";
 
-  using constXmlCharPtr = const xmlChar *;
-
-private:
   std::string Xml;
-  std::string VmName;
-  fs::path RootPath;
-  FeatureModel::FeatureMapTy Features;
-  FeatureModel::ConstraintsTy Constraints;
-  std::vector<std::pair<std::string, std::string>> RawEdges;
-  std::vector<std::pair<std::string, std::string>> RawExcludes;
-  std::vector<std::vector<std::pair<std::string, bool>>> RawConstraints;
+  FeatureModelBuilder FMB;
 
-  void clear() {
-    Features.clear();
-    Constraints.clear();
-    RawEdges.clear();
-    RawExcludes.clear();
-    RawConstraints.clear();
-  }
+  bool parseConfigurationOption(xmlNode *Node, bool Num);
+  bool parseOptions(xmlNode *Node, bool Num);
+  bool parseConstraints(xmlNode *Node);
+  bool parseVm(xmlNode *Node);
 
-  void parseConfigurationOption(xmlNode *N, bool Num);
-  void parseOptions(xmlNode *N, bool Num);
-  void parseConstraints(xmlNode *N);
-  void parseVm(xmlNode *N);
-
-  static Location::LineColumnOffset createLineColumnOffset(xmlNode *N);
+  static FeatureSourceRange::FeatureSourceLocation
+  createFeatureSourceLocation(xmlNode *Node);
 
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
-
-public:
-  explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
-
-  std::unique_ptr<FeatureModel> buildFeatureModel() override;
-
-  bool verifyFeatureModel() override;
 };
 
 } // namespace vara::feature

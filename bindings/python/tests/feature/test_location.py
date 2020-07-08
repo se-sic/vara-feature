@@ -23,7 +23,7 @@ class TestLineColumnOffset(unittest.TestCase):
 
         self.assertEqual(lc_offset_0.column_offset, 4)
         self.assertEqual(lc_offset_1.column_offset, 20)
-    
+
     def test_line_column_offset_setter(self):
         """ Checks if the column offset is correctly mapped. """
         lc_offset_0 = LineColumnOffset(3, 4)
@@ -51,11 +51,11 @@ class TestLocation(unittest.TestCase):
         self.assertEqual(loc_0.path, path_0)
 
         self.assertEqual(loc_1.path, path_1)
-        self.assertEqual(loc_1.get_start(), start_lc_offset)
+        self.assertEqual(loc_1.start, start_lc_offset)
 
         self.assertEqual(loc_2.path, path_2)
-        self.assertEqual(loc_2.get_start(), start_lc_offset)
-        self.assertEqual(loc_2.get_end(), end_lc_offset)
+        self.assertEqual(loc_2.start, start_lc_offset)
+        self.assertEqual(loc_2.end, end_lc_offset)
 
     def test_path(self):
         """ Checks if the path accessor is correctly mapped. """
@@ -69,8 +69,8 @@ class TestLocation(unittest.TestCase):
         start_lc_offset = LineColumnOffset(3, 4)
         loc = Location("foo/bar/buzz", start_lc_offset)
 
-        self.assertEqual(loc.get_start(), start_lc_offset)
-        self.assertIsNone(loc.get_end())
+        self.assertEqual(loc.start, start_lc_offset)
+        self.assertIsNone(loc.end)
 
     def test_get_end(self):
         """ Checks if the end accessor is correctly mapped. """
@@ -78,5 +78,5 @@ class TestLocation(unittest.TestCase):
         end_lc_offset = LineColumnOffset(4, 20)
         loc = Location("foo/bar/buzz", start_lc_offset, end_lc_offset)
 
-        self.assertEqual(loc.get_start(), start_lc_offset)
-        self.assertEqual(loc.get_end(), end_lc_offset)
+        self.assertEqual(loc.start, start_lc_offset)
+        self.assertEqual(loc.end, end_lc_offset)
