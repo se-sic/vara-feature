@@ -73,12 +73,12 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   }
   if (Num) {
     if (Values.empty()) {
-      return FMB.addFeature(Name, std::make_pair(MinValue, MaxValue), Opt,
-                            std::move(Loc));
+      return FMB.makeFeature<NumericFeature>(
+          Name, std::make_pair(MinValue, MaxValue), Opt, std::move(Loc));
     }
-    return FMB.addFeature(Name, Values, Opt, std::move(Loc));
+    return FMB.makeFeature<NumericFeature>(Name, Values, Opt, std::move(Loc));
   }
-  return FMB.addFeature(Name, Opt, std::move(Loc));
+  return FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(Loc));
 }
 
 bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {

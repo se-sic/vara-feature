@@ -48,7 +48,7 @@ public:
   /// Insert a \a Feature into existing model while keeping consistency and
   /// ordering.
   ///
-  /// \param Feature feature to be inserted
+  /// \param[in] Feature feature to be inserted
   /// \return if feature was inserted successfully
   bool addFeature(std::unique_ptr<Feature> Feature);
 
@@ -127,34 +127,13 @@ public:
   ///                        \a Feature constructor
   ///
   /// \returns true, if the feature could be inserted into the \a FeatureModel
-  template <
-      typename FeatureTy, typename... Args,
-      typename std::enable_if_t<std::is_base_of_v<Feature, FeatureTy>, int>>
+  template <typename FeatureTy, typename... Args,
+            typename = typename std::enable_if_t<
+                std::is_base_of_v<Feature, FeatureTy>, int>>
   bool makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
     return Features
-        .try_emplace(FeatureName,
-                     std::make_unique<FeatureTy>(FeatureName,
-                                                 std::forward(FurtherArgs)...))
-        .second;
-  }
-
-  /// Try to add \a BinaryFeature.
-  bool addFeature(const std::string &FeatureName, bool Opt = false,
-                  std::optional<FeatureSourceRange> Loc = std::nullopt) {
-    return Features
-        .try_emplace(FeatureName, std::make_unique<BinaryFeature>(
-                                      FeatureName, Opt, std::move(Loc)))
-        .second;
-  }
-
-  /// Try to add \a NumericFeature.
-  bool addFeature(const std::string &FeatureName,
-                  const NumericFeature::ValuesVariantType &Values,
-                  bool Opt = false,
-                  std::optional<FeatureSourceRange> Loc = std::nullopt) {
-    return Features
-        .try_emplace(FeatureName, std::make_unique<NumericFeature>(
-                                      FeatureName, Values, Opt, std::move(Loc)))
+        .try_emplace(FeatureName, std::make_unique<FeatureTy>(
+                                      FeatureName, std::move(FurtherArgs)...))
         .second;
   }
 
@@ -199,8 +178,8 @@ public:
 
   /// Build simple \a FeatureModel from given edges.
   ///
-  /// \param B edges with \a BinaryFeature
-  /// \param N edges with \a NumericFeature
+  /// \param[in] B edges with \a BinaryFeature
+  /// \param[in] N edges with \a NumericFeature
   /// \return instance of \a FeatureModel
   std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
       const std::vector<std::pair<std::string, std::string>> &B,
@@ -296,8 +275,8 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   /// Checks whether an edge would be a duplicate.
   ///
-  /// \param Edge may be already visited.
-  /// \param Skip contains existing edges.
+  /// \param[in] Edge may be already visited.
+  /// \param[in] Skip contains existing edges.
   static bool
   visited(std::pair<vara::feature::Feature *, vara::feature::Feature *> Edge,
           const FeatureEdgeSetTy &Skip) {
@@ -364,8 +343,8 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   /// Output feature model (tree) recursively.
   ///
-  /// \param Node Root of subtree.
-  /// \param Indent Value to indent statements in dot file.
+  /// \param[in] Node Root of subtree.
+  /// \param[in] Indent Value to indent statements in dot file.
   void emitCluster(const NodeRef Node, const int Indent = 0) {
     O.indent(Indent);
     emitNode(Node);

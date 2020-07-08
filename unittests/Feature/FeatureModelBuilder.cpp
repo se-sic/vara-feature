@@ -7,7 +7,7 @@ namespace vara::feature {
 TEST(FeatureModelBuilder, addBinaryFeature) {
   FeatureModelBuilder B;
 
-  B.addFeature("a");
+  B.makeFeature<BinaryFeature>("a");
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -17,7 +17,7 @@ TEST(FeatureModelBuilder, addBinaryFeature) {
 TEST(FeatureModelBuilder, addNumericFeature) {
   FeatureModelBuilder B;
 
-  B.addFeature("a", std::vector<int>{1, 2, 3});
+  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3});
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -27,7 +27,7 @@ TEST(FeatureModelBuilder, addNumericFeature) {
 TEST(FeatureModelBuilder, addOptionalFeature) {
   FeatureModelBuilder B;
 
-  B.addFeature("a", true);
+  B.makeFeature<BinaryFeature>("a", true);
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -37,8 +37,8 @@ TEST(FeatureModelBuilder, addOptionalFeature) {
 TEST(FeatureModelBuilder, addExclude) {
   FeatureModelBuilder B;
 
-  B.addFeature("a");
-  B.addExclude("a", "b")->addFeature("b");
+  B.makeFeature<BinaryFeature>("a");
+  B.addExclude("a", "b")->makeFeature<BinaryFeature>("b");
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -48,8 +48,8 @@ TEST(FeatureModelBuilder, addExclude) {
 TEST(FeatureModelBuilder, addAlternative) {
   FeatureModelBuilder B;
 
-  B.addFeature("a");
-  B.addConstraint({{"a", true}, {"b", true}})->addFeature("b");
+  B.makeFeature<BinaryFeature>("a");
+  B.addConstraint({{"a", true}, {"b", true}})->makeFeature<BinaryFeature>("b");
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -60,8 +60,8 @@ TEST(FeatureModelBuilder, addAlternative) {
 TEST(FeatureModelBuilder, addImplication) {
   FeatureModelBuilder B;
 
-  B.addFeature("a");
-  B.addConstraint({{"a", false}, {"b", true}})->addFeature("b");
+  B.makeFeature<BinaryFeature>("a");
+  B.addConstraint({{"a", false}, {"b", true}})->makeFeature<BinaryFeature>("b");
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -71,9 +71,9 @@ TEST(FeatureModelBuilder, addImplication) {
 TEST(FeatureModelBuilder, duplicate) {
   FeatureModelBuilder B;
 
-  B.addParent("a", "root")->addFeature("a", true);
+  B.addParent("a", "root")->makeFeature<BinaryFeature>("a", true);
 
-  EXPECT_FALSE(B.addFeature("a", true));
+  EXPECT_FALSE(B.makeFeature<BinaryFeature>("a", true));
 }
 
 TEST(FeatureModelBuilder, addBinaryFeatureRef) {

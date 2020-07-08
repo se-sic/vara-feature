@@ -41,7 +41,7 @@ TEST(NumericFeature, NumericFeatureVector) {
 TEST(NumericFeature, NumericFeatureRoot) {
   auto B = FeatureModelBuilder();
 
-  B.addFeature("F", std::pair<int, int>(0, 1));
+  B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
   B.setRoot("F");
 
   auto FM = B.buildFeatureModel();
@@ -63,8 +63,8 @@ TEST(NumericFeature, NumericFeatureChildren) {
 TEST(NumericFeature, NumericFeatureExclude) {
   auto B = FeatureModelBuilder();
 
-  B.addFeature("F", std::pair<int, int>(0, 1));
-  B.addFeature("G", std::pair<int, int>(0, 1));
+  B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
+  B.makeFeature<NumericFeature>("G", std::pair<int, int>(0, 1));
   B.addExclude("F", "G");
 
   auto FM = B.buildFeatureModel();
@@ -78,8 +78,8 @@ TEST(NumericFeature, NumericFeatureExclude) {
 TEST(NumericFeature, NumericFeatureImplications) {
   auto B = FeatureModelBuilder();
 
-  B.addFeature("F", std::pair<int, int>(0, 1));
-  B.addFeature("G", std::pair<int, int>(0, 1));
+  B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
+  B.makeFeature<NumericFeature>("G", std::pair<int, int>(0, 1));
   B.addConstraint({{"F", false}, {"G", true}});
 
   auto FM = B.buildFeatureModel();
@@ -93,8 +93,8 @@ TEST(NumericFeature, NumericFeatureImplications) {
 TEST(NumericFeature, NumericFeatureAlternatives) {
   auto B = FeatureModelBuilder();
 
-  B.addFeature("F", std::pair<int, int>(0, 1));
-  B.addFeature("G", std::pair<int, int>(0, 1));
+  B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
+  B.makeFeature<NumericFeature>("G", std::pair<int, int>(0, 1));
   B.addConstraint({{"F", true}, {"G", true}});
 
   auto FM = B.buildFeatureModel();

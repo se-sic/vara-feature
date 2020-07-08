@@ -117,7 +117,7 @@ FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &RootName) {
   assert(this->Root == nullptr && "Root already set.");
 
   if (Features.find(RootName) == Features.end()) {
-    addFeature(RootName, false);
+    makeFeature<BinaryFeature>(RootName, false);
   }
   this->Root = Features[RootName].get();
 
@@ -149,13 +149,13 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
         &N) {
   init();
   for (const auto &Binary : B) {
-    addFeature(Binary.first);
-    addFeature(Binary.second);
+    makeFeature<BinaryFeature>(Binary.first);
+    makeFeature<BinaryFeature>(Binary.second);
     addParent(Binary.second, Binary.first);
   }
   for (const auto &Numeric : N) {
-    addFeature(Numeric.first);
-    addFeature(Numeric.second.first, Numeric.second.second);
+    makeFeature<BinaryFeature>(Numeric.first);
+    makeFeature<NumericFeature>(Numeric.second.first, Numeric.second.second);
     addParent(Numeric.second.first, Numeric.first);
   }
   return std::move(buildFeatureModel());
@@ -167,14 +167,15 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
           : std::nullopt;
   switch (F.getKind()) {
   case Feature::FeatureKind::FK_BINARY:
-    if (!addFeature(F.getName(), F.isOptional(), Loc)) {
+    if (!makeFeature<BinaryFeature>(F.getName(), F.isOptional(), Loc)) {
       return false;
     }
     break;
   case Feature::FeatureKind::FK_NUMERIC:
     NumericFeature::ValuesVariantType Values =
         dynamic_cast<NumericFeature *>(&F)->getValues();
-    if (!addFeature(F.getName(), Values, F.isOptional(), Loc)) {
+    if (!makeFeature<NumericFeature>(F.getName(), Values, F.isOptional(),
+                                     Loc)) {
       return false;
     }
     break;

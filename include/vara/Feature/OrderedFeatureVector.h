@@ -21,7 +21,7 @@ public:
 
   /// Insert feature while preserving ordering.
   void insert(Feature *F);
-  
+
   template <typename... Args> void insert(Feature *F, Args... FF) {
     insert(F);
     insert(FF...);

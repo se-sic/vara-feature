@@ -24,7 +24,7 @@ TEST(BinaryFeature, isa) {
 TEST(BinaryFeature, BinaryFeatureRoot) {
   auto B = FeatureModelBuilder();
 
-  B.addFeature("F");
+  B.makeFeature<BinaryFeature>("F");
   B.setRoot("F");
 
   auto FM = B.buildFeatureModel();
@@ -46,8 +46,8 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
 TEST(BinaryFeature, BinaryFeatureExclude) {
   auto B = FeatureModelBuilder();
 
-  B.addFeature("F");
-  B.addFeature("G");
+  B.makeFeature<BinaryFeature>("F");
+  B.makeFeature<BinaryFeature>("G");
   B.addExclude("F", "G");
 
   auto FM = B.buildFeatureModel();
@@ -61,8 +61,8 @@ TEST(BinaryFeature, BinaryFeatureExclude) {
 TEST(BinaryFeature, BinaryFeatureImplications) {
   auto B = FeatureModelBuilder();
 
-  B.addFeature("F");
-  B.addFeature("G");
+  B.makeFeature<BinaryFeature>("F");
+  B.makeFeature<BinaryFeature>("G");
   B.addConstraint({{"F", false}, {"G", true}});
 
   auto FM = B.buildFeatureModel();
@@ -76,8 +76,8 @@ TEST(BinaryFeature, BinaryFeatureImplications) {
 TEST(BinaryFeature, BinaryFeatureAlternatives) {
   auto B = FeatureModelBuilder();
 
-  B.addFeature("F");
-  B.addFeature("G");
+  B.makeFeature<BinaryFeature>("F");
+  B.makeFeature<BinaryFeature>("G");
   B.addConstraint({{"F", true}, {"G", true}});
 
   auto FM = B.buildFeatureModel();
