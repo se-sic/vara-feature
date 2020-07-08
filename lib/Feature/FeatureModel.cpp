@@ -178,7 +178,7 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
     }
     break;
   }
-  if (F.hasParent()) {
+  if (!F.isRoot()) {
     this->addParent(F.getName(), F.getParent()->getName());
   }
   for (const auto *Child : F.children()) {

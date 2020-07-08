@@ -29,18 +29,59 @@ class TestFeature(unittest.TestCase):
         test_feature = feature.BinaryFeature("root", False)
         self.assertTrue(test_feature.is_root())
 
-    # def test_iter_children(self):
-    #     """ Checks if we can iterate over a features children. """
-    #     root_feature = feature.BinaryFeature("root", False)
-    #     test_feature_1 = feature.BinaryFeature("Test1", False)
-    #     test_feature_2 = feature.BinaryFeature("Test2", True)
-    #
-    #     root_feature.add_child(test_feature_1)
-    #     root_feature.add_child(test_feature_2)
-    #
-    #     child_iter = iter(root_feature)
-    #     self.assertEqual(test_feature_1, next(child_iter))
-    #     self.assertEqual(test_feature_2, next(child_iter))
+    def test_iter_children(self):
+        """ Checks if we can iterate over a features children. """
+        test_feature_1 = feature.BinaryFeature("a", False)
+        test_feature_2 = feature.BinaryFeature("b", True)
+
+        root_feature = feature.BinaryFeature("root", False,
+                                             feature.Location(""), None,
+                                             {test_feature_1, test_feature_2})
+
+        self.assertEqual(set(iter(root_feature)),
+                         set(root_feature.children()))
+        self.assertEqual({test_feature_1, test_feature_2},
+                         set(root_feature.children()))
+        self.assertTrue(root_feature.is_child(test_feature_1))
+
+    def test_iter_excludes(self):
+        """ Checks if we can iterate over a features children. """
+        test_feature_1 = feature.BinaryFeature("a", False)
+        test_feature_2 = feature.BinaryFeature("b", True)
+
+        root_feature = feature.BinaryFeature("root", False,
+                                             feature.Location(""), None,
+                                             set(),
+                                             {test_feature_1, test_feature_2})
+
+        self.assertEqual({test_feature_1, test_feature_2},
+                         set(root_feature.excludes()))
+        self.assertTrue(root_feature.is_excluded(test_feature_1))
+
+    def test_iter_implications(self):
+        """ Checks if we can iterate over a features children. """
+        test_feature_1 = feature.BinaryFeature("a", False)
+        test_feature_2 = feature.BinaryFeature("b", True)
+
+        root_feature = feature.BinaryFeature("root", False,
+                                             feature.Location(""), None,
+                                             set(), set(),
+                                             {test_feature_1, test_feature_2})
+
+        self.assertEqual({test_feature_1, test_feature_2},
+                         set(root_feature.implications()))
+        self.assertTrue(root_feature.is_implied(test_feature_1))
+
+    def test_parent(self):
+        """ Checks if we can iterate over a features children. """
+        test_feature_1 = feature.BinaryFeature("a", False)
+        test_feature_2 = feature.BinaryFeature("aa", True, feature.Location(""),
+                                               test_feature_1)
+
+        self.assertFalse(test_feature_2.is_root())
+        self.assertEqual(test_feature_1,
+                         test_feature_2.parent())
+        self.assertTrue(test_feature_2.is_parent(test_feature_1))
 
     def test_feature_equal(self):
         """ Checks if Feature equality comparison operator is correctly
@@ -62,12 +103,12 @@ class TestFeature(unittest.TestCase):
 
         self.assertTrue(test_feature_0.get_location())
         self.assertEqual(test_feature_0.get_location().path, path)
-        self.assertEqual(test_feature_0.get_location().get_start().line_number,
+        self.assertEqual(test_feature_0.get_location().start.line_number,
                          3)
         self.assertEqual(
-            test_feature_0.get_location().get_start().column_offset, 4)
-        self.assertEqual(test_feature_0.get_location().get_end().line_number, 3)
-        self.assertEqual(test_feature_0.get_location().get_end().column_offset,
+            test_feature_0.get_location().start.column_offset, 4)
+        self.assertEqual(test_feature_0.get_location().end.line_number, 3)
+        self.assertEqual(test_feature_0.get_location().end.column_offset,
                          20)
 
     def test_feature_location_setters(self):
@@ -78,8 +119,8 @@ class TestFeature(unittest.TestCase):
         loc = feature.Location(path, start_lco, end_lco)
         test_feature_0 = feature.BinaryFeature("Test", False, loc)
 
-        start = test_feature_0.get_location().get_start()
-        end = test_feature_0.get_location().get_end()
+        start = test_feature_0.get_location().start
+        end = test_feature_0.get_location().end
         start.line_number = 4
         end.line_number = 4
         start.column_offset = 2
@@ -87,12 +128,12 @@ class TestFeature(unittest.TestCase):
 
         self.assertTrue(test_feature_0.get_location())
         self.assertEqual(test_feature_0.get_location().path, path)
-        self.assertEqual(test_feature_0.get_location().get_start().line_number,
+        self.assertEqual(test_feature_0.get_location().start.line_number,
                          4)
         self.assertEqual(
-            test_feature_0.get_location().get_start().column_offset, 2)
-        self.assertEqual(test_feature_0.get_location().get_end().line_number, 4)
-        self.assertEqual(test_feature_0.get_location().get_end().column_offset,
+            test_feature_0.get_location().start.column_offset, 2)
+        self.assertEqual(test_feature_0.get_location().end.line_number, 4)
+        self.assertEqual(test_feature_0.get_location().end.column_offset,
                          18)
 
 

@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 namespace vf = vara::feature;
 namespace py = pybind11;
 
-void init_feature_module_location(py::module &M) {
+void init_feature_location_module(py::module &M) {
   py::class_<vf::FeatureSourceRange>(M, "Location")
       .def(py::init([](std::string Path) {
         return vf::FeatureSourceRange(fs::path(std::move(Path)), std::nullopt,
@@ -42,12 +42,12 @@ void init_feature_module_location(py::module &M) {
           "path",
           [](vf::FeatureSourceRange &Loc) { return Loc.getPath().string(); },
           R"pbdoc(Path to the source file)pbdoc")
-      .def("get_start", &vf::FeatureSourceRange::getStart,
-           py::return_value_policy::reference,
-           R"pbdoc(Get the start `LineColumnOffset` of this `Location`.)pbdoc")
-      .def("get_end", &vf::FeatureSourceRange::getEnd,
-           py::return_value_policy::reference,
-           R"pbdoc(Get the end `LineColumnOffset` of this `Location`.)pbdoc")
+      .def_property_readonly(
+          "start", &vf::FeatureSourceRange::getStart,
+          R"pbdoc(Get the start `LineColumnOffset` of this `Location`.)pbdoc")
+      .def_property_readonly(
+          "end", &vf::FeatureSourceRange::getEnd,
+          R"pbdoc(Get the end `LineColumnOffset` of this `Location`.)pbdoc")
       .def("__str__", &vf::FeatureSourceRange::toString);
 
   py::class_<vf::FeatureSourceRange::FeatureSourceLocation>(M,

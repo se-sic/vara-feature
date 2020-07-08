@@ -7,6 +7,7 @@
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <set>
 #include <stack>
 #include <utility>
 #include <variant>
@@ -22,7 +23,7 @@ namespace vara::feature {
 /// \brief Base class for components of \a FeatureModel.
 class Feature {
 public:
-  using FeatureSetType = typename llvm::DenseSet<Feature *>;
+  using FeatureSetType = typename std::set<Feature *>;
   using feature_iterator = typename FeatureSetType::iterator;
   using const_feature_iterator = typename FeatureSetType::const_iterator;
 
@@ -40,8 +41,8 @@ public:
 
   [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
 
-  bool hasParent() { return Parent != nullptr; }
   [[nodiscard]] Feature *getParent() const { return Parent; }
+  bool isParent(Feature *PosParent) const { return Parent == PosParent; }
 
   //===--------------------------------------------------------------------===//
   // Children
@@ -101,7 +102,7 @@ public:
   implications() const {
     return llvm::make_range(implications_begin(), implications_end());
   }
-  bool implies(Feature *PosImplication) const {
+  bool isImplied(Feature *PosImplication) const {
     return std::find(implications_begin(), implications_end(),
                      PosImplication) != implications_end();
   }
@@ -126,10 +127,6 @@ public:
   bool isAlternative(Feature *PosAlternative) const {
     return std::find(alternatives_begin(), alternatives_end(),
                      PosAlternative) != alternatives_end();
-  }
-  bool isImplied(Feature *PosImplied) const {
-    return std::find(implications_begin(), implications_end(), PosImplied) !=
-           implications_end();
   }
 
   //===--------------------------------------------------------------------===//
