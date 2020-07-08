@@ -121,7 +121,7 @@ FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &RootKey) {
 
   for (const auto &Key : Features.keys()) {
     if (Key != RootKey && Parents.find(Key) == Parents.end()) {
-      Children[RootKey].push_back(Key);
+      Children[RootKey].insert(Key);
       Parents[Key] = RootKey;
     }
   }
@@ -157,5 +157,41 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
     addParent(Numeric.second.first, Numeric.first);
   }
   return std::move(buildFeatureModel());
+}
+bool FeatureModelBuilder::addFeature(Feature &F) {
+  std::optional<FeatureSourceRange> Loc =
+      F.getFeatureSourceRange()
+          ? std::make_optional(FeatureSourceRange(*F.getFeatureSourceRange()))
+          : std::nullopt;
+  switch (F.getKind()) {
+  case Feature::FK_BINARY:
+    if (!addFeature(F.getName(), F.isOptional(), Loc)) {
+      return false;
+    }
+    break;
+  case Feature::FK_NUMERIC:
+    NumericFeature::ValuesVariantType Values =
+        dynamic_cast<NumericFeature *>(&F)->getValues();
+    if (!addFeature(F.getName(), Values, F.isOptional(), Loc)) {
+      return false;
+    }
+    break;
+  }
+  if (F.hasParent()) {
+    this->addParent(F.getName(), F.getParent()->getName());
+  }
+  for (const auto *Child : F.children()) {
+    this->addParent(Child->getName(), F.getName());
+  }
+  for (const auto *Exclude : F.excludes()) {
+    this->addExclude(F.getName(), Exclude->getName());
+  }
+  for (const auto *Alternative : F.alternatives()) {
+    this->addConstraint({{F.getName(), true}, {Alternative->getName(), true}});
+  }
+  for (const auto *Implication : F.implications()) {
+    this->addConstraint({{F.getName(), false}, {Implication->getName(), true}});
+  }
+  return true;
 }
 } // namespace vara::feature

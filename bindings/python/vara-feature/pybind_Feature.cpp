@@ -37,7 +37,7 @@ void init_feature_module_feature(py::module &M) {
       // Parent
       .def("parent", &vf::Feature::getParent,
            py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
-      .def("is_parent", &vf::Feature::isParent,
+      .def("is_parent", &vf::Feature::hasParent,
            R"pbdoc(Checks if a Feature is a parent of this one.)pbdoc")
       //===----------------------------------------------------------------===//
       // Excludes

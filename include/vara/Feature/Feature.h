@@ -40,7 +40,7 @@ public:
 
   [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
 
-  bool isParent() { return Parent != nullptr; }
+  bool hasParent() { return Parent != nullptr; }
   [[nodiscard]] Feature *getParent() const { return Parent; }
 
   //===--------------------------------------------------------------------===//
@@ -126,6 +126,10 @@ public:
   bool isAlternative(Feature *PosAlternative) const {
     return std::find(alternatives_begin(), alternatives_end(),
                      PosAlternative) != alternatives_end();
+  }
+  bool isImplied(Feature *PosImplied) const {
+    return std::find(implications_begin(), implications_end(), PosImplied) !=
+           implications_end();
   }
 
   //===--------------------------------------------------------------------===//

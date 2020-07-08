@@ -20,14 +20,6 @@ TEST(FeatureModel, size) {
   EXPECT_EQ(2, B.buildFeatureModel()->size());
 }
 
-TEST(FeatureModelBuilder, duplicate) {
-  FeatureModelBuilder B;
-
-  B.addParent("a", "root")->addFeature("a", true);
-
-  EXPECT_FALSE(B.addFeature("a", true));
-}
-
 TEST(FeatureModel, addFeature) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
       {{"a", "aa"}, {"root", "aba"}, {"root", "a"}});

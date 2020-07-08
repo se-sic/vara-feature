@@ -140,16 +140,18 @@ public:
         .second;
   }
 
+  bool addFeature(Feature &F);
+
   FeatureModelBuilder *addParent(const std::string &Key,
                                  const std::string &ParentKey) {
-    Children[ParentKey].push_back(Key);
+    Children[ParentKey].insert(Key);
     Parents[Key] = ParentKey;
     return this;
   }
 
   FeatureModelBuilder *addExclude(const std::string &Key,
                                   const std::string &ExcludeKey) {
-    Excludes[Key].push_back(ExcludeKey);
+    Excludes[Key].insert(ExcludeKey);
     return this;
   }
 
@@ -189,8 +191,7 @@ public:
           std::pair<std::string, NumericFeature::ValuesVariantType>>> &N = {});
 
 private:
-  using EdgeMapType =
-      typename llvm::StringMap<llvm::SmallVector<std::string, 3>>;
+  using EdgeMapType = typename llvm::StringMap<llvm::SmallSet<std::string, 3>>;
 
   FeatureModel::ConstraintsTy Constraints;
   llvm::StringMap<std::string> Parents;
