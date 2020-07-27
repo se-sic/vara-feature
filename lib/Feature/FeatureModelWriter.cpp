@@ -110,7 +110,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr writer, Feature &featur
 
     // if numeric: values and stepsize
     if (feature.getKind() == Feature::FeatureKind::FK_NUMERIC) {
-        
+
     }
 
     rc = xmlTextWriterEndElement(writer);
