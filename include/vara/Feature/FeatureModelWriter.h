@@ -1,10 +1,10 @@
-#ifndef VARA_FEATURE_FEATUREMODELPARSER_H
-#define VARA_FEATURE_FEATUREMODELPARSER_H
+#ifndef VARA_FEATURE_FEATUREMODELWRITER_H
+#define VARA_FEATURE_FEATUREMODELWRITER_H
 
 #include "vara/Feature/FeatureModel.h"
 
-#include "libxml/parser.h"
 #include "libxml/tree.h"
+#include <libxml/xmlwriter.h>
 
 #include <memory>
 
@@ -15,22 +15,18 @@ namespace vara::feature {
 //===----------------------------------------------------------------------===//
 
 /// \brief Base class for parsers with different input formats.
-class FeatureModelParser {
+class FeatureModelWriter {
 protected:
-  explicit FeatureModelParser() = default;
+  explicit FeatureModelWriter() = default;
 
 public:
-  virtual ~FeatureModelParser() = default;
+  virtual ~FeatureModelWriter() = default;
 
   /// Build \a FeatureModel after parsing. May return null if parsing or
   /// building failed.
   ///
   /// \returns an instance of \a FeatureModel or \a nullptr
-  virtual std::unique_ptr<FeatureModel> buildFeatureModel() = 0;
-
-  /// Checks whether input is a valid feature model as acyclic graph with unique
-  /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.
-  virtual bool verifyFeatureModel() = 0;
+  virtual bool writeFeatureModel(string path) = 0;
 };
 
 //===----------------------------------------------------------------------===//
@@ -38,13 +34,11 @@ public:
 //===----------------------------------------------------------------------===//
 
 /// \brief Parsers for feature models in XML.
-class FeatureModelXmlParser : public FeatureModelParser {
+class FeatureModelXmlWriter : public FeatureModelWriter {
 public:
-  explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
+  explicit FeatureModelXmlWriter(FeatureModel fm) : fm(std::move(fm)) {}
 
-  std::unique_ptr<FeatureModel> buildFeatureModel() override;
-
-  bool verifyFeatureModel() override;
+  bool writeFeatureModel(string path) override;
 
 private:
   using constXmlCharPtr = const xmlChar *;
@@ -89,6 +83,7 @@ private:
       "<!ELEMENT line (#PCDATA)>\n"
       "<!ELEMENT column (#PCDATA)>";
 
+  static constexpr xmlChar VM[] = "vm";
   static constexpr xmlChar NAME[] = "name";
   static constexpr xmlChar OPTIONAL[] = "optional";
   static constexpr xmlChar PARENT[] = "parent";
@@ -110,18 +105,15 @@ private:
   static constexpr xmlChar LINE[] = "line";
   static constexpr xmlChar COLUMN[] = "column";
 
-  std::string Xml;
-  FeatureModelBuilder FMB;
+  FeatureModel fm;
 
-  bool parseConfigurationOption(xmlNode *Node, bool Num);
-  bool parseOptions(xmlNode *Node, bool Num);
-  bool parseConstraints(xmlNode *Node);
-  bool parseVm(xmlNode *Node);
 
-  static FeatureSourceRange::FeatureSourceLocation
-  createFeatureSourceLocation(xmlNode *Node);
-
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
+  int writeVm(xmlTextWriterPtr writer);
+  int writeBinaryFeatures(xmlTextWriterPtr writer);
+  int writeNumericFeatures(xmlTextWriterPtr writer);
+  int writeConstraints(xmlTextWriterPtr writer);
+  int writeFeature(xmlTextWriterPtr writer, Feature &feature);
+  int writerSourceRange(xmlTextWriterPtr writer, FeatureSourceRange &location);
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
 };
 

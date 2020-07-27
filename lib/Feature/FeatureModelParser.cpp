@@ -189,6 +189,12 @@ std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
 FeatureModelXmlParser::createDtd() {
   std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
       xmlIOParseDTD(nullptr,
+  )
+
+set(LLVM_LINK_COMPONENTS
+  Support
+  Demangle
+  Core
                     xmlParserInputBufferCreateMem(DtdRaw.c_str(),
                                                   DtdRaw.length(),
                                                   XML_CHAR_ENCODING_UTF8),
