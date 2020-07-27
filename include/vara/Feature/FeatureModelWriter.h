@@ -113,7 +113,7 @@ private:
   int writeNumericFeatures(xmlTextWriterPtr writer);
   int writeConstraints(xmlTextWriterPtr writer);
   int writeFeature(xmlTextWriterPtr writer, Feature &feature);
-  int writerSourceRange(xmlTextWriterPtr writer, FeatureSourceRange &location);
+  int writeSourceRange(xmlTextWriterPtr writer, FeatureSourceRange &location);
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
 };
 

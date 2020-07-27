@@ -17,8 +17,8 @@ bool FeatureModelXmlWriter::writeFeatureModel(string path) {
     xmlTextWriterPtr writer;
     xmlChar *tmp;
 
-    writer = xmlNewTextWriterFilename(path, 0)  // TODO: convert string to char *
-    if (writer == NULL) {
+    writer = xmlNewTextWriterFilename(path.data(), 0);
+    if (writer == nullptr) {
         return false;
     }
 
@@ -33,21 +33,24 @@ int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr writer) {
     // open vm node
     rc = xmlTextWriterStartElement(writer, VM);
     CHECK_RC
-    rc = xmlTextWriterWriteAttribute(writer, NAME, BAD_CAST fm.getName());
+    rc = xmlTextWriterWriteAttribute(writer, NAME, BAD_CAST fm.getName().data());
     CHECK_RC
-    rc = xmlTextWriterWriteAttribute(writer, ROOT, BAD_CAST fm.getRoot());
+    rc = xmlTextWriterWriteAttribute(writer, ROOT, nullptr /*TODO where is this?*/);
     CHECK_RC
+
     // write BinaryFeatures
     rc = writeBinaryFeatures(writer);
     CHECK_RC
+
     // write NumericFeatures
     rc = writeNumericFeatures(writer);
     CHECK_RC
+
     // write Constraints
     rc = writeConstraints(writer);
     CHECK_RC
-    // close vm node
-    rc = xmlTextWriterEndElement(writer);
+
+    rc = xmlTextWriterEndElement(writer); // VM
     return rc;
 }
 
@@ -55,18 +58,27 @@ int FeatureModelXmlWriter::writeBinaryFeatures(xmlTextWriterPtr writer) {
     int rc;
     rc = xmlTextWriterStartElement(writer, BINARYOPTIONS);
     CHECK_RC
-    for (Feature f : fm.features()) {
+    for (Feature *f : fm.features()) {
         if (f->getKind() == Feature::FeatureKind::FK_BINARY) {
-            rc = writeFeature(writer, *f)
+            rc = writeFeature(writer, *f);
         }
     }
 
-    rc = xmlTextWriterEndElement(writer);
+    rc = xmlTextWriterEndElement(writer); // BINARYOPTIONS
     return rc;
 }
 
 int FeatureModelXmlWriter::writeNumericFeatures(xmlTextWriterPtr writer) {
     int rc;
+    rc = xmlTextWriterStartElement(writer, NUMERICOPTIONS);
+    CHECK_RC
+    for (Feature *f : fm.features()) {
+      if (f->getKind() == Feature::FeatureKind::FK_NUMERIC) {
+        rc = writeFeature(writer, *f);
+      }
+    }
+
+    rc = xmlTextWriterEndElement(writer); // NUMERICOPTIONS
     return rc;
 }
 
@@ -79,7 +91,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr writer, Feature &featur
     int rc;
     rc = xmlTextWriterStartElement(writer, CONFIGURATIONOPTION);
     CHECK_RC
-    rc = xmlTextWriterWriteElement(writer, NAME, feature.getName());
+    rc = xmlTextWriterWriteElement(writer, NAME, BAD_CAST feature.getName().data());
     CHECK_RC
 
     // optional
@@ -88,7 +100,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr writer, Feature &featur
 
     // parent
     if (not feature.isRoot()) {
-        rc = xmlTextWriterWriteElement(writer, PARENT, feature.getParent()->getName());
+        rc = xmlTextWriterWriteElement(writer, PARENT, BAD_CAST feature.getParent()->getName().data());
         CHECK_RC
     }
 
@@ -98,28 +110,60 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr writer, Feature &featur
     rc = xmlTextWriterStartElement(writer, EXCLUDEDOPTIONS);
     CHECK_RC
     for (Feature *f : feature.children()) {
-        rc = xmlTextWriterWriteElement(writer, OPTIONS, f->getName());
+        rc = xmlTextWriterWriteElement(writer, OPTIONS, BAD_CAST f->getName().data());
         CHECK_RC
     }
-    rc = xmlTextWriterEndElement(writer);
+    rc = xmlTextWriterEndElement(writer); // EXCLUDEOPTIONS
     CHECK_RC
 
     // TODO are there no implications?
 
     // location?
+    // TODO REVIEW: ok in c++?
+    if (FeatureSourceRange *fsr = feature.getFeatureSourceRange()) {
+      rc = writeSourceRange(writer, *fsr);
+      CHECK_RC
+    }
 
     // if numeric: values and stepsize
     if (feature.getKind() == Feature::FeatureKind::FK_NUMERIC) {
-
+      auto &nf = dynamic_cast<NumericFeature &>(feature);
+      // TODO build expression
+      // rc = xmlTextWriterWriteElement(writer, VALUES, nullptr)
     }
 
-    rc = xmlTextWriterEndElement(writer);
+    rc = xmlTextWriterEndElement(writer); // CONFIGURATIONOPTION
     return rc;
 }
 
-int FeatureModelXmlWriter::writerSourceRange(xmlTextWriterPtr writer, FeatureSourceRange &fsr) {
+int FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr writer, FeatureSourceRange &fsr) {
     int rc;
+    rc = xmlTextWriterStartElement(writer, LOCATION);
+    CHECK_RC
+    rc = xmlTextWriterWriteElement(writer, PATH, BAD_CAST fsr.getPath().string().data());
+    CHECK_RC
 
+    rc = xmlTextWriterStartElement(writer, START);
+    CHECK_RC
+    auto start = fsr.getStart();
+    rc = xmlTextWriterWriteElement(writer, LINE, BAD_CAST std::to_string(start->getLineNumber()).data());
+    CHECK_RC
+    rc = xmlTextWriterWriteElement(writer, COLUMN, BAD_CAST std::to_string(start->getColumnOffset()).data());
+    CHECK_RC
+    rc = xmlTextWriterEndElement(writer); // START
+    CHECK_RC
+
+    rc = xmlTextWriterStartElement(writer, END);
+    CHECK_RC
+    auto end = fsr.getStart();
+    rc = xmlTextWriterWriteElement(writer, LINE, BAD_CAST std::to_string(end->getLineNumber()).data());
+    CHECK_RC
+    rc = xmlTextWriterWriteElement(writer, COLUMN, BAD_CAST std::to_string(end->getColumnOffset()).data());
+    CHECK_RC
+    rc = xmlTextWriterEndElement(writer); // END
+    CHECK_RC
+
+    rc = xmlTextWriterEndElement(writer); // LOCATION
     return rc;
 }
 
