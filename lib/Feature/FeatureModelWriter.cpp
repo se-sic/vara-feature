@@ -1,18 +1,14 @@
 #include "vara/Feature/FeatureModelWriter.h"
 #include "vara/Feature/FeatureModel.h"
 
-#include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
-
-#include <iostream>
-#include <regex>
 
 #define CHECK_RC if (rc < 0) { return rc; }
 
 namespace vara::feature {
 
 
-bool FeatureModelXmlWriter::writeFeatureModel(string path) {
+int FeatureModelXmlWriter::writeFeatureModel(string path) {
     int rc;
     xmlTextWriterPtr writer;
     xmlChar *tmp;
@@ -22,10 +18,37 @@ bool FeatureModelXmlWriter::writeFeatureModel(string path) {
         return false;
     }
 
-    rc = writeVm(writer);
+    rc = writeFeatureModel(writer);
     xmlFreeTextWriter(writer);
+    return rc;
+}
+
+
+int FeatureModelXmlWriter::writeFeatureModel(char **doc) {
+    int rc;
+    xmlTextWriterPtr writer;
+    xmlBufferPtr buf;
+
+    buf = xmlBufferCreate();
+    writer = xmlNewTextWriterMemory(buf, 0);
+    rc = writeFeatureModel(writer);
+
+    xmlFreeTextWriter(writer);
+    // copy document into char buffer
+    *doc = static_cast<char *>(calloc(xmlBufferLength(buf), 1));
+    memcpy(*doc, xmlBufferContent(buf), xmlBufferLength(buf));
+
+    xmlBufferFree(buf);
+    return rc;
+}
+
+int FeatureModelXmlWriter::writeFeatureModel(xmlTextWriterPtr writer) {
+    int rc;
+    rc = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", nullptr);
+    CHECK_RC
+    rc = writeVm(writer);
     // report failure/success
-    return rc < 0;
+    return rc;
 }
 
 int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr writer) {
@@ -35,7 +58,7 @@ int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr writer) {
     CHECK_RC
     rc = xmlTextWriterWriteAttribute(writer, NAME, BAD_CAST fm.getName().data());
     CHECK_RC
-    rc = xmlTextWriterWriteAttribute(writer, ROOT, nullptr /*TODO where is this?*/);
+    rc = xmlTextWriterWriteAttribute(writer, ROOT, BAD_CAST fm.getPath().string().data());
     CHECK_RC
 
     // write BinaryFeatures
@@ -47,7 +70,7 @@ int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr writer) {
     CHECK_RC
 
     // write Constraints
-    rc = writeConstraints(writer);
+    rc = writeBooleanConstraints(writer);
     CHECK_RC
 
     rc = xmlTextWriterEndElement(writer); // VM
@@ -82,8 +105,19 @@ int FeatureModelXmlWriter::writeNumericFeatures(xmlTextWriterPtr writer) {
     return rc;
 }
 
-int FeatureModelXmlWriter::writeConstraints(xmlTextWriterPtr writer) {
+int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr writer) {
     int rc;
+    rc = xmlTextWriterStartElement(writer, BOOLEANCONSTRAINTS);
+    CHECK_RC
+
+    for (auto f : fm.features()) {
+      //TODO(lauritz) how to get constraints?
+      // build constraint
+
+      rc = xmlTextWriterWriteElement(writer, CONSTRAINT, nullptr /*TODO*/);
+    }
+
+    rc = xmlTextWriterEndElement(writer); // BOOLEANCONSTRAINT
     return rc;
 }
 
@@ -104,7 +138,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr writer, Feature &featur
         CHECK_RC
     }
 
-    // TODO are there no children noted in XML?
+    // TODO(christian) are there no children noted in XML?
 
     // exclude
     rc = xmlTextWriterStartElement(writer, EXCLUDEDOPTIONS);
@@ -116,10 +150,9 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr writer, Feature &featur
     rc = xmlTextWriterEndElement(writer); // EXCLUDEOPTIONS
     CHECK_RC
 
-    // TODO are there no implications?
+    // TODO(christian) are there no implications?
 
     // location?
-    // TODO REVIEW: ok in c++?
     if (FeatureSourceRange *fsr = feature.getFeatureSourceRange()) {
       rc = writeSourceRange(writer, *fsr);
       CHECK_RC

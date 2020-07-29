@@ -26,7 +26,8 @@ public:
   /// building failed.
   ///
   /// \returns an instance of \a FeatureModel or \a nullptr
-  virtual bool writeFeatureModel(string path) = 0;
+  virtual int writeFeatureModel(string path) = 0;
+
 };
 
 //===----------------------------------------------------------------------===//
@@ -38,7 +39,8 @@ class FeatureModelXmlWriter : public FeatureModelWriter {
 public:
   explicit FeatureModelXmlWriter(FeatureModel fm) : fm(std::move(fm)) {}
 
-  bool writeFeatureModel(string path) override;
+  int writeFeatureModel(string path) override;
+  int writeFeatureModel(char **buf);
 
 private:
   using constXmlCharPtr = const xmlChar *;
@@ -107,11 +109,11 @@ private:
 
   FeatureModel fm;
 
-
+  int writeFeatureModel(xmlTextWriterPtr writer);
   int writeVm(xmlTextWriterPtr writer);
   int writeBinaryFeatures(xmlTextWriterPtr writer);
   int writeNumericFeatures(xmlTextWriterPtr writer);
-  int writeConstraints(xmlTextWriterPtr writer);
+  int writeBooleanConstraints(xmlTextWriterPtr writer);
   int writeFeature(xmlTextWriterPtr writer, Feature &feature);
   int writeSourceRange(xmlTextWriterPtr writer, FeatureSourceRange &location);
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
