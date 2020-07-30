@@ -69,7 +69,7 @@ public:
 
   inline void addValue(llvm::Value *Val) { Values.insert(Val); }
 
-  inline bool hasVal(llvm::Value *Val) { return Values.count(Val); }
+  inline bool hasVal(llvm::Value *Val) const { return Values.count(Val); }
 
   value_iterator values_begin() { return Values.begin(); }
   [[nodiscard]] const_value_iterator values_begin() const {
