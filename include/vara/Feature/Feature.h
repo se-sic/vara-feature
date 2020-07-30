@@ -4,9 +4,15 @@
 #include "vara/Feature/FeatureSourceRange.h"
 
 #include "llvm/ADT/DenseSet.h"
+#include "llvm/ADT/SetVector.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/iterator_range.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/IInfo.h"
+#include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <llvm/ADT/SetVector.h>
 #include <set>
 #include <stack>
 #include <utility>
@@ -22,6 +28,53 @@ namespace vara::feature {
 
 /// \brief Base class for components of \a FeatureModel.
 class Feature {
+public:
+  llvm::SetVector<llvm::Value *> Values;
+  using value_iterator = llvm::SetVector<llvm::Value *>::iterator;
+  using const_value_iterator = llvm::SetVector<llvm::Value *>::const_iterator;
+
+public:
+  Feature(const std::string &Name, llvm::Value *Val) : Name(Name) {
+    Values.insert(Val);
+  }
+
+  inline void addValue(llvm::Value *Val) { Values.insert(Val); }
+
+  value_iterator values_begin() { return Values.begin(); }
+  [[nodiscard]] const_value_iterator values_begin() const {
+    return Values.begin();
+  }
+
+  value_iterator values_end() { return Values.end(); }
+  [[nodiscard]] const_value_iterator values_end() const { return Values.end(); }
+
+  llvm::iterator_range<value_iterator> values() {
+    return make_range(values_begin(), values_end());
+  }
+  [[nodiscard]] llvm::iterator_range<const_value_iterator> values() const {
+    return make_range(values_begin(), values_end());
+  }
+
+  inline bool hasVal(llvm::Value *Val) { return Values.count(Val); }
+
+  [[nodiscard]] inline std::size_t getID() const {
+    return std::hash<std::string>{}(Name);
+  }
+
+  LLVM_DUMP_METHOD
+  void dump() {
+    print(llvm::outs());
+    llvm::outs() << '\n';
+  }
+  void print(llvm::raw_ostream &OS) const {
+    OS << getName() << " (";
+    for (auto *Val : Values) {
+      OS << Val << " ";
+    }
+    OS << ")"
+       << " ID: " << getID();
+  }
+
 public:
   using FeatureSetType = typename std::set<Feature *>;
   using feature_iterator = typename FeatureSetType::iterator;
@@ -165,7 +218,6 @@ public:
   [[nodiscard]] virtual std::string toString() const;
 
   void print(std::ostream &Out) const { Out << toString() << std::endl; }
-  void print(llvm::raw_ostream &Out) const { Out << toString() << '\n'; }
 
   LLVM_DUMP_METHOD
   void dump() const { llvm::outs() << toString() << "\n"; }
