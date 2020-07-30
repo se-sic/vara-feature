@@ -33,6 +33,7 @@ public:
   using feature_iterator = typename FeatureSetType::iterator;
   using const_feature_iterator = typename FeatureSetType::const_iterator;
 
+  // TODO(s9latimm): Can we remove this (in VaRA)?
   llvm::SetVector<llvm::Value *> Values;
   using value_iterator = typename llvm::SetVector<llvm::Value *>::iterator;
   using const_value_iterator =
@@ -212,6 +213,7 @@ public:
 
   [[nodiscard]] virtual std::string toString() const;
 
+  // TODO(s9latimm): Revert to using \a toString if \a Values is refactored.
   void print(std::ostream &OS) const {
     if (Kind == FeatureKind::FK_UNKNOWN) {
       OS << getName().str() << " (";
@@ -266,15 +268,15 @@ private:
 
   void addImplication(Feature *F) { Implications.insert(F); }
 
+  FeatureSetType Children;
+  FeatureSetType Excludes;
+  FeatureSetType Implications;
+  FeatureSetType Alternatives;
   FeatureKind Kind;
   string Name;
   bool Opt;
   std::optional<FeatureSourceRange> Source;
   Feature *Parent;
-  FeatureSetType Children;
-  FeatureSetType Excludes;
-  FeatureSetType Implications;
-  FeatureSetType Alternatives;
 };
 
 /// Options without arguments.
