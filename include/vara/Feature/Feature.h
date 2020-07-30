@@ -26,19 +26,50 @@ namespace vara::feature {
 //                               Feature Class
 //===----------------------------------------------------------------------===//
 
-/// \brief Base class for components of \a FeatureModel.
+/// \brief Base class for components of \a FeatureModel or \a FeatureRegion.
 class Feature {
 public:
-  llvm::SetVector<llvm::Value *> Values;
-  using value_iterator = llvm::SetVector<llvm::Value *>::iterator;
-  using const_value_iterator = llvm::SetVector<llvm::Value *>::const_iterator;
+  using FeatureSetType = typename std::set<Feature *>;
+  using feature_iterator = typename FeatureSetType::iterator;
+  using const_feature_iterator = typename FeatureSetType::const_iterator;
 
-public:
-  Feature(const std::string &Name, llvm::Value *Val) : Name(Name) {
+  llvm::SetVector<llvm::Value *> Values;
+  using value_iterator = typename llvm::SetVector<llvm::Value *>::iterator;
+  using const_value_iterator =
+      typename llvm::SetVector<llvm::Value *>::const_iterator;
+
+  enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
+
+  Feature(std::string Name, llvm::Value *Val)
+      : Kind(FeatureKind::FK_UNKNOWN), Name(std::move(Name)), Opt(false),
+        Source(std::nullopt), Parent(nullptr) {
     Values.insert(Val);
   }
+  Feature(const Feature &) = delete;
+  Feature &operator=(const Feature &) = delete;
+  virtual ~Feature() = default;
+
+  [[nodiscard]] inline std::size_t getID() const {
+    return std::hash<std::string>{}(getName().lower());
+  }
+
+  [[nodiscard]] FeatureKind getKind() const { return Kind; }
+
+  [[nodiscard]] llvm::StringRef getName() const { return Name; }
+
+  [[nodiscard]] bool isOptional() const { return Opt; }
+
+  [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
+
+  [[nodiscard]] Feature *getParent() const { return Parent; }
+  bool isParent(Feature *PosParent) const { return Parent == PosParent; }
+
+  //===--------------------------------------------------------------------===//
+  // Values
 
   inline void addValue(llvm::Value *Val) { Values.insert(Val); }
+
+  inline bool hasVal(llvm::Value *Val) { return Values.count(Val); }
 
   value_iterator values_begin() { return Values.begin(); }
   [[nodiscard]] const_value_iterator values_begin() const {
@@ -55,50 +86,9 @@ public:
     return make_range(values_begin(), values_end());
   }
 
-  inline bool hasVal(llvm::Value *Val) { return Values.count(Val); }
-
-  [[nodiscard]] inline std::size_t getID() const {
-    return std::hash<std::string>{}(Name);
-  }
-
-  LLVM_DUMP_METHOD
-  void dump() {
-    print(llvm::outs());
-    llvm::outs() << '\n';
-  }
-  void print(llvm::raw_ostream &OS) const {
-    OS << getName() << " (";
-    for (auto *Val : Values) {
-      OS << Val << " ";
-    }
-    OS << ")"
-       << " ID: " << getID();
-  }
-
-public:
-  using FeatureSetType = typename std::set<Feature *>;
-  using feature_iterator = typename FeatureSetType::iterator;
-  using const_feature_iterator = typename FeatureSetType::const_iterator;
-
-  enum class FeatureKind { FK_BINARY, FK_NUMERIC };
-
-  Feature(const Feature &) = delete;
-  Feature &operator=(const Feature &) = delete;
-  virtual ~Feature() = default;
-
-  [[nodiscard]] FeatureKind getKind() const { return T; }
-
-  [[nodiscard]] llvm::StringRef getName() const { return Name; }
-
-  [[nodiscard]] bool isOptional() const { return Opt; }
-
-  [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
-
-  [[nodiscard]] Feature *getParent() const { return Parent; }
-  bool isParent(Feature *PosParent) const { return Parent == PosParent; }
-
   //===--------------------------------------------------------------------===//
   // Children
+
   feature_iterator children_begin() { return Children.begin(); }
   feature_iterator children_end() { return Children.end(); }
   [[nodiscard]] const_feature_iterator children_begin() const {
@@ -119,6 +109,7 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Excludes
+
   feature_iterator excludes_begin() { return Excludes.begin(); }
   feature_iterator excludes_end() { return Excludes.end(); }
   [[nodiscard]] const_feature_iterator excludes_begin() const {
@@ -140,6 +131,7 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Implications
+
   feature_iterator implications_begin() { return Implications.begin(); }
   feature_iterator implications_end() { return Implications.end(); }
   [[nodiscard]] const_feature_iterator implications_begin() const {
@@ -162,6 +154,7 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Alternatives
+
   feature_iterator alternatives_begin() { return Alternatives.begin(); }
   feature_iterator alternatives_end() { return Alternatives.end(); }
   [[nodiscard]] const_feature_iterator alternatives_begin() const {
@@ -184,6 +177,7 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Default
+
   feature_iterator begin() { return children_begin(); }
   feature_iterator end() { return children_end(); }
   [[nodiscard]] const_feature_iterator begin() const {
@@ -215,19 +209,45 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Utility
+
   [[nodiscard]] virtual std::string toString() const;
 
-  void print(std::ostream &Out) const { Out << toString() << std::endl; }
+  void print(std::ostream &OS) const {
+    if (Kind == FeatureKind::FK_UNKNOWN) {
+      OS << getName().str() << " (";
+      for (auto *Val : Values) {
+        OS << Val << " ";
+      }
+      OS << ") ID: " << getID();
+    } else {
+      OS << toString();
+    }
+  }
+
+  void print(llvm::raw_ostream &OS) const {
+    if (Kind == FeatureKind::FK_UNKNOWN) {
+      OS << getName().str() << " (";
+      for (auto *Val : Values) {
+        OS << Val << " ";
+      }
+      OS << ") ID: " << getID();
+    } else {
+      OS << toString();
+    }
+  }
 
   LLVM_DUMP_METHOD
-  void dump() const { llvm::outs() << toString() << "\n"; }
+  void dump() const {
+    print(llvm::outs());
+    llvm::outs() << '\n';
+  }
 
 protected:
   Feature(FeatureKind Kind, string Name, bool Opt,
           std::optional<FeatureSourceRange> Source, Feature *Parent,
           FeatureSetType Children, FeatureSetType Excludes,
           FeatureSetType Implications, FeatureSetType Alternatives)
-      : T(Kind), Name(std::move(Name)), Opt(Opt), Source(std::move(Source)),
+      : Kind(Kind), Name(std::move(Name)), Opt(Opt), Source(std::move(Source)),
         Parent(Parent), Children(std::move(Children)),
         Excludes(std::move(Excludes)), Implications(std::move(Implications)),
         Alternatives(std::move(Alternatives)) {}
@@ -246,7 +266,7 @@ private:
 
   void addImplication(Feature *F) { Implications.insert(F); }
 
-  FeatureKind T;
+  FeatureKind Kind;
   string Name;
   bool Opt;
   std::optional<FeatureSourceRange> Source;
