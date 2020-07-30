@@ -12,6 +12,7 @@ namespace py = pybind11;
 
 void init_feature_module_feature(py::module &M) {
   py::class_<vf::Feature>(M, "Feature")
+      .def("__hash__", &vf::Feature::getID)
       .def_property_readonly("name", &vf::Feature::getName,
                              R"pbdoc(The name of the feature.)pbdoc")
       .def("is_optional", &vf::Feature::isOptional,
