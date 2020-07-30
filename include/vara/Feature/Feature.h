@@ -8,7 +8,6 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/IR/Function.h"
-#include "llvm/IR/IInfo.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
 
@@ -268,15 +267,15 @@ private:
 
   void addImplication(Feature *F) { Implications.insert(F); }
 
-  FeatureSetType Children;
-  FeatureSetType Excludes;
-  FeatureSetType Implications;
-  FeatureSetType Alternatives;
   FeatureKind Kind;
   string Name;
   bool Opt;
   std::optional<FeatureSourceRange> Source;
   Feature *Parent;
+  FeatureSetType Children;
+  FeatureSetType Excludes;
+  FeatureSetType Implications;
+  FeatureSetType Alternatives;
 };
 
 /// Options without arguments.
