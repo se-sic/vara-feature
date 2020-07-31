@@ -1,8 +1,9 @@
 #include "vara/Feature/FeatureModelWriter.h"
-#include "XmlConstants.h"
 #include "vara/Feature/FeatureModel.h"
 
-#include <libxml/xmlwriter.h>
+#include "XmlConstants.h"
+
+#include "libxml/xmlwriter.h"
 
 #define CHECK_RC                                                               \
   if (Rc < 0) {                                                                \
