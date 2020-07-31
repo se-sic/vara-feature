@@ -1,4 +1,5 @@
 #include "vara/Feature/FeatureModelParser.h"
+#include "XmlConstants.h"
 
 #include <iostream>
 #include <regex>
@@ -187,16 +188,16 @@ std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
 
 std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
 FeatureModelXmlParser::createDtd() {
-    std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
-            xmlIOParseDTD(nullptr,
-                          xmlParserInputBufferCreateMem(DtdRaw.c_str(),
-                                                        DtdRaw.length(),
-                                                        XML_CHAR_ENCODING_UTF8),
-                          XML_CHAR_ENCODING_UTF8),
-            xmlFreeDtd);
-    xmlCleanupParser();
-    assert(Dtd && "Failed to parse DTD.");
-    return Dtd;
+  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
+      xmlIOParseDTD(nullptr,
+                    xmlParserInputBufferCreateMem(DtdRaw.c_str(),
+                                                  DtdRaw.length(),
+                                                  XML_CHAR_ENCODING_UTF8),
+                    XML_CHAR_ENCODING_UTF8),
+      xmlFreeDtd);
+  xmlCleanupParser();
+  assert(Dtd && "Failed to parse DTD.");
+  return Dtd;
 }
 
 std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
