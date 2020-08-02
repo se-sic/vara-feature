@@ -5,7 +5,37 @@
 
 namespace vara::feature {
 
-inline static const std::string DtdRaw =
+class XmlConstants {
+public:
+  XmlConstants() = delete;
+  ~XmlConstants() = delete;
+
+  static const std::string DtdRaw;
+  static constexpr xmlChar VM[] = "vm";
+  static constexpr xmlChar NAME[] = "name";
+  static constexpr xmlChar OPTIONAL[] = "optional";
+  static constexpr xmlChar PARENT[] = "parent";
+  static constexpr xmlChar CHILDREN[] = "children";
+  static constexpr xmlChar EXCLUDEDOPTIONS[] = "excludedOptions";
+  static constexpr xmlChar OPTIONS[] = "options";
+  static constexpr xmlChar LOCATION[] = "location";
+  static constexpr xmlChar PATH[] = "path";
+  static constexpr xmlChar START[] = "start";
+  static constexpr xmlChar END[] = "end";
+  static constexpr xmlChar MINVALUE[] = "minValue";
+  static constexpr xmlChar MAXVALUE[] = "maxValue";
+  static constexpr xmlChar VALUES[] = "values";
+  static constexpr xmlChar CONFIGURATIONOPTION[] = "configurationOption";
+  static constexpr xmlChar CONSTRAINT[] = "constraint";
+  static constexpr xmlChar ROOT[] = "root";
+  static constexpr xmlChar BINARYOPTIONS[] = "binaryOptions";
+  static constexpr xmlChar NUMERICOPTIONS[] = "numericOptions";
+  static constexpr xmlChar BOOLEANCONSTRAINTS[] = "booleanConstraints";
+  static constexpr xmlChar LINE[] = "line";
+  static constexpr xmlChar COLUMN[] = "column";
+};
+
+const std::string XmlConstants::DtdRaw =
     "<!ELEMENT vm (binaryOptions, numericOptions?, booleanConstraints?, "
     "nonBooleanConstraints?, mixedConstraints?)>\n"
     "<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED>\n"
@@ -45,28 +75,6 @@ inline static const std::string DtdRaw =
     "<!ELEMENT line (#PCDATA)>\n"
     "<!ELEMENT column (#PCDATA)>";
 
-static constexpr xmlChar VM[] = "vm";
-static constexpr xmlChar NAME[] = "name";
-static constexpr xmlChar OPTIONAL[] = "optional";
-static constexpr xmlChar PARENT[] = "parent";
-static constexpr xmlChar EXCLUDEDOPTIONS[] = "excludedOptions";
-static constexpr xmlChar OPTIONS[] = "options";
-static constexpr xmlChar LOCATION[] = "location";
-static constexpr xmlChar PATH[] = "path";
-static constexpr xmlChar START[] = "start";
-static constexpr xmlChar END[] = "end";
-static constexpr xmlChar MINVALUE[] = "minValue";
-static constexpr xmlChar MAXVALUE[] = "maxValue";
-static constexpr xmlChar VALUES[] = "values";
-static constexpr xmlChar CONFIGURATIONOPTION[] = "configurationOption";
-static constexpr xmlChar CONSTRAINT[] = "constraint";
-static constexpr xmlChar ROOT[] = "root";
-static constexpr xmlChar BINARYOPTIONS[] = "binaryOptions";
-static constexpr xmlChar NUMERICOPTIONS[] = "numericOptions";
-static constexpr xmlChar BOOLEANCONSTRAINTS[] = "booleanConstraints";
-static constexpr xmlChar LINE[] = "line";
-static constexpr xmlChar COLUMN[] = "column";
-
 } // namespace vara::feature
 
-#endif //VARA_FEATURE_XMLCONSTANTS_H
+#endif // VARA_FEATURE_XMLCONSTANTS_H

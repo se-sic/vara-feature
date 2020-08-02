@@ -20,48 +20,48 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                        xmlNodeGetContent(Head), xmlFree)
                                        .get()));
-      if (!xmlStrcmp(Head->name, NAME)) {
+      if (!xmlStrcmp(Head->name, XmlConstants::NAME)) {
         Name = Cnt;
-      } else if (!xmlStrcmp(Head->name, OPTIONAL)) {
+      } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
         Opt = Cnt == "True";
-      } else if (!xmlStrcmp(Head->name, PARENT)) {
+      } else if (!xmlStrcmp(Head->name, XmlConstants::PARENT)) {
         FMB.addParent(Name, Cnt);
-      } else if (!xmlStrcmp(Head->name, EXCLUDEDOPTIONS)) {
+      } else if (!xmlStrcmp(Head->name, XmlConstants::EXCLUDEDOPTIONS)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
-            if (!xmlStrcmp(Child->name, OPTIONS)) {
+            if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
                   xmlNodeGetContent(Child), xmlFree);
               FMB.addExclude(Name, reinterpret_cast<char *>(CCnt.get()));
             }
           }
         }
-      } else if (!xmlStrcmp(Head->name, LOCATION)) {
+      } else if (!xmlStrcmp(Head->name, XmlConstants::LOCATION)) {
         fs::path Path;
         std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
         std::optional<FeatureSourceRange::FeatureSourceLocation> End;
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
-            if (!xmlStrcmp(Child->name, PATH)) {
+            if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
               Path = fs::path(reinterpret_cast<char *>(
                   std::unique_ptr<xmlChar, void (*)(void *)>(
                       xmlNodeGetContent(Child), xmlFree)
                       .get()));
 
-            } else if (!xmlStrcmp(Child->name, START)) {
+            } else if (!xmlStrcmp(Child->name, XmlConstants::START)) {
               Start = createFeatureSourceLocation(Child);
-            } else if (!xmlStrcmp(Child->name, END)) {
+            } else if (!xmlStrcmp(Child->name, XmlConstants::END)) {
               End = createFeatureSourceLocation(Child);
             }
           }
         }
         Loc = FeatureSourceRange(Path, Start, End);
       } else if (Num) {
-        if (!xmlStrcmp(Head->name, MINVALUE)) {
+        if (!xmlStrcmp(Head->name, XmlConstants::MINVALUE)) {
           MinValue = std::stoi(Cnt);
-        } else if (!xmlStrcmp(Head->name, MAXVALUE)) {
+        } else if (!xmlStrcmp(Head->name, XmlConstants::MAXVALUE)) {
           MaxValue = std::stoi(Cnt);
-        } else if (!xmlStrcmp(Head->name, VALUES)) {
+        } else if (!xmlStrcmp(Head->name, XmlConstants::VALUES)) {
           const std::regex Regex(R"(\d+)");
           std::smatch Matches;
           for (string Suffix = Cnt; regex_search(Suffix, Matches, Regex);
@@ -85,7 +85,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
 bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name, CONFIGURATIONOPTION)) {
+      if (!xmlStrcmp(H->name, XmlConstants::CONFIGURATIONOPTION)) {
         if (!parseConfigurationOption(H, Num)) {
           return false;
         }
@@ -98,7 +98,7 @@ bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
 bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name, CONSTRAINT)) {
+      if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
         string Cnt = std::string(
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(H), xmlFree)
@@ -124,27 +124,27 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
 
 bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, NAME),
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::NAME),
                                                    xmlFree);
     FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
   }
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, ROOT),
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::ROOT),
                                                    xmlFree);
     FMB.setPath(Cnt ? fs::path(reinterpret_cast<char *>(Cnt.get()))
                     : fs::current_path());
   }
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name, BINARYOPTIONS)) {
+      if (!xmlStrcmp(H->name, XmlConstants::BINARYOPTIONS)) {
         if (!parseOptions(H)) {
           return false;
         }
-      } else if (!xmlStrcmp(H->name, NUMERICOPTIONS)) {
+      } else if (!xmlStrcmp(H->name, XmlConstants::NUMERICOPTIONS)) {
         if (!parseOptions(H, true)) {
           return false;
         }
-      } else if (!xmlStrcmp(H->name, BOOLEANCONSTRAINTS)) {
+      } else if (!xmlStrcmp(H->name, XmlConstants::BOOLEANCONSTRAINTS)) {
         if (!parseConstraints(H)) {
           return false;
         }
@@ -160,12 +160,12 @@ FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
   int Column = 0;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(Head->name, LINE)) {
+      if (!xmlStrcmp(Head->name, XmlConstants::LINE)) {
         Line = atoi(
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(Head), xmlFree)
                                          .get()));
-      } else if (!xmlStrcmp(Head->name, COLUMN)) {
+      } else if (!xmlStrcmp(Head->name, XmlConstants::COLUMN)) {
         Column = atoi(
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(Head), xmlFree)
@@ -190,8 +190,8 @@ std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
 FeatureModelXmlParser::createDtd() {
   std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
       xmlIOParseDTD(nullptr,
-                    xmlParserInputBufferCreateMem(DtdRaw.c_str(),
-                                                  DtdRaw.length(),
+                    xmlParserInputBufferCreateMem(XmlConstants::DtdRaw.c_str(),
+                                                  XmlConstants::DtdRaw.length(),
                                                   XML_CHAR_ENCODING_UTF8),
                     XML_CHAR_ENCODING_UTF8),
       xmlFreeDtd);
