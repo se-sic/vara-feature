@@ -60,7 +60,7 @@ endif ()
 # Setup custom targets
 
 find_program(VARA_FEATURE_RUN_CLANG_TIDY
-  NAMES run-clang-tidy-10.py run-clang-tidy-10 run-clang-tidy.py run-clang-tidy
+  NAMES run-clang-tidy-10.py run-clang-tidy-10 run-clang-tidy.py run-clang-tidy clang-tidy-10
   PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
   )
 
