@@ -6,6 +6,8 @@
 #include "libxml/tree.h"
 #include "libxml/xmlwriter.h"
 
+#include "llvm/Support/ErrorOr.h"
+
 #include <memory>
 
 namespace vara::feature {
@@ -40,7 +42,7 @@ public:
   explicit FeatureModelXmlWriter(const FeatureModel &Fm) : Fm{Fm}{}
 
   int writeFeatureModel(std::string Path) override;
-  int writeFeatureModel(char **Doc);
+  std::optional<std::string> writeFeatureModel();
 
 private:
   using constXmlCharPtr = const xmlChar *;

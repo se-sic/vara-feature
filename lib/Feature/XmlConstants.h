@@ -16,6 +16,7 @@ public:
   static constexpr xmlChar OPTIONAL[] = "optional";
   static constexpr xmlChar PARENT[] = "parent";
   static constexpr xmlChar CHILDREN[] = "children";
+  static constexpr xmlChar IMPLIEDOPTIONS[] = "impliedOptions";
   static constexpr xmlChar EXCLUDEDOPTIONS[] = "excludedOptions";
   static constexpr xmlChar OPTIONS[] = "options";
   static constexpr xmlChar LOCATION[] = "location";
@@ -24,6 +25,7 @@ public:
   static constexpr xmlChar END[] = "end";
   static constexpr xmlChar MINVALUE[] = "minValue";
   static constexpr xmlChar MAXVALUE[] = "maxValue";
+  static constexpr xmlChar STEPFUNCTION[] = "stepFunction";
   static constexpr xmlChar VALUES[] = "values";
   static constexpr xmlChar CONFIGURATIONOPTION[] = "configurationOption";
   static constexpr xmlChar CONSTRAINT[] = "constraint";
@@ -31,6 +33,8 @@ public:
   static constexpr xmlChar BINARYOPTIONS[] = "binaryOptions";
   static constexpr xmlChar NUMERICOPTIONS[] = "numericOptions";
   static constexpr xmlChar BOOLEANCONSTRAINTS[] = "booleanConstraints";
+  static constexpr xmlChar MIXEDCONSTRAINTS[] = "mixedConstraints";
+  static constexpr xmlChar NONBOOLEANCONSTRAINTS[] = "nonBooleanConstraints";
   static constexpr xmlChar LINE[] = "line";
   static constexpr xmlChar COLUMN[] = "column";
 };

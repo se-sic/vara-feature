@@ -1,5 +1,6 @@
 #include "vara/Feature/FeatureModelWriter.h"
 #include "vara/Feature/FeatureModel.h"
+#include <llvm/Support/Errc.h>
 
 #include "XmlConstants.h"
 
@@ -12,7 +13,8 @@
 
 namespace vara::feature {
 
-static constexpr xmlChar IndentationString[] = "  ";
+static constexpr xmlChar INDENTATIONSTRING[] = "  ";
+static constexpr char ENCODING[] = "UTF-8";
 
 int FeatureModelXmlWriter::writeFeatureModel(std::string Path) {
   int Rc;
@@ -28,22 +30,29 @@ int FeatureModelXmlWriter::writeFeatureModel(std::string Path) {
   return Rc;
 }
 
-int FeatureModelXmlWriter::writeFeatureModel(char **Doc) {
+std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
   int Rc;
   xmlTextWriterPtr Writer;
-  xmlBufferPtr Buf;
+  xmlDocPtr Doc;
 
-  Buf = xmlBufferCreate();
-  Writer = xmlNewTextWriterMemory(Buf, 0);
+  Writer = xmlNewTextWriterDoc(&Doc, 0);
+  if (Writer == nullptr) {
+    return std::nullopt;
+  }
   Rc = writeFeatureModel(Writer);
+  if (Rc < 0) {
+    return std::nullopt;
+  }
+
+  xmlChar *xmlbuff;
+  int buffersize;
+  xmlDocDumpMemoryEnc(Doc, &xmlbuff, &buffersize, ENCODING);
+
+  std::string Str((char *)xmlbuff, buffersize);
 
   xmlFreeTextWriter(Writer);
-  // copy document into char buffer
-  *Doc = static_cast<char *>(calloc(xmlBufferLength(Buf), 1));
-  memcpy(*Doc, xmlBufferContent(Buf), xmlBufferLength(Buf));
-
-  xmlBufferFree(Buf);
-  return Rc;
+  xmlFreeDoc(Doc);
+  return Str;
 }
 
 int FeatureModelXmlWriter::writeFeatureModel(xmlTextWriterPtr Writer) {
@@ -51,10 +60,10 @@ int FeatureModelXmlWriter::writeFeatureModel(xmlTextWriterPtr Writer) {
 
   Rc = xmlTextWriterSetIndent(Writer, 1);
   CHECK_RC
-  Rc = xmlTextWriterSetIndentString(Writer, IndentationString);
+  Rc = xmlTextWriterSetIndentString(Writer, INDENTATIONSTRING);
   CHECK_RC
 
-  Rc = xmlTextWriterStartDocument(Writer, "1.0", "UTF-8", nullptr);
+  Rc = xmlTextWriterStartDocument(Writer, "1.0", ENCODING, nullptr);
   CHECK_RC
   Rc = writeVm(Writer);
   // report failure/success
@@ -66,7 +75,8 @@ int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr Writer) {
   // open vm node
   Rc = xmlTextWriterStartElement(Writer, XmlConstants::VM);
   CHECK_RC
-  Rc = xmlTextWriterWriteAttribute(Writer, XmlConstants::NAME, BAD_CAST Fm.getName().data());
+  Rc = xmlTextWriterWriteAttribute(Writer, XmlConstants::NAME,
+                                   BAD_CAST Fm.getName().data());
   CHECK_RC
   Rc = xmlTextWriterWriteAttribute(Writer, XmlConstants::ROOT,
                                    BAD_CAST Fm.getPath().string().data());
@@ -123,9 +133,37 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
   Rc = xmlTextWriterStartElement(Writer, XmlConstants::BOOLEANCONSTRAINTS);
   CHECK_RC
 
-  // TODO (padupr) add alternatives
-  for (auto *F : Fm.features()) {};
-  // TODO (padupr) add constraints, after adding constraint accessor
+  // collect alternative groups
+  std::set<std::set<Feature *>> AltGroups;
+  for (auto *F : Fm.features()) {
+    if (F->alternatives().empty()) {
+      continue;
+    }
+    std::set<Feature *> AltGroup(F->alternatives().begin(),
+                                 F->alternatives().end());
+    AltGroup.insert(F);
+    AltGroups.insert(AltGroup);
+  };
+
+  for (auto Group : AltGroups) {
+    Rc = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
+    CHECK_RC
+
+    auto F = Group.begin();
+    Rc = xmlTextWriterWriteString(Writer, BAD_CAST (*F)->getName().data());
+    CHECK_RC
+    for (; F != Group.end(); ++F) {
+      Rc = xmlTextWriterWriteString(Writer, BAD_CAST " || ");
+      CHECK_RC
+      Rc = xmlTextWriterWriteString(Writer, BAD_CAST (*F)->getName().data());
+      CHECK_RC
+    }
+
+    Rc = xmlTextWriterEndElement(Writer); // CONSTRAINT
+    CHECK_RC
+  }
+
+  // TODO write boolean constraints if they are parsed
 
   Rc = xmlTextWriterEndElement(Writer); // BOOLEANCONSTRAINT
   return Rc;
@@ -142,13 +180,15 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
 
   // optional
   Rc = xmlTextWriterWriteElement(
-      Writer, XmlConstants::OPTIONAL, BAD_CAST(Feature1.isOptional() ? "True" : "False"));
+      Writer, XmlConstants::OPTIONAL,
+      BAD_CAST(Feature1.isOptional() ? "True" : "False"));
   CHECK_RC
 
   // parent
   if (not Feature1.isRoot()) {
     Rc = xmlTextWriterWriteElement(
-        Writer, XmlConstants::PARENT, BAD_CAST Feature1.getParent()->getName().data());
+        Writer, XmlConstants::PARENT,
+        BAD_CAST Feature1.getParent()->getName().data());
     CHECK_RC
   }
 
@@ -171,14 +211,19 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
                                    BAD_CAST F->getName().data());
     CHECK_RC
   }
-  Rc = xmlTextWriterEndElement(Writer); // EXCLUDEOPTIONS
+  Rc = xmlTextWriterEndElement(Writer); // EXCLUDEDOPTIONS
   CHECK_RC
 
-  // location?
-  if (FeatureSourceRange *Fsr = Feature1.getFeatureSourceRange()) {
-    Rc = writeSourceRange(Writer, *Fsr);
+  // implications
+  Rc = xmlTextWriterStartElement(Writer, XmlConstants::IMPLIEDOPTIONS);
+  CHECK_RC
+  for (Feature *F : Feature1.implications()) {
+    Rc = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
+                                   BAD_CAST F->getName().data());
     CHECK_RC
   }
+  Rc = xmlTextWriterEndElement(Writer); // IMPLIEDOPTIONS
+  CHECK_RC
 
   // if numeric
   if (NumericFeature::classof(&Feature1)) {
@@ -202,9 +247,16 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
       });
       Str.append(std::to_string(Values.back()));
 
-      Rc = xmlTextWriterWriteElement(Writer, XmlConstants::VALUES, BAD_CAST Str.data());
+      Rc = xmlTextWriterWriteElement(Writer, XmlConstants::VALUES,
+                                     BAD_CAST Str.data());
       CHECK_RC
     }
+  }
+
+  // location?
+  if (FeatureSourceRange *Fsr = Feature1.getFeatureSourceRange()) {
+    Rc = writeSourceRange(Writer, *Fsr);
+    CHECK_RC
   }
 
   Rc = xmlTextWriterEndElement(Writer); // CONFIGURATIONOPTION
@@ -224,10 +276,12 @@ int FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr Writer,
   CHECK_RC
   auto *Start = Location.getStart();
   Rc = xmlTextWriterWriteElement(
-      Writer, XmlConstants::LINE, BAD_CAST std::to_string(Start->getLineNumber()).data());
+      Writer, XmlConstants::LINE,
+      BAD_CAST std::to_string(Start->getLineNumber()).data());
   CHECK_RC
   Rc = xmlTextWriterWriteElement(
-      Writer, XmlConstants::COLUMN, BAD_CAST std::to_string(Start->getColumnOffset()).data());
+      Writer, XmlConstants::COLUMN,
+      BAD_CAST std::to_string(Start->getColumnOffset()).data());
   CHECK_RC
   Rc = xmlTextWriterEndElement(Writer); // START
   CHECK_RC
@@ -236,10 +290,12 @@ int FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr Writer,
   CHECK_RC
   auto *End = Location.getStart();
   Rc = xmlTextWriterWriteElement(
-      Writer, XmlConstants::LINE, BAD_CAST std::to_string(End->getLineNumber()).data());
+      Writer, XmlConstants::LINE,
+      BAD_CAST std::to_string(End->getLineNumber()).data());
   CHECK_RC
   Rc = xmlTextWriterWriteElement(
-      Writer, XmlConstants::COLUMN, BAD_CAST std::to_string(End->getColumnOffset()).data());
+      Writer, XmlConstants::COLUMN,
+      BAD_CAST std::to_string(End->getColumnOffset()).data());
   CHECK_RC
   Rc = xmlTextWriterEndElement(Writer); // END
   CHECK_RC
