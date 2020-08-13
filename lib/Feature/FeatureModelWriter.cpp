@@ -1,6 +1,5 @@
 #include "vara/Feature/FeatureModelWriter.h"
 #include "vara/Feature/FeatureModel.h"
-#include <llvm/Support/Errc.h>
 
 #include "XmlConstants.h"
 
@@ -152,8 +151,9 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
     auto F = Group.begin();
     Rc = xmlTextWriterWriteString(Writer, BAD_CAST (*F)->getName().data());
     CHECK_RC
+    ++F;
     for (; F != Group.end(); ++F) {
-      Rc = xmlTextWriterWriteString(Writer, BAD_CAST " || ");
+      Rc = xmlTextWriterWriteString(Writer, BAD_CAST " | ");
       CHECK_RC
       Rc = xmlTextWriterWriteString(Writer, BAD_CAST (*F)->getName().data());
       CHECK_RC
@@ -288,7 +288,7 @@ int FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr Writer,
 
   Rc = xmlTextWriterStartElement(Writer, XmlConstants::END);
   CHECK_RC
-  auto *End = Location.getStart();
+  auto *End = Location.getEnd();
   Rc = xmlTextWriterWriteElement(
       Writer, XmlConstants::LINE,
       BAD_CAST std::to_string(End->getLineNumber()).data());

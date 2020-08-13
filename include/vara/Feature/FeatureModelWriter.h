@@ -6,8 +6,6 @@
 #include "libxml/tree.h"
 #include "libxml/xmlwriter.h"
 
-#include "llvm/Support/ErrorOr.h"
-
 #include <memory>
 
 namespace vara::feature {
