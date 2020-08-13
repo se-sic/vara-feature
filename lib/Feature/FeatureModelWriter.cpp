@@ -71,7 +71,6 @@ int FeatureModelXmlWriter::writeFeatureModel(xmlTextWriterPtr Writer) {
 
 int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr Writer) {
   int Rc;
-  // open vm node
   Rc = xmlTextWriterStartElement(Writer, XmlConstants::VM);
   CHECK_RC
   Rc = xmlTextWriterWriteAttribute(Writer, XmlConstants::NAME,
@@ -92,6 +91,7 @@ int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr Writer) {
   // write Constraints
   Rc = writeBooleanConstraints(Writer);
   CHECK_RC
+  // TODO mixed and nonNumeric constraints when supported
 
   Rc = xmlTextWriterEndDocument(Writer); // VM
   return Rc;
@@ -163,7 +163,7 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
     CHECK_RC
   }
 
-  // TODO write boolean constraints if they are parsed
+  // TODO write other boolean constraints if they are parsed
 
   Rc = xmlTextWriterEndElement(Writer); // BOOLEANCONSTRAINT
   return Rc;
