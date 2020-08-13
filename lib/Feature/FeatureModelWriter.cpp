@@ -150,13 +150,13 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
     CHECK_RC
 
     auto F = Group.begin();
-    Rc = xmlTextWriterWriteString(Writer, BAD_CAST (*F)->getName().data());
+    Rc = xmlTextWriterWriteString(Writer, BAD_CAST(*F)->getName().data());
     CHECK_RC
     ++F;
     for (; F != Group.end(); ++F) {
       Rc = xmlTextWriterWriteString(Writer, BAD_CAST " | ");
       CHECK_RC
-      Rc = xmlTextWriterWriteString(Writer, BAD_CAST (*F)->getName().data());
+      Rc = xmlTextWriterWriteString(Writer, BAD_CAST(*F)->getName().data());
       CHECK_RC
     }
 
@@ -196,7 +196,9 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   // children
   Rc = xmlTextWriterStartElement(Writer, XmlConstants::CHILDREN);
   CHECK_RC
-  for (Feature *F : Feature1.children()) {
+  OrderedFeatureVector Children;
+  Children.insert(Feature1.children());
+  for (Feature *F : Children) {
     Rc = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                    BAD_CAST F->getName().data());
     CHECK_RC
@@ -207,7 +209,9 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   // exclude
   Rc = xmlTextWriterStartElement(Writer, XmlConstants::EXCLUDEDOPTIONS);
   CHECK_RC
-  for (Feature *F : Feature1.excludes()) {
+  OrderedFeatureVector Exludes;
+  Exludes.insert(Feature1.excludes());
+  for (Feature *F : Exludes) {
     Rc = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                    BAD_CAST F->getName().data());
     CHECK_RC
@@ -218,7 +222,9 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   // implications
   Rc = xmlTextWriterStartElement(Writer, XmlConstants::IMPLIEDOPTIONS);
   CHECK_RC
-  for (Feature *F : Feature1.implications()) {
+  OrderedFeatureVector Implies;
+  Implies.insert(Feature1.implications());
+  for (Feature *F : Implies) {
     Rc = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                    BAD_CAST F->getName().data());
     CHECK_RC

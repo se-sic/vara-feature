@@ -6,8 +6,8 @@
       <optional>False</optional>
       <children>
         <options>A</options>
-        <options>C</options>
         <options>B</options>
+        <options>C</options>
       </children>
       <excludedOptions/>
       <impliedOptions/>
@@ -42,8 +42,8 @@
       <children/>
       <excludedOptions>
         <options>AB</options>
-        <options>C</options>
         <options>AC</options>
+        <options>C</options>
       </excludedOptions>
       <impliedOptions/>
     </configurationOption>
