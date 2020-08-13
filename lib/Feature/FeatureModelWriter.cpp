@@ -135,7 +135,8 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
   // collect alternative groups
   std::set<std::set<Feature *>> AltGroups;
   for (auto *F : Fm.features()) {
-    if (F->alternatives().empty()) {
+    // skip empty groups
+    if (F->alternatives().begin() == F->alternatives().end()) {
       continue;
     }
     std::set<Feature *> AltGroup(F->alternatives().begin(),
