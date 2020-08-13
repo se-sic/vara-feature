@@ -43,11 +43,11 @@ std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
     return std::nullopt;
   }
 
-  xmlChar *xmlbuff;
-  int buffersize;
-  xmlDocDumpMemoryEnc(Doc, &xmlbuff, &buffersize, ENCODING);
+  xmlChar *XmlBuff;
+  int Buffersize;
+  xmlDocDumpMemoryEnc(Doc, &XmlBuff, &Buffersize, ENCODING);
 
-  std::string Str((char *)xmlbuff, buffersize);
+  std::string Str((char *)XmlBuff, Buffersize);
 
   xmlFreeTextWriter(Writer);
   xmlFreeDoc(Doc);
@@ -144,7 +144,7 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
     AltGroups.insert(AltGroup);
   };
 
-  for (auto Group : AltGroups) {
+  for (auto const &Group : AltGroups) {
     Rc = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
     CHECK_RC
 
