@@ -16,7 +16,7 @@ static constexpr xmlChar INDENTATIONSTRING[] = "  ";
 static constexpr char ENCODING[] = "UTF-8";
 
 int FeatureModelXmlWriter::writeFeatureModel(std::string Path) {
-  int Rc;
+  int RC;
   xmlTextWriterPtr Writer;
 
   Writer = xmlNewTextWriterFilename(Path.data(), 0);
