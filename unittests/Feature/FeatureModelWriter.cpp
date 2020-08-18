@@ -16,14 +16,14 @@ TEST(XmlWriter, testtest) {
   auto FM = FeatureModelXmlParser(FS.get()->getBuffer()).buildFeatureModel();
 
   FeatureModelXmlWriter Fmxw = FeatureModelXmlWriter(*FM);
-  auto OutOpt = Fmxw.writeFeatureModel();
-  assert(OutOpt && "Feature model could not be written");
+  auto Output = Fmxw.writeFeatureModel();
+  assert(Output && "Feature model could not be written");
 
-  std::string Out = OutOpt.value();
+  std::string ActualOutput = Output.value();
   FS = llvm::MemoryBuffer::getFileAsStream(TESTFILEDIRPATH + "test_out.xml");
   assert(FS && "Comparisson file could not be read");
-  std::string OutCmp = FS.get()->getBuffer();
-  EXPECT_EQ(Out, OutCmp);
+  std::string ExpectedOutput = FS.get()->getBuffer();
+  EXPECT_EQ(ActualOutput, ExpectedOutput);
 }
 
 } // namespace vara::feature

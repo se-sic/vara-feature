@@ -9,8 +9,6 @@
         <options>B</options>
         <options>C</options>
       </children>
-      <excludedOptions/>
-      <impliedOptions/>
     </configurationOption>
     <configurationOption>
       <name>A</name>
@@ -21,8 +19,6 @@
         <options>AB</options>
         <options>AC</options>
       </children>
-      <excludedOptions/>
-      <impliedOptions/>
       <location>
         <path>main.c</path>
         <start>
@@ -39,19 +35,16 @@
       <name>AA</name>
       <optional>False</optional>
       <parent>A</parent>
-      <children/>
       <excludedOptions>
         <options>AB</options>
         <options>AC</options>
         <options>C</options>
       </excludedOptions>
-      <impliedOptions/>
     </configurationOption>
     <configurationOption>
       <name>AB</name>
       <optional>False</optional>
       <parent>A</parent>
-      <children/>
       <excludedOptions>
         <options>AA</options>
         <options>AC</options>
@@ -64,12 +57,10 @@
       <name>AC</name>
       <optional>False</optional>
       <parent>A</parent>
-      <children/>
       <excludedOptions>
         <options>AA</options>
         <options>AB</options>
       </excludedOptions>
-      <impliedOptions/>
     </configurationOption>
     <configurationOption>
       <name>B</name>
@@ -78,7 +69,6 @@
       <children>
         <options>N</options>
       </children>
-      <excludedOptions/>
       <impliedOptions>
         <options>AB</options>
       </impliedOptions>
@@ -87,9 +77,6 @@
       <name>C</name>
       <optional>True</optional>
       <parent>root</parent>
-      <children/>
-      <excludedOptions/>
-      <impliedOptions/>
     </configurationOption>
   </binaryOptions>
   <numericOptions>
@@ -97,8 +84,6 @@
       <name>N</name>
       <optional>True</optional>
       <parent>B</parent>
-      <children/>
-      <excludedOptions/>
       <impliedOptions>
         <options>C</options>
       </impliedOptions>
