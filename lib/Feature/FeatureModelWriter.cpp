@@ -31,27 +31,31 @@ int FeatureModelXmlWriter::writeFeatureModel(std::string Path) {
 std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
   int RC;
 
-  xmlDocPtr Doc;
+  std::unique_ptr<xmlDocPtr, void (*)(xmlDocPtr *)> DocPtrPtr(
+      new xmlDocPtr(), [](xmlDocPtr *Ptr) {
+        xmlFreeDoc(*Ptr);
+        delete (Ptr);
+      });
 
   std::unique_ptr<xmlTextWriter, void (*)(xmlTextWriterPtr)> Writer(
-      xmlNewTextWriterDoc(&Doc, 0), &xmlFreeTextWriter);
+      xmlNewTextWriterDoc(DocPtrPtr.get(), 0), &xmlFreeTextWriter);
   if (Writer == nullptr) {
     return std::nullopt;
   }
   RC = writeFeatureModel(Writer.get());
   if (RC < 0) {
-    xmlFreeDoc(Doc);
     return std::nullopt;
   }
 
-  xmlChar *XmlBuff;
+  std::unique_ptr<xmlChar *, void (*)(xmlChar **)> XmlBuffPtr(
+      new xmlChar *(), [](xmlChar **Ptr) {
+        xmlFree(*Ptr);
+        delete (Ptr);
+      });
   int Buffersize;
-  xmlDocDumpMemoryEnc(Doc, &XmlBuff, &Buffersize, ENCODING);
-  std::string Str(reinterpret_cast<char *>(XmlBuff), Buffersize);
-  xmlFree(XmlBuff);
+  xmlDocDumpMemoryEnc(*DocPtrPtr, XmlBuffPtr.get(), &Buffersize, ENCODING);
+  std::string Str(reinterpret_cast<char *>(*XmlBuffPtr), Buffersize);
 
-  // xmlFreeTextWriter called implicitly
-  xmlFreeDoc(Doc);
   return Str;
 }
 
@@ -148,7 +152,7 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
       continue;
     }
     std::set<Feature *, FeatureCompare> AltGroup(F->alternatives_begin(),
-                                 F->alternatives_end());
+                                                 F->alternatives_end());
     AltGroup.insert(F);
     AltGroups.insert(std::move(AltGroup));
   }
