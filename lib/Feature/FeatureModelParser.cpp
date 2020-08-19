@@ -1,4 +1,5 @@
 #include "vara/Feature/FeatureModelParser.h"
+
 #include "XmlConstants.h"
 
 #include <iostream>

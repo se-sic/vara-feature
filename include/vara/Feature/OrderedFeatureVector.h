@@ -18,6 +18,12 @@ public:
       typename std::vector<Feature *>::const_iterator;
 
   OrderedFeatureVector() = default;
+  template<class feature_iterator> OrderedFeatureVector(feature_iterator It, feature_iterator End)
+  {
+    while (It != End) {
+      insert(*(It++));
+    }
+  }
 
   /// Insert feature while preserving ordering.
   void insert(Feature *F);

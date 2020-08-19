@@ -10,7 +10,37 @@ namespace vara::feature {
 
 const std::string TESTFILEDIRPATH = "../../../test/";
 
-TEST(XmlWriter, testtest) {
+TEST(XmlWriter, children) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(TESTFILEDIRPATH +
+                                                "test_children.xml");
+  assert(FS && "Input file could not be read");
+  auto FM = FeatureModelXmlParser(FS.get()->getBuffer()).buildFeatureModel();
+
+  FeatureModelXmlWriter Fmxw = FeatureModelXmlWriter(*FM);
+  auto Output = Fmxw.writeFeatureModel();
+  assert(Output && "Feature model could not be written");
+  std::string ActualOutput = Output.value();
+
+  std::string ExpectedOutput = FS.get()->getBuffer();
+  EXPECT_EQ(ActualOutput, ExpectedOutput);
+}
+
+TEST(XmlWriter, excludes) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(TESTFILEDIRPATH +
+                                                "test_excludes.xml");
+  assert(FS && "Input file could not be read");
+  auto FM = FeatureModelXmlParser(FS.get()->getBuffer()).buildFeatureModel();
+
+  FeatureModelXmlWriter Fmxw = FeatureModelXmlWriter(*FM);
+  auto Output = Fmxw.writeFeatureModel();
+  assert(Output && "Feature model could not be written");
+  std::string ActualOutput = Output.value();
+
+  std::string ExpectedOutput = FS.get()->getBuffer();
+  EXPECT_EQ(ActualOutput, ExpectedOutput);
+}
+
+TEST(XmlWriter, test) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(TESTFILEDIRPATH + "test.xml");
   assert(FS && "Input file could not be read");
   auto FM = FeatureModelXmlParser(FS.get()->getBuffer()).buildFeatureModel();

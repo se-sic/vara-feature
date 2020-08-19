@@ -3,22 +3,22 @@
   <binaryOptions>
     <configurationOption>
       <name>root</name>
-      <optional>False</optional>
       <children>
         <options>A</options>
         <options>B</options>
         <options>C</options>
       </children>
+      <optional>False</optional>
     </configurationOption>
     <configurationOption>
       <name>A</name>
-      <optional>False</optional>
       <parent>root</parent>
       <children>
         <options>AA</options>
         <options>AB</options>
         <options>AC</options>
       </children>
+      <optional>False</optional>
       <location>
         <path>main.c</path>
         <start>
@@ -33,38 +33,37 @@
     </configurationOption>
     <configurationOption>
       <name>AA</name>
-      <optional>False</optional>
       <parent>A</parent>
       <excludedOptions>
         <options>AB</options>
         <options>AC</options>
         <options>C</options>
       </excludedOptions>
+      <optional>False</optional>
     </configurationOption>
     <configurationOption>
       <name>AB</name>
-      <optional>False</optional>
       <parent>A</parent>
+      <impliedOptions>
+        <options>B</options>
+      </impliedOptions>
       <excludedOptions>
         <options>AA</options>
         <options>AC</options>
       </excludedOptions>
-      <impliedOptions>
-        <options>B</options>
-      </impliedOptions>
+      <optional>False</optional>
     </configurationOption>
     <configurationOption>
       <name>AC</name>
-      <optional>False</optional>
       <parent>A</parent>
       <excludedOptions>
         <options>AA</options>
         <options>AB</options>
       </excludedOptions>
+      <optional>False</optional>
     </configurationOption>
     <configurationOption>
       <name>B</name>
-      <optional>True</optional>
       <parent>root</parent>
       <children>
         <options>N</options>
@@ -72,21 +71,22 @@
       <impliedOptions>
         <options>AB</options>
       </impliedOptions>
+      <optional>True</optional>
     </configurationOption>
     <configurationOption>
       <name>C</name>
-      <optional>True</optional>
       <parent>root</parent>
+      <optional>True</optional>
     </configurationOption>
   </binaryOptions>
   <numericOptions>
     <configurationOption>
       <name>N</name>
-      <optional>True</optional>
       <parent>B</parent>
       <impliedOptions>
         <options>C</options>
       </impliedOptions>
+      <optional>True</optional>
       <values>1;5;9</values>
     </configurationOption>
   </numericOptions>

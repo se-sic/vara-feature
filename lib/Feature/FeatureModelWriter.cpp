@@ -1,5 +1,6 @@
 #include "vara/Feature/FeatureModelWriter.h"
 #include "vara/Feature/FeatureModel.h"
+#include <llvm/Support/Casting.h>
 
 #include "XmlConstants.h"
 
@@ -17,15 +18,13 @@ static constexpr char ENCODING[] = "UTF-8";
 
 int FeatureModelXmlWriter::writeFeatureModel(std::string Path) {
   int RC;
-  xmlTextWriterPtr Writer;
-
-  Writer = xmlNewTextWriterFilename(Path.data(), 0);
-  if (Writer == nullptr) {
+  std::unique_ptr<xmlTextWriter, void (*)(xmlTextWriterPtr)> Writer(
+      xmlNewTextWriterFilename(Path.data(), 0), &xmlFreeTextWriter);
+  if (!Writer) {
     return false;
   }
 
-  RC = writeFeatureModel(Writer);
-  xmlFreeTextWriter(Writer);
+  RC = writeFeatureModel(Writer.get());
   return RC;
 }
 
@@ -34,7 +33,7 @@ std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
 
   xmlDocPtr Doc;
 
-  std::unique_ptr<xmlTextWriter, decltype(&xmlFreeTextWriter)> Writer(
+  std::unique_ptr<xmlTextWriter, void (*)(xmlTextWriterPtr)> Writer(
       xmlNewTextWriterDoc(&Doc, 0), &xmlFreeTextWriter);
   if (Writer == nullptr) {
     return std::nullopt;
@@ -48,7 +47,7 @@ std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
   xmlChar *XmlBuff;
   int Buffersize;
   xmlDocDumpMemoryEnc(Doc, &XmlBuff, &Buffersize, ENCODING);
-  std::string Str((char *)XmlBuff, Buffersize);
+  std::string Str(reinterpret_cast<char *>(XmlBuff), Buffersize);
   xmlFree(XmlBuff);
 
   // xmlFreeTextWriter called implicitly
@@ -139,19 +138,22 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
   CHECK_RC
 
   // collect alternative groups
-  std::set<std::set<Feature *>> AltGroups;
+  struct FeatureCompare {
+    bool operator()(Feature *F1, Feature *F2) const { return *F1 < *F2; }
+  };
+  std::set<std::set<Feature *, FeatureCompare>> AltGroups;
   for (auto *F : Fm.features()) {
     // skip empty groups
     if (F->alternatives().begin() == F->alternatives().end()) {
       continue;
     }
-    std::set<Feature *> AltGroup(F->alternatives().begin(),
-                                 F->alternatives().end());
+    std::set<Feature *, FeatureCompare> AltGroup(F->alternatives_begin(),
+                                 F->alternatives_end());
     AltGroup.insert(F);
-    AltGroups.insert(AltGroup);
-  };
+    AltGroups.insert(std::move(AltGroup));
+  }
 
-  for (auto const &Group : AltGroups) {
+  for (const auto &Group : AltGroups) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
     CHECK_RC
 
@@ -187,14 +189,8 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
                                  BAD_CAST Feature1.getName().data());
   CHECK_RC
 
-  // optional
-  RC = xmlTextWriterWriteElement(
-      Writer, XmlConstants::OPTIONAL,
-      BAD_CAST(Feature1.isOptional() ? "True" : "False"));
-  CHECK_RC
-
   // parent
-  if (not Feature1.isRoot()) {
+  if (!Feature1.isRoot()) {
     RC = xmlTextWriterWriteElement(
         Writer, XmlConstants::PARENT,
         BAD_CAST Feature1.getParent()->getName().data());
@@ -206,8 +202,8 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CHILDREN);
     CHECK_RC
 
-    OrderedFeatureVector Children;
-    Children.insert(Feature1.children());
+    OrderedFeatureVector Children{Feature1.children_begin(),
+                                  Feature1.children_end()};
     for (Feature *F : Children) {
       RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                      BAD_CAST F->getName().data());
@@ -218,30 +214,13 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
     CHECK_RC
   }
 
-  // excludes
-  if (Feature1.excludes_begin() != Feature1.excludes_end()) {
-    RC = xmlTextWriterStartElement(Writer, XmlConstants::EXCLUDEDOPTIONS);
-    CHECK_RC
-
-    OrderedFeatureVector Exludes;
-    Exludes.insert(Feature1.excludes());
-    for (Feature *F : Exludes) {
-      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
-                                     BAD_CAST F->getName().data());
-      CHECK_RC
-    }
-
-    RC = xmlTextWriterEndElement(Writer); // EXCLUDEDOPTIONS
-    CHECK_RC
-  }
-
   // implications
   if (Feature1.implications_begin() != Feature1.implications_end()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::IMPLIEDOPTIONS);
     CHECK_RC
 
-    OrderedFeatureVector Implies;
-    Implies.insert(Feature1.implications());
+    OrderedFeatureVector Implies{Feature1.implications_begin(),
+                                 Feature1.implications_end()};
     for (Feature *F : Implies) {
       RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                      BAD_CAST F->getName().data());
@@ -252,10 +231,32 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
     CHECK_RC
   }
 
-  // if numeric
-  if (NumericFeature::classof(&Feature1)) {
-    auto &Nf = dynamic_cast<NumericFeature &>(Feature1);
-    auto ValueVariant = Nf.getValues();
+  // excludes
+  if (Feature1.excludes_begin() != Feature1.excludes_end()) {
+    RC = xmlTextWriterStartElement(Writer, XmlConstants::EXCLUDEDOPTIONS);
+    CHECK_RC
+
+    OrderedFeatureVector Exludes{Feature1.excludes_begin(),
+                                 Feature1.excludes_end()};
+    for (Feature *F : Exludes) {
+      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
+                                     BAD_CAST F->getName().data());
+      CHECK_RC
+    }
+
+    RC = xmlTextWriterEndElement(Writer); // EXCLUDEDOPTIONS
+    CHECK_RC
+  }
+
+  // optional
+  RC = xmlTextWriterWriteElement(
+      Writer, XmlConstants::OPTIONAL,
+      BAD_CAST(Feature1.isOptional() ? "True" : "False"));
+  CHECK_RC
+
+  // numeric elements
+  if (auto *NF = llvm::dyn_cast<NumericFeature>(&Feature1)) {
+    auto ValueVariant = NF->getValues();
     if (std::holds_alternative<std::pair<int, int>>(ValueVariant)) {
       auto [Min, Max] = std::get<std::pair<int, int>>(ValueVariant);
       RC = xmlTextWriterWriteElement(Writer, XmlConstants::MINVALUE,

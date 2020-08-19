@@ -43,10 +43,6 @@ public:
   std::optional<std::string> writeFeatureModel();
 
 private:
-  using constXmlCharPtr = const xmlChar *;
-
-  const FeatureModel &Fm;
-
   int writeFeatureModel(xmlTextWriterPtr Writer);
   int writeVm(xmlTextWriterPtr Writer);
   int writeBinaryFeatures(xmlTextWriterPtr Writer);
@@ -54,6 +50,8 @@ private:
   int writeBooleanConstraints(xmlTextWriterPtr Writer);
   static int writeFeature(xmlTextWriterPtr Writer, Feature &Feature1);
   static int writeSourceRange(xmlTextWriterPtr Writer, FeatureSourceRange &Location);
+
+  const FeatureModel &Fm;
 };
 
 } // namespace vara::feature
