@@ -8,6 +8,10 @@ namespace vara::feature {
 class XmlConstants {
 public:
   XmlConstants() = delete;
+  XmlConstants(const XmlConstants &) = delete;
+  XmlConstants &operator=(const XmlConstants &) = delete;
+  XmlConstants(XmlConstants &&) noexcept = delete;
+  XmlConstants &operator=(XmlConstants &&) noexcept = delete;
   ~XmlConstants() = delete;
 
   static constexpr xmlChar VM[] = "vm";

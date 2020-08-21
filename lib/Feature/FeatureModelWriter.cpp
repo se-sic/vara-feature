@@ -1,5 +1,6 @@
 #include "vara/Feature/FeatureModelWriter.h"
 #include "vara/Feature/FeatureModel.h"
+
 #include <llvm/Support/Casting.h>
 
 #include "XmlConstants.h"
@@ -32,14 +33,16 @@ std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
   int RC;
 
   std::unique_ptr<xmlDocPtr, void (*)(xmlDocPtr *)> DocPtrPtr(
-      new xmlDocPtr(), [](xmlDocPtr *Ptr) {
-        xmlFreeDoc(*Ptr);
+      new xmlDocPtr{nullptr}, [](xmlDocPtr *Ptr) {
+        if (*Ptr) {
+          xmlFreeDoc(*Ptr);
+        }
         delete (Ptr);
       });
 
   std::unique_ptr<xmlTextWriter, void (*)(xmlTextWriterPtr)> Writer(
       xmlNewTextWriterDoc(DocPtrPtr.get(), 0), &xmlFreeTextWriter);
-  if (Writer == nullptr) {
+  if (!Writer) {
     return std::nullopt;
   }
   RC = writeFeatureModel(Writer.get());
@@ -48,8 +51,10 @@ std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
   }
 
   std::unique_ptr<xmlChar *, void (*)(xmlChar **)> XmlBuffPtr(
-      new xmlChar *(), [](xmlChar **Ptr) {
-        xmlFree(*Ptr);
+      new xmlChar *{nullptr}, [](xmlChar **Ptr) {
+        if (*Ptr) {
+          xmlFree(*Ptr);
+        }
         delete (Ptr);
       });
   int Buffersize;
@@ -108,7 +113,7 @@ int FeatureModelXmlWriter::writeBinaryFeatures(xmlTextWriterPtr Writer) {
   CHECK_RC
 
   for (Feature *F : Fm.features()) {
-    if (F->getKind() == Feature::FeatureKind::FK_BINARY) {
+    if (llvm::isa<BinaryFeature>(F)) {
       RC = writeFeature(Writer, *F);
       CHECK_RC
     }
@@ -125,7 +130,7 @@ int FeatureModelXmlWriter::writeNumericFeatures(xmlTextWriterPtr Writer) {
   CHECK_RC
 
   for (auto *F : Fm.features()) {
-    if (F->getKind() == Feature::FeatureKind::FK_NUMERIC) {
+    if (llvm::isa<NumericFeature>(F)) {
       RC = writeFeature(Writer, *F);
       CHECK_RC
     }
