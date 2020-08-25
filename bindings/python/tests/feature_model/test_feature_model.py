@@ -30,7 +30,7 @@ class TestFeatureModel(unittest.TestCase):
 
     def test_path(self):
         """ Check if path accessor is correctly mapped. """
-        self.assertEqual(self.fm.path, "test/path/to/root/")
+        self.assertEqual(self.fm.path, "resources/path/to/root/")
 
     def test_fm_root(self):
         """ Check if the root of the feature model was correctly set. """

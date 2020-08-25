@@ -15,5 +15,5 @@ target_link_libraries(fm-viewer
 
 add_custom_target(check-vara-fm-viewer
   COMMAND fm-viewer test.xml -viewer cat | dot | grep . -q
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../test
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}../../unittests/resources
   )
