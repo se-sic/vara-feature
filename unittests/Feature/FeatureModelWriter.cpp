@@ -8,7 +8,7 @@
 
 namespace vara::feature {
 
-const std::string TESTFILEDIRPATH = "../../../test/";
+const std::string TESTFILEDIRPATH = "../../test/";
 
 TEST(XmlWriter, children) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(TESTFILEDIRPATH +
