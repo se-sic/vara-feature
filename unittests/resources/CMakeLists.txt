@@ -6,7 +6,7 @@ macro(add_test_file file_name)
   )
 endmacro()
 
-  set(FEATURE_LIB_TEST_FILES
+set(FEATURE_LIB_TEST_FILES
   test.xml
   test_children.xml
   test_excludes.xml
