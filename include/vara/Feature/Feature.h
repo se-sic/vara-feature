@@ -159,6 +159,9 @@ public:
   [[nodiscard]] FeatureSourceRange *getFeatureSourceRange() {
     return Source.has_value() ? &Source.value() : nullptr;
   }
+  void setFeatureSourceRange(FeatureSourceRange &Fsr) {
+    Source = std::move(Fsr);
+  }
 
   //===--------------------------------------------------------------------===//
   // Utility

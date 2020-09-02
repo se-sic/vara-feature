@@ -38,9 +38,10 @@ void init_feature_location_module(py::module &M) {
             return vf::FeatureSourceRange(fs::path(std::move(Path)), Start,
                                           End);
           }))
-      .def_property_readonly(
+      .def_property(
           "path",
           [](vf::FeatureSourceRange &Loc) { return Loc.getPath().string(); },
+          &vf::FeatureSourceRange::setPath,
           R"pbdoc(Path to the source file)pbdoc")
       .def_property_readonly(
           "start", &vf::FeatureSourceRange::getStart,

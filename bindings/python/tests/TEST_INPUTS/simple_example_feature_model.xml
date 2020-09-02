@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vm name="Children" root="test">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <children>
+        <options>A</options>
+        <options>B</options>
+        <options>C</options>
+      </children>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>A</name>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>B</name>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>C</name>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions/>
+  <booleanConstraints/>
+</vm>

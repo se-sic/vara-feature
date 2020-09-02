@@ -101,14 +101,14 @@ class TestFeature(unittest.TestCase):
         loc = feature.Location(path, start_lco, end_lco)
         test_feature_0 = feature.BinaryFeature("Test", False, loc)
 
-        self.assertTrue(test_feature_0.get_location())
-        self.assertEqual(test_feature_0.get_location().path, path)
-        self.assertEqual(test_feature_0.get_location().start.line_number,
+        self.assertTrue(test_feature_0.location)
+        self.assertEqual(test_feature_0.location.path, path)
+        self.assertEqual(test_feature_0.location.start.line_number,
                          3)
         self.assertEqual(
-            test_feature_0.get_location().start.column_offset, 4)
-        self.assertEqual(test_feature_0.get_location().end.line_number, 3)
-        self.assertEqual(test_feature_0.get_location().end.column_offset,
+            test_feature_0.location.start.column_offset, 4)
+        self.assertEqual(test_feature_0.location.end.line_number, 3)
+        self.assertEqual(test_feature_0.location.end.column_offset,
                          20)
 
     def test_feature_location_setters(self):
@@ -119,21 +119,21 @@ class TestFeature(unittest.TestCase):
         loc = feature.Location(path, start_lco, end_lco)
         test_feature_0 = feature.BinaryFeature("Test", False, loc)
 
-        start = test_feature_0.get_location().start
-        end = test_feature_0.get_location().end
+        start = test_feature_0.location.start
+        end = test_feature_0.location.end
         start.line_number = 4
         end.line_number = 4
         start.column_offset = 2
         end.column_offset = 18
 
-        self.assertTrue(test_feature_0.get_location())
-        self.assertEqual(test_feature_0.get_location().path, path)
-        self.assertEqual(test_feature_0.get_location().start.line_number,
+        self.assertTrue(test_feature_0.location)
+        self.assertEqual(test_feature_0.location.path, path)
+        self.assertEqual(test_feature_0.location.start.line_number,
                          4)
         self.assertEqual(
-            test_feature_0.get_location().start.column_offset, 2)
-        self.assertEqual(test_feature_0.get_location().end.line_number, 4)
-        self.assertEqual(test_feature_0.get_location().end.column_offset,
+            test_feature_0.location.start.column_offset, 2)
+        self.assertEqual(test_feature_0.location.end.line_number, 4)
+        self.assertEqual(test_feature_0.location.end.column_offset,
                          18)
 
 
