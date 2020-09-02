@@ -68,9 +68,9 @@ public:
       : Path(std::move(Path)), Start(Start), End(End) {}         // NOLINT
 
   [[nodiscard]] fs::path getPath() const { return Path; }
-  void setPath(std::string value) {
-    fs::path p(value);
-    this->Path = p;
+  void setPath(const std::string &Value) {
+    fs::path P(Value);
+    this->Path = P;
   }
 
   [[nodiscard]] bool hasStart() const { return Start.has_value(); }
