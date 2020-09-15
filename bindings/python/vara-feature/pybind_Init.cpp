@@ -10,6 +10,7 @@ void init_feature_module(py::module &M);
 void init_feature_location_module(py::module &M);
 void init_feature_model_module(py::module &M);
 void init_xml_parser(py::module &M);
+void init_xml_writer(py::module &M);
 
 PYBIND11_MODULE(vara_feature, M) {
   auto LLVMModule = M.def_submodule("llvm_util");
@@ -21,4 +22,6 @@ PYBIND11_MODULE(vara_feature, M) {
   init_feature_model_module(FeatureModelModule);
   auto FMParserModule = M.def_submodule("fm_parsers");
   init_xml_parser(FMParserModule);
+  auto FMWriterModule = M.def_submodule("fm_writer");
+  init_xml_writer(FMWriterModule);
 }
