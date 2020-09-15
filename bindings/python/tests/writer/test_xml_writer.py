@@ -28,7 +28,7 @@ class TestFeatureModel(unittest.TestCase):
     def test_fm_name(self):
         """ Check if the feature model is written correctly. """
         writer = fm_writer.FeatureModelXmlWriter(self.fm)
-        output = writer.dumps_feature_model()
+        output = writer.get_feature_model_as_string()
         with open(TEST_INPUTS_DIR / "simple_example_feature_model.xml",
                   'r') as fm_file:
             expected = fm_file.read()

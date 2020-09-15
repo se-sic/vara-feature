@@ -13,15 +13,15 @@ void init_xml_writer(py::module &M) {
   py::class_<vf::FeatureModelXmlWriter>(M, "FeatureModelXmlWriter")
       .def(py::init<const vf::FeatureModel &>())
       .def(
-          "dumps_feature_model",
+          "get_feature_model_as_string",
           [](vf::FeatureModelXmlWriter &Fmxw) {
             return Fmxw.writeFeatureModel();
           },
           R"pbdoc(Return the xml representation as string)pbdoc")
       .def(
-          "dump_feature_model",
+          "write_feature_model_to_file",
           [](vf::FeatureModelXmlWriter &Fmxw, const std::string StrS) {
             return Fmxw.writeFeatureModel(StrS);
           },
-          R"pbdoc(Write feature model to the given location)pbdoc");
+          R"pbdoc(Write feature model to the given file)pbdoc");
 }
