@@ -81,7 +81,6 @@ public:
   [[nodiscard]] bool hasEnd() const { return End.has_value(); }
   [[nodiscard]] FeatureSourceLocation *getEnd() {
     return End.has_value() ? &End.value() : nullptr;
-    ;
   }
 
   [[nodiscard]] std::string toString() const {
@@ -94,6 +93,14 @@ public:
       StrS << "-" << End->toString();
     }
     return StrS.str();
+  }
+
+  inline bool operator==(const FeatureSourceRange &Other) const {
+    return Path == Other.Path and Start == Other.Start and End == Other.End;
+  }
+
+  inline bool operator!=(const FeatureSourceRange &Other) const {
+    return !(*this == Other);
   }
 
 private:

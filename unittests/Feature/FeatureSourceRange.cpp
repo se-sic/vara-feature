@@ -73,4 +73,19 @@ TEST(FeatureSourceRange, onlyEnd) {
   EXPECT_FALSE(L.hasStart());
   EXPECT_TRUE(L.hasEnd());
 }
+
+TEST(FeatureSourceRange, equality) {
+  auto Path1 = "path1";
+  auto Fsl1start = FeatureSourceRange::FeatureSourceLocation(1,2);
+  auto Fsl1end = FeatureSourceRange::FeatureSourceLocation(1, 20);
+  auto L1 = FeatureSourceRange(Path1, Fsl1start, Fsl1end);
+  auto Path2 = "path2";
+  auto Fsl2start = FeatureSourceRange::FeatureSourceLocation(1, 2);
+  auto Fsl2end = FeatureSourceRange::FeatureSourceLocation(1, 20);
+  auto L2 = FeatureSourceRange(Path2, Fsl2start, Fsl2end);
+  EXPECT_NE(L1, L2);
+
+  L2.setPath(Path1);
+  EXPECT_EQ(L1, L2);
+}
 } // namespace vara::feature
