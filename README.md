@@ -15,8 +15,8 @@ Please also assure that you have `cmake` and `make` installed on your system. Ot
 Second, setup the repository and build the `vara-feature` lib.
 ```bash
 git clone https://github.com/se-passau/vara-feature
-git submodule update --init
 cd vara-feature
+git submodule update --init
 mkdir build && cd build
 CC=clang CXX=clang++ cmake ..
 cmake --build .
