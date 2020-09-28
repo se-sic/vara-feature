@@ -32,7 +32,7 @@ function(add_vara_unittest test_name)
     add_executable(${test_name} EXCLUDE_FROM_ALL ${ARGN})
     set_target_properties(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-    target_link_libraries(${test_name} PRIVATE gtest_main gtest)
+    target_link_libraries(${test_name} PRIVATE gtest_main gtest stdc++fs)
     add_dependencies(VaRAFeatureUnitTests ${test_name})
 
     set_property(TARGET ${test_name} PROPERTY FOLDER "VaRA/vara-feature")
