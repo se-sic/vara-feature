@@ -75,11 +75,11 @@ TEST(FeatureSourceRange, onlyEnd) {
 }
 
 TEST(FeatureSourceRange, equality) {
-  auto Path1 = "path1";
+  const auto *Path1 = "path1";
   auto Fsl1start = FeatureSourceRange::FeatureSourceLocation(1,2);
   auto Fsl1end = FeatureSourceRange::FeatureSourceLocation(1, 20);
   auto L1 = FeatureSourceRange(Path1, Fsl1start, Fsl1end);
-  auto Path2 = "path2";
+  const auto *Path2 = "path2";
   auto Fsl2start = FeatureSourceRange::FeatureSourceLocation(1, 2);
   auto Fsl2end = FeatureSourceRange::FeatureSourceLocation(1, 20);
   auto L2 = FeatureSourceRange(Path2, Fsl2start, Fsl2end);

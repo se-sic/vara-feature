@@ -48,8 +48,8 @@ TEST(Feature, locationSetter) {
 
     Start = FeatureSourceRange::FeatureSourceLocation(4, 4);
     End = FeatureSourceRange::FeatureSourceLocation(5,20);
-    FeatureSourceRange otherLocation("path2", Start, End);
-    TestLCO.setFeatureSourceRange(otherLocation);
+    FeatureSourceRange OtherLocation("path2", Start, End);
+    TestLCO.setFeatureSourceRange(OtherLocation);
 
     EXPECT_EQ(TestLCO.getFeatureSourceRange()->getPath(), "path2");
     EXPECT_EQ(TestLCO.getFeatureSourceRange()->getStart()->getLineNumber(), 4);
