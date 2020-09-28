@@ -32,19 +32,11 @@ public:
   using feature_iterator = typename FeatureSetType::iterator;
   using const_feature_iterator = typename FeatureSetType::const_iterator;
 
-  // TODO(s9latimm): Can we remove this (in VaRA)?
-  llvm::SetVector<llvm::Value *> Values;
-  using value_iterator = typename llvm::SetVector<llvm::Value *>::iterator;
-  using const_value_iterator =
-      typename llvm::SetVector<llvm::Value *>::const_iterator;
-
   enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
 
-  Feature(std::string Name, llvm::Value *Val)
+  Feature(std::string Name)
       : Kind(FeatureKind::FK_UNKNOWN), Name(std::move(Name)), Opt(false),
-        Source(std::nullopt), Parent(nullptr) {
-    Values.insert(Val);
-  }
+        Source(std::nullopt), Parent(nullptr) {}
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
   virtual ~Feature() = default;
@@ -63,28 +55,6 @@ public:
 
   [[nodiscard]] Feature *getParent() const { return Parent; }
   bool isParent(Feature *PosParent) const { return Parent == PosParent; }
-
-  //===--------------------------------------------------------------------===//
-  // Values
-
-  inline void addValue(llvm::Value *Val) { Values.insert(Val); }
-
-  inline bool hasVal(llvm::Value *Val) const { return Values.count(Val); }
-
-  value_iterator values_begin() { return Values.begin(); }
-  [[nodiscard]] const_value_iterator values_begin() const {
-    return Values.begin();
-  }
-
-  value_iterator values_end() { return Values.end(); }
-  [[nodiscard]] const_value_iterator values_end() const { return Values.end(); }
-
-  llvm::iterator_range<value_iterator> values() {
-    return make_range(values_begin(), values_end());
-  }
-  [[nodiscard]] llvm::iterator_range<const_value_iterator> values() const {
-    return make_range(values_begin(), values_end());
-  }
 
   //===--------------------------------------------------------------------===//
   // Children
@@ -212,36 +182,8 @@ public:
 
   [[nodiscard]] virtual std::string toString() const;
 
-  // TODO(s9latimm): Revert to using \a toString if \a Values is refactored.
-  void print(std::ostream &OS) const {
-    if (Kind == FeatureKind::FK_UNKNOWN) {
-      OS << getName().str() << " (";
-      for (auto *Val : Values) {
-        OS << Val << " ";
-      }
-      OS << ") ID: " << getID();
-    } else {
-      OS << toString();
-    }
-  }
-
-  void print(llvm::raw_ostream &OS) const {
-    if (Kind == FeatureKind::FK_UNKNOWN) {
-      OS << getName().str() << " (";
-      for (auto *Val : Values) {
-        OS << Val << " ";
-      }
-      OS << ") ID: " << getID();
-    } else {
-      OS << toString();
-    }
-  }
-
   LLVM_DUMP_METHOD
-  void dump() const {
-    print(llvm::outs());
-    llvm::outs() << '\n';
-  }
+  void dump() const { llvm::outs() << toString() << '\n'; }
 
 protected:
   Feature(FeatureKind Kind, string Name, bool Opt,
