@@ -75,7 +75,8 @@ void init_feature_module_feature(py::module &M) {
           "is_alternative", &vf::Feature::isAlternative,
           R"pbdoc(Checks if a Feature is an alternative of this Feature.)pbdoc")
 
-      .def("get_location", &vf::Feature::getFeatureSourceRange,
+      .def_property("location", &vf::Feature::getFeatureSourceRange,
+           &vf::Feature::setFeatureSourceRange,
            py::return_value_policy::reference,
            R"pbdoc(Returns the code location of the feature variable if
                 possible, otherwise, `None`.)pbdoc")

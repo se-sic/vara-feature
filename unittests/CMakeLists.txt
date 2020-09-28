@@ -52,3 +52,4 @@ include_directories(
 
 add_subdirectory(Feature)
 add_subdirectory(Utils)
+add_subdirectory(resources)

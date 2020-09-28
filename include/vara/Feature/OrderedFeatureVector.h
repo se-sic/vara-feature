@@ -18,6 +18,10 @@ public:
       typename std::vector<Feature *>::const_iterator;
 
   OrderedFeatureVector() = default;
+  template<class FeatureIterTy> OrderedFeatureVector(FeatureIterTy Start, FeatureIterTy End)
+  {
+    insert(llvm::iterator_range(std::move(Start), std::move(End)));
+  }
 
   /// Insert feature while preserving ordering.
   void insert(Feature *F);
