@@ -49,7 +49,12 @@ void init_feature_location_module(py::module &M) {
       .def_property_readonly(
           "end", &vf::FeatureSourceRange::getEnd,
           R"pbdoc(Get the end `LineColumnOffset` of this `Location`.)pbdoc")
-      .def("__str__", &vf::FeatureSourceRange::toString);
+      .def("__str__", &vf::FeatureSourceRange::toString)
+      .def("__eq__", [](const vf::FeatureSourceRange &Self,
+                        const vf::FeatureSourceRange *Other) {
+        if (!Other) return false;
+        return Self == *Other;
+      }, py::arg("Other").none(true));
 
   py::class_<vf::FeatureSourceRange::FeatureSourceLocation>(M,
                                                             "LineColumnOffset")
@@ -63,9 +68,9 @@ void init_feature_location_module(py::module &M) {
           &vf::FeatureSourceRange::FeatureSourceLocation::getColumnOffset,
           &vf::FeatureSourceRange::FeatureSourceLocation::setColumnOffset)
       .def("__str__", &vf::FeatureSourceRange::FeatureSourceLocation::toString)
-      .def("__eq__",
-           [](const vf::FeatureSourceRange::FeatureSourceLocation &Self,
-              const vf::FeatureSourceRange::FeatureSourceLocation &Other) {
-             return Self == Other;
-           });
+      .def("__eq__", [](const vf::FeatureSourceRange::FeatureSourceLocation &Self,
+                        const vf::FeatureSourceRange::FeatureSourceLocation *Other) {
+        if (!Other) return false;
+        return Self == *Other;
+      }, py::arg("Other").none(true));
 }
