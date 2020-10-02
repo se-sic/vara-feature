@@ -11,6 +11,7 @@ add_vara_executable(fm-viewer
 target_link_libraries(fm-viewer
   LINK_PRIVATE
   VaRAFeature
+  stdc++fs
   )
 
 add_custom_target(check-vara-fm-viewer
