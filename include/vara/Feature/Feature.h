@@ -25,7 +25,7 @@ namespace vara::feature {
 //                               Feature Class
 //===----------------------------------------------------------------------===//
 
-/// \brief Base class for components of \a FeatureModel or \a FeatureRegion.
+/// \brief Base class for components of \a FeatureModel.
 class Feature {
 public:
   using FeatureSetType = typename std::set<Feature *>;
