@@ -136,17 +136,6 @@ class TestFeature(unittest.TestCase):
         self.assertEqual(test_feature_0.location.end.column_offset,
                          18)
 
-        test_feature_0.location = test_feature_0.location
-        self.assertTrue(test_feature_0.location)
-        self.assertEqual(test_feature_0.location.path, path)
-        self.assertEqual(test_feature_0.location.start.line_number,
-                         4)
-        self.assertEqual(
-            test_feature_0.location.start.column_offset, 2)
-        self.assertEqual(test_feature_0.location.end.line_number, 4)
-        self.assertEqual(test_feature_0.location.end.column_offset,
-                         18)
-        
     def test_feature_location_self_assign(self):
         """ Checks if a feature's location is mutable."""
         path = "test"
@@ -165,7 +154,7 @@ class TestFeature(unittest.TestCase):
         self.assertEqual(test_feature_0.location.end.line_number, 4)
         self.assertEqual(test_feature_0.location.end.column_offset,
                          18)
-        
+
 
 class TestBinaryFeature(unittest.TestCase):
     """ Test BinaryFeature functionality.  """
