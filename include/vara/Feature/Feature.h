@@ -41,7 +41,7 @@ public:
   Feature &operator=(const Feature &) = delete;
   virtual ~Feature() = default;
 
-  [[nodiscard]] inline std::size_t getID() const {
+  [[nodiscard]] inline std::size_t hash() const {
     return std::hash<std::string>{}(getName().lower());
   }
 
