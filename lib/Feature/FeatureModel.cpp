@@ -172,13 +172,14 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
     }
     break;
   case Feature::FeatureKind::FK_NUMERIC:
-    NumericFeature::ValuesVariantType Values =
-        dynamic_cast<NumericFeature *>(&F)->getValues();
-    if (!makeFeature<NumericFeature>(F.getName(), Values, F.isOptional(),
-                                     Loc)) {
+    if (!makeFeature<NumericFeature>(
+            F.getName(), dynamic_cast<NumericFeature *>(&F)->getValues(),
+            F.isOptional(), Loc)) {
       return false;
     }
     break;
+  default:
+    return false;
   }
   if (!F.isRoot()) {
     this->addParent(F.getName(), F.getParent()->getName());

@@ -12,6 +12,7 @@ namespace py = pybind11;
 
 void init_feature_module_feature(py::module &M) {
   py::class_<vf::Feature>(M, "Feature")
+      .def("__hash__", &vf::Feature::hash)
       .def_property_readonly("name", &vf::Feature::getName,
                              R"pbdoc(The name of the feature.)pbdoc")
       .def("is_optional", &vf::Feature::isOptional,
@@ -75,9 +76,9 @@ void init_feature_module_feature(py::module &M) {
           R"pbdoc(Checks if a Feature is an alternative of this Feature.)pbdoc")
 
       .def_property("location", &vf::Feature::getFeatureSourceRange,
-           &vf::Feature::setFeatureSourceRange,
-           py::return_value_policy::reference,
-           R"pbdoc(Returns the code location of the feature variable if
+                    &vf::Feature::setFeatureSourceRange,
+                    py::return_value_policy::reference,
+                    R"pbdoc(Returns the code location of the feature variable if
                 possible, otherwise, `None`.)pbdoc")
 
       //===----------------------------------------------------------------===//
