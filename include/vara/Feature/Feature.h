@@ -4,9 +4,14 @@
 #include "vara/Feature/FeatureSourceRange.h"
 
 #include "llvm/ADT/DenseSet.h"
+#include "llvm/ADT/SetVector.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/iterator_range.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <llvm/ADT/SetVector.h>
 #include <set>
 #include <stack>
 #include <utility>
@@ -27,13 +32,20 @@ public:
   using feature_iterator = typename FeatureSetType::iterator;
   using const_feature_iterator = typename FeatureSetType::const_iterator;
 
-  enum class FeatureKind { FK_BINARY, FK_NUMERIC };
+  enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
 
+  Feature(std::string Name)
+      : Kind(FeatureKind::FK_UNKNOWN), Name(std::move(Name)), Opt(false),
+        Source(std::nullopt), Parent(nullptr) {}
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
   virtual ~Feature() = default;
 
-  [[nodiscard]] FeatureKind getKind() const { return T; }
+  [[nodiscard]] inline std::size_t hash() const {
+    return std::hash<std::string>{}(getName().lower());
+  }
+
+  [[nodiscard]] FeatureKind getKind() const { return Kind; }
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
@@ -46,6 +58,7 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Children
+
   feature_iterator children_begin() { return Children.begin(); }
   feature_iterator children_end() { return Children.end(); }
   [[nodiscard]] const_feature_iterator children_begin() const {
@@ -66,6 +79,7 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Excludes
+
   feature_iterator excludes_begin() { return Excludes.begin(); }
   feature_iterator excludes_end() { return Excludes.end(); }
   [[nodiscard]] const_feature_iterator excludes_begin() const {
@@ -87,6 +101,7 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Implications
+
   feature_iterator implications_begin() { return Implications.begin(); }
   feature_iterator implications_end() { return Implications.end(); }
   [[nodiscard]] const_feature_iterator implications_begin() const {
@@ -109,6 +124,7 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Alternatives
+
   feature_iterator alternatives_begin() { return Alternatives.begin(); }
   feature_iterator alternatives_end() { return Alternatives.end(); }
   [[nodiscard]] const_feature_iterator alternatives_begin() const {
@@ -131,6 +147,7 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Default
+
   feature_iterator begin() { return children_begin(); }
   feature_iterator end() { return children_end(); }
   [[nodiscard]] const_feature_iterator begin() const {
@@ -165,20 +182,18 @@ public:
 
   //===--------------------------------------------------------------------===//
   // Utility
+
   [[nodiscard]] virtual std::string toString() const;
 
-  void print(std::ostream &Out) const { Out << toString() << std::endl; }
-  void print(llvm::raw_ostream &Out) const { Out << toString() << '\n'; }
-
   LLVM_DUMP_METHOD
-  void dump() const { llvm::outs() << toString() << "\n"; }
+  void dump() const { llvm::outs() << toString() << '\n'; }
 
 protected:
   Feature(FeatureKind Kind, string Name, bool Opt,
           std::optional<FeatureSourceRange> Source, Feature *Parent,
           FeatureSetType Children, FeatureSetType Excludes,
           FeatureSetType Implications, FeatureSetType Alternatives)
-      : T(Kind), Name(std::move(Name)), Opt(Opt), Source(std::move(Source)),
+      : Kind(Kind), Name(std::move(Name)), Opt(Opt), Source(std::move(Source)),
         Parent(Parent), Children(std::move(Children)),
         Excludes(std::move(Excludes)), Implications(std::move(Implications)),
         Alternatives(std::move(Alternatives)) {}
@@ -197,7 +212,7 @@ private:
 
   void addImplication(Feature *F) { Implications.insert(F); }
 
-  FeatureKind T;
+  FeatureKind Kind;
   string Name;
   bool Opt;
   std::optional<FeatureSourceRange> Source;

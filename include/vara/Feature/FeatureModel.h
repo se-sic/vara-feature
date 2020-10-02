@@ -204,13 +204,13 @@ private:
 
 inline std::ostream &operator<<(std::ostream &Out,
                                 const vara::feature::Feature *Feature) {
-  Feature->print(Out);
+  Out << Feature->toString();
   return Out;
 }
 
 inline llvm::raw_ostream &operator<<(llvm::raw_ostream &Out,
                                      const vara::feature::Feature *Feature) {
-  Feature->print(Out);
+  Out << Feature->toString();
   return Out;
 }
 
