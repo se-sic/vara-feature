@@ -12,7 +12,7 @@ void FeatureModel::dump() const {
 
 bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   // TODO(s9latimm): check consistency
-  std::string FeatureName = Feature->getName();
+  std::string FeatureName = std::string(Feature->getName());
   if (!Features.try_emplace(FeatureName, std::move(Feature)).second) {
     return false;
   }
@@ -123,7 +123,7 @@ FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &RootName) {
 
   for (const auto &FeatureName : Features.keys()) {
     if (FeatureName != RootName && Parents.find(FeatureName) == Parents.end()) {
-      Children[RootName].insert(FeatureName);
+      Children[RootName].insert(std::string(FeatureName));
       Parents[FeatureName] = RootName;
     }
   }
@@ -136,7 +136,7 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
   }
   assert(Root && "Root not set.");
   std::set<std::string> Visited;
-  if (!buildTree(Root->getName(), Visited) || !buildConstraints()) {
+  if (!buildTree(std::string(Root->getName()), Visited) || !buildConstraints()) {
     return nullptr;
   }
   return std::make_unique<FeatureModel>(Name, Path, std::move(Features), Root);
@@ -167,13 +167,13 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
           : std::nullopt;
   switch (F.getKind()) {
   case Feature::FeatureKind::FK_BINARY:
-    if (!makeFeature<BinaryFeature>(F.getName(), F.isOptional(), Loc)) {
+    if (!makeFeature<BinaryFeature>(std::string(F.getName()), F.isOptional(), Loc)) {
       return false;
     }
     break;
   case Feature::FeatureKind::FK_NUMERIC:
     if (!makeFeature<NumericFeature>(
-            F.getName(), dynamic_cast<NumericFeature *>(&F)->getValues(),
+            std::string(F.getName()), dynamic_cast<NumericFeature *>(&F)->getValues(),
             F.isOptional(), Loc)) {
       return false;
     }
@@ -182,19 +182,19 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
     return false;
   }
   if (!F.isRoot()) {
-    this->addParent(F.getName(), F.getParent()->getName());
+    this->addParent(std::string(F.getName()), std::string(F.getParent()->getName()));
   }
   for (const auto *Child : F.children()) {
-    this->addParent(Child->getName(), F.getName());
+    this->addParent(std::string(Child->getName()), std::string(F.getName()));
   }
   for (const auto *Exclude : F.excludes()) {
-    this->addExclude(F.getName(), Exclude->getName());
+    this->addExclude(std::string(F.getName()), std::string(Exclude->getName()));
   }
   for (const auto *Alternative : F.alternatives()) {
-    this->addConstraint({{F.getName(), true}, {Alternative->getName(), true}});
+    this->addConstraint({{std::string(F.getName()), true}, {std::string(Alternative->getName()), true}});
   }
   for (const auto *Implication : F.implications()) {
-    this->addConstraint({{F.getName(), false}, {Implication->getName(), true}});
+    this->addConstraint({{std::string(F.getName()), false}, {std::string(Implication->getName()), true}});
   }
   return true;
 }
