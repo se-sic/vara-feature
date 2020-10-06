@@ -56,7 +56,7 @@ int main(int Argc, char **Argv) {
     return 1;
   }
 
-  if (Verify && !vara::feature::FeatureModelXmlParser(FS.get()->getBuffer())
+  if (Verify && !vara::feature::FeatureModelXmlParser(std::string(FS.get()->getBuffer()))
                      .verifyFeatureModel()) {
     llvm::errs() << "error: Invalid feature model.\n";
     return 1;
@@ -65,7 +65,7 @@ int main(int Argc, char **Argv) {
   std::unique_ptr<vara::feature::FeatureModel> FM;
 
   if (Xml) {
-    FM = vara::feature::FeatureModelXmlParser(FS.get()->getBuffer())
+    FM = vara::feature::FeatureModelXmlParser(std::string(FS.get()->getBuffer()))
              .buildFeatureModel();
   } else {
     assert(FM && "No matching parser.");
