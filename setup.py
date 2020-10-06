@@ -73,7 +73,7 @@ class CMakeBuild(build_ext):
 
 
 setup(name='vara_feature',
-      version='0.0.2',
+      version='0.0.5',
       author='Florian Sattler',
       author_email='sattlerf@cs.uni-saarland.de',
       description='Python bindings for vara-feature library',
