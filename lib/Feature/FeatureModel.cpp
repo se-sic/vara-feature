@@ -12,7 +12,7 @@ void FeatureModel::dump() const {
 
 bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   // TODO(s9latimm): check consistency
-  std::string FeatureName = std::string(Feature->getName());
+  auto FeatureName = std::string(Feature->getName());
   if (!Features.try_emplace(FeatureName, std::move(Feature)).second) {
     return false;
   }
