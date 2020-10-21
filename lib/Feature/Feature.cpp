@@ -11,24 +11,15 @@ std::string Feature::toString() const {
   if (Source) {
     StrS << "location: " << Source->toString() << ",\n  ";
   }
-  if (Parent) {
-    StrS << "parent: " << Parent->Name << ",\n  ";
+  if (getParentFeature()) {
+    StrS << "parent: " << getParentFeature()->getName().str() << ",\n  ";
   }
   StrS << "children: [";
-  for (const auto &Child : Children) {
-    StrS << Child->Name << ",";
-  }
-  StrS << "],\n  excludes: [";
-  for (const auto &Exclude : Excludes) {
-    StrS << Exclude->Name << ",";
-  }
-  StrS << "],\n  implies: [";
-  for (const auto &Implication : Implications) {
-    StrS << Implication->Name << ",";
-  }
-  StrS << "],\n  alternatives: [";
-  for (const auto &Alternative : Alternatives) {
-    StrS << Alternative->Name << ",";
+  for (const auto &Child : children()) {
+    auto *F = llvm::dyn_cast<Feature>(Child);
+    if (F) {
+      StrS << F->getName().str() << ",";
+    }
   }
   StrS << "]";
   return StrS.str();
@@ -53,16 +44,16 @@ std::string NumericFeature::toString() const {
 std::string BinaryFeature::toString() const { return Feature::toString(); }
 
 /// Find roots of subtrees containing either A (this) or B (Other) which have a
-/// common parent and compare them lexicographically. If no such node can be
-/// found compare names directly.
+/// common parent feature and compare them lexicographically. If no such node
+/// can be found compare names directly.
 bool Feature::operator<(const vara::feature::Feature &Other) const {
   std::stack<const vara::feature::Feature *> TraceA;
   std::stack<const vara::feature::Feature *> TraceB;
 
-  for (const auto *Head = this; Head; Head = Head->getParent()) {
+  for (const auto *Head = this; Head; Head = Head->getParentFeature()) {
     TraceA.push(Head); // path from A to root
   }
-  for (const auto *Head = &Other; Head; Head = Head->getParent()) {
+  for (const auto *Head = &Other; Head; Head = Head->getParentFeature()) {
     TraceB.push(Head); // path from B to root
   }
   assert(!TraceA.empty() && !TraceB.empty());

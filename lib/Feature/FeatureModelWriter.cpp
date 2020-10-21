@@ -151,16 +151,16 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
     bool operator()(Feature *F1, Feature *F2) const { return *F1 < *F2; }
   };
   std::set<std::set<Feature *, FeatureCompare>> AltGroups;
-  for (auto *F : Fm.features()) {
-    // skip empty groups
-    if (F->alternatives().begin() == F->alternatives().end()) {
-      continue;
-    }
-    std::set<Feature *, FeatureCompare> AltGroup(F->alternatives_begin(),
-                                                 F->alternatives_end());
-    AltGroup.insert(F);
-    AltGroups.insert(std::move(AltGroup));
-  }
+  //  for (auto *F : Fm.features()) {
+  //    // skip empty groups
+  //    if (F->alternatives().begin() == F->alternatives().end()) {
+  //      continue;
+  //    }
+  //    std::set<Feature *, FeatureCompare> AltGroup(F->alternatives_begin(),
+  //                                                 F->alternatives_end());
+  //    AltGroup.insert(F);
+  //    AltGroups.insert(std::move(AltGroup));
+  //  }
 
   for (const auto &Group : AltGroups) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
@@ -202,17 +202,16 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   if (!Feature1.isRoot()) {
     RC = xmlTextWriterWriteElement(
         Writer, XmlConstants::PARENT,
-        BAD_CAST Feature1.getParent()->getName().data());
+        BAD_CAST Feature1.getParentFeature()->getName().data());
     CHECK_RC
   }
 
   // children
-  if (Feature1.children_begin() != Feature1.children_end()) {
+  if (Feature1.begin() != Feature1.end()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CHILDREN);
     CHECK_RC
 
-    OrderedFeatureVector Children{Feature1.children_begin(),
-                                  Feature1.children_end()};
+    OrderedFeatureVector Children{Feature1.begin(), Feature1.end()};
     for (Feature *F : Children) {
       RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                      BAD_CAST F->getName().data());
@@ -224,38 +223,38 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // implications
-  if (Feature1.implications_begin() != Feature1.implications_end()) {
-    RC = xmlTextWriterStartElement(Writer, XmlConstants::IMPLIEDOPTIONS);
-    CHECK_RC
-
-    OrderedFeatureVector Implies{Feature1.implications_begin(),
-                                 Feature1.implications_end()};
-    for (Feature *F : Implies) {
-      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
-                                     BAD_CAST F->getName().data());
-      CHECK_RC
-    }
-
-    RC = xmlTextWriterEndElement(Writer); // IMPLIEDOPTIONS
-    CHECK_RC
-  }
+  //  if (Feature1.implications_begin() != Feature1.implications_end()) {
+  //    RC = xmlTextWriterStartElement(Writer, XmlConstants::IMPLIEDOPTIONS);
+  //    CHECK_RC
+  //
+  //    OrderedFeatureVector Implies{Feature1.implications_begin(),
+  //                                 Feature1.implications_end()};
+  //    for (Feature *F : Implies) {
+  //      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
+  //                                     BAD_CAST F->getName().data());
+  //      CHECK_RC
+  //    }
+  //
+  //    RC = xmlTextWriterEndElement(Writer); // IMPLIEDOPTIONS
+  //    CHECK_RC
+  //  }
 
   // excludes
-  if (Feature1.excludes_begin() != Feature1.excludes_end()) {
-    RC = xmlTextWriterStartElement(Writer, XmlConstants::EXCLUDEDOPTIONS);
-    CHECK_RC
-
-    OrderedFeatureVector Exludes{Feature1.excludes_begin(),
-                                 Feature1.excludes_end()};
-    for (Feature *F : Exludes) {
-      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
-                                     BAD_CAST F->getName().data());
-      CHECK_RC
-    }
-
-    RC = xmlTextWriterEndElement(Writer); // EXCLUDEDOPTIONS
-    CHECK_RC
-  }
+  //  if (Feature1.excludes_begin() != Feature1.excludes_end()) {
+  //    RC = xmlTextWriterStartElement(Writer, XmlConstants::EXCLUDEDOPTIONS);
+  //    CHECK_RC
+  //
+  //    OrderedFeatureVector Exludes{Feature1.excludes_begin(),
+  //                                 Feature1.excludes_end()};
+  //    for (Feature *F : Exludes) {
+  //      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
+  //                                     BAD_CAST F->getName().data());
+  //      CHECK_RC
+  //    }
+  //
+  //    RC = xmlTextWriterEndElement(Writer); // EXCLUDEDOPTIONS
+  //    CHECK_RC
+  //  }
 
   // optional
   RC = xmlTextWriterWriteElement(

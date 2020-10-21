@@ -27,11 +27,11 @@ TEST(FeatureModel, addFeature) {
 
   FM->addFeature(std::make_unique<BinaryFeature>(
       "ab", false, std::nullopt, FM->getFeature("a"),
-      Feature::FeatureSetType({FM->getFeature("aba")})));
+      Feature::NodeSetType({FM->getFeature("aba")})));
 
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
-  EXPECT_EQ(*FM->getFeature("aba")->getParent(), *FM->getFeature("ab"));
+  EXPECT_EQ(*FM->getFeature("aba")->getParentFeature(), *FM->getFeature("ab"));
 }
 
 TEST(FeatureModel, newRoot) {
@@ -41,7 +41,7 @@ TEST(FeatureModel, newRoot) {
 
   FM->addFeature(std::make_unique<BinaryFeature>(
       "new_root", false, std::nullopt, nullptr,
-      Feature::FeatureSetType({FM->getFeature("root")})));
+      Feature::NodeSetType({FM->getFeature("root")})));
 
   EXPECT_TRUE(FM->getFeature("new_root")->isRoot());
   EXPECT_FALSE(FM->getFeature("root")->isRoot());

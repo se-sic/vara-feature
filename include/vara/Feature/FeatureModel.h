@@ -1,6 +1,7 @@
 #ifndef VARA_FEATURE_FEATUREMODEL_H
 #define VARA_FEATURE_FEATUREMODEL_H
 
+#include "vara/Feature/Group.h"
 #include "vara/Feature/OrderedFeatureVector.h"
 
 #include "llvm/ADT/SmallSet.h"
@@ -226,7 +227,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   raw_ostream &O;
   const GraphType &G;
 
-  using NodeRef = typename vara::feature::Feature *;
+  using NodeRef = typename vara::feature::Node *;
 
   GraphWriter(raw_ostream &O, const GraphType &G, bool SN) : O(O), G(G) {}
 
@@ -260,12 +261,12 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   /// Output tree structure of feature model and additional edges.
   void writeNodes() {
     emitCluster(G->getRoot());
-    (O << '\n').indent(2) << "// Excludes\n";
-    emitExcludeEdges();
-    (O << '\n').indent(2) << "// Implications\n";
-    emitImplicationEdges();
-    (O << '\n').indent(2) << "// Alternatives\n";
-    emitAlternativeEdges();
+    //    (O << '\n').indent(2) << "// Excludes\n";
+    //    emitExcludeEdges();
+    //    (O << '\n').indent(2) << "// Implications\n";
+    //    emitImplicationEdges();
+    //    (O << '\n').indent(2) << "// Alternatives\n";
+    //    emitAlternativeEdges();
   }
 
   void writeFooter() { O << "}\n"; }
@@ -288,58 +289,59 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     return false;
   }
 
-  void emitExcludeEdges() {
-    FeatureEdgeSetTy Skip;
-    for (auto *Node : *G) {
-      for (const auto &Exclude : Node->excludes()) {
-        if (visited(std::make_pair(Node, Exclude), Skip)) {
-          continue;
-        }
-        if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
-                      Node) != Exclude->excludes_end()) {
-          emitEdge(Node, Exclude, "color=red dir=both constraint=false");
-          Skip.insert(std::make_pair<>(Exclude, Node));
-        } else {
-          emitEdge(Node, Exclude, "color=red");
-        }
-        Skip.insert(std::make_pair<>(Node, Exclude));
-      }
-    }
-  }
-
-  void emitAlternativeEdges() {
-    FeatureEdgeSetTy Skip;
-    for (auto *Node : *G) {
-      for (const auto &Alternative : Node->alternatives()) {
-        if (visited(std::make_pair(Node, Alternative), Skip)) {
-          continue;
-        }
-        emitEdge(Node, Alternative, "color=green dir=none constraint=false");
-        Skip.insert(std::make_pair<>(Alternative, Node));
-        Skip.insert(std::make_pair<>(Node, Alternative));
-      }
-    }
-  }
-
-  void emitImplicationEdges() {
-    FeatureEdgeSetTy Skip;
-    for (auto *Node : *G) {
-      for (const auto &Implication : Node->implications()) {
-        if (visited(std::make_pair(Node, Implication), Skip)) {
-          continue;
-        }
-        if (std::find(Implication->implications_begin(),
-                      Implication->implications_end(),
-                      Node) != Implication->implications_end()) {
-          emitEdge(Node, Implication, "color=blue dir=both constraint=false");
-          Skip.insert(std::make_pair<>(Implication, Node));
-        } else {
-          emitEdge(Node, Implication, "color=blue constraint=false");
-        }
-        Skip.insert(std::make_pair<>(Node, Implication));
-      }
-    }
-  }
+  //  void emitExcludeEdges() {
+  //    FeatureEdgeSetTy Skip;
+  //    for (auto *Node : *G) {
+  //      for (const auto &Exclude : Node->excludes()) {
+  //        if (visited(std::make_pair(Node, Exclude), Skip)) {
+  //          continue;
+  //        }
+  //        if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
+  //                      Node) != Exclude->excludes_end()) {
+  //          emitEdge(Node, Exclude, "color=red dir=both constraint=false");
+  //          Skip.insert(std::make_pair<>(Exclude, Node));
+  //        } else {
+  //          emitEdge(Node, Exclude, "color=red");
+  //        }
+  //        Skip.insert(std::make_pair<>(Node, Exclude));
+  //      }
+  //    }
+  //  }
+  //
+  //  void emitAlternativeEdges() {
+  //    FeatureEdgeSetTy Skip;
+  //    for (auto *Node : *G) {
+  //      for (const auto &Alternative : Node->alternatives()) {
+  //        if (visited(std::make_pair(Node, Alternative), Skip)) {
+  //          continue;
+  //        }
+  //        emitEdge(Node, Alternative, "color=green dir=none
+  //        constraint=false"); Skip.insert(std::make_pair<>(Alternative,
+  //        Node)); Skip.insert(std::make_pair<>(Node, Alternative));
+  //      }
+  //    }
+  //  }
+  //
+  //  void emitImplicationEdges() {
+  //    FeatureEdgeSetTy Skip;
+  //    for (auto *Node : *G) {
+  //      for (const auto &Implication : Node->implications()) {
+  //        if (visited(std::make_pair(Node, Implication), Skip)) {
+  //          continue;
+  //        }
+  //        if (std::find(Implication->implications_begin(),
+  //                      Implication->implications_end(),
+  //                      Node) != Implication->implications_end()) {
+  //          emitEdge(Node, Implication, "color=blue dir=both
+  //          constraint=false"); Skip.insert(std::make_pair<>(Implication,
+  //          Node));
+  //        } else {
+  //          emitEdge(Node, Implication, "color=blue constraint=false");
+  //        }
+  //        Skip.insert(std::make_pair<>(Node, Implication));
+  //      }
+  //    }
+  //  }
 
   /// Output feature model (tree) recursively.
   ///
@@ -348,7 +350,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   void emitCluster(const NodeRef Node, const int Indent = 0) {
     O.indent(Indent);
     emitNode(Node);
-    if (Node->children_begin() != Node->children_end()) {
+    if (Node->begin() != Node->end()) {
       O.indent(Indent + 2) << "subgraph cluster_" << static_cast<void *>(Node)
                            << " {\n";
       O.indent(Indent + 4) << "label=\"\";\n";
@@ -357,9 +359,12 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
       for (auto *Child : *Node) {
         emitCluster(Child, Indent + 2);
         O.indent(Indent + 2);
-        emitEdge(Node, Child,
-                 llvm::formatv("arrowhead={0}",
-                               Child->isOptional() ? "odot" : "dot"));
+        auto *F = llvm::dyn_cast<vara::feature::Feature>(Node);
+        if (F) {
+          emitEdge(
+              Node, F,
+              llvm::formatv("arrowhead={0}", F->isOptional() ? "odot" : "dot"));
+        }
       }
       O.indent(Indent + 4) << "{\n";
       O.indent(Indent + 6) << "rank=same;\n";
@@ -371,19 +376,22 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     }
   }
 
-  /// Output \a Node with custom attributes.
+  /// Output \a Feature node with custom attributes.
   void emitNode(const NodeRef Node) {
-    std::string Label = llvm::formatv(
-        "<<table align=\"center\" valign=\"middle\" border=\"0\" "
-        "cellborder=\"0\" "
-        "cellpadding=\"5\"><tr><td>{0}{1}</td></tr></"
-        "table>>",
-        DOT::EscapeString(Node->getName().str()),
-        (Node->getFeatureSourceRange()
-             ? "</td></tr><hr/><tr><td>" +
-                   DOT::EscapeString(Node->getFeatureSourceRange()->toString())
-             : ""));
-
+    std::string Label;
+    auto *F = llvm::dyn_cast<vara::feature::Feature>(Node);
+    if (F) {
+      Label = llvm::formatv(
+          "<<table align=\"center\" valign=\"middle\" border=\"0\" "
+          "cellborder=\"0\" "
+          "cellpadding=\"5\"><tr><td>{0}{1}</td></tr></"
+          "table>>",
+          DOT::EscapeString(F->getName().str()),
+          (F->getFeatureSourceRange()
+               ? "</td></tr><hr/><tr><td>" +
+                     DOT::EscapeString(F->getFeatureSourceRange()->toString())
+               : ""));
+    }
     O.indent(2) << "node_" << static_cast<void *>(Node) << " ["
                 << "shape=box margin=.1 fontsize=12 fontname=\"CMU "
                    "Typewriter\" label="
