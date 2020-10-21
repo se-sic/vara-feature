@@ -24,9 +24,7 @@ void init_feature_module_feature(py::module &M) {
       // Children
       .def(
           "children",
-          [](vf::Feature &F) {
-            return py::make_iterator(F.children_begin(), F.children_end());
-          },
+          [](vf::Node &F) { return py::make_iterator(F.begin(), F.end()); },
           py::keep_alive<0, 1>(), R"pbdoc(Child features)pbdoc")
       .def(
           "__iter__",
@@ -40,46 +38,51 @@ void init_feature_module_feature(py::module &M) {
            py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
       .def("is_parent", &vf::Feature::isParent,
            R"pbdoc(Checks if a Feature is a parent of this one.)pbdoc")
-      //===----------------------------------------------------------------===//
-      // Excludes
-      .def(
-          "excludes",
-          [](vf::Feature &F) {
-            return py::make_iterator(F.excludes_begin(), F.excludes_end());
-          },
-          py::keep_alive<0, 1>(), R"pbdoc(Excluded features)pbdoc")
-      .def("is_excluded", &vf::Feature::isExcluded,
-           R"pbdoc(Checks if a Feature is excluded by this Feature.)pbdoc")
-      //===----------------------------------------------------------------===//
-      // Implications
-      .def(
-          "implications",
-          [](vf::Feature &F) {
-            return py::make_iterator(F.implications_begin(),
-                                     F.implications_end());
-          },
-          py::keep_alive<0, 1>(), R"pbdoc(Implicated features)pbdoc")
-      .def("is_implied_by", &vf::Feature::isImplied,
-           R"pbdoc(Checks if a Feature is implicated by this Feature.)pbdoc")
+      //      //===----------------------------------------------------------------===//
+      //      // Excludes
+      //      .def(
+      //          "excludes",
+      //          [](vf::Feature &F) {
+      //            return py::make_iterator(F.excludes_begin(),
+      //            F.excludes_end());
+      //          },
+      //          py::keep_alive<0, 1>(), R"pbdoc(Excluded features)pbdoc")
+      //      .def("is_excluded", &vf::Feature::isExcluded,
+      //           R"pbdoc(Checks if a Feature is excluded by this
+      //           Feature.)pbdoc")
+      //      //===----------------------------------------------------------------===//
+      //      // Implications
+      //      .def(
+      //          "implications",
+      //          [](vf::Feature &F) {
+      //            return py::make_iterator(F.implications_begin(),
+      //                                     F.implications_end());
+      //          },
+      //          py::keep_alive<0, 1>(), R"pbdoc(Implicated features)pbdoc")
+      //      .def("is_implied_by", &vf::Feature::isImplied,
+      //           R"pbdoc(Checks if a Feature is implicated by this
+      //           Feature.)pbdoc")
 
-      //===----------------------------------------------------------------===//
-      // Alternatives
-      .def(
-          "alternatives",
-          [](vf::Feature &F) {
-            return py::make_iterator(F.alternatives_begin(),
-                                     F.alternatives_end());
-          },
-          py::keep_alive<0, 1>(), R"pbdoc(Alternative features)pbdoc")
-      .def(
-          "is_alternative", &vf::Feature::isAlternative,
-          R"pbdoc(Checks if a Feature is an alternative of this Feature.)pbdoc")
-
-      .def_property("location", &vf::Feature::getFeatureSourceRange,
-                    &vf::Feature::setFeatureSourceRange,
-                    py::return_value_policy::reference,
-                    R"pbdoc(Returns the code location of the feature variable if
-                possible, otherwise, `None`.)pbdoc")
+      //      //===----------------------------------------------------------------===//
+      //      // Alternatives
+      //      .def(
+      //          "alternatives",
+      //          [](vf::Feature &F) {
+      //            return py::make_iterator(F.alternatives_begin(),
+      //                                     F.alternatives_end());
+      //          },
+      //          py::keep_alive<0, 1>(), R"pbdoc(Alternative features)pbdoc")
+      //      .def(
+      //          "is_alternative", &vf::Feature::isAlternative,
+      //          R"pbdoc(Checks if a Feature is an alternative of this
+      //          Feature.)pbdoc")
+      //
+      //      .def_property("location", &vf::Feature::getFeatureSourceRange,
+      //                    &vf::Feature::setFeatureSourceRange,
+      //                    py::return_value_policy::reference,
+      //                    R"pbdoc(Returns the code location of the feature
+      //                    variable if
+      //                possible, otherwise, `None`.)pbdoc")
 
       //===----------------------------------------------------------------===//
       // Utility functions
@@ -96,22 +99,7 @@ void init_feature_module_binary_feature(py::module &M) {
                     vara::feature::Feature *>())
       .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
                     vara::feature::Feature *,
-                    vara::feature::Feature::FeatureSetType>())
-      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
-                    vara::feature::Feature *,
-                    vara::feature::Feature::FeatureSetType,
-                    vara::feature::Feature::FeatureSetType>())
-      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
-                    vara::feature::Feature *,
-                    vara::feature::Feature::FeatureSetType,
-                    vara::feature::Feature::FeatureSetType,
-                    vara::feature::Feature::FeatureSetType>())
-      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
-                    vara::feature::Feature *,
-                    vara::feature::Feature::FeatureSetType,
-                    vara::feature::Feature::FeatureSetType,
-                    vara::feature::Feature::FeatureSetType,
-                    vara::feature::Feature::FeatureSetType>())
+                    vara::feature::Feature::NodeSetType>())
       .def(
           "to_string", &vf::BinaryFeature::toString,
           R"pbdoc(Returns the string representation of a BinaryFeature.)pbdoc");
