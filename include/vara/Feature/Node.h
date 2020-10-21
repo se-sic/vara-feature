@@ -27,7 +27,7 @@ namespace vara::feature {
 
 class Node {
 public:
-  enum class NodeKind { NK_FEATURE, NK_GROUP };
+  enum class NodeKind { NK_FEATURE, NK_GROUP, NK_CONSTRAINT };
 
   using NodeSetType = typename std::set<Node *>;
   using node_iterator = typename NodeSetType::iterator;

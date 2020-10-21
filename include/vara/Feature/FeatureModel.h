@@ -2,6 +2,7 @@
 #define VARA_FEATURE_FEATUREMODEL_H
 
 #include "vara/Feature/Group.h"
+#include "vara/Feature/Constraint.h"
 #include "vara/Feature/OrderedFeatureVector.h"
 
 #include "llvm/ADT/SmallSet.h"
@@ -22,7 +23,7 @@ class FeatureModel {
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
   using OrderedFeatureTy = OrderedFeatureVector;
-  using ConstraintTy = llvm::SmallVector<std::pair<std::string, bool>, 3>;
+  using ConstraintTy = Constraint;
   using ConstraintsTy = std::vector<ConstraintTy>;
 
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
