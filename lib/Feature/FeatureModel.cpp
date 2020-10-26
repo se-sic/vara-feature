@@ -33,7 +33,8 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   return true;
 }
 
-// TODO(s9latimm)
+// TODO(s9latimm): Refactor with new Constraints representation
+// TODO(s9latimm): remove NOLINT
 bool FeatureModelBuilder::buildConstraints() { // NOLINT
   //  for (const auto &Feature : Features.keys()) {
   //    for (const auto &Exclude : Excludes[Feature]) {

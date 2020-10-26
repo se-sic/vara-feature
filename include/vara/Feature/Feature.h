@@ -36,7 +36,7 @@ public:
         Name(std::move(Name)), Opt(false), Source(std::nullopt) {}
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
-  virtual ~Feature() = default;
+  ~Feature() override = default;
 
   [[nodiscard]] inline std::size_t hash() const {
     return std::hash<std::string>{}(getName().lower());

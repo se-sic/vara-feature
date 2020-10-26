@@ -140,7 +140,10 @@ int FeatureModelXmlWriter::writeNumericFeatures(xmlTextWriterPtr Writer) {
   return RC;
 }
 
-int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
+// TODO(s9latimm): Refactor with new Constraints representation
+// TODO(s9latimm): remove NOLINT
+int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
+    xmlTextWriterPtr Writer) {                      // NOLINT
   int RC;
 
   RC = xmlTextWriterStartElement(Writer, XmlConstants::BOOLEANCONSTRAINTS);
@@ -151,7 +154,6 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
     bool operator()(Feature *F1, Feature *F2) const { return *F1 < *F2; }
   };
   std::set<std::set<Feature *, FeatureCompare>> AltGroups;
-  // TODO(s9latimm): Refactor with new Constraints representation
   //  for (auto *F : Fm.features()) {
   //    // skip empty groups
   //    if (F->alternatives().begin() == F->alternatives().end()) {

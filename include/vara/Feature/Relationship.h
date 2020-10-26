@@ -22,7 +22,7 @@ using std::string;
 namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
-//                               Group Class
+//                          Relationship Class
 //===----------------------------------------------------------------------===//
 
 class Relationship : public FeatureTreeNode {

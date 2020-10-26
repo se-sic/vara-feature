@@ -96,7 +96,9 @@ bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
   return true;
 }
 
-bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
+// TODO(s9latimm): Refactor with new Constraints representation
+// TODO(s9latimm): remove NOLINT
+bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
@@ -106,7 +108,6 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
                                          .get()));
         const std::regex Regex(R"((!?\w+))");
         std::smatch Matches;
-        // TODO(s9latimm): Refactor with new Constraints representation
         //        FeatureModel::ConstraintTy Constraint;
         //        for (string Suffix = Cnt; regex_search(Suffix, Matches,
         //        Regex);

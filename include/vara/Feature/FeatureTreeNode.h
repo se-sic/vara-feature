@@ -22,7 +22,7 @@ using std::string;
 namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
-//                               FeatureTreeNode Class
+//                          FeatureTreeNode Class
 //===----------------------------------------------------------------------===//
 
 class FeatureTreeNode
@@ -39,12 +39,12 @@ public:
 
   [[nodiscard]] NodeKind getNodeKind() const { return Kind; }
 
-  [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
-
   //===--------------------------------------------------------------------===//
   // Parent
 
   [[nodiscard]] FeatureTreeNode *getParent() const { return Parent; }
+
+  [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
 
   bool hasEdgeFrom(FeatureTreeNode &N) const { return Parent == &N; }
 
