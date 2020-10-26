@@ -40,9 +40,15 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
   EXPECT_EQ(
       std::distance(FM->getFeature("F")->begin(), FM->getFeature("F")->end()),
       1);
-  //  EXPECT_EQ("A", (*FM->getFeature("F")->begin())->getName());
+
+  auto *F =
+      llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("F")->begin());
+  EXPECT_TRUE(F);
+  // TODO(s9latimm): Called C++ object pointer [F] is null
+  EXPECT_EQ("A", F->getName()); // NOLINT
 }
 
+// TODO(s9latimm): Refactor with new Constraints representation
 // TEST(BinaryFeature, BinaryFeatureExclude) {
 //  auto B = FeatureModelBuilder();
 //
@@ -58,6 +64,7 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
 //  EXPECT_EQ("G", (*FM->getFeature("F")->excludes_begin())->getName());
 //}
 
+// TODO(s9latimm): Refactor with new Constraints representation
 // TEST(BinaryFeature, BinaryFeatureImplications) {
 //  auto B = FeatureModelBuilder();
 //
@@ -73,6 +80,7 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
 //  EXPECT_EQ("G", (*FM->getFeature("F")->implications_begin())->getName());
 //}
 
+// TODO(s9latimm): Refactor with new Constraints representation
 // TEST(BinaryFeature, BinaryFeatureAlternatives) {
 //  auto B = FeatureModelBuilder();
 //

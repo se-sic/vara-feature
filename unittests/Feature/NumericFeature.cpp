@@ -57,9 +57,12 @@ TEST(NumericFeature, NumericFeatureChildren) {
   EXPECT_EQ(
       std::distance(FM->getFeature("F")->begin(), FM->getFeature("F")->end()),
       1);
-  //  EXPECT_EQ("A", (*FM->getFeature("F")->begin())->getName());
+  EXPECT_EQ(
+      "A", llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("F")->begin())
+               ->getName());
 }
 
+// TODO(s9latimm): Refactor with new Constraints representation
 // TEST(NumericFeature, NumericFeatureExclude) {
 //  auto B = FeatureModelBuilder();
 //
@@ -75,6 +78,7 @@ TEST(NumericFeature, NumericFeatureChildren) {
 //  EXPECT_EQ("G", (*FM->getFeature("F")->excludes_begin())->getName());
 //}
 
+// TODO(s9latimm): Refactor with new Constraints representation
 // TEST(NumericFeature, NumericFeatureImplications) {
 //  auto B = FeatureModelBuilder();
 //
@@ -90,6 +94,7 @@ TEST(NumericFeature, NumericFeatureChildren) {
 //  EXPECT_EQ("G", (*FM->getFeature("F")->implications_begin())->getName());
 //}
 
+// TODO(s9latimm): Refactor with new Constraints representation
 // TEST(NumericFeature, NumericFeatureAlternatives) {
 //  auto B = FeatureModelBuilder();
 //

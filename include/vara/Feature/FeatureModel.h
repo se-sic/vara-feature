@@ -1,9 +1,9 @@
 #ifndef VARA_FEATURE_FEATUREMODEL_H
 #define VARA_FEATURE_FEATUREMODEL_H
 
-#include "vara/Feature/Group.h"
 #include "vara/Feature/Constraint.h"
 #include "vara/Feature/OrderedFeatureVector.h"
+#include "vara/Feature/Relationship.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
@@ -154,11 +154,12 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *
-  addConstraint(const FeatureModel::ConstraintTy &Constraint) {
-    Constraints.push_back(Constraint);
-    return this;
-  }
+  // TODO(s9latimm): Fix copy-const
+  //  FeatureModelBuilder *
+  //  addConstraint(const FeatureModel::ConstraintTy &Constraint) {
+  //    Constraints.push_back(std::move(Constraint));
+  //    return this;
+  //  }
 
   FeatureModelBuilder *setVmName(std::string Name) {
     this->Name = std::move(Name);
@@ -228,7 +229,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   raw_ostream &O;
   const GraphType &G;
 
-  using NodeRef = typename vara::feature::Node *;
+  using NodeRef = typename vara::feature::FeatureTreeNode *;
 
   GraphWriter(raw_ostream &O, const GraphType &G, bool SN) : O(O), G(G) {}
 
@@ -260,15 +261,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   }
 
   /// Output tree structure of feature model and additional edges.
-  void writeNodes() {
-    emitCluster(G->getRoot());
-    //    (O << '\n').indent(2) << "// Excludes\n";
-    //    emitExcludeEdges();
-    //    (O << '\n').indent(2) << "// Implications\n";
-    //    emitImplicationEdges();
-    //    (O << '\n').indent(2) << "// Alternatives\n";
-    //    emitAlternativeEdges();
-  }
+  void writeNodes() { emitCluster(G->getRoot()); }
 
   void writeFooter() { O << "}\n"; }
 
@@ -290,6 +283,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     return false;
   }
 
+  // TODO(s9latimm): Refactor with new Constraints representation
   //  void emitExcludeEdges() {
   //    FeatureEdgeSetTy Skip;
   //    for (auto *Node : *G) {
@@ -308,7 +302,8 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   //      }
   //    }
   //  }
-  //
+
+  // TODO(s9latimm): Refactor with new Constraints representation
   //  void emitAlternativeEdges() {
   //    FeatureEdgeSetTy Skip;
   //    for (auto *Node : *G) {
@@ -322,7 +317,8 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   //      }
   //    }
   //  }
-  //
+
+  // TODO(s9latimm): Refactor with new Constraints representation
   //  void emitImplicationEdges() {
   //    FeatureEdgeSetTy Skip;
   //    for (auto *Node : *G) {
@@ -360,7 +356,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
       for (auto *Child : *Node) {
         emitCluster(Child, Indent + 2);
         O.indent(Indent + 2);
-        auto *F = llvm::dyn_cast<vara::feature::Feature>(Node);
+        auto *F = llvm::dyn_cast<vara::feature::Feature>(Child);
         if (F) {
           emitEdge(
               Node, F,

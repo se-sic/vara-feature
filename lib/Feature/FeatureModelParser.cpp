@@ -106,17 +106,19 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
                                          .get()));
         const std::regex Regex(R"((!?\w+))");
         std::smatch Matches;
-        FeatureModel::ConstraintTy Constraint;
-        for (string Suffix = Cnt; regex_search(Suffix, Matches, Regex);
-             Suffix = Matches.suffix()) {
-          string B = Matches.str(0);
-          if (B.length() > 1 && B[0] == '!') {
-            Constraint.emplace_back(B.substr(1, B.length()), false);
-          } else {
-            Constraint.emplace_back(B, true);
-          }
-        }
-        FMB.addConstraint(Constraint);
+        // TODO(s9latimm): Refactor with new Constraints representation
+        //        FeatureModel::ConstraintTy Constraint;
+        //        for (string Suffix = Cnt; regex_search(Suffix, Matches,
+        //        Regex);
+        //             Suffix = Matches.suffix()) {
+        //          string B = Matches.str(0);
+        //          if (B.length() > 1 && B[0] == '!') {
+        //            Constraint.emplace_back(B.substr(1, B.length()), false);
+        //          } else {
+        //            Constraint.emplace_back(B, true);
+        //          }
+        //        }
+        //        FMB.addConstraint(std::move(Constraint));
       }
     }
   }
@@ -125,13 +127,13 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
 
 bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::NAME),
-                                                   xmlFree);
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
+        xmlGetProp(Node, XmlConstants::NAME), xmlFree);
     FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
   }
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::ROOT),
-                                                   xmlFree);
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
+        xmlGetProp(Node, XmlConstants::ROOT), xmlFree);
     FMB.setPath(Cnt ? fs::path(reinterpret_cast<char *>(Cnt.get()))
                     : fs::current_path());
   }

@@ -1,3 +1,4 @@
+#include "llvm/ADT/SetVector.h"
 #include <vara/Feature/FeatureModel.h>
 
 #include "gtest/gtest.h"

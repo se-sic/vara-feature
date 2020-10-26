@@ -1,7 +1,7 @@
-#ifndef VARA_FEATURE_GROUP_H
-#define VARA_FEATURE_GROUP_H
+#ifndef VARA_FEATURE_RELATIONSHIP_H
+#define VARA_FEATURE_RELATIONSHIP_H
 
-#include "vara/Feature/Node.h"
+#include "vara/Feature/FeatureTreeNode.h"
 
 #include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/SetVector.h"
@@ -25,19 +25,22 @@ namespace vara::feature {
 //                               Group Class
 //===----------------------------------------------------------------------===//
 
-class Group : public Node {
+class Relationship : public FeatureTreeNode {
 public:
-  Group() : Node(NodeKind::NK_GROUP) {}
+  enum class RelationshipKind { RK_ALTERNATIVE, RK_OR };
 
-  static bool classof(const Node *N) {
+  Relationship(RelationshipKind Kind)
+      : Kind(Kind), FeatureTreeNode(NodeKind::NK_GROUP) {}
+
+  [[nodiscard]] RelationshipKind getRelationshipKind() const { return Kind; }
+
+  static bool classof(const FeatureTreeNode *N) {
     return N->getNodeKind() == NodeKind::NK_GROUP;
   }
+
+private:
+  RelationshipKind Kind;
 };
-
-class Alternative : public Group {};
-
-class Or : public Group {};
-
 } // namespace vara::feature
 
-#endif // VARA_FEATURE_GROUP_H
+#endif // VARA_FEATURE_RELATIONSHIP_H

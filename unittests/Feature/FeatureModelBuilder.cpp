@@ -34,6 +34,7 @@ TEST(FeatureModelBuilder, addOptionalFeature) {
   EXPECT_TRUE(FM->getFeature("a")->isOptional());
 }
 
+// TODO(s9latimm): Refactor with new Constraints representation
 // TEST(FeatureModelBuilder, addExclude) {
 //  FeatureModelBuilder B;
 //
@@ -45,6 +46,7 @@ TEST(FeatureModelBuilder, addOptionalFeature) {
 //  EXPECT_TRUE(FM->getFeature("a")->isExcluded(FM->getFeature("b")));
 //}
 
+// TODO(s9latimm): Refactor with new Constraints representation
 // TEST(FeatureModelBuilder, addAlternative) {
 //  FeatureModelBuilder B;
 //
@@ -57,6 +59,7 @@ TEST(FeatureModelBuilder, addOptionalFeature) {
 //  EXPECT_TRUE(FM->getFeature("b")->isAlternative(FM->getFeature("a")));
 //}
 
+// TODO(s9latimm): Refactor with new Constraints representation
 // TEST(FeatureModelBuilder, addImplication) {
 //  FeatureModelBuilder B;
 //
@@ -87,7 +90,8 @@ TEST(FeatureModelBuilder, addBinaryFeatureRef) {
   assert(FM);
 
   EXPECT_EQ(FM->getFeature("a")->getKind(), Feature::FeatureKind::FK_BINARY);
-  EXPECT_TRUE(FM->getFeature("a")->isChild(FM->getFeature("aa")));
+  EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
+  // TODO(s9latimm): Refactor with new Constraints representation
   //  EXPECT_TRUE(FM->getFeature("a")->isExcluded(FM->getFeature("aa")));
   //  EXPECT_TRUE(FM->getFeature("a")->isImplied(FM->getFeature("aa")));
   //  EXPECT_TRUE(FM->getFeature("a")->isAlternative(FM->getFeature("aa")));
@@ -105,7 +109,8 @@ TEST(FeatureModelBuilder, addNumericFeatureRef) {
   assert(FM);
 
   EXPECT_EQ(FM->getFeature("a")->getKind(), Feature::FeatureKind::FK_NUMERIC);
-  EXPECT_TRUE(FM->getFeature("a")->isChild(FM->getFeature("aa")));
+  EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
+  // TODO(s9latimm): Refactor with new Constraints representation
   //  EXPECT_TRUE(FM->getFeature("a")->isExcluded(FM->getFeature("aa")));
   //  EXPECT_TRUE(FM->getFeature("a")->isImplied(FM->getFeature("aa")));
   //  EXPECT_TRUE(FM->getFeature("a")->isAlternative(FM->getFeature("aa")));

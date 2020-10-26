@@ -2,7 +2,7 @@
 #define VARA_FEATURE_FEATURE_H
 
 #include "vara/Feature/FeatureSourceRange.h"
-#include "vara/Feature/Node.h"
+#include "vara/Feature/FeatureTreeNode.h"
 
 #include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/SetVector.h"
@@ -27,12 +27,12 @@ namespace vara::feature {
 //===----------------------------------------------------------------------===//
 
 /// \brief Base class for components of \a FeatureModel.
-class Feature : public Node {
+class Feature : public FeatureTreeNode {
 public:
   enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
 
   Feature(std::string Name)
-      : Node(NodeKind::NK_FEATURE), Kind(FeatureKind::FK_UNKNOWN),
+      : FeatureTreeNode(NodeKind::NK_FEATURE), Kind(FeatureKind::FK_UNKNOWN),
         Name(std::move(Name)), Opt(false), Source(std::nullopt) {}
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
@@ -91,15 +91,15 @@ public:
   LLVM_DUMP_METHOD
   void dump() const { llvm::outs() << toString() << '\n'; }
 
-  static bool classof(const Node *N) {
+  static bool classof(const FeatureTreeNode *N) {
     return N->getNodeKind() == NodeKind::NK_FEATURE;
   }
 
 protected:
   Feature(FeatureKind Kind, string Name, bool Opt,
-          std::optional<FeatureSourceRange> Source, Node *Parent,
-          NodeSetType Children)
-      : Node(NodeKind::NK_FEATURE, Parent, std::move(Children)), Kind(Kind),
+          std::optional<FeatureSourceRange> Source, FeatureTreeNode *Parent,
+          const NodeSetType &Children)
+      : FeatureTreeNode(NodeKind::NK_FEATURE, Parent, Children), Kind(Kind),
         Name(std::move(Name)), Opt(Opt), Source(std::move(Source)) {}
 
 private:

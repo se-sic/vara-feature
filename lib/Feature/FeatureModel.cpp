@@ -18,22 +18,23 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   }
   auto *Value = Features[FeatureName].get();
   for (auto *Child : Value->children()) {
-    Child->setParent(Value);
+    Child->setParent(*Value);
   }
   if (Value->isRoot()) {
     if (*Root->getParentFeature() == *Value) {
       Root = Value;
     } else {
-      Value->setParent(Root);
+      Value->setParent(*Root);
     }
   } else {
-    Value->getParent()->addChild(Value);
+    Value->getParent()->addEdge(*Value);
   }
   OrderedFeatures.insert(Value);
   return true;
 }
 
-bool FeatureModelBuilder::buildConstraints() {
+// TODO(s9latimm)
+bool FeatureModelBuilder::buildConstraints() { // NOLINT
   //  for (const auto &Feature : Features.keys()) {
   //    for (const auto &Exclude : Excludes[Feature]) {
   //      Features[Feature]->addExclude(Features[Exclude].get());
@@ -42,7 +43,6 @@ bool FeatureModelBuilder::buildConstraints() {
 
   //  for (const ConstraintTy &Clause : Constraints) {
   //    if (Clause.size() > 2) {
-  //      // TODO(s9latimm): add missing constraint handling
   //      bool NoNegation = true;
   //      for (const auto &Literal : Clause) {
   //        NoNegation &= Literal.second;
@@ -107,8 +107,8 @@ bool FeatureModelBuilder::buildTree(const string &FeatureName,
     if (!buildTree(Child, Visited)) {
       return false;
     }
-    Features[FeatureName]->addChild(Features[Child].get());
-    Features[Child]->setParent(Features[FeatureName].get());
+    Features[FeatureName]->addEdge(*Features[Child]);
+    Features[Child]->setParent(*Features[FeatureName]);
   }
   return true;
 }

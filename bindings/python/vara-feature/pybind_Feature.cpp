@@ -24,19 +24,21 @@ void init_feature_module_feature(py::module &M) {
       // Children
       .def(
           "children",
-          [](vf::Node &F) { return py::make_iterator(F.begin(), F.end()); },
+          [](vf::FeatureTreeNode &F) {
+            return py::make_iterator(F.begin(), F.end());
+          },
           py::keep_alive<0, 1>(), R"pbdoc(Child features)pbdoc")
       .def(
           "__iter__",
           [](vf::Feature &F) { return py::make_iterator(F.begin(), F.end()); },
           py::keep_alive<0, 1>())
-      .def("is_child", &vf::Feature::isChild,
+      .def("is_child", &vf::Feature::hasEdgeTo,
            R"pbdoc(Checks if a Feature is a child of this one.)pbdoc")
       //===----------------------------------------------------------------===//
       // Parent
       .def("parent", &vf::Feature::getParent,
            py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
-      .def("is_parent", &vf::Feature::isParent,
+      .def("is_parent", &vf::Feature::hasEdgeFrom,
            R"pbdoc(Checks if a Feature is a parent of this one.)pbdoc")
       //      //===----------------------------------------------------------------===//
       //      // Excludes
