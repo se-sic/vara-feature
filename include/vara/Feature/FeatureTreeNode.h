@@ -25,8 +25,7 @@ namespace vara::feature {
 //                          FeatureTreeNode Class
 //===----------------------------------------------------------------------===//
 
-class FeatureTreeNode
-    : protected llvm::DGNode<FeatureTreeNode, FeatureTreeNode> {
+class FeatureTreeNode : private llvm::DGNode<FeatureTreeNode, FeatureTreeNode> {
 public:
   enum class NodeKind { NK_FEATURE, NK_GROUP };
 
