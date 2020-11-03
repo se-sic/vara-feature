@@ -27,8 +27,9 @@ namespace vara::feature {
 
 class FeatureTreeNode : private llvm::DGNode<FeatureTreeNode, FeatureTreeNode> {
 public:
-  enum class NodeKind { NK_FEATURE, NK_GROUP };
+  enum class NodeKind { NK_FEATURE, NK_RELATIONSHIP };
 
+  // TODO(s9latimm): Refactor to llvm::SmallSet
   using NodeSetType = typename std::set<FeatureTreeNode *>;
 
   FeatureTreeNode(NodeKind Kind) : Kind(Kind){};
@@ -36,7 +37,7 @@ public:
   FeatureTreeNode &operator=(const FeatureTreeNode &) = delete;
   virtual ~FeatureTreeNode() = default;
 
-  [[nodiscard]] NodeKind getNodeKind() const { return Kind; }
+  [[nodiscard]] NodeKind getKind() const { return Kind; }
 
   //===--------------------------------------------------------------------===//
   // Parent
@@ -56,7 +57,7 @@ public:
   [[nodiscard]] iterator end() { return DGNode::end(); }
   [[nodiscard]] const_iterator end() const { return DGNode::end(); }
 
-  llvm::iterator_range<iterator> children() {
+  [[nodiscard]] llvm::iterator_range<iterator> children() {
     return llvm::make_range(begin(), end());
   }
   [[nodiscard]] llvm::iterator_range<const_iterator> children() const {
@@ -79,6 +80,9 @@ private:
   friend class FeatureModelBuilder;
 
   void setParent(FeatureTreeNode &Feature) { Parent = &Feature; }
+  void setParent(FeatureTreeNode *Feature) { Parent = Feature; }
+
+  bool addEdge(FeatureTreeNode *Feature) { return DGNode::addEdge(*Feature); }
 
   FeatureTreeNode *Parent{nullptr};
   NodeKind Kind;

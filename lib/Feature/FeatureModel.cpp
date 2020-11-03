@@ -24,10 +24,10 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
     if (*Root->getParentFeature() == *Value) {
       Root = Value;
     } else {
-      Value->setParent(*Root);
+      Value->setParent(Root);
     }
   } else {
-    Value->getParent()->addEdge(*Value);
+    Value->getParent()->addEdge(Value);
   }
   OrderedFeatures.insert(Value);
   return true;
@@ -108,8 +108,8 @@ bool FeatureModelBuilder::buildTree(const string &FeatureName,
     if (!buildTree(Child, Visited)) {
       return false;
     }
-    Features[FeatureName]->addEdge(*Features[Child]);
-    Features[Child]->setParent(*Features[FeatureName]);
+    Features[FeatureName]->addEdge(Features[Child].get());
+    Features[Child]->setParent(Features[FeatureName].get());
   }
   return true;
 }
@@ -177,7 +177,7 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
   case Feature::FeatureKind::FK_NUMERIC:
     if (!makeFeature<NumericFeature>(
             std::string(F.getName()),
-            dynamic_cast<NumericFeature *>(&F)->getValues(), F.isOptional(),
+            llvm::dyn_cast<NumericFeature>(&F)->getValues(), F.isOptional(),
             Loc)) {
       return false;
     }

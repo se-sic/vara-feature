@@ -48,8 +48,9 @@ public:
 
   [[nodiscard]] bool isOptional() const { return Opt; }
 
+  /// Search parent feature in tree structure -- this may not exist.
   [[nodiscard]] Feature *getParentFeature() const {
-    for (auto *P = this->getParent(); P; P = P->getParent()) {
+    for (FeatureTreeNode *P = this->getParent(); P; P = P->getParent()) {
       auto *F = llvm::dyn_cast<Feature>(P);
       if (F) {
         return F;
@@ -92,7 +93,7 @@ public:
   void dump() const { llvm::outs() << toString() << '\n'; }
 
   static bool classof(const FeatureTreeNode *N) {
-    return N->getNodeKind() == NodeKind::NK_FEATURE;
+    return N->getKind() == NodeKind::NK_FEATURE;
   }
 
 protected:

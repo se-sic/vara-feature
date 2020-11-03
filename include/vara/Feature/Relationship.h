@@ -30,12 +30,12 @@ public:
   enum class RelationshipKind { RK_ALTERNATIVE, RK_OR };
 
   Relationship(RelationshipKind Kind)
-      : Kind(Kind), FeatureTreeNode(NodeKind::NK_GROUP) {}
+      : Kind(Kind), FeatureTreeNode(NodeKind::NK_RELATIONSHIP) {}
 
-  [[nodiscard]] RelationshipKind getRelationshipKind() const { return Kind; }
+  [[nodiscard]] RelationshipKind getKind() const { return Kind; }
 
   static bool classof(const FeatureTreeNode *N) {
-    return N->getNodeKind() == NodeKind::NK_GROUP;
+    return N->getKind() == NodeKind::NK_RELATIONSHIP;
   }
 
 private:

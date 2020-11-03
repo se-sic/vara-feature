@@ -24,7 +24,7 @@ public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
   using OrderedFeatureTy = OrderedFeatureVector;
   using ConstraintTy = Constraint;
-  using ConstraintsTy = std::vector<ConstraintTy>;
+  using ConstraintContainerTy = std::vector<ConstraintTy>;
 
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
                Feature *Root)
@@ -193,7 +193,7 @@ public:
 private:
   using EdgeMapType = typename llvm::StringMap<llvm::SmallSet<std::string, 3>>;
 
-  FeatureModel::ConstraintsTy Constraints;
+  FeatureModel::ConstraintContainerTy Constraints;
   llvm::StringMap<std::string> Parents;
   EdgeMapType Children;
   EdgeMapType Excludes;

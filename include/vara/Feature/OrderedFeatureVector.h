@@ -31,9 +31,9 @@ public:
     insert(FF...);
   }
 
-  template <typename T> void insert(llvm::iterator_range<T> FF) {
-    for (const auto &N : FF) {
-      auto *F = llvm::dyn_cast<Feature>(N);
+  template <typename T> void insert(llvm::iterator_range<T> Iter) {
+    for (const auto &Ptr : Iter) {
+      auto *F = llvm::dyn_cast<Feature>(Ptr);
       if (F) {
         insert(F);
       }
