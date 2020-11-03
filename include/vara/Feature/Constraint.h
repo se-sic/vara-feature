@@ -22,33 +22,55 @@ public:
   [[nodiscard]] ConstraintKind getKind() const { return Kind; };
 
 private:
-  friend class FeatureModel;
-  friend class FeatureModelBuilder;
-
   ConstraintKind Kind;
+};
+
+class ConstraintOperator {
+public:
+  /// TODO: Numeric Operators are missing (e.g. GREATER, LESS, MINUS, ADD, MULTIPLY, DIVISION)
+  enum class OperatorKind { OK_NOT, OK_NEGATION, OK_AND, OK_OR, OK_XOR, OK_EQUALS, OK_IMPLIES, OK_EQUIVALENCE };
+  ConstraintOperator(OperatorKind Operator) : Operator(Operator) {};
+
+  [[nodiscard]] std::string toString() {
+    switch(Operator) {
+    case OperatorKind::OK_NOT: return "!";
+    case OperatorKind::OK_NEGATION: return "~";
+    case OperatorKind::OK_AND: return "&";
+    case OperatorKind::OK_OR: return "v";
+    case OperatorKind::OK_EQUALS: return "=";
+    case OperatorKind::OK_IMPLIES: return "=>";
+    case OperatorKind::OK_EQUIVALENCE: return "<=>";
+    case OperatorKind::OK_XOR: return "^";
+    default: return "";
+    }
+  };
+
+private:
+  OperatorKind Operator;
 };
 
 class BinaryConstraint : public Constraint {
 public:
-  BinaryConstraint(string Operator, Constraint *LeftOperand,
+  BinaryConstraint(ConstraintOperator Operator, Constraint *LeftOperand,
                    Constraint *RightOperand)
-      : Operator(std::move(Operator)), LeftOperand(LeftOperand),
+      : Operator(Operator), LeftOperand(LeftOperand),
         RightOperand(RightOperand), Constraint(ConstraintKind::CK_BINARY) {}
 
 private:
-  string Operator;
+/// TODO: maybe we use a variant type to allow for operators that are not added as enumkind
+  ConstraintOperator Operator;
   Constraint *LeftOperand;
   Constraint *RightOperand;
 };
 
 class UnaryConstraint : public Constraint {
 public:
-  UnaryConstraint(string Operator, Constraint *Operand)
-      : Operator(std::move(Operator)), Operand(Operand),
+  UnaryConstraint(ConstraintOperator Operator, Constraint *Operand)
+      : Operator(Operator), Operand(Operand),
         Constraint(ConstraintKind::CK_UNARY) {}
 
 private:
-  string Operator;
+  ConstraintOperator Operator;
   Constraint *Operand;
 };
 
@@ -60,5 +82,6 @@ public:
 private:
   Feature *Feature;
 };
+
 } // namespace vara::feature
 #endif // VARA_FEATURE_CONSTRAINT_H
