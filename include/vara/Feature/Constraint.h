@@ -25,53 +25,164 @@ private:
   ConstraintKind Kind;
 };
 
-class ConstraintOperator {
+class BoolschesConstraint {
 public:
-  /// TODO: Numeric Operators are missing (e.g. GREATER, LESS, MINUS, ADD, MULTIPLY, DIVISION)
-  enum class OperatorKind { OK_NOT, OK_NEGATION, OK_AND, OK_OR, OK_XOR, OK_EQUALS, OK_IMPLIES, OK_EQUIVALENCE };
-  ConstraintOperator(OperatorKind Operator) : Operator(Operator) {};
+  [[nodiscard]] virtual std::string toString() const;
+};
 
-  [[nodiscard]] std::string toString() {
-    switch(Operator) {
-    case OperatorKind::OK_NOT: return "!";
-    case OperatorKind::OK_NEGATION: return "~";
-    case OperatorKind::OK_AND: return "&";
-    case OperatorKind::OK_OR: return "v";
-    case OperatorKind::OK_EQUALS: return "=";
-    case OperatorKind::OK_IMPLIES: return "=>";
-    case OperatorKind::OK_EQUIVALENCE: return "<=>";
-    case OperatorKind::OK_XOR: return "^";
-    default: return "";
-    }
-  };
-
-private:
-  OperatorKind Operator;
+class NumericConstraint {
+public:
+  [[nodiscard]] virtual std::string toString() const;
 };
 
 class BinaryConstraint : public Constraint {
 public:
-  BinaryConstraint(ConstraintOperator Operator, Constraint *LeftOperand,
-                   Constraint *RightOperand)
-      : Operator(Operator), LeftOperand(LeftOperand),
+  BinaryConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : LeftOperand(LeftOperand),
         RightOperand(RightOperand), Constraint(ConstraintKind::CK_BINARY) {}
 
+  [[nodiscard]] virtual std::string toString() const;
 private:
-/// TODO: maybe we use a variant type to allow for operators that are not added as enumkind
-  ConstraintOperator Operator;
   Constraint *LeftOperand;
   Constraint *RightOperand;
 };
 
 class UnaryConstraint : public Constraint {
 public:
-  UnaryConstraint(ConstraintOperator Operator, Constraint *Operand)
-      : Operator(Operator), Operand(Operand),
+  UnaryConstraint(Constraint *Operand) : Operand(Operand),
         Constraint(ConstraintKind::CK_UNARY) {}
 
+  [[nodiscard]] virtual std::string toString() const;
 private:
-  ConstraintOperator Operator;
   Constraint *Operand;
+};
+
+class NotConstraint : public UnaryConstraint, public BoolschesConstraint {
+public:
+  NotConstraint(Constraint *Operand)
+      : UnaryConstraint(Operand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class OrConstraint : public BinaryConstraint, public BoolschesConstraint {
+public:
+  OrConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class XOrConstraint : public BinaryConstraint, public BoolschesConstraint {
+public:
+  XOrConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class AndConstraint : public BinaryConstraint, public BoolschesConstraint {
+public:
+  AndConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class EqualsConstraint : public BinaryConstraint, public BoolschesConstraint {
+public:
+  EqualsConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class ImpliesConstraint : public BinaryConstraint, public BoolschesConstraint {
+public:
+  ImpliesConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class EquivalenceConstraint : public BinaryConstraint, public BoolschesConstraint {
+public:
+  EquivalenceConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class NegConstraint : public UnaryConstraint, public NumericConstraint {
+public:
+  NegConstraint(Constraint *Operand)
+      : UnaryConstraint(Operand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class AdditionConstraint : public BinaryConstraint, public NumericConstraint {
+public:
+  AdditionConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class SubtractionConstraint : public BinaryConstraint, public NumericConstraint {
+public:
+  SubtractionConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class MultiplicationConstraint : public BinaryConstraint, public NumericConstraint {
+public:
+  MultiplicationConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class DivisionConstraint : public BinaryConstraint, public NumericConstraint {
+public:
+  DivisionConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class LessConstraint : public BinaryConstraint, public NumericConstraint {
+public:
+  LessConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class GreaterConstraint : public BinaryConstraint, public NumericConstraint {
+public:
+  GreaterConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class LessEquelsConstraint : public BinaryConstraint, public NumericConstraint {
+public:
+  LessEquelsConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
+};
+
+class GreaterEquelsConstraint : public BinaryConstraint, public NumericConstraint {
+public:
+  GreaterEquelsConstraint(Constraint *LeftOperand, Constraint *RightOperand)
+      : BinaryConstraint(LeftOperand, RightOperand) {}
+
+  [[nodiscard]] std::string toString() const override;
 };
 
 class PrimaryConstraint : public Constraint {
