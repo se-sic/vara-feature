@@ -11,6 +11,7 @@ set(FEATURE_LIB_TEST_FILES
   test_children.xml
   test_excludes.xml
   test_out.xml
+  test.sxfm
   )
 
 foreach(file_name ${FEATURE_LIB_TEST_FILES})

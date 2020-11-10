@@ -64,6 +64,37 @@ private:
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
 };
 
+//===----------------------------------------------------------------------===//
+//                         FeatureModelSxfmParser Class
+//===----------------------------------------------------------------------===//
+
+/// \brief Parsers for feature models in SXFM.
+/// The SXFM (simple XML feature model) format is a feature model format embeded
+/// in an XML structure.
+class FeatureModelSxfmParser : public FeatureModelParser {
+public:
+  explicit FeatureModelSxfmParser(std::string Sxfm) : Sxfm(std::move(Sxfm)) {}
+
+  std::unique_ptr<FeatureModel> buildFeatureModel() override;
+
+  bool verifyFeatureModel() override;
+
+private:
+  using constSxfmCharPtr = const xmlChar *;
+
+  std::string Sxfm;
+  FeatureModelBuilder FMB;
+  std::string Indentation = "\t";
+
+  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
+  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
+  bool parseVm(xmlNode *Node);
+
+  bool parseFeatureTree(xmlChar *feature_tree);
+  bool parseConstraints(xmlChar *constraints);
+
+};
+
 } // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATUREMODELPARSER_H
