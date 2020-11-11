@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <variant>
@@ -56,7 +57,7 @@ public:
 
   void accept(ConstraintVisitor &V) override;
 
-private:
+protected:
   std::unique_ptr<Constraint> LeftOperand;
   std::unique_ptr<Constraint> RightOperand;
 };
@@ -70,7 +71,7 @@ public:
 
   void accept(ConstraintVisitor &V) override;
 
-private:
+protected:
   std::unique_ptr<Constraint> Operand;
 };
 
@@ -78,6 +79,11 @@ class NotConstraint : public UnaryConstraint, public BooleanConstraint {
 public:
   NotConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(std::move(Operand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " ! (" << Operand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class OrConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -85,6 +91,11 @@ public:
   OrConstraint(std::unique_ptr<Constraint> LeftOperand,
                std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "|" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class XorConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -92,6 +103,11 @@ public:
   XorConstraint(std::unique_ptr<Constraint> LeftOperand,
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "^" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class AndConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -99,6 +115,11 @@ public:
   AndConstraint(std::unique_ptr<Constraint> LeftOperand,
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "&" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class EqualsConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -106,6 +127,11 @@ public:
   EqualsConstraint(std::unique_ptr<Constraint> LeftOperand,
                    std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "=" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class ImpliesConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -113,6 +139,11 @@ public:
   ImpliesConstraint(std::unique_ptr<Constraint> LeftOperand,
                     std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "=>" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class EquivalenceConstraint : public BinaryConstraint,
@@ -121,12 +152,22 @@ public:
   EquivalenceConstraint(std::unique_ptr<Constraint> LeftOperand,
                         std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "<=>" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class NegConstraint : public UnaryConstraint, public NumericConstraint {
 public:
   NegConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(std::move(Operand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " ~ (" << Operand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class AdditionConstraint : public BinaryConstraint, public NumericConstraint {
@@ -134,6 +175,11 @@ public:
   AdditionConstraint(std::unique_ptr<Constraint> LeftOperand,
                      std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "+" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class SubtractionConstraint : public BinaryConstraint,
@@ -142,6 +188,11 @@ public:
   SubtractionConstraint(std::unique_ptr<Constraint> LeftOperand,
                         std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "-" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class MultiplicationConstraint : public BinaryConstraint,
@@ -150,6 +201,11 @@ public:
   MultiplicationConstraint(std::unique_ptr<Constraint> LeftOperand,
                            std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "*" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class DivisionConstraint : public BinaryConstraint, public NumericConstraint {
@@ -157,6 +213,11 @@ public:
   DivisionConstraint(std::unique_ptr<Constraint> LeftOperand,
                      std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "/" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class LessConstraint : public BinaryConstraint, public NumericConstraint {
@@ -164,6 +225,11 @@ public:
   LessConstraint(std::unique_ptr<Constraint> LeftOperand,
                  std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "<" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class GreaterConstraint : public BinaryConstraint, public NumericConstraint {
@@ -171,6 +237,11 @@ public:
   GreaterConstraint(std::unique_ptr<Constraint> LeftOperand,
                     std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << ">" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class LessEquelsConstraint : public BinaryConstraint, public NumericConstraint {
@@ -178,6 +249,11 @@ public:
   LessEquelsConstraint(std::unique_ptr<Constraint> LeftOperand,
                        std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << "<=" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class GreaterEquelsConstraint : public BinaryConstraint,
@@ -186,6 +262,11 @@ public:
   GreaterEquelsConstraint(std::unique_ptr<Constraint> LeftOperand,
                           std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
+
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream << " (" << LeftOperand->toString() << ">=" << RightOperand->toString() << ") ";
+    return Stream.str(); }
 };
 
 class Feature;
@@ -200,6 +281,10 @@ class PrimaryIntegerConstraint : public PrimaryConstraint {
 public:
   PrimaryIntegerConstraint(int V) : V(V) {}
 
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream <<  " " << std::to_string(V) << " ";
+    return Stream.str(); }
 private:
   int V;
 };
@@ -209,7 +294,13 @@ public:
   PrimaryFeatureConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
       : FV(std::move(FV)) {}
 
-  [[nodiscard]] Feature *getFeature();
+  [[nodiscard]] Feature *getFeature() const;
+
+  // TODO(s9latimm): there is no getName available for the Feature yet...
+  [[nodiscard]] std::string toString() const override { 
+    std::stringstream Stream;
+    Stream <<  " " << getFeature()->getName() << " ";
+    return Stream.str(); }
 
   void accept(ConstraintVisitor &V) override;
 
