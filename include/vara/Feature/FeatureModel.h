@@ -152,10 +152,11 @@ public:
   FeatureModelBuilder *addExclude(const std::string &FeatureName,
                                   const std::string &ExcludeName) {
     Constraints.push_back(std::make_unique<ImpliesConstraint>(
-        std::make_unique<PrimaryConstraint>(
+        std::make_unique<PrimaryFeatureConstraint>(
             std::make_unique<Feature>(FeatureName)),
-        std::make_unique<NotConstraint>(std::make_unique<PrimaryConstraint>(
-            std::make_unique<Feature>(ExcludeName)))));
+        std::make_unique<NotConstraint>(
+            std::make_unique<PrimaryFeatureConstraint>(
+                std::make_unique<Feature>(ExcludeName)))));
     return this;
   }
 
@@ -200,7 +201,7 @@ private:
   public:
     BuilderVisitor(FeatureModelBuilder *Builder) : Builder(Builder) {}
 
-    void visit(PrimaryConstraint *C) override {
+    void visit(PrimaryFeatureConstraint *C) override {
       auto *F = Builder->getFeature(C->getFeature()->getName());
       C->setFeature(F);
       F->addConstraint(C);

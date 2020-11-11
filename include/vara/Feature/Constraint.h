@@ -193,8 +193,21 @@ class FeatureModelBuilder;
 
 class PrimaryConstraint : public Constraint {
 public:
-  PrimaryConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
-      : FV(std::move(FV)), Constraint(ConstraintKind::CK_PRIMARY) {}
+  PrimaryConstraint() : Constraint(ConstraintKind::CK_PRIMARY) {}
+};
+
+class PrimaryIntegerConstraint : public PrimaryConstraint {
+public:
+  PrimaryIntegerConstraint(int V) : V(V) {}
+
+private:
+  int V;
+};
+
+class PrimaryFeatureConstraint : public PrimaryConstraint {
+public:
+  PrimaryFeatureConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
+      : FV(std::move(FV)) {}
 
   [[nodiscard]] Feature *getFeature();
 
@@ -217,7 +230,7 @@ public:
 
   virtual void visit(UnaryConstraint *C) { C->getOperand()->accept(*this); }
 
-  virtual void visit(PrimaryConstraint *C) {}
+  virtual void visit(PrimaryFeatureConstraint *C) {}
 };
 
 } // namespace vara::feature
