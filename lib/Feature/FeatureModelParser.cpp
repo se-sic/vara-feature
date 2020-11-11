@@ -1,7 +1,7 @@
 #include "vara/Feature/FeatureModelParser.h"
 
-#include "XmlConstants.h"
 #include "SxfmConstants.h"
+#include "XmlConstants.h"
 
 #include <iostream>
 #include <regex>
@@ -246,6 +246,17 @@ FeatureModelSxfmParser::createDtd() {
 
 bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
   // Split the lines of the feature tree by new lines
+  {
+    std::stringstream Ss(reinterpret_cast<const char *>(FeatureTree));
+    std::string To;
+
+    if (FeatureTree != nullptr)
+    {
+      while(std::getline(Ss, To)){
+
+      }
+    }
+  }
 
   // The first line (beginning with :r) is usually the root feature
 
@@ -299,7 +310,6 @@ bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
         }
       }
     }
-    return true;
   }
 
   // Parse the feature tree with all its features and relations among them.

@@ -86,12 +86,12 @@ private:
   FeatureModelBuilder FMB;
   std::string Indentation = "\t";
 
-  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
+  static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
   bool parseVm(xmlNode *Node);
 
-  bool parseFeatureTree(xmlChar *FeatureTree);
-  bool parseConstraints(xmlChar *Constraints);
+  static bool parseFeatureTree(xmlChar *FeatureTree);
+  static bool parseConstraints(xmlChar *Constraints);
 
 };
 
