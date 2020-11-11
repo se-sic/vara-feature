@@ -113,9 +113,9 @@ private:
   string Name;
   bool Opt;
   std::optional<FeatureSourceRange> Source;
-  llvm::DenseSet<Constraint *> Constraints;
+  std::vector<Constraint *> Constraints;
 
-  void addConstraint(Constraint *C) { Constraints.insert(C); }
+  void addConstraint(Constraint *C) { Constraints.push_back(C); }
 };
 
 /// Options without arguments.
