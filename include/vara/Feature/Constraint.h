@@ -20,12 +20,13 @@ public:
   virtual ~Constraint() = default;
 
   [[nodiscard]] ConstraintKind getKind() const { return Kind; };
+  [[nodiscard]] virtual std::string toString() const;
 
 private:
   ConstraintKind Kind;
 };
 
-class BoolschesConstraint {
+class BooleanConstraint {
 public:
   [[nodiscard]] virtual std::string toString() const;
 };
@@ -41,7 +42,7 @@ public:
       : LeftOperand(LeftOperand),
         RightOperand(RightOperand), Constraint(ConstraintKind::CK_BINARY) {}
 
-  [[nodiscard]] virtual std::string toString() const;
+  [[nodiscard]] std::string toString() const override;
 private:
   Constraint *LeftOperand;
   Constraint *RightOperand;
@@ -52,12 +53,12 @@ public:
   UnaryConstraint(Constraint *Operand) : Operand(Operand),
         Constraint(ConstraintKind::CK_UNARY) {}
 
-  [[nodiscard]] virtual std::string toString() const;
+  [[nodiscard]] std::string toString() const override;
 private:
   Constraint *Operand;
 };
 
-class NotConstraint : public UnaryConstraint, public BoolschesConstraint {
+class NotConstraint : public UnaryConstraint, public BooleanConstraint {
 public:
   NotConstraint(Constraint *Operand)
       : UnaryConstraint(Operand) {}
@@ -65,7 +66,7 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class OrConstraint : public BinaryConstraint, public BoolschesConstraint {
+class OrConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   OrConstraint(Constraint *LeftOperand, Constraint *RightOperand)
       : BinaryConstraint(LeftOperand, RightOperand) {}
@@ -73,7 +74,7 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class XOrConstraint : public BinaryConstraint, public BoolschesConstraint {
+class XOrConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   XOrConstraint(Constraint *LeftOperand, Constraint *RightOperand)
       : BinaryConstraint(LeftOperand, RightOperand) {}
@@ -81,7 +82,7 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class AndConstraint : public BinaryConstraint, public BoolschesConstraint {
+class AndConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   AndConstraint(Constraint *LeftOperand, Constraint *RightOperand)
       : BinaryConstraint(LeftOperand, RightOperand) {}
@@ -89,7 +90,7 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class EqualsConstraint : public BinaryConstraint, public BoolschesConstraint {
+class EqualsConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   EqualsConstraint(Constraint *LeftOperand, Constraint *RightOperand)
       : BinaryConstraint(LeftOperand, RightOperand) {}
@@ -97,7 +98,7 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class ImpliesConstraint : public BinaryConstraint, public BoolschesConstraint {
+class ImpliesConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   ImpliesConstraint(Constraint *LeftOperand, Constraint *RightOperand)
       : BinaryConstraint(LeftOperand, RightOperand) {}
@@ -105,7 +106,7 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class EquivalenceConstraint : public BinaryConstraint, public BoolschesConstraint {
+class EquivalenceConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   EquivalenceConstraint(Constraint *LeftOperand, Constraint *RightOperand)
       : BinaryConstraint(LeftOperand, RightOperand) {}
