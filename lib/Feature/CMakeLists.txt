@@ -1,4 +1,5 @@
 set(FEATURE_LIB_SRC
+  Constraint.cpp
   Feature.cpp
   FeatureModel.cpp
   FeatureModelParser.cpp

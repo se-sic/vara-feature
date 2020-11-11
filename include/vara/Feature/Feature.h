@@ -48,7 +48,8 @@ public:
 
   [[nodiscard]] bool isOptional() const { return Opt; }
 
-  /// Search parent feature in tree structure -- this may not exist.
+  /// Search parent feature in tree structure -- this may not exist or nullptr
+  /// if node is already root.
   [[nodiscard]] Feature *getParentFeature() const {
     for (FeatureTreeNode *P = this->getParent(); P; P = P->getParent()) {
       auto *F = llvm::dyn_cast<Feature>(P);
