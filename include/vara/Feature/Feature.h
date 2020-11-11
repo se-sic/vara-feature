@@ -1,6 +1,7 @@
 #ifndef VARA_FEATURE_FEATURE_H
 #define VARA_FEATURE_FEATURE_H
 
+#include "vara/Feature/Constraint.h"
 #include "vara/Feature/FeatureSourceRange.h"
 #include "vara/Feature/FeatureTreeNode.h"
 
@@ -112,6 +113,9 @@ private:
   string Name;
   bool Opt;
   std::optional<FeatureSourceRange> Source;
+  llvm::DenseSet<Constraint *> Constraints;
+
+  void addConstraint(Constraint *C) { Constraints.insert(C); }
 };
 
 /// Options without arguments.

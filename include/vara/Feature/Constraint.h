@@ -27,7 +27,8 @@ public:
 
   [[nodiscard]] ConstraintKind getKind() const { return Kind; };
 
-  virtual void accept(ConstraintVisitor &V) = 0;
+  // TODO(s9latimm): this class cannot be abstract within llvm::DenseSet
+  virtual void accept(ConstraintVisitor &V) {}
 
 private:
   ConstraintKind Kind;

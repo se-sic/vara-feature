@@ -98,7 +98,7 @@ protected:
   fs::path Path;
   FeatureMapTy Features;
   ConstraintContainerTy Constraints;
-  Feature *Root;
+  Feature *Root{nullptr};
 
   FeatureModel() = default;
 
@@ -200,9 +200,13 @@ private:
     BuilderVisitor(FeatureModelBuilder *Builder) : Builder(Builder) {}
 
     void visit(PrimaryConstraint *C) override {
-      auto F = C->getFeature();
-      if (std::holds_alternative<std::string>(F)) {
-        C->setFeature(Builder->getFeature(std::get<std::string>(F)));
+      auto FV = C->getFeature();
+      if (std::holds_alternative<std::string>(FV)) {
+        auto *F = Builder->getFeature(std::get<std::string>(FV));
+        C->setFeature(F);
+        F->addConstraint(C);
+      } else {
+        std::get<Feature *>(FV)->addConstraint(C);
       }
     };
 
