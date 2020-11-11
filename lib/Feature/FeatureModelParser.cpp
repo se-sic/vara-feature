@@ -244,11 +244,23 @@ FeatureModelSxfmParser::createDtd() {
   return Dtd;
 }
 
-bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *feature_tree) {
+bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
+  // Split the lines of the feature tree by new lines
+
+  // The first line (beginning with :r) is usually the root feature
+
+  // For every line, count the indentation
+  // -1,0 or +1 additional indentations are allowed to the original one
+  // Otherwise, the format is violated
+
+  // Retrieve the type of the feature (optional, mandatory, alternative) and add
+  // the information to the FeatureModelBuilder
   return true;
 }
 
-bool FeatureModelSxfmParser::parseConstraints(xmlChar *constraints) {
+bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
+  // TODO (CK): This has to wait until the constraint part is implemented in
+  // the FeatureModelBuilder
   return true;
 }
 

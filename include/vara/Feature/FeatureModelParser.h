@@ -90,8 +90,8 @@ private:
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
   bool parseVm(xmlNode *Node);
 
-  bool parseFeatureTree(xmlChar *feature_tree);
-  bool parseConstraints(xmlChar *constraints);
+  bool parseFeatureTree(xmlChar *FeatureTree);
+  bool parseConstraints(xmlChar *Constraints);
 
 };
 
