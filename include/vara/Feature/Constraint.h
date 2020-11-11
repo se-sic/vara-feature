@@ -27,7 +27,7 @@ public:
 
   [[nodiscard]] ConstraintKind getKind() const { return Kind; };
 
-  [[nodiscard]] virtual std::string toString() const;
+  [[nodiscard]] virtual std::string toString() const { return ""; }
 
   // TODO(s9latimm): this class cannot be abstract within llvm::DenseSet
   virtual void accept(ConstraintVisitor &V) {}
@@ -36,15 +36,9 @@ private:
   ConstraintKind Kind;
 };
 
-class BooleanConstraint {
-public:
-  [[nodiscard]] virtual std::string toString() const;
-};
+class BooleanConstraint {};
 
-class NumericConstraint {
-public:
-  [[nodiscard]] virtual std::string toString() const;
-};
+class NumericConstraint {};
 
 class BinaryConstraint : public Constraint {
 public:
@@ -82,8 +76,6 @@ class NotConstraint : public UnaryConstraint, public BooleanConstraint {
 public:
   NotConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(std::move(Operand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class OrConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -91,8 +83,6 @@ public:
   OrConstraint(std::unique_ptr<Constraint> LeftOperand,
                std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class XorConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -100,8 +90,6 @@ public:
   XorConstraint(std::unique_ptr<Constraint> LeftOperand,
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class AndConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -109,8 +97,6 @@ public:
   AndConstraint(std::unique_ptr<Constraint> LeftOperand,
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class EqualsConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -118,8 +104,6 @@ public:
   EqualsConstraint(std::unique_ptr<Constraint> LeftOperand,
                    std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class ImpliesConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -127,8 +111,6 @@ public:
   ImpliesConstraint(std::unique_ptr<Constraint> LeftOperand,
                     std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class EquivalenceConstraint : public BinaryConstraint,
@@ -137,16 +119,12 @@ public:
   EquivalenceConstraint(std::unique_ptr<Constraint> LeftOperand,
                         std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class NegConstraint : public UnaryConstraint, public NumericConstraint {
 public:
   NegConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(std::move(Operand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class AdditionConstraint : public BinaryConstraint, public NumericConstraint {
@@ -154,8 +132,6 @@ public:
   AdditionConstraint(std::unique_ptr<Constraint> LeftOperand,
                      std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class SubtractionConstraint : public BinaryConstraint,
@@ -164,8 +140,6 @@ public:
   SubtractionConstraint(std::unique_ptr<Constraint> LeftOperand,
                         std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class MultiplicationConstraint : public BinaryConstraint,
@@ -174,8 +148,6 @@ public:
   MultiplicationConstraint(std::unique_ptr<Constraint> LeftOperand,
                            std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class DivisionConstraint : public BinaryConstraint, public NumericConstraint {
@@ -183,8 +155,6 @@ public:
   DivisionConstraint(std::unique_ptr<Constraint> LeftOperand,
                      std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class LessConstraint : public BinaryConstraint, public NumericConstraint {
@@ -192,8 +162,6 @@ public:
   LessConstraint(std::unique_ptr<Constraint> LeftOperand,
                  std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class GreaterConstraint : public BinaryConstraint, public NumericConstraint {
@@ -201,8 +169,6 @@ public:
   GreaterConstraint(std::unique_ptr<Constraint> LeftOperand,
                     std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class LessEquelsConstraint : public BinaryConstraint, public NumericConstraint {
@@ -210,8 +176,6 @@ public:
   LessEquelsConstraint(std::unique_ptr<Constraint> LeftOperand,
                        std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class GreaterEquelsConstraint : public BinaryConstraint,
@@ -220,8 +184,6 @@ public:
   GreaterEquelsConstraint(std::unique_ptr<Constraint> LeftOperand,
                           std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
-
-  [[nodiscard]] std::string toString() const override;
 };
 
 class Feature;
