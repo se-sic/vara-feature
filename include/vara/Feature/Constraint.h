@@ -30,10 +30,10 @@ public:
 
   [[nodiscard]] ConstraintKind getKind() const { return Kind; };
 
+  // TODO(s9latimm): move to subclass
   [[nodiscard]] virtual std::string toString() const { return ""; }
 
-  // TODO(s9latimm): this class cannot be abstract within llvm::DenseSet
-  virtual void accept(ConstraintVisitor &V) {}
+  virtual void accept(ConstraintVisitor &V) = 0;
 
 private:
   ConstraintKind Kind;
