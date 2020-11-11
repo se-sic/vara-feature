@@ -1,18 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE note [
-<!ELEMENT feature_model (meta?, feature_tree, constraints?)>
-<!ATTLIST feature_model
-    name CDATA #IMPLIED
->
-<!ELEMENT meta (data*)>
-<!ELEMENT data (#PCDATA)>
-<!ATTLIST data name CDATA #REQUIRED>
-<!ELEMENT feature_tree (#PCDATA)>
-<!ATTLIST feature_tree
-    indentation_string CDATA #IMPLIED
->
-<!ELEMENT constraints (#PCDATA)>
-]>
 <feature_model name="My feature model">
   <meta>
   <data name="description">Model description</data>

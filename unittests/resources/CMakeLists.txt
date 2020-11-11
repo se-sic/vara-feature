@@ -11,6 +11,7 @@ set(FEATURE_LIB_TEST_FILES
   test_children.xml
   test_excludes.xml
   test_out.xml
+  sxfm_example.sxfm
   test.sxfm
   )
 
