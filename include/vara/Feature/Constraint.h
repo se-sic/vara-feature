@@ -27,6 +27,8 @@ public:
 
   [[nodiscard]] ConstraintKind getKind() const { return Kind; };
 
+  [[nodiscard]] virtual std::string toString() const;
+
   // TODO(s9latimm): this class cannot be abstract within llvm::DenseSet
   virtual void accept(ConstraintVisitor &V) {}
 
@@ -34,7 +36,7 @@ private:
   ConstraintKind Kind;
 };
 
-class BoolschesConstraint {
+class BooleanConstraint {
 public:
   [[nodiscard]] virtual std::string toString() const;
 };
@@ -56,8 +58,6 @@ public:
 
   Constraint *getRightOperand() { return RightOperand.get(); }
 
-  [[nodiscard]] virtual std::string toString() const;
-
   void accept(ConstraintVisitor &V) override;
 
 private:
@@ -72,15 +72,13 @@ public:
 
   Constraint *getOperand() { return Operand.get(); }
 
-  [[nodiscard]] virtual std::string toString() const;
-
   void accept(ConstraintVisitor &V) override;
 
 private:
   std::unique_ptr<Constraint> Operand;
 };
 
-class NotConstraint : public UnaryConstraint, public BoolschesConstraint {
+class NotConstraint : public UnaryConstraint, public BooleanConstraint {
 public:
   NotConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(std::move(Operand)) {}
@@ -88,7 +86,7 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class OrConstraint : public BinaryConstraint, public BoolschesConstraint {
+class OrConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   OrConstraint(std::unique_ptr<Constraint> LeftOperand,
                std::unique_ptr<Constraint> RightOperand)
@@ -97,16 +95,16 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class XOrConstraint : public BinaryConstraint, public BoolschesConstraint {
+class XorConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
-  XOrConstraint(std::unique_ptr<Constraint> LeftOperand,
+  XorConstraint(std::unique_ptr<Constraint> LeftOperand,
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
   [[nodiscard]] std::string toString() const override;
 };
 
-class AndConstraint : public BinaryConstraint, public BoolschesConstraint {
+class AndConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   AndConstraint(std::unique_ptr<Constraint> LeftOperand,
                 std::unique_ptr<Constraint> RightOperand)
@@ -115,7 +113,7 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class EqualsConstraint : public BinaryConstraint, public BoolschesConstraint {
+class EqualsConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   EqualsConstraint(std::unique_ptr<Constraint> LeftOperand,
                    std::unique_ptr<Constraint> RightOperand)
@@ -124,7 +122,7 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class ImpliesConstraint : public BinaryConstraint, public BoolschesConstraint {
+class ImpliesConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
   ImpliesConstraint(std::unique_ptr<Constraint> LeftOperand,
                     std::unique_ptr<Constraint> RightOperand)
@@ -134,7 +132,7 @@ public:
 };
 
 class EquivalenceConstraint : public BinaryConstraint,
-                              public BoolschesConstraint {
+                              public BooleanConstraint {
 public:
   EquivalenceConstraint(std::unique_ptr<Constraint> LeftOperand,
                         std::unique_ptr<Constraint> RightOperand)
