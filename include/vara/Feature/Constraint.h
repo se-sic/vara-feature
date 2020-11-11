@@ -57,7 +57,7 @@ public:
 
   [[nodiscard]] virtual std::string toString() const;
 
-  void accept(ConstraintVisitor &V);
+  void accept(ConstraintVisitor &V) override;
 
 private:
   std::unique_ptr<Constraint> LeftOperand;
@@ -73,7 +73,7 @@ public:
 
   [[nodiscard]] virtual std::string toString() const;
 
-  void accept(ConstraintVisitor &V);
+  void accept(ConstraintVisitor &V) override;
 
 private:
   std::unique_ptr<Constraint> Operand;
@@ -235,7 +235,7 @@ public:
 
   std::variant<Feature *, std::string> getFeature() { return FV; }
 
-  void accept(ConstraintVisitor &V);
+  void accept(ConstraintVisitor &V) override;
 
 private:
   friend FeatureModelBuilder;
