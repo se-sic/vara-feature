@@ -56,8 +56,6 @@ public:
 
   Constraint *getRightOperand() { return RightOperand.get(); }
 
-  [[nodiscard]] std::string toString() const override;
-
   void accept(ConstraintVisitor &V) override;
 
 private:
@@ -71,8 +69,6 @@ public:
       : Operand(std::move(Operand)), Constraint(ConstraintKind::CK_UNARY) {}
 
   Constraint *getOperand() { return Operand.get(); }
-
-  [[nodiscard]] std::string toString() const override;
 
   void accept(ConstraintVisitor &V) override;
 
