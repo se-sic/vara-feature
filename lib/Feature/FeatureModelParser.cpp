@@ -299,12 +299,10 @@ bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
           }
 
         }
-        // TODO: Implement parsing the feature tree
         if (!parseFeatureTree(xmlNodeGetContent(H))) {
           return false;
         }
       } else if (!xmlStrcmp(H->name, SxfmConstants::CONSTRAINTS)) {
-        // TODO: Implement parsing the constraints
         if (!parseConstraints(xmlNodeGetContent(H))) {
           return false;
         }
