@@ -30,7 +30,7 @@ jobs:
     - name: Clang-10 Release
       stage: Legacy
       addons: *clang10
-      env: CXX=clang++-9 BUILD_TYPE=Release LLVM_VERSION=10
+      env: CXX=clang++-10 BUILD_TYPE=Release LLVM_VERSION=10
 
     # Clang latest
     - name: Clang-11 Debug
