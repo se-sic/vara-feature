@@ -1,6 +1,8 @@
 #ifndef VARA_FEATURE_CONSTRAINT_H
 #define VARA_FEATURE_CONSTRAINT_H
 
+#include "llvm/ADT/StringRef.h"
+
 #include <cassert>
 #include <memory>
 #include <string>
@@ -191,17 +193,17 @@ class FeatureModelBuilder;
 
 class PrimaryConstraint : public Constraint {
 public:
-  PrimaryConstraint(std::variant<Feature *, std::string> FV)
+  PrimaryConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
       : FV(std::move(FV)), Constraint(ConstraintKind::CK_PRIMARY) {}
 
-  std::variant<Feature *, std::string> getFeature() { return FV; }
+  [[nodiscard]] Feature *getFeature();
 
   void accept(ConstraintVisitor &V) override;
 
 private:
   friend FeatureModelBuilder;
 
-  std::variant<Feature *, std::string> FV;
+  std::variant<Feature *, std::unique_ptr<Feature>> FV;
 
   void setFeature(Feature *F) { this->FV = F; }
 };
