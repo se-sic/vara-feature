@@ -33,59 +33,11 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   return true;
 }
 
-// TODO(s9latimm): Refactor with new Constraints representation
-// TODO(s9latimm): remove NOLINT
-bool FeatureModelBuilder::buildConstraints() { // NOLINT
-  //  for (const auto &Feature : Features.keys()) {
-  //    for (const auto &Exclude : Excludes[Feature]) {
-  //      Features[Feature]->addExclude(Features[Exclude].get());
-  //    }
-  //  }
-
-  //  for (const ConstraintTy &Clause : Constraints) {
-  //    if (Clause.size() > 2) {
-  //      bool NoNegation = true;
-  //      for (const auto &Literal : Clause) {
-  //        NoNegation &= Literal.second;
-  //      }
-  //      if (NoNegation) {
-  //        for (const auto &Literal : Clause) {
-  //          for (const auto &OtherLiteral : Clause) {
-  //            if (Literal.first != OtherLiteral.first) {
-  //              Features[Literal.first]->addAlternative(
-  //                  Features[OtherLiteral.first].get());
-  //            }
-  //          }
-  //        }
-  //      } else {
-  //        llvm::errs() << "warning: Unrecognized clause.\n";
-  //      }
-  //    } else if (Clause.size() == 2) {
-  //      if (Clause[0].second != Clause[1].second) {
-  //        if (Clause[0].second) { // A || !B
-  //          Features[Clause[1].first]->addImplication(
-  //              Features[Clause[0].first].get());
-  //        } else { // !A || B
-  //          Features[Clause[0].first]->addImplication(
-  //              Features[Clause[1].first].get());
-  //        }
-  //      } else if (!(Clause[0].second || Clause[1].second)) { // !A || !B
-  //        Features[Clause[0].first]->addExclude(Features[Clause[1].first].get());
-  //        Features[Clause[1].first]->addExclude(Features[Clause[0].first].get());
-  //      } else if (Clause[0].second && Clause[1].second) { // A || B
-  //        Features[Clause[0].first]->addAlternative(
-  //            Features[Clause[1].first].get());
-  //        Features[Clause[1].first]->addAlternative(
-  //            Features[Clause[0].first].get());
-  //      }
-  //    } else if (Clause.size() == 1 && !Clause.front().second) {
-  //      llvm::errs() << "error: Clause \'!" << Clause.front().first
-  //                   << "\' invalidates feature.\n";
-  //      return false;
-  //    } else {
-  //      llvm::errs() << "warning: Empty or trivial clause.\n";
-  //    }
-  //  }
+bool FeatureModelBuilder::buildConstraints() {
+  auto B = BuilderVisitor(this);
+  for (const auto &C : Constraints) {
+    C->accept(B);
+  }
   return true;
 }
 
@@ -141,7 +93,8 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
       !buildConstraints()) {
     return nullptr;
   }
-  return std::make_unique<FeatureModel>(Name, Path, std::move(Features), Root);
+  return std::make_unique<FeatureModel>(Name, Path, std::move(Features),
+                                        std::move(Constraints), Root);
 }
 
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
@@ -174,6 +127,7 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
       return false;
     }
     break;
+  // locale var -> assert
   case Feature::FeatureKind::FK_NUMERIC:
     if (!makeFeature<NumericFeature>(
             std::string(F.getName()),

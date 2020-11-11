@@ -76,7 +76,7 @@ include("vara_feature_macros")
 
 # Include external dependencies
 if (NOT VARA_FEATURE_IN_TREE)
-  set(MIN_LLVM_REQUIRED 9)
+  set(MIN_LLVM_REQUIRED 10)
 
   # Only search for LLVM if we build out of tree
   if (${LLVM_REQUESTED_VERSION})

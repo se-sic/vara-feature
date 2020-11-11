@@ -24,12 +24,13 @@ public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
   using OrderedFeatureTy = OrderedFeatureVector;
   using ConstraintTy = Constraint;
-  using ConstraintContainerTy = std::vector<ConstraintTy>;
+  using ConstraintContainerTy = std::vector<std::unique_ptr<ConstraintTy>>;
 
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
-               Feature *Root)
-      : Name(std::move(Name)), Path(std::move(RootPath)), Root(Root),
-        Features(std::move(Features)) {
+               ConstraintContainerTy Constraints, Feature *Root)
+      : Name(std::move(Name)), Path(std::move(RootPath)),
+        Features(std::move(Features)), Constraints(std::move(Constraints)),
+        Root(Root) {
     // Insert all values into ordered data structure.
     for (const auto &KV : this->Features) {
       OrderedFeatures.insert(KV.getValue().get());
@@ -96,7 +97,10 @@ protected:
   string Name;
   fs::path Path;
   FeatureMapTy Features;
+  ConstraintContainerTy Constraints;
   Feature *Root;
+
+  FeatureModel() = default;
 
 private:
   OrderedFeatureTy OrderedFeatures;
@@ -109,8 +113,6 @@ private:
 /// \brief Builder for \a FeatureModel which can be used while parsing.
 class FeatureModelBuilder : private FeatureModel {
 public:
-  FeatureModelBuilder() : FeatureModel("", "", {}, nullptr){};
-
   void init() {
     Name = "";
     Path = "";
@@ -119,7 +121,6 @@ public:
     Constraints.clear();
     Parents.clear();
     Children.clear();
-    Excludes.clear();
   }
 
   /// Try to create and add a new \a Feature to the \a FeatureModel.
@@ -150,16 +151,18 @@ public:
 
   FeatureModelBuilder *addExclude(const std::string &FeatureName,
                                   const std::string &ExcludeName) {
-    Excludes[FeatureName].insert(ExcludeName);
+    Constraints.push_back(std::make_unique<ImpliesConstraint>(
+        std::make_unique<PrimaryConstraint>(FeatureName),
+        std::make_unique<NotConstraint>(
+            std::make_unique<PrimaryConstraint>(ExcludeName))));
     return this;
   }
 
-  // TODO(s9latimm): Fix copy-const
-  //  FeatureModelBuilder *
-  //  addConstraint(const FeatureModel::ConstraintTy &Constraint) {
-  //    Constraints.push_back(std::move(Constraint));
-  //    return this;
-  //  }
+  FeatureModelBuilder *
+  addConstraint(std::unique_ptr<FeatureModel::ConstraintTy> C) {
+    Constraints.push_back(std::move(C));
+    return this;
+  }
 
   FeatureModelBuilder *setVmName(std::string Name) {
     this->Name = std::move(Name);
@@ -191,12 +194,27 @@ public:
           std::pair<std::string, NumericFeature::ValuesVariantType>>> &N = {});
 
 private:
+  class BuilderVisitor : public ConstraintVisitor {
+
+  public:
+    BuilderVisitor(FeatureModelBuilder *Builder) : Builder(Builder) {}
+
+    void visit(PrimaryConstraint *C) override {
+      auto F = C->getFeature();
+      if (std::holds_alternative<std::string>(F)) {
+        C->setFeature(Builder->getFeature(std::get<std::string>(F)));
+      }
+    };
+
+  private:
+    FeatureModelBuilder *Builder;
+  };
+
   using EdgeMapType = typename llvm::StringMap<llvm::SmallSet<std::string, 3>>;
 
   FeatureModel::ConstraintContainerTy Constraints;
   llvm::StringMap<std::string> Parents;
   EdgeMapType Children;
-  EdgeMapType Excludes;
 
   bool buildConstraints();
 
@@ -299,43 +317,6 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   //          emitEdge(Node, Exclude, "color=red");
   //        }
   //        Skip.insert(std::make_pair<>(Node, Exclude));
-  //      }
-  //    }
-  //  }
-
-  // TODO(s9latimm): Refactor with new Constraints representation
-  //  void emitAlternativeEdges() {
-  //    FeatureEdgeSetTy Skip;
-  //    for (auto *Node : *G) {
-  //      for (const auto &Alternative : Node->alternatives()) {
-  //        if (visited(std::make_pair(Node, Alternative), Skip)) {
-  //          continue;
-  //        }
-  //        emitEdge(Node, Alternative, "color=green dir=none
-  //        constraint=false"); Skip.insert(std::make_pair<>(Alternative,
-  //        Node)); Skip.insert(std::make_pair<>(Node, Alternative));
-  //      }
-  //    }
-  //  }
-
-  // TODO(s9latimm): Refactor with new Constraints representation
-  //  void emitImplicationEdges() {
-  //    FeatureEdgeSetTy Skip;
-  //    for (auto *Node : *G) {
-  //      for (const auto &Implication : Node->implications()) {
-  //        if (visited(std::make_pair(Node, Implication), Skip)) {
-  //          continue;
-  //        }
-  //        if (std::find(Implication->implications_begin(),
-  //                      Implication->implications_end(),
-  //                      Node) != Implication->implications_end()) {
-  //          emitEdge(Node, Implication, "color=blue dir=both
-  //          constraint=false"); Skip.insert(std::make_pair<>(Implication,
-  //          Node));
-  //        } else {
-  //          emitEdge(Node, Implication, "color=blue constraint=false");
-  //        }
-  //        Skip.insert(std::make_pair<>(Node, Implication));
   //      }
   //    }
   //  }
