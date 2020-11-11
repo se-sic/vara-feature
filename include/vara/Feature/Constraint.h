@@ -97,9 +97,9 @@ public:
   [[nodiscard]] std::string toString() const override;
 };
 
-class XOrConstraint : public BinaryConstraint, public BooleanConstraint {
+class XorConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
-  XOrConstraint(std::unique_ptr<Constraint> LeftOperand,
+  XorConstraint(std::unique_ptr<Constraint> LeftOperand,
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
