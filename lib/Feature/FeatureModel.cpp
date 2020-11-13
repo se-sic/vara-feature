@@ -57,8 +57,39 @@ bool FeatureModelBuilder::buildTree(const string &FeatureName,
   }
 
   for (const auto &Child : Children[FeatureName]) {
+    if (Parents[Child] != FeatureName) {
+      llvm::errs() << "error: Parent of \'" << Child << "\' does not match \'"
+                   << FeatureName << "\'.\n";
+      return false;
+    }
     if (!buildTree(Child, Visited)) {
       return false;
+    }
+  }
+
+  llvm::SmallSet<std::string, 3> Skip;
+  if (RelationshipEdges.find(FeatureName) != RelationshipEdges.end()) {
+    for (const auto &Pair : RelationshipEdges[FeatureName]) {
+      auto R = std::make_unique<Relationship>(Pair.first);
+      Features[FeatureName]->addEdge(R.get());
+      R->setParent(Features[FeatureName].get());
+      for (const auto &Child : Pair.second) {
+        if (Children[FeatureName].count(Child) == 0) {
+          llvm::errs() << "error: Related node \'" << Child
+                       << "\' is not child of \'" << FeatureName << "\'.\n";
+          return false;
+        } else {
+          Skip.insert(Child);
+        }
+        R->addEdge(Features[Child].get());
+        Features[Child]->setParent(R.get());
+      }
+      Relationships.push_back(std::move(R));
+    }
+  }
+  for (const auto &Child : Children[FeatureName]) {
+    if (Skip.count(Child) > 0) {
+      continue;
     }
     Features[FeatureName]->addEdge(Features[Child].get());
     Features[Child]->setParent(Features[FeatureName].get());
@@ -89,12 +120,16 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
   }
   assert(Root && "Root not set.");
   std::set<std::string> Visited;
+
+  addRelationship(Relationship::RelationshipKind::RK_OR, {"AA", "AB"}, "A");
+
   if (!buildTree(std::string(Root->getName()), Visited) ||
       !buildConstraints()) {
     return nullptr;
   }
   return std::make_unique<FeatureModel>(Name, Path, std::move(Features),
-                                        std::move(Constraints), Root);
+                                        std::move(Constraints),
+                                        std::move(Relationships), Root);
 }
 
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(

@@ -25,12 +25,15 @@ public:
   using OrderedFeatureTy = OrderedFeatureVector;
   using ConstraintTy = Constraint;
   using ConstraintContainerTy = std::vector<std::unique_ptr<ConstraintTy>>;
+  using RelationshipTy = Relationship;
+  using RelationshipContainerTy = std::vector<std::unique_ptr<RelationshipTy>>;
 
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
-               ConstraintContainerTy Constraints, Feature *Root)
+               ConstraintContainerTy Constraints,
+               RelationshipContainerTy Relationships, Feature *Root)
       : Name(std::move(Name)), Path(std::move(RootPath)),
         Features(std::move(Features)), Constraints(std::move(Constraints)),
-        Root(Root) {
+        Relationships(std::move(Relationships)), Root(Root) {
     // Insert all values into ordered data structure.
     for (const auto &KV : this->Features) {
       OrderedFeatures.insert(KV.getValue().get());
@@ -98,6 +101,7 @@ protected:
   fs::path Path;
   FeatureMapTy Features;
   ConstraintContainerTy Constraints;
+  RelationshipContainerTy Relationships;
   Feature *Root{nullptr};
 
   FeatureModel() = default;
@@ -146,6 +150,14 @@ public:
                                  const std::string &ParentName) {
     Children[ParentName].insert(FeatureName);
     Parents[FeatureName] = ParentName;
+    return this;
+  }
+
+  FeatureModelBuilder *
+  addRelationship(Relationship::RelationshipKind RK,
+                  const std::vector<std::string> &FeatureNames,
+                  const std::string &ParentName) {
+    RelationshipEdges[ParentName].emplace_back(RK, FeatureNames);
     return this;
   }
 
@@ -201,10 +213,14 @@ private:
   };
 
   using EdgeMapType = typename llvm::StringMap<llvm::SmallSet<std::string, 3>>;
+  using RelationshipEdgeType = typename llvm::StringMap<std::vector<
+      std::pair<Relationship::RelationshipKind, std::vector<std::string>>>>;
 
   FeatureModel::ConstraintContainerTy Constraints;
+  FeatureModel::RelationshipContainerTy Relationships;
   llvm::StringMap<std::string> Parents;
   EdgeMapType Children;
+  RelationshipEdgeType RelationshipEdges;
 
   bool buildConstraints();
 
@@ -312,6 +328,8 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
           emitEdge(
               Node, F,
               llvm::formatv("arrowhead={0}", F->isOptional() ? "odot" : "dot"));
+        } else {
+          emitEdge(Node, Child, "arrowhead=none");
         }
       }
       O.indent(Indent + 4) << "{\n";
@@ -350,6 +368,20 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
                          .str()
                    : ""))
               .str();
+    } else {
+      auto *R = llvm::dyn_cast<vara::feature::Relationship>(Node);
+      if (R) {
+        switch (R->getKind()) {
+        case vara::feature::Relationship::RelationshipKind::RK_ALTERNATIVE:
+          Label = "ALTERNATIVE";
+          break;
+        case vara::feature::Relationship::RelationshipKind::RK_OR:
+          Label = "OR";
+          break;
+        }
+      } else {
+        Label = "error";
+      }
     }
     O.indent(2) << "node_" << static_cast<void *>(Node) << " ["
                 << "shape=box margin=.1 fontsize=12 fontname=\"CMU "
