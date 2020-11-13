@@ -149,17 +149,6 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *addExclude(const std::string &FeatureName,
-                                  const std::string &ExcludeName) {
-    Constraints.push_back(std::make_unique<ImpliesConstraint>(
-        std::make_unique<PrimaryFeatureConstraint>(
-            std::make_unique<Feature>(FeatureName)),
-        std::make_unique<NotConstraint>(
-            std::make_unique<PrimaryFeatureConstraint>(
-                std::make_unique<Feature>(ExcludeName)))));
-    return this;
-  }
-
   FeatureModelBuilder *
   addConstraint(std::unique_ptr<FeatureModel::ConstraintTy> C) {
     Constraints.push_back(std::move(C));
@@ -302,26 +291,6 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     return false;
   }
 
-  // TODO(s9latimm): Refactor with new Constraints representation
-  //  void emitExcludeEdges() {
-  //    FeatureEdgeSetTy Skip;
-  //    for (auto *Node : *G) {
-  //      for (const auto &Exclude : Node->excludes()) {
-  //        if (visited(std::make_pair(Node, Exclude), Skip)) {
-  //          continue;
-  //        }
-  //        if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
-  //                      Node) != Exclude->excludes_end()) {
-  //          emitEdge(Node, Exclude, "color=red dir=both constraint=false");
-  //          Skip.insert(std::make_pair<>(Exclude, Node));
-  //        } else {
-  //          emitEdge(Node, Exclude, "color=red");
-  //        }
-  //        Skip.insert(std::make_pair<>(Node, Exclude));
-  //      }
-  //    }
-  //  }
-
   /// Output feature model (tree) recursively.
   ///
   /// \param[in] Node Root of subtree.
@@ -360,16 +329,27 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     std::string Label;
     auto *F = llvm::dyn_cast<vara::feature::Feature>(Node);
     if (F) {
-      Label = llvm::formatv(
-          "<<table align=\"center\" valign=\"middle\" border=\"0\" "
-          "cellborder=\"0\" "
-          "cellpadding=\"5\"><tr><td>{0}{1}</td></tr></"
-          "table>>",
-          DOT::EscapeString(F->getName().str()),
-          (F->getFeatureSourceRange()
-               ? "</td></tr><hr/><tr><td>" +
-                     DOT::EscapeString(F->getFeatureSourceRange()->toString())
-               : ""));
+      std::stringstream CS;
+      for (const auto &C : F->constraints()) {
+        CS << "<tr><td>" << DOT::EscapeString(C->getRoot()->toHTML())
+           << "</td></tr>";
+      }
+      Label =
+          llvm::formatv(
+              "<<table align=\"center\" valign=\"middle\" border=\"0\" "
+              "cellborder=\"0\" "
+              "cellpadding=\"5\">{0}{1}{2}</table>>",
+              llvm::formatv("<tr><td><b>{0}</b></td></tr>",
+                            DOT::EscapeString(F->getName().str()))
+                  .str(),
+              CS.str(),
+              (F->getFeatureSourceRange()
+                   ? llvm::formatv("<hr/><tr><td>{0}</td></tr>",
+                                   DOT::EscapeString(
+                                       F->getFeatureSourceRange()->toString()))
+                         .str()
+                   : ""))
+              .str();
     }
     O.indent(2) << "node_" << static_cast<void *>(Node) << " ["
                 << "shape=box margin=.1 fontsize=12 fontname=\"CMU "

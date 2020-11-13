@@ -8,7 +8,7 @@ void PrimaryFeatureConstraint::accept(ConstraintVisitor &V) {
   return V.visit(this);
 }
 
-Feature *PrimaryFeatureConstraint::getFeature() {
+Feature *PrimaryFeatureConstraint::getFeature() const {
   if (std::holds_alternative<Feature *>(FV)) {
     return std::get<Feature *>(FV);
   } else {

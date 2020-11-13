@@ -1,6 +1,8 @@
 #ifndef VARA_FEATURE_CONSTRAINT_H
 #define VARA_FEATURE_CONSTRAINT_H
 
+#include "vara/Feature/Feature.h"
+
 #include "llvm/ADT/StringRef.h"
 
 #include <cassert>
@@ -30,13 +32,27 @@ public:
 
   [[nodiscard]] ConstraintKind getKind() const { return Kind; };
 
-  // TODO(s9latimm): move to subclass
-  [[nodiscard]] virtual std::string toString() const { return ""; }
+  void setParent(Constraint *P) { this->Parent = P; }
+
+  [[nodiscard]] Constraint *getParent() { return Parent; }
+
+  [[nodiscard]] Constraint *getRoot() {
+    auto *R = this;
+    while (R->Parent) {
+      R = R->Parent;
+    }
+    return R;
+  }
+
+  [[nodiscard]] virtual std::string toString() const = 0;
+
+  [[nodiscard]] virtual std::string toHTML() const { return toString(); }
 
   virtual void accept(ConstraintVisitor &V) = 0;
 
 private:
   ConstraintKind Kind;
+  Constraint *Parent{nullptr};
 };
 
 class BooleanConstraint {};
@@ -49,7 +65,10 @@ public:
                    std::unique_ptr<Constraint> RightOperand)
       : LeftOperand(std::move(LeftOperand)),
         RightOperand(std::move(RightOperand)),
-        Constraint(ConstraintKind::CK_BINARY) {}
+        Constraint(ConstraintKind::CK_BINARY) {
+    this->LeftOperand->setParent(this);
+    this->RightOperand->setParent(this);
+  }
 
   Constraint *getLeftOperand() { return LeftOperand.get(); }
 
@@ -65,7 +84,9 @@ protected:
 class UnaryConstraint : public Constraint {
 public:
   UnaryConstraint(std::unique_ptr<Constraint> Operand)
-      : Operand(std::move(Operand)), Constraint(ConstraintKind::CK_UNARY) {}
+      : Operand(std::move(Operand)), Constraint(ConstraintKind::CK_UNARY) {
+    this->Operand->setParent(this);
+  }
 
   Constraint *getOperand() { return Operand.get(); }
 
@@ -80,10 +101,9 @@ public:
   NotConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(std::move(Operand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " ! (" << Operand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("!{0}", Operand->toString());
+  }
 };
 
 class OrConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -92,10 +112,10 @@ public:
                std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "|" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} | {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class XorConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -104,10 +124,10 @@ public:
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "^" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} ^ {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class AndConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -116,10 +136,15 @@ public:
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "&" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} & {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
+
+  [[nodiscard]] std::string toHTML() const override {
+    return llvm::formatv("({0} &amp; {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class EqualsConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -128,10 +153,10 @@ public:
                    std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "=" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} = {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class ImpliesConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -140,10 +165,15 @@ public:
                     std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "=>" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} => {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
+
+  [[nodiscard]] std::string toHTML() const override {
+    return llvm::formatv("({0} =&gt; {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class EquivalenceConstraint : public BinaryConstraint,
@@ -153,10 +183,15 @@ public:
                         std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "<=>" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} <=> {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
+
+  [[nodiscard]] std::string toHTML() const override {
+    return llvm::formatv("({0} &lt;=&gt; {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class NegConstraint : public UnaryConstraint, public NumericConstraint {
@@ -164,10 +199,9 @@ public:
   NegConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(std::move(Operand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " ~ (" << Operand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("~{0}", Operand->toString());
+  }
 };
 
 class AdditionConstraint : public BinaryConstraint, public NumericConstraint {
@@ -176,10 +210,10 @@ public:
                      std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "+" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} + {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class SubtractionConstraint : public BinaryConstraint,
@@ -189,10 +223,10 @@ public:
                         std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "-" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} - {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class MultiplicationConstraint : public BinaryConstraint,
@@ -202,10 +236,10 @@ public:
                            std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "*" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} * {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class DivisionConstraint : public BinaryConstraint, public NumericConstraint {
@@ -214,10 +248,10 @@ public:
                      std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "/" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} / {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class LessConstraint : public BinaryConstraint, public NumericConstraint {
@@ -226,10 +260,15 @@ public:
                  std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "<" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} < {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
+
+  [[nodiscard]] std::string toHTML() const override {
+    return llvm::formatv("({0} &lt; {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
 class GreaterConstraint : public BinaryConstraint, public NumericConstraint {
@@ -238,38 +277,52 @@ public:
                     std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << ">" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} > {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
+
+  [[nodiscard]] std::string toHTML() const override {
+    return llvm::formatv("({0} &gt; {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
-class LessEquelsConstraint : public BinaryConstraint, public NumericConstraint {
+class LessEqualConstraint : public BinaryConstraint, public NumericConstraint {
 public:
-  LessEquelsConstraint(std::unique_ptr<Constraint> LeftOperand,
-                       std::unique_ptr<Constraint> RightOperand)
+  LessEqualConstraint(std::unique_ptr<Constraint> LeftOperand,
+                      std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << "<=" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} <= {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
+
+  [[nodiscard]] std::string toHTML() const override {
+    return llvm::formatv("({0} &lt;= {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
-class GreaterEquelsConstraint : public BinaryConstraint,
-                                public NumericConstraint {
+class GreaterEqualConstraint : public BinaryConstraint,
+                               public NumericConstraint {
 public:
-  GreaterEquelsConstraint(std::unique_ptr<Constraint> LeftOperand,
-                          std::unique_ptr<Constraint> RightOperand)
+  GreaterEqualConstraint(std::unique_ptr<Constraint> LeftOperand,
+                         std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(std::move(LeftOperand), std::move(RightOperand)) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream << " (" << LeftOperand->toString() << ">=" << RightOperand->toString() << ") ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} >= {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
+
+  [[nodiscard]] std::string toHTML() const override {
+    return llvm::formatv("({0} &gt;= {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
 };
 
-class Feature;
 class FeatureModelBuilder;
 
 class PrimaryConstraint : public Constraint {
@@ -281,10 +334,10 @@ class PrimaryIntegerConstraint : public PrimaryConstraint {
 public:
   PrimaryIntegerConstraint(int V) : V(V) {}
 
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream <<  " " << std::to_string(V) << " ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("{0}", V);
+  }
+
 private:
   int V;
 };
@@ -296,11 +349,9 @@ public:
 
   [[nodiscard]] Feature *getFeature() const;
 
-  // TODO(s9latimm): there is no getName available for the Feature yet...
-  [[nodiscard]] std::string toString() const override { 
-    std::stringstream Stream;
-    Stream <<  " " << getFeature()->getName() << " ";
-    return Stream.str(); }
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("{0}", getFeature()->getName());
+  }
 
   void accept(ConstraintVisitor &V) override;
 

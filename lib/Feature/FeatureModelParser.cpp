@@ -33,7 +33,28 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
                   xmlNodeGetContent(Child), xmlFree);
-              FMB.addExclude(Name, reinterpret_cast<char *>(CCnt.get()));
+              FMB.addConstraint(std::make_unique<ImpliesConstraint>(
+                  std::make_unique<PrimaryFeatureConstraint>(
+                      std::make_unique<Feature>(Name)),
+                  std::make_unique<NotConstraint>(
+                      std::make_unique<PrimaryFeatureConstraint>(
+                          std::make_unique<Feature>(
+                              reinterpret_cast<char *>(CCnt.get()))))));
+            }
+          }
+        }
+      } else if (!xmlStrcmp(Head->name, XmlConstants::IMPLIEDOPTIONS)) {
+        for (xmlNode *Child = Head->children; Child; Child = Child->next) {
+          if (Child->type == XML_ELEMENT_NODE) {
+            if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
+              std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
+                  xmlNodeGetContent(Child), xmlFree);
+              FMB.addConstraint(std::make_unique<ImpliesConstraint>(
+                  std::make_unique<PrimaryFeatureConstraint>(
+                      std::make_unique<Feature>(Name)),
+                  std::make_unique<PrimaryFeatureConstraint>(
+                      std::make_unique<Feature>(
+                          reinterpret_cast<char *>(CCnt.get())))));
             }
           }
         }

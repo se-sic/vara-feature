@@ -1,7 +1,6 @@
 #ifndef VARA_FEATURE_FEATURE_H
 #define VARA_FEATURE_FEATURE_H
 
-#include "vara/Feature/Constraint.h"
 #include "vara/Feature/FeatureSourceRange.h"
 #include "vara/Feature/FeatureTreeNode.h"
 
@@ -23,6 +22,8 @@ using std::string;
 
 namespace vara::feature {
 
+class Constraint;
+
 //===----------------------------------------------------------------------===//
 //                               Feature Class
 //===----------------------------------------------------------------------===//
@@ -30,6 +31,10 @@ namespace vara::feature {
 /// \brief Base class for components of \a FeatureModel.
 class Feature : public FeatureTreeNode {
 public:
+  using constraint_iterator = typename std::vector<Constraint *>::iterator;
+  using const_constraint_iterator =
+      typename std::vector<Constraint *>::const_iterator;
+
   enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
 
   Feature(std::string Name)
@@ -84,6 +89,14 @@ public:
   }
   void setFeatureSourceRange(FeatureSourceRange FeatureSR) {
     Source = std::move(FeatureSR);
+  }
+
+  llvm::iterator_range<constraint_iterator> constraints() {
+    return llvm::make_range(Constraints.begin(), Constraints.end());
+  }
+  [[nodiscard]] llvm::iterator_range<const_constraint_iterator>
+  constraints() const {
+    return llvm::make_range(Constraints.begin(), Constraints.end());
   }
 
   //===--------------------------------------------------------------------===//
