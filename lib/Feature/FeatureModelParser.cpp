@@ -252,7 +252,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
     std::string To;
     string Name;
     bool Opt;
-    int LastIndentation = -1;
+    int LastIndentationLevel = -1;
     int OrGroupCounter = 0;
     std::map<int, string> IndentationToParentMapping;
 
@@ -272,12 +272,11 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       }
 
       // For every line, count the indentation
-      // -1,0 or +1 additional indentations are allowed to the original one
-      // Otherwise, the format is violated
+      // not more than 1 additional indentations are allowed to the original one
       int CurrentIndentationLevel = countOccurrences(To, Indentation);
-      int Diff = LastIndentation - CurrentIndentationLevel;
-      if ((LastIndentation != -1) && (Diff < -1 | Diff > 1)) {
-        std::cerr << "Indentation error in feature tree." << std::endl;
+      int Diff = CurrentIndentationLevel - LastIndentationLevel;
+      if ((LastIndentationLevel != -1) && Diff > 1) {
+        std::cerr << "Indentation error in feature tree in line " << To << std::endl;
         return false;
       }
 
@@ -331,97 +330,16 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       IndentationToParentMapping[CurrentIndentationLevel] = Name;
 
       // Add parent from the upper indentation level if there is one
-      if (LastIndentation != -1) {
+      if (LastIndentationLevel != -1) {
         auto Parent = IndentationToParentMapping.find(CurrentIndentationLevel - 1);
         assert(Parent != IndentationToParentMapping.end());
         FMB.addParent(Name, Parent->second);
       }
-      LastIndentation = CurrentIndentationLevel;
+      LastIndentationLevel = CurrentIndentationLevel;
     }
   }
 
   return true;
-}
-
-bool FeatureModelSxfmParser::processFeatureTreeLine(std::stringstream& Ss, const char *ParentName,
-                                                    std::optional<std::tuple<string, string>> ParentCardinality,
-                                                    int ParentIndentation, int OrGroupCounter) {
-  std::string To;
-  if (!std::getline(Ss, To)) {
-    return true;
-  }
-  bool Opt = false;
-  string Name;
-
-  if (To.empty()) {
-    processFeatureTreeLine(Ss, ParentName, std::move(ParentCardinality), ParentIndentation, OrGroupCounter);
-  }
-
-  // For every line, count the indentation
-  // -1,0 or +1 additional indentations are allowed to the original one
-  // Otherwise, the format is violated
-  int CurrentIndentationLevel = countOccurrences(To, Indentation);
-  int Diff = ParentIndentation - CurrentIndentationLevel;
-  if ((ParentIndentation != -1) & (Diff < -1 | Diff > 1)) {
-    std::cerr << "Indentation error in feature tree." << std::endl;
-    return false;
-  }
-
-  // Move pointer to first character after indentation
-  // The first character has to be a colon followed by the type of
-  // the feature (m for mandatory, o for optional, a for alternative)
-  std::string::size_type Pos = CurrentIndentationLevel * Indentation.length() + 2;
-  std::optional<std::tuple<string, string>> Cardinalities;
-  switch (To.at(Pos - 1)) {
-  case 'o':
-    // Code for optional
-    Opt = true;
-    break;
-  case 'g':
-    // Code for an or group with different cardinalities
-    Opt = false;
-    // Extract the cardinality
-    Cardinalities = extractCardinality(To);
-    // TODO: Process the cardinality
-    // Currently, we only accept cardinalities [1,1] (alternative group) and
-    // [1, *] (or group)
-
-    break;
-  case ' ':
-    // Code for alternative child
-    Pos--;
-    break;
-  }
-  // Extract the name
-  Name = readUntil(To, ' ', Pos + 1);
-
-  // Note that we ignore the ID and use the name of the feature
-  // as unique identifier.
-  if (Name.find_first_of('(') != std::string::npos) {
-    Name = readUntil(Name, '(', 0);
-  }
-
-  // Remove the cardinality
-  if (Name.find_first_of('[') != std::string::npos) {
-    Name = readUntil(Name, '[', 0);
-  }
-
-  // If there is no name, provide an artificial one
-  if (Name.empty()) {
-    Name = "group_" + std::to_string(OrGroupCounter);
-    OrGroupCounter++;
-  }
-
-  // Create the feature
-  FMB.makeFeature<BinaryFeature>(Name, Opt);
-
-  // Add parent from the upper indentation level if there is one
-  if (ParentIndentation != -1) {
-    FMB.addParent(Name, ParentName);
-  }
-
-
-  return processFeatureTreeLine(Ss, Name.c_str(), Cardinalities, CurrentIndentationLevel, OrGroupCounter);
 }
 
 /// This method extracts the cardinality from the given line.
