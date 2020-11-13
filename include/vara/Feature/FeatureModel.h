@@ -191,8 +191,8 @@ public:
   /// \param[in] N edges with \a NumericFeature
   /// \return instance of \a FeatureModel
   std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
-      const std::vector<std::pair<std::string, std::string>> &B,
-      const std::vector<std::pair<
+      const std::initializer_list<std::pair<std::string, std::string>> &B,
+      const std::initializer_list<std::pair<
           std::string,
           std::pair<std::string, NumericFeature::ValuesVariantType>>> &N = {});
 

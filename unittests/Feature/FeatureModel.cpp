@@ -25,10 +25,11 @@ TEST(FeatureModel, addFeature) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
       {{"a", "aa"}, {"root", "aba"}, {"root", "a"}});
   assert(FM);
+  auto CS = Feature::NodeSetType();
+  CS.insert(FM->getFeature("aba"));
 
-  FM->addFeature(std::make_unique<BinaryFeature>(
-      "ab", false, std::nullopt, FM->getFeature("a"),
-      Feature::NodeSetType({FM->getFeature("aba")})));
+  FM->addFeature(std::make_unique<BinaryFeature>("ab", false, std::nullopt,
+                                                 FM->getFeature("a"), CS));
 
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
@@ -39,10 +40,11 @@ TEST(FeatureModel, newRoot) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
       {{"root", "b"}, {"root", "a"}});
   assert(FM);
+  auto CS = Feature::NodeSetType();
+  CS.insert(FM->getFeature("root"));
 
-  FM->addFeature(std::make_unique<BinaryFeature>(
-      "new_root", false, std::nullopt, nullptr,
-      Feature::NodeSetType({FM->getFeature("root")})));
+  FM->addFeature(std::make_unique<BinaryFeature>("new_root", false,
+                                                 std::nullopt, nullptr, CS));
 
   EXPECT_TRUE(FM->getFeature("new_root")->isRoot());
   EXPECT_FALSE(FM->getFeature("root")->isRoot());

@@ -43,56 +43,7 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
 
   auto *F =
       llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("F")->begin());
-  EXPECT_TRUE(F);
-  // TODO(s9latimm): Called C++ object pointer [F] is null
-  EXPECT_EQ("A", F->getName()); // NOLINT
+  assert(F);
+  EXPECT_EQ("A", F->getName());
 }
-
-// TODO(s9latimm): Refactor with new Constraints representation
-// TEST(BinaryFeature, BinaryFeatureExclude) {
-//  auto B = FeatureModelBuilder();
-//
-//  B.makeFeature<BinaryFeature>("F");
-//  B.makeFeature<BinaryFeature>("G");
-//  B.addExclude("F", "G");
-//
-//  auto FM = B.buildFeatureModel();
-//
-//  EXPECT_EQ(std::distance(FM->getFeature("F")->excludes_begin(),
-//                          FM->getFeature("F")->excludes_end()),
-//            1);
-//  EXPECT_EQ("G", (*FM->getFeature("F")->excludes_begin())->getName());
-//}
-
-// TODO(s9latimm): Refactor with new Constraints representation
-// TEST(BinaryFeature, BinaryFeatureImplications) {
-//  auto B = FeatureModelBuilder();
-//
-//  B.makeFeature<BinaryFeature>("F");
-//  B.makeFeature<BinaryFeature>("G");
-//  B.addConstraint({{"F", false}, {"G", true}});
-//
-//  auto FM = B.buildFeatureModel();
-//
-//  EXPECT_EQ(std::distance(FM->getFeature("F")->implications_begin(),
-//                          FM->getFeature("F")->implications_end()),
-//            1);
-//  EXPECT_EQ("G", (*FM->getFeature("F")->implications_begin())->getName());
-//}
-
-// TODO(s9latimm): Refactor with new Constraints representation
-// TEST(BinaryFeature, BinaryFeatureAlternatives) {
-//  auto B = FeatureModelBuilder();
-//
-//  B.makeFeature<BinaryFeature>("F");
-//  B.makeFeature<BinaryFeature>("G");
-//  B.addConstraint({{"F", true}, {"G", true}});
-//
-//  auto FM = B.buildFeatureModel();
-//
-//  EXPECT_EQ(std::distance(FM->getFeature("F")->alternatives_begin(),
-//                          FM->getFeature("F")->alternatives_end()),
-//            1);
-//  EXPECT_EQ("G", (*FM->getFeature("F")->alternatives_begin())->getName());
-//}
 } // namespace vara::feature

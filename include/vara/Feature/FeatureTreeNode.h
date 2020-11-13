@@ -3,8 +3,8 @@
 
 #include "vara/Feature/FeatureSourceRange.h"
 
-#include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/DirectedGraph.h"
+#include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/IR/Function.h"
@@ -29,8 +29,7 @@ class FeatureTreeNode : private llvm::DGNode<FeatureTreeNode, FeatureTreeNode> {
 public:
   enum class NodeKind { NK_FEATURE, NK_RELATIONSHIP };
 
-  // TODO(s9latimm): Refactor to llvm::SmallSet
-  using NodeSetType = typename std::set<FeatureTreeNode *>;
+  using NodeSetType = typename llvm::SmallSet<FeatureTreeNode *, 3>;
 
   FeatureTreeNode(NodeKind Kind) : Kind(Kind){};
   FeatureTreeNode(const FeatureTreeNode &) = delete;

@@ -121,8 +121,6 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
   assert(Root && "Root not set.");
   std::set<std::string> Visited;
 
-  addRelationship(Relationship::RelationshipKind::RK_OR, {"AA", "AB"}, "A");
-
   if (!buildTree(std::string(Root->getName()), Visited) ||
       !buildConstraints()) {
     return nullptr;
@@ -133,8 +131,8 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
 }
 
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
-    const std::vector<std::pair<std::string, std::string>> &B,
-    const std::vector<std::pair<
+    const std::initializer_list<std::pair<std::string, std::string>> &B,
+    const std::initializer_list<std::pair<
         std::string, std::pair<std::string, NumericFeature::ValuesVariantType>>>
         &N) {
   init();
@@ -156,21 +154,24 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
           ? std::make_optional(FeatureSourceRange(*F.getFeatureSourceRange()))
           : std::nullopt;
   switch (F.getKind()) {
-  case Feature::FeatureKind::FK_BINARY:
-    if (!makeFeature<BinaryFeature>(std::string(F.getName()), F.isOptional(),
-                                    Loc)) {
+  case Feature::FeatureKind::FK_BINARY: {
+    auto *BF = llvm::dyn_cast<BinaryFeature>(&F);
+    assert(BF);
+    if (!makeFeature<BinaryFeature>(std::string(BF->getName()),
+                                    BF->isOptional(), Loc)) {
       return false;
     }
     break;
-  // locale var -> assert
-  case Feature::FeatureKind::FK_NUMERIC:
-    if (!makeFeature<NumericFeature>(
-            std::string(F.getName()),
-            llvm::dyn_cast<NumericFeature>(&F)->getValues(), F.isOptional(),
-            Loc)) {
+  }
+  case Feature::FeatureKind::FK_NUMERIC: {
+    auto *NF = llvm::dyn_cast<NumericFeature>(&F);
+    assert(NF);
+    if (!makeFeature<NumericFeature>(std::string(NF->getName()),
+                                     NF->getValues(), NF->isOptional(), Loc)) {
       return false;
     }
     break;
+  }
   default:
     return false;
   }
@@ -184,18 +185,6 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
       this->addParent(std::string(C->getName()), std::string(F.getName()));
     }
   }
-  //  for (const auto *Exclude : F.excludes()) {
-  //    this->addExclude(std::string(F.getName()),
-  //    std::string(Exclude->getName()));
-  //  }
-  //  for (const auto *Alternative : F.alternatives()) {
-  //    this->addConstraint({{std::string(F.getName()), true},
-  //                         {std::string(Alternative->getName()), true}});
-  //  }
-  //  for (const auto *Implication : F.implications()) {
-  //    this->addConstraint({{std::string(F.getName()), false},
-  //                         {std::string(Implication->getName()), true}});
-  //  }
   return true;
 }
 } // namespace vara::feature
