@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <regex>
+#include <utility>
 
 namespace vara::feature {
 
@@ -227,7 +228,7 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
 bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 //===----------------------------------------------------------------------===//
-//                               FeatureModelSxfmParser Class
+//                        FeatureModelSxfmParser Class
 //===----------------------------------------------------------------------===//
 
 std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
@@ -249,29 +250,242 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
   {
     std::stringstream Ss(reinterpret_cast<const char *>(FeatureTree));
     std::string To;
+    string Name;
+    bool Opt;
+    int LastIndentation = -1;
+    int OrGroupCounter = 0;
+    std::map<int, string> IndentationToParentMapping;
 
-    if (FeatureTree != nullptr)
-    {
-      while(std::getline(Ss, To)){
+    if (FeatureTree == nullptr) {
+      std::cerr << "Failed to read in feature tree. Is it empty?" << std::endl;
+      return false;
+    }
 
+    while (std::getline(Ss, To)) {
+      if (!std::getline(Ss, To)) {
+        return true;
       }
+      Opt = false;
+
+      if (To.empty() || std::all_of(To.begin(),To.end(),isspace)) {
+        continue;
+      }
+
+      // For every line, count the indentation
+      // -1,0 or +1 additional indentations are allowed to the original one
+      // Otherwise, the format is violated
+      int CurrentIndentationLevel = countOccurrences(To, Indentation);
+      int Diff = LastIndentation - CurrentIndentationLevel;
+      if ((LastIndentation != -1) && (Diff < -1 | Diff > 1)) {
+        std::cerr << "Indentation error in feature tree." << std::endl;
+        return false;
+      }
+
+      // Move pointer to first character after indentation
+      // The first character has to be a colon followed by the type of
+      // the feature (m for mandatory, o for optional, a for alternative)
+      std::string::size_type Pos = CurrentIndentationLevel * Indentation.length() + 2;
+      std::optional<std::tuple<string, string>> Cardinalities;
+      switch (To.at(Pos - 1)) {
+      case 'o':
+        // Code for optional
+        Opt = true;
+        break;
+      case 'g':
+        // Code for an or group with different cardinalities
+        Opt = false;
+        // Extract the cardinality
+        Cardinalities = extractCardinality(To);
+        // TODO: Process the cardinality
+        // Currently, we only accept cardinalities [1,1] (alternative group) and
+        // [1, *] (or group)
+
+        break;
+      case ' ':
+        // Code for alternative child
+        Pos--;
+        break;
+      }
+      // Extract the name
+      Name = readUntil(To, ' ', Pos + 1);
+
+      // Note that we ignore the ID and use the name of the feature
+      // as unique identifier.
+      if (Name.find_first_of('(') != std::string::npos) {
+        Name = readUntil(Name, '(', 0);
+      }
+
+      // Remove the cardinality
+      if (Name.find_first_of('[') != std::string::npos) {
+        Name = readUntil(Name, '[', 0);
+      }
+
+      // If there is no name, provide an artificial one
+      if (Name.empty()) {
+        OrGroupCounter++;
+        Name = "group_" + std::to_string(OrGroupCounter);
+      }
+
+      // Create the feature
+      FMB.makeFeature<BinaryFeature>(Name, Opt);
+      IndentationToParentMapping[CurrentIndentationLevel] = Name;
+
+      // Add parent from the upper indentation level if there is one
+      if (LastIndentation != -1) {
+        auto Parent = IndentationToParentMapping.find(CurrentIndentationLevel - 1);
+        assert(Parent != IndentationToParentMapping.end());
+        FMB.addParent(Name, Parent->second);
+      }
+      LastIndentation = CurrentIndentationLevel;
     }
   }
 
-  // The first line (beginning with :r) is usually the root feature
+  return true;
+}
+
+bool FeatureModelSxfmParser::processFeatureTreeLine(std::stringstream& Ss, const char *ParentName,
+                                                    std::optional<std::tuple<string, string>> ParentCardinality,
+                                                    int ParentIndentation, int OrGroupCounter) {
+  std::string To;
+  if (!std::getline(Ss, To)) {
+    return true;
+  }
+  bool Opt = false;
+  string Name;
+
+  if (To.empty()) {
+    processFeatureTreeLine(Ss, ParentName, std::move(ParentCardinality), ParentIndentation, OrGroupCounter);
+  }
 
   // For every line, count the indentation
   // -1,0 or +1 additional indentations are allowed to the original one
   // Otherwise, the format is violated
+  int CurrentIndentationLevel = countOccurrences(To, Indentation);
+  int Diff = ParentIndentation - CurrentIndentationLevel;
+  if ((ParentIndentation != -1) & (Diff < -1 | Diff > 1)) {
+    std::cerr << "Indentation error in feature tree." << std::endl;
+    return false;
+  }
 
-  // Retrieve the type of the feature (optional, mandatory, alternative) and add
-  // the information to the FeatureModelBuilder
-  return true;
+  // Move pointer to first character after indentation
+  // The first character has to be a colon followed by the type of
+  // the feature (m for mandatory, o for optional, a for alternative)
+  std::string::size_type Pos = CurrentIndentationLevel * Indentation.length() + 2;
+  std::optional<std::tuple<string, string>> Cardinalities;
+  switch (To.at(Pos - 1)) {
+  case 'o':
+    // Code for optional
+    Opt = true;
+    break;
+  case 'g':
+    // Code for an or group with different cardinalities
+    Opt = false;
+    // Extract the cardinality
+    Cardinalities = extractCardinality(To);
+    // TODO: Process the cardinality
+    // Currently, we only accept cardinalities [1,1] (alternative group) and
+    // [1, *] (or group)
+
+    break;
+  case ' ':
+    // Code for alternative child
+    Pos--;
+    break;
+  }
+  // Extract the name
+  Name = readUntil(To, ' ', Pos + 1);
+
+  // Note that we ignore the ID and use the name of the feature
+  // as unique identifier.
+  if (Name.find_first_of('(') != std::string::npos) {
+    Name = readUntil(Name, '(', 0);
+  }
+
+  // Remove the cardinality
+  if (Name.find_first_of('[') != std::string::npos) {
+    Name = readUntil(Name, '[', 0);
+  }
+
+  // If there is no name, provide an artificial one
+  if (Name.empty()) {
+    Name = "group_" + std::to_string(OrGroupCounter);
+    OrGroupCounter++;
+  }
+
+  // Create the feature
+  FMB.makeFeature<BinaryFeature>(Name, Opt);
+
+  // Add parent from the upper indentation level if there is one
+  if (ParentIndentation != -1) {
+    FMB.addParent(Name, ParentName);
+  }
+
+
+  return processFeatureTreeLine(Ss, Name.c_str(), Cardinalities, CurrentIndentationLevel, OrGroupCounter);
+}
+
+/// This method extracts the cardinality from the given line.
+/// The cardinality is wrapped in square brackets (e.g., [1,1])
+/// \param StringToExtractFrom the string to extract the cardinality from
+/// \return
+std::optional<std::tuple<string, string>> FeatureModelSxfmParser::extractCardinality(const string& StringToExtractFrom) {
+  string MinCardinality = "*";
+  string MaxCardinality = "*";
+
+  // Search for the first occurrence of '['; then read in the min cardinality
+  // until the comma. Afterwards, read in the max cardinality until ']'
+  std::string::size_type Pos = StringToExtractFrom.find_first_of('[');
+  if (Pos == std::string::npos) {
+    std::cerr << "No cardinality given in or group!" << std::endl;
+    return std::optional<std::tuple<string, string>>();
+  }
+  MinCardinality = readUntil(StringToExtractFrom, ',', Pos + 1);
+  Pos = StringToExtractFrom.find_first_of(',', Pos);
+  MaxCardinality = readUntil(StringToExtractFrom, ']', Pos + 1);
+
+  return std::optional<std::tuple<string, string>>(std::tuple<string, string>{MinCardinality, MaxCardinality});
+}
+
+/// This method reads beginning from a certain starting position and reads in
+/// every character until CharToSearch is found.
+/// \param StringToReadFrom string to read from
+/// \param CharToSearch character to search for
+/// \param Start the starting position to start reading
+/// \return the string read until the given character is found
+string FeatureModelSxfmParser::readUntil(const string& StringToReadFrom, const char& CharToSearch, std::string::size_type Start) {
+  string Result;
+  std::string::size_type Pos = Start;
+  if (Pos > StringToReadFrom.length()) {
+    std::cerr << "Position out of bounds!" << std::endl;
+    return "";
+  }
+
+  while ((Pos < StringToReadFrom.length()) && (StringToReadFrom.at(Pos) != CharToSearch)) {
+    Result += StringToReadFrom.at(Pos);
+    Pos++;
+  }
+  return Result;
+}
+
+/// This method counts the occurrences of the second argument in the first argument.
+/// The intended use of this method is to count the indentation level of the feature
+/// tree in the sxfm format.
+/// \param StringToSearch the string to search in
+/// \param StringToFind the string to count the occurrences of
+/// \return the number of occurrences
+int FeatureModelSxfmParser::countOccurrences(const string& StringToSearch, const string& StringToFind) {
+  int Occurrences = 0;
+  std::string::size_type Pos = 0;
+  while ((Pos = StringToSearch.find(StringToFind, Pos )) != std::string::npos) {
+  ++Occurrences;
+  Pos += StringToFind.length();
+  }
+  return Occurrences;
 }
 
 bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
   // TODO (CK): This has to wait until the constraint part is implemented in
-  // the FeatureModelBuilder
+  // the FeatureModelBuilder (issue #24)
   return true;
 }
 
@@ -292,7 +506,7 @@ bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
         // Check whether a custom indentation is defined in the feature tree and
         // set it accordingly
         {
-          std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, SxfmConstants::INDENTATION),
+          std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(H, SxfmConstants::INDENTATION),
                                                          xmlFree);
           if (Cnt) {
             Indentation = reinterpret_cast<char*>(Cnt.get());
@@ -357,8 +571,6 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelSxfmParser::parseDoc() 
   return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
 }
 
-// TODO (CK): Check the feature model before reading in the whole model by
-// using a syntax graph?
 /// This method checks if the given feature model is valid
 /// \return true iff the feature model is valid
 bool FeatureModelSxfmParser::verifyFeatureModel() { return parseDoc().get(); }

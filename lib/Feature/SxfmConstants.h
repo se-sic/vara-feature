@@ -19,7 +19,7 @@ public:
   static constexpr xmlChar ROOT[] = "root";
   static constexpr xmlChar FEATURE_TREE[] = "feature_tree";
   static constexpr xmlChar CONSTRAINTS[] = "constraints";
-  static constexpr xmlChar INDENTATION[] = "\t";
+  static constexpr xmlChar INDENTATION[] = "indentation_string";
   static inline const std::string DtdRaw =
       "<!ELEMENT feature_model (meta?, feature_tree, constraints?)>\n"
       "<!ATTLIST feature_model\n"

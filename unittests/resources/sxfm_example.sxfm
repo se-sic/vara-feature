@@ -11,7 +11,7 @@
   <data name="website">Model creator's website</data>
   <data name="reference">Model's related publication</data>
   </meta>
-  <feature_tree>
+  <feature_tree indentation_string="  ">
     :r root (root_id)
       :o opt1 (id_opt1)
       :o opt2 (id_opt2)

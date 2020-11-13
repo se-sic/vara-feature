@@ -90,9 +90,16 @@ private:
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
   bool parseVm(xmlNode *Node);
 
-  static bool parseFeatureTree(xmlChar *FeatureTree);
+  bool parseFeatureTree(xmlChar *FeatureTree);
   static bool parseConstraints(xmlChar *Constraints);
 
+  static int countOccurrences(const string& Target, const string& StringToSearch);
+  static std::optional<std::tuple<string, string>> extractCardinality(const string& StringToExtractFrom);
+  static string readUntil(const string& StringToReadFrom, const char& CharToSearch, std::string::size_type Start);
+  bool
+  processFeatureTreeLine(std::stringstream& Ss, const char *ParentName,
+                         std::optional<std::tuple<string, string>> ParentCardinality,
+                         int ParentIndentation, int OrGroupCounter);
 };
 
 } // namespace vara::feature
