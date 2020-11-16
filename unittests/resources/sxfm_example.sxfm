@@ -24,11 +24,11 @@
         :g [1,1]
           : d (id_d)
           : e (id_e)
-            :g [2,3]
+            :g [1,*]
               : f (id_f)
               : g (id_g)
               : h (id_h)
-      :o opt3 (id_opt3)
+      :o opt4 (id_opt4)
   </feature_tree>
   <constraints>
     c1: ~id_a or id_opt2

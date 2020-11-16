@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <regex>
+#include <tuple>
 #include <utility>
 
 namespace vara::feature {
@@ -277,8 +278,15 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
     string Name;
     bool Opt;
     int LastIndentationLevel = -1;
+    int RootIndentation = -1;
     int OrGroupCounter = 0;
     std::map<int, string> IndentationToParentMapping;
+
+    // This map is used for the or group mapping
+    // Each entry represents an or group as a tuple where the first value is
+    // the name of the parent, the second is the relationship kind, and the
+    // third a vector consisting of the name of the children
+    std::map<int, std::tuple<string, Relationship::RelationshipKind, std::vector<string>>> OrGroupMapping;
 
     if (FeatureTree == nullptr) {
       std::cerr << "Failed to read in feature tree. Is it empty?" << std::endl;
@@ -286,9 +294,6 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
     }
 
     while (std::getline(Ss, To)) {
-      if (!std::getline(Ss, To)) {
-        return true;
-      }
       Opt = false;
 
       if (To.empty() || std::all_of(To.begin(),To.end(),isspace)) {
@@ -298,8 +303,19 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       // For every line, count the indentation
       // not more than 1 additional indentations are allowed to the original one
       // However, we may have arbitrarily less indentations
-      int CurrentIndentationLevel = countOccurrences(To, Indentation);
+      if ((To.find(':', 0 )) == std::string::npos) {
+        std::cerr << "Colon is missing in line" << To << std::endl;
+        return false;
+      }
+
+      int CurrentIndentationLevel = countOccurrences(readUntil(To, ':', 0), Indentation);
       int Diff = CurrentIndentationLevel - LastIndentationLevel;
+
+      // Remember the root indentation for later checks
+      if (LastIndentationLevel == -1) {
+        RootIndentation = CurrentIndentationLevel;
+      }
+
       if ((LastIndentationLevel != -1) && Diff > 1) {
         std::cerr << "Indentation error in feature tree in line " << To << std::endl;
         return false;
@@ -310,9 +326,6 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       // the feature (m for mandatory, o for optional, a for alternative)
       std::string::size_type Pos = CurrentIndentationLevel * Indentation.length() + 2;
       std::optional<std::tuple<int, int>> Cardinalities;
-      if (To.at(Pos) != ':') {
-        std::cerr << "Colon is missing in line" << To << std::endl;
-      }
 
       switch (To.at(Pos - 1)) {
       case 'o':
@@ -358,12 +371,46 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       IndentationToParentMapping[CurrentIndentationLevel] = Name;
 
       // Add parent from the upper indentation level if there is one
+      if (LastIndentationLevel != -1 && CurrentIndentationLevel == RootIndentation) {
+        std::cerr << "Only one feature can be root and have the same indentation as root." << std::endl;
+        return false;
+      }
+
       if (LastIndentationLevel != -1) {
         auto Parent = IndentationToParentMapping.find(CurrentIndentationLevel - 1);
         assert(Parent != IndentationToParentMapping.end());
         FMB.addParent(Name, Parent->second);
       }
+
+      // Add the or group to the feature model if it is completely parsed
+      auto OrGroup = OrGroupMapping.find(CurrentIndentationLevel);
+      if (OrGroup != OrGroupMapping.end()) {
+        FMB.addRelationship(std::get<1>(OrGroup->second), std::get<2>(OrGroup->second), std::get<0>(OrGroup->second));
+        OrGroupMapping.erase(CurrentIndentationLevel);
+      }
+
+      // Remember the new or group parent if there is one
+      if (Cardinalities.has_value()) {
+        Relationship::RelationshipKind GroupKind = Relationship::RelationshipKind::RK_ALTERNATIVE;
+        if (std::get<1>(Cardinalities.value()) == UINT_MAX) {
+          GroupKind = Relationship::RelationshipKind::RK_OR;
+        }
+        OrGroupMapping[CurrentIndentationLevel] = std::tuple<string, Relationship::RelationshipKind, std::vector<string>>(Name, GroupKind, std::vector<string>());
+      }
+
+      // Add a child
+      OrGroup = OrGroupMapping.find(CurrentIndentationLevel - 1);
+      if (OrGroup != OrGroupMapping.end()) {
+        std::get<2>(OrGroup->second).push_back(Name);
+      }
+
+
       LastIndentationLevel = CurrentIndentationLevel;
+    }
+
+    // Add the remaining or groups
+    for (auto & OrGroup : OrGroupMapping) {
+      FMB.addRelationship(std::get<1>(OrGroup.second), std::get<2>(OrGroup.second), std::get<0>(OrGroup.second));
     }
   }
 
@@ -394,7 +441,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(c
     return std::optional<std::tuple<int, int>>();
   }
 
-  if (MinCardinality.value() != 1 || MaxCardinality.value() != 1 || MaxCardinality.value() != UINT_MAX) {
+  if (MinCardinality.value() != 1 || (MaxCardinality.value() != 1 && MaxCardinality.value() != UINT_MAX)) {
     std::cerr << "Cardinality unsupported. We support cardinalities [1,1] (alternative) or [1, *] (or group)." << std::endl;
     return std::optional<std::tuple<int, int>>();
   }
@@ -462,9 +509,10 @@ string FeatureModelSxfmParser::readUntil(const string& StringToReadFrom, const c
 int FeatureModelSxfmParser::countOccurrences(const string& StringToSearch, const string& StringToFind) {
   int Occurrences = 0;
   std::string::size_type Pos = 0;
+
   while ((Pos = StringToSearch.find(StringToFind, Pos )) != std::string::npos) {
-  ++Occurrences;
-  Pos += StringToFind.length();
+    ++Occurrences;
+    Pos += StringToFind.length();
   }
   return Occurrences;
 }
@@ -499,9 +547,13 @@ bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
           }
 
         }
+
+        // Parse the feature tree with all its features and relations among them.
         if (!parseFeatureTree(xmlNodeGetContent(H))) {
           return false;
         }
+
+      // Finally, parse the cross-tree-constraints in the constraints tag.
       } else if (!xmlStrcmp(H->name, SxfmConstants::CONSTRAINTS)) {
         if (!parseConstraints(xmlNodeGetContent(H))) {
           return false;
@@ -509,10 +561,6 @@ bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
       }
     }
   }
-
-  // Parse the feature tree with all its features and relations among them.
-
-  // Finally, parse the cross-tree-constraints in the constraints tag.
   return true;
 }
 
