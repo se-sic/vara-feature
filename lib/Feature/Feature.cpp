@@ -1,5 +1,4 @@
 #include "vara/Feature/Feature.h"
-#include "vara/Feature/Constraint.h"
 
 #include <iterator>
 
@@ -44,12 +43,28 @@ std::string NumericFeature::toString() const {
 
 std::string BinaryFeature::toString() const { return Feature::toString(); }
 
+bool Feature::hasExclude(const Feature *F) const {
+  for (const auto *E : excludes()) {
+    const auto *RHS =
+        llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
+    const auto *LHS =
+        llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
+    if (RHS && LHS) {
+      if (RHS->getFeature()->getName() == this->getName() &&
+          LHS->getFeature()->getName() == F->getName()) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 /// Find roots of subtrees containing either A (this) or B (Other) which have a
 /// common parent feature and compare them lexicographically. If no such node
 /// can be found compare names directly.
-bool Feature::operator<(const vara::feature::Feature &Other) const {
-  std::stack<const vara::feature::Feature *> TraceA;
-  std::stack<const vara::feature::Feature *> TraceB;
+bool Feature::operator<(const Feature &Other) const {
+  std::stack<const Feature *> TraceA;
+  std::stack<const Feature *> TraceB;
 
   for (const auto *Head = this; Head; Head = Head->getParentFeature()) {
     TraceA.push(Head); // path from A to root
@@ -75,46 +90,5 @@ bool Feature::operator<(const vara::feature::Feature &Other) const {
     return false;
   }
   return TraceA.top()->getName().lower() < TraceB.top()->getName().lower();
-}
-
-llvm::iterator_range<Feature::excludes_iterator> Feature::excludes() {
-  std::vector<const vara::feature::ExcludesConstraint *> Excludes;
-  for (const auto *C : constraints()) {
-    const auto *E = llvm::dyn_cast<vara::feature::ExcludesConstraint>(C);
-    if (E) {
-      Excludes.push_back(E);
-    }
-  }
-  // TODO
-  return llvm::make_range(nullptr, nullptr);
-}
-
-llvm::iterator_range<Feature::const_excludes_iterator>
-Feature::excludes() const {
-  std::vector<const vara::feature::ExcludesConstraint *> Excludes;
-  for (const auto *C : constraints()) {
-    const auto *E = llvm::dyn_cast<vara::feature::ExcludesConstraint>(C);
-    if (E) {
-      Excludes.push_back(E);
-    }
-  }
-  // TODO
-  return llvm::make_range(nullptr, nullptr);
-}
-
-bool Feature::hasExclude(const Feature *F) const {
-  for (const auto *E : excludes()) {
-    const auto *RHS =
-        llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
-    const auto *LHS =
-        llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
-    if (RHS && LHS) {
-      if (RHS->getFeature()->getName() == this->getName() &&
-          LHS->getFeature()->getName() == F->getName()) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 } // namespace vara::feature

@@ -21,4 +21,7 @@ Feature *PrimaryFeatureConstraint::getFeature() const {
     return std::get<std::unique_ptr<Feature>>(FV).get();
   }
 }
+std::string PrimaryFeatureConstraint::toString() const {
+  return llvm::formatv("{0}", getFeature()->getName());
+}
 } // namespace vara::feature

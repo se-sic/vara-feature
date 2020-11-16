@@ -1,9 +1,8 @@
 #ifndef VARA_FEATURE_CONSTRAINT_H
 #define VARA_FEATURE_CONSTRAINT_H
 
-#include "vara/Feature/Feature.h"
-
 #include "llvm/ADT/StringRef.h"
+#include "llvm/Support/FormatVariadic.h"
 
 #include <cassert>
 #include <memory>
@@ -473,6 +472,8 @@ private:
   int Value;
 };
 
+class Feature;
+
 class PrimaryFeatureConstraint : public PrimaryConstraint {
 public:
   PrimaryFeatureConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
@@ -480,9 +481,7 @@ public:
 
   [[nodiscard]] Feature *getFeature() const;
 
-  [[nodiscard]] std::string toString() const override {
-    return llvm::formatv("{0}", getFeature()->getName());
-  }
+  [[nodiscard]] std::string toString() const override;
 
   static bool classof(const Constraint *C) {
     return C->getKind() == ConstraintKind::CK_FEATURE;

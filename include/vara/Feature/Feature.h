@@ -1,6 +1,7 @@
 #ifndef VARA_FEATURE_FEATURE_H
 #define VARA_FEATURE_FEATURE_H
 
+#include "vara/Feature/Constraint.h"
 #include "vara/Feature/FeatureSourceRange.h"
 #include "vara/Feature/FeatureTreeNode.h"
 
@@ -12,7 +13,6 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include <llvm/ADT/SetVector.h>
 #include <set>
 #include <stack>
 #include <utility>
@@ -21,9 +21,6 @@
 using std::string;
 
 namespace vara::feature {
-
-class Constraint;
-class ExcludesConstraint;
 
 //===----------------------------------------------------------------------===//
 //                               Feature Class
@@ -39,6 +36,10 @@ public:
       typename std::vector<ExcludesConstraint *>::iterator;
   using const_excludes_iterator =
       typename std::vector<ExcludesConstraint *>::const_iterator;
+  using implications_iterator =
+      typename std::vector<ImpliesConstraint *>::iterator;
+  using const_implications_iterator =
+      typename std::vector<ImpliesConstraint *>::const_iterator;
 
   enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
 
@@ -104,8 +105,56 @@ public:
     return llvm::make_range(Constraints.begin(), Constraints.end());
   }
 
-  llvm::iterator_range<excludes_iterator> excludes();
-  [[nodiscard]] llvm::iterator_range<const_excludes_iterator> excludes() const;
+  //===--------------------------------------------------------------------===//
+  // Excludes
+
+  llvm::iterator_range<excludes_iterator> excludes() {
+    std::vector<ExcludesConstraint *> Excludes;
+    for (auto *C : Constraints) {
+      auto *E = llvm::dyn_cast<ExcludesConstraint>(C);
+      if (E) {
+        Excludes.push_back(E);
+      }
+    }
+    return llvm::make_range(Excludes.begin(), Excludes.end());
+  }
+
+  [[nodiscard]] llvm::iterator_range<const_excludes_iterator> excludes() const {
+    std::vector<ExcludesConstraint *> Excludes;
+    for (auto *C : constraints()) {
+      auto *E = llvm::dyn_cast<ExcludesConstraint>(C);
+      if (E) {
+        Excludes.push_back(E);
+      }
+    }
+    return llvm::make_range(Excludes.begin(), Excludes.end());
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Implications
+
+  llvm::iterator_range<implications_iterator> implications() {
+    std::vector<ImpliesConstraint *> Excludes;
+    for (auto *C : Constraints) {
+      auto *I = llvm::dyn_cast<ImpliesConstraint>(C);
+      if (I) {
+        Excludes.push_back(I);
+      }
+    }
+    return llvm::make_range(Excludes.begin(), Excludes.end());
+  }
+
+  [[nodiscard]] llvm::iterator_range<const_implications_iterator>
+  implications() const {
+    std::vector<ImpliesConstraint *> Implications;
+    for (auto *C : constraints()) {
+      auto *I = llvm::dyn_cast<ImpliesConstraint>(C);
+      if (I) {
+        Implications.push_back(I);
+      }
+    }
+    return llvm::make_range(Implications.begin(), Implications.end());
+  }
 
   //===--------------------------------------------------------------------===//
   // Utility
