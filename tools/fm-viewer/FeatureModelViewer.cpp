@@ -10,7 +10,7 @@ static llvm::cl::OptionCategory
     FMViewerCategory("Feature model viewer options");
 
 static llvm::cl::list<std::string> FileNames(llvm::cl::Positional,
-                                             llvm::cl::desc("<file>"),
+                                             llvm::cl::desc("file"),
                                              llvm::cl::cat(FMViewerCategory));
 
 static llvm::cl::opt<bool> Xml("xml",
@@ -25,7 +25,7 @@ static llvm::cl::opt<bool> Verify("verify",
 
 static llvm::cl::opt<std::string>
     Viewer("viewer", llvm::cl::desc("Use <executable> to view DOT file."),
-           llvm::cl::value_desc("<executable>"), llvm::cl::init(""),
+           llvm::cl::value_desc("executable"), llvm::cl::init(""),
            llvm::cl::cat(FMViewerCategory));
 
 static llvm::cl::opt<std::string>
@@ -56,8 +56,9 @@ int main(int Argc, char **Argv) {
     return 1;
   }
 
-  if (Verify && !vara::feature::FeatureModelXmlParser(std::string(FS.get()->getBuffer()))
-                     .verifyFeatureModel()) {
+  if (Verify &&
+      !vara::feature::FeatureModelXmlParser(std::string(FS.get()->getBuffer()))
+           .verifyFeatureModel()) {
     llvm::errs() << "error: Invalid feature model.\n";
     return 1;
   }
@@ -65,8 +66,9 @@ int main(int Argc, char **Argv) {
   std::unique_ptr<vara::feature::FeatureModel> FM;
 
   if (Xml) {
-    FM = vara::feature::FeatureModelXmlParser(std::string(FS.get()->getBuffer()))
-             .buildFeatureModel();
+    FM =
+        vara::feature::FeatureModelXmlParser(std::string(FS.get()->getBuffer()))
+            .buildFeatureModel();
   } else {
     assert(FM && "No matching parser.");
   }

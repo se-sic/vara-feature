@@ -18,8 +18,8 @@ public:
       typename std::vector<Feature *>::const_iterator;
 
   OrderedFeatureVector() = default;
-  template<class FeatureIterTy> OrderedFeatureVector(FeatureIterTy Start, FeatureIterTy End)
-  {
+  template <class FeatureIterTy>
+  OrderedFeatureVector(FeatureIterTy Start, FeatureIterTy End) {
     insert(llvm::iterator_range(std::move(Start), std::move(End)));
   }
 
@@ -31,9 +31,12 @@ public:
     insert(FF...);
   }
 
-  template <typename T> void insert(llvm::iterator_range<T> FF) {
-    for (const auto &F : FF) {
-      insert(F);
+  template <typename T> void insert(llvm::iterator_range<T> Iter) {
+    for (const auto &Ptr : Iter) {
+      auto *F = llvm::dyn_cast<Feature>(Ptr);
+      if (F) {
+        insert(F);
+      }
     }
   }
 

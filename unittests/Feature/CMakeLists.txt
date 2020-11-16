@@ -8,4 +8,5 @@ add_vara_unittest(VaRAFeatureTests
   FeatureModelWriter.cpp
   OrderedFeatureVector.cpp
   FeatureModelSxfm.cpp
+  Relationship.cpp
   )

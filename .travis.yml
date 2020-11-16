@@ -13,42 +13,42 @@ jobs:
     # Clang on linux
 
     # Clang legacy
-    - name: Clang-9 Debug
-      stage: Legacy
-      addons: &clang9
-        apt:
-          sources:
-            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
-              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
-            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main'
-              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
-          packages:
-            - llvm-9-dev
-            - clang++-9
-            - clang-tidy-10
-      env: CXX=clang++-9 BUILD_TYPE=Debug LLVM_VERSION=9
-    - name: Clang-9 Release
-      stage: Legacy
-      addons: *clang9
-      env: CXX=clang++-9 BUILD_TYPE=Release LLVM_VERSION=9
-
-    # Clang latest
     - name: Clang-10 Debug
-      stage: Latest
+      stage: Legacy
       addons: &clang10
         apt:
           sources:
             - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main'
               key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main'
+              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
           packages:
             - llvm-10-dev
             - clang++-10
-            - clang-tidy-10
-      env: CXX=clang++-10 BUILD_TYPE=Debug
+            - clang-tidy-11
+      env: CXX=clang++-10 BUILD_TYPE=Debug LLVM_VERSION=10
     - name: Clang-10 Release
-      stage: Latest
+      stage: Legacy
       addons: *clang10
-      env: CXX=clang++-10 BUILD_TYPE=Release
+      env: CXX=clang++-10 BUILD_TYPE=Release LLVM_VERSION=10
+
+    # Clang latest
+    - name: Clang-11 Debug
+      stage: Latest
+      addons: &clang11
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main'
+              key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+          packages:
+            - llvm-11-dev
+            - clang++-11
+            - clang-tidy-11
+      env: CXX=clang++-11 BUILD_TYPE=Debug LLVM_VERSION=11
+    - name: Clang-11 Release
+      stage: Latest
+      addons: *clang11
+      env: CXX=clang++-11 BUILD_TYPE=Release LLVM_VERSION=11
 
     ##############
     # GCC on linux
@@ -59,18 +59,18 @@ jobs:
       addons: &gcc9
         apt:
           sources:
-            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main'
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main'
               key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
-            - sourceline:  ppa:ubuntu-toolchain-r/test
+            - sourceline: ppa:ubuntu-toolchain-r/test
           packages:
-            - llvm-10-dev
+            - llvm-11-dev
             - g++-9
-            - clang-tidy-10
-      env: CXX=g++-9 BUILD_TYPE=Debug
+            - clang-tidy-11
+      env: CXX=g++-9 BUILD_TYPE=Debug LLVM_VERSION=11
     - name: GCC-9 Release
       stage: Latest
       addons: *gcc9
-      env: CXX=g++-9 BUILD_TYPE=Release
+      env: CXX=g++-9 BUILD_TYPE=Release LLVM_VERSION=11
 
 script:
   - mkdir build
