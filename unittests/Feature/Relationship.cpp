@@ -18,7 +18,8 @@ TEST(Relationship, orTree) {
   B.addParent("aa", "a")->addFeature(AA);
   B.addParent("ab", "a")->addFeature(AB);
 
-  B.addRelationship(Relationship::RelationshipKind::RK_OR, {"aa", "ab"}, "a");
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, {"aa", "ab"},
+                        "a");
   auto FM = B.buildFeatureModel();
   assert(FM);
   auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());
@@ -44,8 +45,8 @@ TEST(Relationship, alternativeTree) {
   B.addParent("aa", "a")->addFeature(AA);
   B.addParent("ab", "a")->addFeature(AB);
 
-  B.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
-                    {"aa", "ab"}, "a");
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
+                        {"aa", "ab"}, "a");
   auto FM = B.buildFeatureModel();
   assert(FM);
   auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());

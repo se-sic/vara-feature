@@ -23,6 +23,7 @@ using std::string;
 namespace vara::feature {
 
 class Constraint;
+class ExcludesConstraint;
 
 //===----------------------------------------------------------------------===//
 //                               Feature Class
@@ -34,6 +35,10 @@ public:
   using constraint_iterator = typename std::vector<Constraint *>::iterator;
   using const_constraint_iterator =
       typename std::vector<Constraint *>::const_iterator;
+  using excludes_iterator =
+      typename std::vector<ExcludesConstraint *>::iterator;
+  using const_excludes_iterator =
+      typename std::vector<ExcludesConstraint *>::const_iterator;
 
   enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
 
@@ -99,6 +104,9 @@ public:
     return llvm::make_range(Constraints.begin(), Constraints.end());
   }
 
+  llvm::iterator_range<excludes_iterator> excludes();
+  [[nodiscard]] llvm::iterator_range<const_excludes_iterator> excludes() const;
+
   //===--------------------------------------------------------------------===//
   // Utility
 
@@ -129,6 +137,8 @@ private:
   std::vector<Constraint *> Constraints;
 
   void addConstraint(Constraint *C) { Constraints.push_back(C); }
+
+  [[nodiscard]] bool hasExclude(const Feature *F) const;
 };
 
 /// Options without arguments.

@@ -71,8 +71,6 @@ public:
 
   [[nodiscard]] virtual std::string toHTML() const { return toString(); }
 
-  bool classof(const Constraint *C) const { return C->getKind() == getKind(); }
-
   virtual void accept(ConstraintVisitor &V) = 0;
 
 private:
@@ -118,6 +116,10 @@ public:
     return llvm::formatv("({0} | {1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_OR;
+  }
 };
 
 class XorConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -130,6 +132,10 @@ public:
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} ^ {1})", LeftOperand->toString(),
                          RightOperand->toString());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_XOR;
   }
 };
 
@@ -149,6 +155,10 @@ public:
     return llvm::formatv("({0} &amp; {1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_AND;
+  }
 };
 
 class EqualsConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -161,6 +171,10 @@ public:
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} = {1})", LeftOperand->toString(),
                          RightOperand->toString());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_EQUALS;
   }
 };
 
@@ -180,6 +194,10 @@ public:
     return llvm::formatv("({0} =&gt; {1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_IMPLIES;
+  }
 };
 
 class ExcludesConstraint : public BinaryConstraint, public BooleanConstraint {
@@ -197,6 +215,10 @@ public:
   [[nodiscard]] std::string toHTML() const override {
     return llvm::formatv("({0} =&gt; {1})", LeftOperand->toString(),
                          RightOperand->toString());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_EXCLUDES;
   }
 };
 
@@ -217,6 +239,10 @@ public:
     return llvm::formatv("({0} &lt;=&gt; {1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_EQUIVALENCE;
+  }
 };
 
 class AdditionConstraint : public BinaryConstraint, public NumericConstraint {
@@ -229,6 +255,10 @@ public:
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} + {1})", LeftOperand->toString(),
                          RightOperand->toString());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_ADDITION;
   }
 };
 
@@ -244,6 +274,10 @@ public:
     return llvm::formatv("({0} - {1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_SUBTRACTION;
+  }
 };
 
 class MultiplicationConstraint : public BinaryConstraint,
@@ -258,6 +292,10 @@ public:
     return llvm::formatv("({0} * {1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_MULTIPLICATION;
+  }
 };
 
 class DivisionConstraint : public BinaryConstraint, public NumericConstraint {
@@ -270,6 +308,10 @@ public:
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} / {1})", LeftOperand->toString(),
                          RightOperand->toString());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_DIVISION;
   }
 };
 
@@ -289,6 +331,10 @@ public:
     return llvm::formatv("({0} &lt; {1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_LESS;
+  }
 };
 
 class GreaterConstraint : public BinaryConstraint, public NumericConstraint {
@@ -306,6 +352,10 @@ public:
   [[nodiscard]] std::string toHTML() const override {
     return llvm::formatv("({0} &gt; {1})", LeftOperand->toString(),
                          RightOperand->toString());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_GREATER;
   }
 };
 
@@ -325,6 +375,10 @@ public:
     return llvm::formatv("({0} &lt;= {1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_LESSEQUAL;
+  }
 };
 
 class GreaterEqualConstraint : public BinaryConstraint,
@@ -343,6 +397,10 @@ public:
   [[nodiscard]] std::string toHTML() const override {
     return llvm::formatv("({0} &gt;= {1})", LeftOperand->toString(),
                          RightOperand->toString());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_GREATEREQUAL;
   }
 };
 
@@ -369,6 +427,10 @@ public:
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("!{0}", Operand->toString());
   }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_NOT;
+  }
 };
 
 class NegConstraint : public UnaryConstraint, public NumericConstraint {
@@ -378,6 +440,10 @@ public:
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("~{0}", Operand->toString());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_NEG;
   }
 };
 
@@ -390,15 +456,21 @@ public:
 
 class PrimaryIntegerConstraint : public PrimaryConstraint {
 public:
-  PrimaryIntegerConstraint(int V)
-      : V(V), PrimaryConstraint(ConstraintKind::CK_INTEGER) {}
+  PrimaryIntegerConstraint(int Value)
+      : Value(Value), PrimaryConstraint(ConstraintKind::CK_INTEGER) {}
 
   [[nodiscard]] std::string toString() const override {
-    return llvm::formatv("{0}", V);
+    return llvm::formatv("{0}", Value);
   }
 
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_INTEGER;
+  }
+
+  void accept(ConstraintVisitor &V) override;
+
 private:
-  int V;
+  int Value;
 };
 
 class PrimaryFeatureConstraint : public PrimaryConstraint {
@@ -410,6 +482,10 @@ public:
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("{0}", getFeature()->getName());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_FEATURE;
   }
 
   void accept(ConstraintVisitor &V) override;
@@ -430,6 +506,8 @@ public:
   }
 
   virtual void visit(UnaryConstraint *C) { C->getOperand()->accept(*this); }
+
+  virtual void visit(PrimaryIntegerConstraint *C) {}
 
   virtual void visit(PrimaryFeatureConstraint *C) {}
 };

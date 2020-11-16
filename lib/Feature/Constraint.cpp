@@ -3,7 +3,13 @@
 
 namespace vara::feature {
 void BinaryConstraint::accept(ConstraintVisitor &V) { return V.visit(this); }
+
 void UnaryConstraint::accept(ConstraintVisitor &V) { return V.visit(this); }
+
+void PrimaryIntegerConstraint::accept(ConstraintVisitor &V) {
+  return V.visit(this);
+}
+
 void PrimaryFeatureConstraint::accept(ConstraintVisitor &V) {
   return V.visit(this);
 }

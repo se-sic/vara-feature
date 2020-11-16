@@ -117,7 +117,6 @@ bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
   return true;
 }
 
-// TODO(s9latimm): Refactor with new Constraints representation
 // TODO(s9latimm): remove NOLINT
 bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
   for (xmlNode *H = Node->children; H; H = H->next) {
@@ -127,20 +126,7 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(H), xmlFree)
                                          .get()));
-        const std::regex Regex(R"((!?\w+))");
-        std::smatch Matches;
-        //        FeatureModel::ConstraintTy Constraint;
-        //        for (string Suffix = Cnt; regex_search(Suffix, Matches,
-        //        Regex);
-        //             Suffix = Matches.suffix()) {
-        //          string B = Matches.str(0);
-        //          if (B.length() > 1 && B[0] == '!') {
-        //            Constraint.emplace_back(B.substr(1, B.length()), false);
-        //          } else {
-        //            Constraint.emplace_back(B, true);
-        //          }
-        //        }
-        //        FMB.addConstraint(std::move(Constraint));
+        // TODO(s9latimm): Implement advanced parsing into constraint tree
       }
     }
   }

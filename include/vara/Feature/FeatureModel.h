@@ -154,9 +154,9 @@ public:
   }
 
   FeatureModelBuilder *
-  addRelationship(Relationship::RelationshipKind RK,
-                  const std::vector<std::string> &FeatureNames,
-                  const std::string &ParentName) {
+  emplaceRelationship(Relationship::RelationshipKind RK,
+                      const std::vector<std::string> &FeatureNames,
+                      const std::string &ParentName) {
     RelationshipEdges[ParentName].emplace_back(RK, FeatureNames);
     return this;
   }
@@ -223,6 +223,11 @@ private:
   RelationshipEdgeType RelationshipEdges;
 
   bool buildConstraints();
+
+  /// This method is solely relevant for parsing XML, as alternatives are
+  /// represented als mutual excluded but non-optional features (which requires
+  /// additional processing).
+  void detectXMLAlternatives();
 
   bool buildTree(const std::string &FeatureName,
                  std::set<std::string> &Visited);

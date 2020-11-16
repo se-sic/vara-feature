@@ -33,11 +33,26 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   return true;
 }
 
+void FeatureModelBuilder::detectXMLAlternatives() {
+  for (const auto &FeatureName : Features.keys()) {
+    std::vector<llvm::SmallSet<const Feature *, 3>> FSets;
+    for (const auto *Child : Features[FeatureName]->children()) {
+      const auto *F = llvm::dyn_cast<Feature>(Child);
+      // collect all excludes,
+      if (F && !F->isOptional()) {
+        // iterate over all children and remove not excluded edges
+        // TODO
+      }
+    }
+  }
+}
+
 bool FeatureModelBuilder::buildConstraints() {
   auto B = BuilderVisitor(this);
   for (const auto &C : Constraints) {
     C->accept(B);
   }
+  detectXMLAlternatives();
   return true;
 }
 
@@ -121,8 +136,8 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
   assert(Root && "Root not set.");
   std::set<std::string> Visited;
 
-  if (!buildTree(std::string(Root->getName()), Visited) ||
-      !buildConstraints()) {
+  if (!buildConstraints() ||
+      !buildTree(std::string(Root->getName()), Visited)) {
     return nullptr;
   }
   return std::make_unique<FeatureModel>(Name, Path, std::move(Features),
