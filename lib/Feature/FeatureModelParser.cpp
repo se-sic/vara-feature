@@ -273,6 +273,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
 
       // For every line, count the indentation
       // not more than 1 additional indentations are allowed to the original one
+      // However, we may have arbitrarily less indentations
       int CurrentIndentationLevel = countOccurrences(To, Indentation);
       int Diff = CurrentIndentationLevel - LastIndentationLevel;
       if ((LastIndentationLevel != -1) && Diff > 1) {
@@ -284,7 +285,11 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       // The first character has to be a colon followed by the type of
       // the feature (m for mandatory, o for optional, a for alternative)
       std::string::size_type Pos = CurrentIndentationLevel * Indentation.length() + 2;
-      std::optional<std::tuple<string, string>> Cardinalities;
+      std::optional<std::tuple<int, int>> Cardinalities;
+      if (To.at(Pos) != ':') {
+        std::cerr << "Colon is missing in line" << To << std::endl;
+      }
+
       switch (To.at(Pos - 1)) {
       case 'o':
         // Code for optional
@@ -295,10 +300,9 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
         Opt = false;
         // Extract the cardinality
         Cardinalities = extractCardinality(To);
-        // TODO: Process the cardinality
-        // Currently, we only accept cardinalities [1,1] (alternative group) and
-        // [1, *] (or group)
-
+        if (!Cardinalities.has_value()) {
+          return false;
+        }
         break;
       case ' ':
         // Code for alternative child
@@ -346,22 +350,62 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
 /// The cardinality is wrapped in square brackets (e.g., [1,1])
 /// \param StringToExtractFrom the string to extract the cardinality from
 /// \return
-std::optional<std::tuple<string, string>> FeatureModelSxfmParser::extractCardinality(const string& StringToExtractFrom) {
-  string MinCardinality = "*";
-  string MaxCardinality = "*";
+std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(const string& StringToExtractFrom) {
+  std::optional<int> MinCardinality;
+  std::optional<int> MaxCardinality;
 
   // Search for the first occurrence of '['; then read in the min cardinality
   // until the comma. Afterwards, read in the max cardinality until ']'
   std::string::size_type Pos = StringToExtractFrom.find_first_of('[');
   if (Pos == std::string::npos) {
     std::cerr << "No cardinality given in or group!" << std::endl;
-    return std::optional<std::tuple<string, string>>();
+    return std::optional<std::tuple<int, int>>();
   }
-  MinCardinality = readUntil(StringToExtractFrom, ',', Pos + 1);
+  MinCardinality = parseCardinality(readUntil(StringToExtractFrom, ',', Pos + 1));
   Pos = StringToExtractFrom.find_first_of(',', Pos);
-  MaxCardinality = readUntil(StringToExtractFrom, ']', Pos + 1);
+  MaxCardinality = parseCardinality(readUntil(StringToExtractFrom, ']', Pos + 1));
 
-  return std::optional<std::tuple<string, string>>(std::tuple<string, string>{MinCardinality, MaxCardinality});
+  if (!MinCardinality.has_value() || !MaxCardinality.has_value()) {
+    std::cerr << "No parsable cardinality!" << std::endl;
+    return std::optional<std::tuple<int, int>>();
+  }
+
+  if (MinCardinality.value() != 1 || MaxCardinality.value() != 1 || MaxCardinality.value() != UINT_MAX) {
+    std::cerr << "Cardinality unsupported. We support cardinalities [1,1] (alternative) or [1, *] (or group)." << std::endl;
+    return std::optional<std::tuple<int, int>>();
+  }
+
+  return std::optional<std::tuple<int, int>>(std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()});
+}
+
+
+/// This method parses the given cardinality and returns an optional.
+/// If the optional is empty, the process failed; otherwise the result contains
+/// either UINT_MAX for the wildcard or the cardinality number as integer.
+/// \param CardinalityString the cardinality to parse
+/// \return an optional that contains no integer in case of failure or UINT_MAX
+/// for wildcard, or the number itself.
+std::optional<int> FeatureModelSxfmParser::parseCardinality(const string& CardinalityString) {
+  std::optional<int> Result = std::optional<int>();
+  if (CardinalityString == "*") {
+    // We use UINT_MAX as our magic integer (which is -1 as int) to indicate
+    // that the cardinality is a wildcard.
+    Result = UINT_MAX;
+  } else {
+    // Convert the string into an integer in a safe way
+    char *End;
+    long LongNumber;
+    errno = 0;
+    LongNumber = strtol(CardinalityString.c_str(), &End, 0);
+    if (errno == ERANGE || LongNumber < INT_MIN || LongNumber > INT_MAX
+        || *CardinalityString.c_str() == '\0' || *End != '\0') {
+      std::cerr << "The following cardinality is not integer: " << CardinalityString << std::endl;
+    } else {
+      Result = LongNumber;
+    }
+  }
+
+  return Result;
 }
 
 /// This method reads beginning from a certain starting position and reads in

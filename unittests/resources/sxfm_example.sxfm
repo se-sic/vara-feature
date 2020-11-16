@@ -28,6 +28,7 @@
               : f (id_f)
               : g (id_g)
               : h (id_h)
+      :o opt3 (id_opt3)
   </feature_tree>
   <constraints>
     c1: ~id_a or id_opt2

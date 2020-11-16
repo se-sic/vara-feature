@@ -94,7 +94,8 @@ private:
   static bool parseConstraints(xmlChar *Constraints);
 
   static int countOccurrences(const string& Target, const string& StringToSearch);
-  static std::optional<std::tuple<string, string>> extractCardinality(const string& StringToExtractFrom);
+  static std::optional<std::tuple<int, int>> extractCardinality(const string& StringToExtractFrom);
+  static std::optional<int> parseCardinality(const string& CardinalityString);
   static string readUntil(const string& StringToReadFrom, const char& CharToSearch, std::string::size_type Start);
 };
 
