@@ -16,8 +16,7 @@ std::string Feature::toString() const {
   }
   StrS << "children: [";
   for (const auto &Child : children()) {
-    auto *F = llvm::dyn_cast<Feature>(Child);
-    if (F) {
+    if (auto *F = llvm::dyn_cast<Feature>(Child); F) {
       StrS << F->getName().str() << ",";
     }
   }

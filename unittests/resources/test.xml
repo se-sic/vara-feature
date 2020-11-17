@@ -67,11 +67,4 @@
       <values>1;5;9</values>
     </configurationOption>
   </numericOptions>
-  <booleanConstraints>
-    <constraint>!N | C</constraint>
-    <constraint>!AA | !AB</constraint>
-    <constraint>!AB | B</constraint>
-    <constraint>!B | AB</constraint>
-    <constraint>AB | AC | AA</constraint>
-  </booleanConstraints>
 </vm>

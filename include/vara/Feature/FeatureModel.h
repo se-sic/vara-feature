@@ -157,7 +157,7 @@ public:
   emplaceRelationship(Relationship::RelationshipKind RK,
                       const std::vector<std::string> &FeatureNames,
                       const std::string &ParentName) {
-    RelationshipEdges[ParentName].emplace_back(RK, std::move(FeatureNames));
+    RelationshipEdges[ParentName].emplace_back(RK, FeatureNames);
     return this;
   }
 

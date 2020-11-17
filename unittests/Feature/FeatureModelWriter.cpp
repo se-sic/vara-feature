@@ -39,8 +39,7 @@ TEST(XmlWriter, excludes) {
   EXPECT_FALSE(ActualOutput.empty());
 
   std::string ExpectedOutput = FS.get()->getBuffer();
-  // TODO(s9latimm): Enable with refactored Constraint
-  //  EXPECT_EQ(ActualOutput, ExpectedOutput);
+  EXPECT_EQ(ActualOutput, ExpectedOutput);
 }
 
 TEST(XmlWriter, test) {
@@ -57,8 +56,7 @@ TEST(XmlWriter, test) {
   FS = llvm::MemoryBuffer::getFileAsStream(getTestResource("test_out.xml"));
   EXPECT_TRUE(FS && "Comparisson file could not be read");
   std::string ExpectedOutput = FS.get()->getBuffer();
-  // TODO(s9latimm): Enable with refactored Constraint
-  //  EXPECT_EQ(ActualOutput, ExpectedOutput);
+  EXPECT_EQ(ActualOutput, ExpectedOutput);
 }
 
 } // namespace vara::feature

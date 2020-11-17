@@ -153,9 +153,9 @@ protected:
 private:
   void addConstraint(Constraint *C) {
     Constraints.push_back(C);
-    if (auto *I = llvm::dyn_cast<ImpliesConstraint>(C); I) {
+    if (auto *I = llvm::dyn_cast<ImpliesConstraint>(C->getRoot()); I) {
       Implications.push_back(I);
-    } else if (auto *E = llvm::dyn_cast<ExcludesConstraint>(C); E) {
+    } else if (auto *E = llvm::dyn_cast<ExcludesConstraint>(C->getRoot()); E) {
       Excludes.push_back(E);
     }
   }

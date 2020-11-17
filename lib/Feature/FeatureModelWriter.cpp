@@ -225,41 +225,68 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
     CHECK_RC
   }
 
-  // TODO(s9latimm): Refactor with new Constraints representation
   // implications
-  //  if (Feature1.implications_begin() != Feature1.implications_end()) {
-  //    RC = xmlTextWriterStartElement(Writer, XmlConstants::IMPLIEDOPTIONS);
-  //    CHECK_RC
-  //
-  //    OrderedFeatureVector Implies{Feature1.implications_begin(),
-  //                                 Feature1.implications_end()};
-  //    for (Feature *F : Implies) {
-  //      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
-  //                                     BAD_CAST F->getName().data());
-  //      CHECK_RC
-  //    }
-  //
-  //    RC = xmlTextWriterEndElement(Writer); // IMPLIEDOPTIONS
-  //    CHECK_RC
-  //  }
+  llvm::SmallSet<Feature *, 3> Implications;
+  for (const auto *C : Feature1.implications()) {
+    if (const auto *LHS =
+            llvm::dyn_cast<PrimaryFeatureConstraint>(C->getLeftOperand());
+        LHS) {
+      if (const auto *RHS =
+              llvm::dyn_cast<PrimaryFeatureConstraint>(C->getRightOperand());
+          RHS) {
+        if (LHS->getFeature() &&
+            LHS->getFeature()->getName() == Feature1.getName() &&
+            RHS->getFeature()) {
+          Implications.insert(RHS->getFeature());
+        }
+      }
+    }
+  }
 
-  // TODO(s9latimm): Refactor with new Constraints representation
+  if (!Implications.empty()) {
+    RC = xmlTextWriterStartElement(Writer, XmlConstants::IMPLIEDOPTIONS);
+    CHECK_RC
+
+    for (Feature *F : Implications) {
+      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
+                                     BAD_CAST F->getName().data());
+      CHECK_RC
+    }
+
+    RC = xmlTextWriterEndElement(Writer); // IMPLIEDOPTIONS
+    CHECK_RC
+  }
+
   // excludes
-  //  if (Feature1.excludes_begin() != Feature1.excludes_end()) {
-  //    RC = xmlTextWriterStartElement(Writer, XmlConstants::EXCLUDEDOPTIONS);
-  //    CHECK_RC
-  //
-  //    OrderedFeatureVector Exludes{Feature1.excludes_begin(),
-  //                                 Feature1.excludes_end()};
-  //    for (Feature *F : Exludes) {
-  //      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
-  //                                     BAD_CAST F->getName().data());
-  //      CHECK_RC
-  //    }
-  //
-  //    RC = xmlTextWriterEndElement(Writer); // EXCLUDEDOPTIONS
-  //    CHECK_RC
-  //  }
+  llvm::SmallSet<Feature *, 3> Excludes;
+  for (const auto *C : Feature1.excludes()) {
+    if (const auto *LHS =
+            llvm::dyn_cast<PrimaryFeatureConstraint>(C->getLeftOperand());
+        LHS) {
+      if (const auto *RHS =
+              llvm::dyn_cast<PrimaryFeatureConstraint>(C->getRightOperand());
+          RHS) {
+        if (LHS->getFeature() &&
+            LHS->getFeature()->getName() == Feature1.getName() &&
+            RHS->getFeature()) {
+          Excludes.insert(RHS->getFeature());
+        }
+      }
+    }
+  }
+  if (!Excludes.empty()) {
+    RC = xmlTextWriterStartElement(Writer, XmlConstants::EXCLUDEDOPTIONS);
+    CHECK_RC
+
+    for (Feature *F : Excludes) {
+      RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
+                                     BAD_CAST F->getName().data());
+      CHECK_RC
+    }
+
+    RC = xmlTextWriterEndElement(Writer); // EXCLUDEDOPTIONS
+    CHECK_RC
+  }
 
   // optional
   RC = xmlTextWriterWriteElement(
