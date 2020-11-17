@@ -50,6 +50,8 @@ public:
   Constraint(ConstraintKind Kind) : Kind(Kind) {}
   Constraint(const Constraint &) = delete;
   Constraint &operator=(const Constraint &) = delete;
+  Constraint(Constraint &&) = delete;
+  Constraint &operator=(Constraint &&) = delete;
   virtual ~Constraint() = default;
 
   [[nodiscard]] ConstraintKind getKind() const { return Kind; };
@@ -73,7 +75,7 @@ public:
   virtual void accept(ConstraintVisitor &V) = 0;
 
 private:
-  ConstraintKind Kind;
+  const ConstraintKind Kind;
   Constraint *Parent{nullptr};
 };
 
@@ -457,6 +459,8 @@ class PrimaryIntegerConstraint : public PrimaryConstraint {
 public:
   PrimaryIntegerConstraint(int Value)
       : Value(Value), PrimaryConstraint(ConstraintKind::CK_INTEGER) {}
+
+  [[nodiscard]] int getValue() const { return Value; }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("{0}", Value);

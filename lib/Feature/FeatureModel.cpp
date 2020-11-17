@@ -38,32 +38,38 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
 bool isMutex(const Feature *A, const Feature *B) {
   return std::any_of(
       A->excludes().begin(), A->excludes().end(), [A, B](const auto *E) {
-        const auto *LHS =
-            llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
-        const auto *RHS =
-            llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
-        if (LHS && RHS) {
-          // A excludes B
-          if (LHS->getFeature() &&
-              LHS->getFeature()->getName() == A->getName() &&
-              RHS->getFeature() &&
-              RHS->getFeature()->getName() == B->getName()) {
-            return std::any_of(
-                B->excludes().begin(), B->excludes().end(),
-                [A, B](const auto *E) {
-                  const auto *LHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
-                      E->getLeftOperand());
-                  const auto *RHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
-                      E->getRightOperand());
-                  if (LHS && RHS) {
-                    // B excludes A
-                    return LHS->getFeature() &&
-                           LHS->getFeature()->getName() == B->getName() &&
-                           RHS->getFeature() &&
-                           RHS->getFeature()->getName() == A->getName();
-                  }
-                  return false;
-                });
+        if (const auto *LHS =
+                llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
+            LHS) {
+          if (const auto *RHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
+                  E->getRightOperand());
+              RHS) {
+            // A excludes B
+            if (LHS->getFeature() &&
+                LHS->getFeature()->getName() == A->getName() &&
+                RHS->getFeature() &&
+                RHS->getFeature()->getName() == B->getName()) {
+              return std::any_of(
+                  B->excludes().begin(), B->excludes().end(),
+                  [A, B](const auto *E) {
+                    if (const auto *LHS =
+                            llvm::dyn_cast<PrimaryFeatureConstraint>(
+                                E->getLeftOperand());
+                        LHS) {
+                      if (const auto *RHS =
+                              llvm::dyn_cast<PrimaryFeatureConstraint>(
+                                  E->getRightOperand());
+                          RHS) {
+                        // B excludes A
+                        return LHS->getFeature() &&
+                               LHS->getFeature()->getName() == B->getName() &&
+                               RHS->getFeature() &&
+                               RHS->getFeature()->getName() == A->getName();
+                      }
+                    }
+                    return false;
+                  });
+            }
           }
         }
         return false;
@@ -75,14 +81,14 @@ void FeatureModelBuilder::detectXMLAlternatives() {
     std::vector<std::string> Frontier(Children[FeatureName].begin(),
                                       Children[FeatureName].end());
     while (!Frontier.empty()) {
-      const auto *F = llvm::dyn_cast<Feature>(Features[Frontier.back()].get());
+      const auto FName = Frontier.back();
       Frontier.pop_back();
-      if (F) {
+      if (const auto *F = llvm::dyn_cast<Feature>(Features[FName].get()); F) {
         llvm::SmallSet<std::string, 3> Xor;
         for (const auto &Name : Frontier) {
-          const auto *E =
-              llvm::dyn_cast<Feature>(Features[Frontier.back()].get());
-          if (E) {
+          if (const auto *E =
+                  llvm::dyn_cast<Feature>(Features[Frontier.back()].get());
+              E) {
             if (!F->isOptional() && !E->isOptional() && isMutex(F, E)) {
               Xor.insert(F->getName());
               Xor.insert(E->getName());
@@ -253,8 +259,7 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
                     std::string(F.getParentFeature()->getName()));
   }
   for (const auto *Child : F.children()) {
-    const auto *C = llvm::dyn_cast<vara::feature::Feature>(Child);
-    if (C) {
+    if (const auto *C = llvm::dyn_cast<vara::feature::Feature>(Child); C) {
       this->addParent(std::string(C->getName()), std::string(F.getName()));
     }
   }

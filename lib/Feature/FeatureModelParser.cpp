@@ -5,6 +5,8 @@
 #include <iostream>
 #include <regex>
 
+using std::make_unique;
+
 namespace vara::feature {
 
 bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
@@ -33,13 +35,11 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
                   xmlNodeGetContent(Child), xmlFree);
-              FMB.addConstraint(std::make_unique<ImpliesConstraint>(
-                  std::make_unique<PrimaryFeatureConstraint>(
-                      std::make_unique<Feature>(Name)),
-                  std::make_unique<NotConstraint>(
-                      std::make_unique<PrimaryFeatureConstraint>(
-                          std::make_unique<Feature>(
-                              reinterpret_cast<char *>(CCnt.get()))))));
+              FMB.addConstraint(make_unique<ExcludesConstraint>(
+                  make_unique<PrimaryFeatureConstraint>(
+                      make_unique<Feature>(Name)),
+                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
+                      reinterpret_cast<char *>(CCnt.get())))));
             }
           }
         }
@@ -49,12 +49,11 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
                   xmlNodeGetContent(Child), xmlFree);
-              FMB.addConstraint(std::make_unique<ImpliesConstraint>(
-                  std::make_unique<PrimaryFeatureConstraint>(
-                      std::make_unique<Feature>(Name)),
-                  std::make_unique<PrimaryFeatureConstraint>(
-                      std::make_unique<Feature>(
-                          reinterpret_cast<char *>(CCnt.get())))));
+              FMB.addConstraint(make_unique<ImpliesConstraint>(
+                  make_unique<PrimaryFeatureConstraint>(
+                      make_unique<Feature>(Name)),
+                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
+                      reinterpret_cast<char *>(CCnt.get())))));
             }
           }
         }

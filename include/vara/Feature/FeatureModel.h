@@ -157,7 +157,7 @@ public:
   emplaceRelationship(Relationship::RelationshipKind RK,
                       const std::vector<std::string> &FeatureNames,
                       const std::string &ParentName) {
-    RelationshipEdges[ParentName].emplace_back(RK, FeatureNames);
+    RelationshipEdges[ParentName].emplace_back(RK, std::move(FeatureNames));
     return this;
   }
 
@@ -328,8 +328,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
       for (auto *Child : *Node) {
         emitCluster(Child, Indent + 2);
         O.indent(Indent + 2);
-        auto *F = llvm::dyn_cast<vara::feature::Feature>(Child);
-        if (F) {
+        if (auto *F = llvm::dyn_cast<vara::feature::Feature>(Child); F) {
           emitEdge(
               Node, F,
               llvm::formatv("arrowhead={0}", F->isOptional() ? "odot" : "dot"));
@@ -350,32 +349,27 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   /// Output \a Feature node with custom attributes.
   void emitNode(const NodeRef Node) {
     std::string Label;
-    auto *F = llvm::dyn_cast<vara::feature::Feature>(Node);
-    if (F) {
+    if (auto *F = llvm::dyn_cast<vara::feature::Feature>(Node); F) {
       std::stringstream CS;
       for (const auto &C : F->constraints()) {
         CS << "<tr><td>" << DOT::EscapeString(C->getRoot()->toHTML())
            << "</td></tr>";
       }
-      Label =
-          llvm::formatv(
-              "<<table align=\"center\" valign=\"middle\" border=\"0\" "
-              "cellborder=\"0\" "
-              "cellpadding=\"5\">{0}{1}{2}</table>>",
-              llvm::formatv("<tr><td><b>{0}</b></td></tr>",
-                            DOT::EscapeString(F->getName().str()))
-                  .str(),
-              CS.str(),
-              (F->getFeatureSourceRange()
-                   ? llvm::formatv("<hr/><tr><td>{0}</td></tr>",
-                                   DOT::EscapeString(
-                                       F->getFeatureSourceRange()->toString()))
-                         .str()
-                   : ""))
-              .str();
+      Label = llvm::formatv(
+          "<<table align=\"center\" valign=\"middle\" border=\"0\" "
+          "cellborder=\"0\" "
+          "cellpadding=\"5\">{0}{1}{2}</table>>",
+          llvm::formatv("<tr><td><b>{0}</b></td></tr>",
+                        DOT::EscapeString(F->getName().str())),
+          CS.str(),
+          (F->getFeatureSourceRange()
+               ? llvm::formatv(
+                     "<hr/><tr><td>{0}</td></tr>",
+                     DOT::EscapeString(F->getFeatureSourceRange()->toString()))
+                     .str()
+               : ""));
     } else {
-      auto *R = llvm::dyn_cast<vara::feature::Relationship>(Node);
-      if (R) {
+      if (auto *R = llvm::dyn_cast<vara::feature::Relationship>(Node); R) {
         switch (R->getKind()) {
         case vara::feature::Relationship::RelationshipKind::RK_ALTERNATIVE:
           Label = "ALTERNATIVE";

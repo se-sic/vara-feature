@@ -11,13 +11,10 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include <llvm/ADT/SetVector.h>
 #include <set>
 #include <stack>
 #include <utility>
 #include <variant>
-
-using std::string;
 
 namespace vara::feature {
 
@@ -39,7 +36,7 @@ public:
   }
 
 private:
-  RelationshipKind Kind;
+  const RelationshipKind Kind;
 };
 } // namespace vara::feature
 

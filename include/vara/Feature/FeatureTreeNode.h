@@ -11,7 +11,6 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include <llvm/ADT/SetVector.h>
 #include <set>
 #include <stack>
 #include <utility>
@@ -45,7 +44,9 @@ public:
 
   [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
 
-  bool hasEdgeFrom(FeatureTreeNode &N) const { return Parent == &N; }
+  [[nodiscard]] bool hasEdgeFrom(FeatureTreeNode &N) const {
+    return Parent == &N;
+  }
 
   //===--------------------------------------------------------------------===//
   // Children
@@ -69,7 +70,7 @@ public:
 
 protected:
   FeatureTreeNode(NodeKind Kind, FeatureTreeNode *Parent,
-                  const NodeSetType &Children)
+                  const llvm::SmallPtrSetImpl<FeatureTreeNode *> &Children)
       : Kind(Kind), Parent(Parent) {
     this->Edges.insert(Children.begin(), Children.end());
   }
@@ -83,8 +84,8 @@ private:
 
   bool addEdge(FeatureTreeNode *Feature) { return DGNode::addEdge(*Feature); }
 
+  const NodeKind Kind;
   FeatureTreeNode *Parent{nullptr};
-  NodeKind Kind;
 };
 } // namespace vara::feature
 

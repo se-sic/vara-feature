@@ -92,7 +92,7 @@ public:
   using const_constraint_iterator =
       typename std::vector<Constraint *>::const_iterator;
 
-  llvm::iterator_range<constraint_iterator> constraints() {
+  [[nodiscard]] llvm::iterator_range<constraint_iterator> constraints() {
     return llvm::make_range(Constraints.begin(), Constraints.end());
   }
   [[nodiscard]] llvm::iterator_range<const_constraint_iterator>
@@ -108,25 +108,10 @@ public:
   using const_excludes_iterator =
       typename std::vector<ExcludesConstraint *>::const_iterator;
 
-  llvm::iterator_range<excludes_iterator> excludes() {
-    std::vector<ExcludesConstraint *> Excludes;
-    for (auto *C : Constraints) {
-      auto *E = llvm::dyn_cast<ExcludesConstraint>(C);
-      if (E) {
-        Excludes.push_back(E);
-      }
-    }
+  [[nodiscard]] llvm::iterator_range<excludes_iterator> excludes() {
     return llvm::make_range(Excludes.begin(), Excludes.end());
   }
-
   [[nodiscard]] llvm::iterator_range<const_excludes_iterator> excludes() const {
-    std::vector<ExcludesConstraint *> Excludes;
-    for (auto *C : Constraints) {
-      auto *E = llvm::dyn_cast<ExcludesConstraint>(C);
-      if (E) {
-        Excludes.push_back(E);
-      }
-    }
     return llvm::make_range(Excludes.begin(), Excludes.end());
   }
 
@@ -138,26 +123,11 @@ public:
   using const_implications_iterator =
       typename std::vector<ImpliesConstraint *>::const_iterator;
 
-  llvm::iterator_range<implications_iterator> implications() {
-    std::vector<ImpliesConstraint *> Implications;
-    for (auto *C : Constraints) {
-      auto *I = llvm::dyn_cast<ImpliesConstraint>(C);
-      if (I) {
-        Implications.push_back(I);
-      }
-    }
+  [[nodiscard]] llvm::iterator_range<implications_iterator> implications() {
     return llvm::make_range(Implications.begin(), Implications.end());
   }
-
   [[nodiscard]] llvm::iterator_range<const_implications_iterator>
   implications() const {
-    std::vector<ImpliesConstraint *> Implications;
-    for (auto *C : Constraints) {
-      auto *I = llvm::dyn_cast<ImpliesConstraint>(C);
-      if (I) {
-        Implications.push_back(I);
-      }
-    }
     return llvm::make_range(Implications.begin(), Implications.end());
   }
 
@@ -178,19 +148,27 @@ protected:
           std::optional<FeatureSourceRange> Source, FeatureTreeNode *Parent,
           const NodeSetType &Children)
       : FeatureTreeNode(NodeKind::NK_FEATURE, Parent, Children), Kind(Kind),
-        Name(std::move(Name)), Opt(Opt), Source(std::move(Source)) {}
+        Name(std::move(Name)), Source(std::move(Source)), Opt(Opt) {}
 
 private:
+  void addConstraint(Constraint *C) {
+    Constraints.push_back(C);
+    if (auto *I = llvm::dyn_cast<ImpliesConstraint>(C); I) {
+      Implications.push_back(I);
+    } else if (auto *E = llvm::dyn_cast<ExcludesConstraint>(C); E) {
+      Excludes.push_back(E);
+    }
+  }
+
   friend class FeatureModel;
   friend class FeatureModelBuilder;
-
-  FeatureKind Kind;
+  const FeatureKind Kind;
   string Name;
-  bool Opt;
   std::optional<FeatureSourceRange> Source;
   std::vector<Constraint *> Constraints;
-
-  void addConstraint(Constraint *C) { Constraints.push_back(C); }
+  std::vector<ExcludesConstraint *> Excludes;
+  std::vector<ImpliesConstraint *> Implications;
+  bool Opt;
 };
 
 /// Options without arguments.
