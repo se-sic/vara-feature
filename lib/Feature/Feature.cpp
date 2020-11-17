@@ -43,22 +43,6 @@ std::string NumericFeature::toString() const {
 
 std::string BinaryFeature::toString() const { return Feature::toString(); }
 
-bool Feature::hasExclude(const Feature *F) const {
-  for (const auto *E : excludes()) {
-    const auto *RHS =
-        llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
-    const auto *LHS =
-        llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
-    if (RHS && LHS) {
-      if (RHS->getFeature()->getName() == this->getName() &&
-          LHS->getFeature()->getName() == F->getName()) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 /// Find roots of subtrees containing either A (this) or B (Other) which have a
 /// common parent feature and compare them lexicographically. If no such node
 /// can be found compare names directly.

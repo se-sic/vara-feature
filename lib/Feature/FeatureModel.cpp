@@ -33,16 +33,67 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   return true;
 }
 
+bool isMutex(const Feature *A, const Feature *B) {
+  return std::any_of(
+      A->excludes().begin(), A->excludes().end(), [A, B](const auto *E) {
+        const auto *LHS =
+            llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
+        const auto *RHS =
+            llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
+        // A excludes B
+        if (LHS && RHS && LHS->getFeature()->getName() == A->getName() &&
+            RHS->getFeature()->getName() == B->getName()) {
+          return std::any_of(
+              B->excludes().begin(), B->excludes().end(),
+              [A, B](const auto *E) {
+                const auto *LHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
+                    E->getLeftOperand());
+                const auto *RHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
+                    E->getRightOperand());
+                // B excludes A
+                return LHS && RHS &&
+                       LHS->getFeature()->getName() == B->getName() &&
+                       RHS->getFeature()->getName() == A->getName();
+              });
+        }
+        return false;
+      });
+}
+
 void FeatureModelBuilder::detectXMLAlternatives() {
   for (const auto &FeatureName : Features.keys()) {
-    std::vector<llvm::SmallSet<const Feature *, 3>> FSets;
+    llvm::SmallSet<llvm::SmallSet<Feature *, 3>, 3> Alternatives;
     for (const auto *Child : Features[FeatureName]->children()) {
       const auto *F = llvm::dyn_cast<Feature>(Child);
-      // collect all excludes,
       if (F && !F->isOptional()) {
-        // iterate over all children and remove not excluded edges
-        // TODO
+        llvm::SmallSet<Feature *, 3> Xor;
+        for (const auto *E : F->excludes()) {
+          const auto *LHS =
+              llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
+          const auto *RHS =
+              llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
+          if (LHS && RHS) {
+            if (LHS->getFeature() &&
+                LHS->getFeature()->getName() == F->getName() &&
+                RHS->getFeature() &&
+                Children[FeatureName].count(RHS->getFeature()->getName())) {
+              if (isMutex(LHS->getFeature(), RHS->getFeature())) {
+                Xor.insert(RHS->getFeature());
+                Xor.insert(LHS->getFeature());
+              }
+            }
+          }
+        }
       }
+    }
+    for (const auto &Xor : Alternatives) {
+      // TODO(s9latimm): Assert whether resulting features are mutual exclusive
+      std::vector<std::string> V;
+      for (const auto *F : Xor) {
+        V.push_back(F->getName());
+      }
+      emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, V,
+                          FeatureName);
     }
   }
 }
