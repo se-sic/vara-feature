@@ -349,7 +349,9 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   /// Output \a Feature node with custom attributes.
   void emitNode(const NodeRef Node) {
     std::string Label;
+    std::string Shape;
     if (auto *F = llvm::dyn_cast<vara::feature::Feature>(Node); F) {
+      Shape = "box";
       std::stringstream CS;
       for (const auto &C : F->constraints()) {
         CS << "<tr><td>" << DOT::EscapeString(C->getRoot()->toHTML())
@@ -369,6 +371,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
                      .str()
                : ""));
     } else {
+      Shape = "ellipse";
       if (auto *R = llvm::dyn_cast<vara::feature::Relationship>(Node); R) {
         switch (R->getKind()) {
         case vara::feature::Relationship::RelationshipKind::RK_ALTERNATIVE:
@@ -383,7 +386,8 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
       }
     }
     O.indent(2) << "node_" << static_cast<void *>(Node) << " ["
-                << "shape=box margin=.1 fontsize=12 fontname=\"CMU "
+                << "shape=" << Shape
+                << " margin=.1 fontsize=12 fontname=\"CMU "
                    "Typewriter\" label="
                 << Label << "];\n";
   }

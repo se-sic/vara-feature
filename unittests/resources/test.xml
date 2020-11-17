@@ -43,7 +43,6 @@
       <name>AC</name>
       <parent>A</parent>
       <excludedOptions>
-        <options>AA</options>
         <options>AB</options>
       </excludedOptions>
       <optional>False</optional>
@@ -56,6 +55,9 @@
     <configurationOption>
       <name>C</name>
       <parent>root</parent>
+      <excludedOptions>
+        <options>AA</options>
+      </excludedOptions>
       <optional>True</optional>
     </configurationOption>
   </binaryOptions>

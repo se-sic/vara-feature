@@ -209,12 +209,12 @@ public:
                          std::move(RightOperand)) {}
 
   [[nodiscard]] std::string toString() const override {
-    return llvm::formatv("({0} => {1})", LeftOperand->toString(),
+    return llvm::formatv("({0} => !{1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
 
   [[nodiscard]] std::string toHTML() const override {
-    return llvm::formatv("({0} =&gt; {1})", LeftOperand->toString(),
+    return llvm::formatv("({0} =&gt; !{1})", LeftOperand->toString(),
                          RightOperand->toString());
   }
 
