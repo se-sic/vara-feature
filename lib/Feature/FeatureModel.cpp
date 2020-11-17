@@ -1,5 +1,7 @@
 #include "vara/Feature/FeatureModel.h"
 
+#include <algorithm>
+
 namespace vara::feature {
 void FeatureModel::dump() const {
   for (const auto &Feature : Features) {
@@ -40,21 +42,29 @@ bool isMutex(const Feature *A, const Feature *B) {
             llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
         const auto *RHS =
             llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
-        // A excludes B
-        if (LHS && RHS && LHS->getFeature()->getName() == A->getName() &&
-            RHS->getFeature()->getName() == B->getName()) {
-          return std::any_of(
-              B->excludes().begin(), B->excludes().end(),
-              [A, B](const auto *E) {
-                const auto *LHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
-                    E->getLeftOperand());
-                const auto *RHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
-                    E->getRightOperand());
-                // B excludes A
-                return LHS && RHS &&
-                       LHS->getFeature()->getName() == B->getName() &&
-                       RHS->getFeature()->getName() == A->getName();
-              });
+        if (LHS && RHS) {
+          // A excludes B
+          if (LHS->getFeature() &&
+              LHS->getFeature()->getName() == A->getName() &&
+              RHS->getFeature() &&
+              RHS->getFeature()->getName() == B->getName()) {
+            return std::any_of(
+                B->excludes().begin(), B->excludes().end(),
+                [A, B](const auto *E) {
+                  const auto *LHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
+                      E->getLeftOperand());
+                  const auto *RHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
+                      E->getRightOperand());
+                  if (LHS && RHS) {
+                    // B excludes A
+                    return LHS->getFeature() &&
+                           LHS->getFeature()->getName() == B->getName() &&
+                           RHS->getFeature() &&
+                           RHS->getFeature()->getName() == A->getName();
+                  }
+                  return false;
+                });
+          }
         }
         return false;
       });
@@ -62,38 +72,35 @@ bool isMutex(const Feature *A, const Feature *B) {
 
 void FeatureModelBuilder::detectXMLAlternatives() {
   for (const auto &FeatureName : Features.keys()) {
-    llvm::SmallSet<llvm::SmallSet<Feature *, 3>, 3> Alternatives;
-    for (const auto *Child : Features[FeatureName]->children()) {
-      const auto *F = llvm::dyn_cast<Feature>(Child);
-      if (F && !F->isOptional()) {
-        llvm::SmallSet<Feature *, 3> Xor;
-        for (const auto *E : F->excludes()) {
-          const auto *LHS =
-              llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
-          const auto *RHS =
-              llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
-          if (LHS && RHS) {
-            if (LHS->getFeature() &&
-                LHS->getFeature()->getName() == F->getName() &&
-                RHS->getFeature() &&
-                Children[FeatureName].count(RHS->getFeature()->getName())) {
-              if (isMutex(LHS->getFeature(), RHS->getFeature())) {
-                Xor.insert(RHS->getFeature());
-                Xor.insert(LHS->getFeature());
-              }
+    std::vector<std::string> Frontier(Children[FeatureName].begin(),
+                                      Children[FeatureName].end());
+    while (!Frontier.empty()) {
+      const auto *F = llvm::dyn_cast<Feature>(Features[Frontier.back()].get());
+      Frontier.pop_back();
+      if (F) {
+        llvm::SmallSet<std::string, 3> Xor;
+        for (const auto &Name : Frontier) {
+          const auto *E =
+              llvm::dyn_cast<Feature>(Features[Frontier.back()].get());
+          if (E) {
+            if (!F->isOptional() && !E->isOptional() && isMutex(F, E)) {
+              Xor.insert(F->getName());
+              Xor.insert(E->getName());
             }
           }
         }
+        for (const auto &Name : Xor) {
+          Frontier.erase(std::remove(Frontier.begin(), Frontier.end(), Name),
+                         Frontier.end());
+        }
+        // TODO(s9latimm): Assert whether all resulting features are mutual
+        //  exclusive
+        if (!Xor.empty()) {
+          std::vector<std::string> V;
+          emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
+                              {Xor.begin(), Xor.end()}, FeatureName);
+        }
       }
-    }
-    for (const auto &Xor : Alternatives) {
-      // TODO(s9latimm): Assert whether resulting features are mutual exclusive
-      std::vector<std::string> V;
-      for (const auto *F : Xor) {
-        V.push_back(F->getName());
-      }
-      emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, V,
-                          FeatureName);
     }
   }
 }
