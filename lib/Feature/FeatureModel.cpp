@@ -35,7 +35,9 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   return true;
 }
 
-bool isMutex(const Feature *A, const Feature *B) {
+/// Decide whether two features are mutual exclusive. Beware that this method
+/// only detects very simple trees with binary excludes.
+bool isSimpleMutex(const Feature *A, const Feature *B) {
   return std::any_of(
       A->excludes().begin(), A->excludes().end(), [A, B](const auto *E) {
         if (const auto *LHS =
@@ -81,30 +83,33 @@ void FeatureModelBuilder::detectXMLAlternatives() {
     std::vector<std::string> Frontier(Children[FeatureName].begin(),
                                       Children[FeatureName].end());
     while (!Frontier.empty()) {
-      const auto FName = Frontier.back();
+      const auto &FName = Frontier.back();
       Frontier.pop_back();
-      if (const auto *F = llvm::dyn_cast<Feature>(Features[FName].get()); F) {
-        llvm::SmallSet<std::string, 3> Xor;
+      if (const auto *F = llvm::dyn_cast<Feature>(Features[FName].get());
+          F && !F->isOptional()) {
+        llvm::SmallSet<const Feature *, 3> Xor;
+        Xor.insert(F);
         for (const auto &Name : Frontier) {
           if (const auto *E =
                   llvm::dyn_cast<Feature>(Features[Frontier.back()].get());
-              E) {
-            if (!F->isOptional() && !E->isOptional() && isMutex(F, E)) {
-              Xor.insert(F->getName());
-              Xor.insert(E->getName());
+              E && !E->isOptional()) {
+            if (std::all_of(Xor.begin(), Xor.end(), [E](const auto *F) {
+                  return isSimpleMutex(F, E);
+                })) {
+              Xor.insert(E);
             }
           }
         }
-        for (const auto &Name : Xor) {
-          Frontier.erase(std::remove(Frontier.begin(), Frontier.end(), Name),
-                         Frontier.end());
-        }
-        // TODO(s9latimm): Assert whether all resulting features are mutual
-        //  exclusive
-        if (!Xor.empty()) {
+        if (Xor.size() > 1) {
           std::vector<std::string> V;
-          emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
-                              {Xor.begin(), Xor.end()}, FeatureName);
+          for (const auto *E : Xor) {
+            Frontier.erase(std::remove(Frontier.begin(), Frontier.end(),
+                                       E->getName().str()),
+                           Frontier.end());
+            V.push_back(E->getName().str());
+          }
+          emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, V,
+                              FeatureName);
         }
       }
     }
