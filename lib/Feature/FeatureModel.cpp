@@ -137,7 +137,7 @@ void FeatureModelBuilder::detectXMLAlternatives() {
             }
           }
           emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, V,
-                              FeatureName);
+                              FeatureName.str());
         }
       }
     }
