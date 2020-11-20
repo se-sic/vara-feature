@@ -44,11 +44,11 @@ jobs:
             - llvm-11-dev
             - clang++-11
             - clang-tidy-11
-      env: CXX=clang++-11 BUILD_TYPE=Debug LLVM_VERSION=11
+      env: CXX=clang++-11 BUILD_TYPE=Debug
     - name: Clang-11 Release
       stage: Latest
       addons: *clang11
-      env: CXX=clang++-11 BUILD_TYPE=Release LLVM_VERSION=11
+      env: CXX=clang++-11 BUILD_TYPE=Release
 
     ##############
     # GCC on linux
@@ -66,11 +66,11 @@ jobs:
             - llvm-11-dev
             - g++-9
             - clang-tidy-11
-      env: CXX=g++-9 BUILD_TYPE=Debug LLVM_VERSION=11
+      env: CXX=g++-9 BUILD_TYPE=Debug
     - name: GCC-9 Release
       stage: Latest
       addons: *gcc9
-      env: CXX=g++-9 BUILD_TYPE=Release LLVM_VERSION=11
+      env: CXX=g++-9 BUILD_TYPE=Release
 
 script:
   - mkdir build

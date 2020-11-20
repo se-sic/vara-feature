@@ -26,6 +26,12 @@ public:
   /// Insert feature while preserving ordering.
   void insert(Feature *F);
 
+  void insert(const OrderedFeatureVector &OFV) {
+    for (const auto &F : OFV) {
+      insert(F);
+    }
+  }
+
   template <typename... Args> void insert(Feature *F, Args... FF) {
     insert(F);
     insert(FF...);

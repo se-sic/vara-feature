@@ -53,7 +53,7 @@ TEST(XmlWriter, test) {
   std::string ActualOutput = Output.value();
   EXPECT_FALSE(ActualOutput.empty());
 
-  FS = llvm::MemoryBuffer::getFileAsStream(getTestResource("test_out.xml"));
+  FS = llvm::MemoryBuffer::getFileAsStream(getTestResource("test.xml"));
   EXPECT_TRUE(FS && "Comparisson file could not be read");
   std::string ExpectedOutput = FS.get()->getBuffer();
   EXPECT_EQ(ActualOutput, ExpectedOutput);

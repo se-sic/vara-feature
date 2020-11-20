@@ -4,11 +4,21 @@
   <binaryOptions>
     <configurationOption>
       <name>root</name>
+      <children>
+        <options>A</options>
+        <options>B</options>
+        <options>C</options>
+      </children>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
       <name>A</name>
       <parent>root</parent>
+      <children>
+        <options>AA</options>
+        <options>AB</options>
+        <options>AC</options>
+      </children>
       <optional>False</optional>
       <location>
         <path>main.c</path>
@@ -50,6 +60,9 @@
     <configurationOption>
       <name>B</name>
       <parent>root</parent>
+      <children>
+        <options>N</options>
+      </children>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -69,4 +82,5 @@
       <values>1;5;9</values>
     </configurationOption>
   </numericOptions>
+  <booleanConstraints/>
 </vm>

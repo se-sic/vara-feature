@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
 <vm name="Children" root="test">
   <binaryOptions>
     <configurationOption>

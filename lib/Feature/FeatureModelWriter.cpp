@@ -74,6 +74,9 @@ int FeatureModelXmlWriter::writeFeatureModel(xmlTextWriterPtr Writer) {
 
   RC = xmlTextWriterStartDocument(Writer, "1.0", ENCODING, nullptr);
   CHECK_RC
+  RC = xmlTextWriterWriteDTD(Writer, BAD_CAST "vm", nullptr, BAD_CAST "vm.dtd",
+                             nullptr);
+  CHECK_RC
   RC = writeVm(Writer);
 
   return RC;
@@ -190,6 +193,18 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
   return RC;
 }
 
+OrderedFeatureVector getChildrenFeatures(FeatureTreeNode *N) {
+  OrderedFeatureVector V;
+  for (FeatureTreeNode *C : N->children()) {
+    if (auto *F = llvm::dyn_cast<Feature>(C); F) {
+      V.insert(F);
+    } else {
+      V.insert(getChildrenFeatures(C));
+    }
+  }
+  return std::move(V);
+}
+
 int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
                                         Feature &Feature1) {
   int RC;
@@ -210,11 +225,11 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // children
-  if (Feature1.begin() != Feature1.end()) {
+  OrderedFeatureVector Children = getChildrenFeatures(&Feature1);
+  if (Children.size() > 0) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CHILDREN);
     CHECK_RC
 
-    OrderedFeatureVector Children{Feature1.begin(), Feature1.end()};
     for (Feature *F : Children) {
       RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                      BAD_CAST F->getName().data());
