@@ -19,7 +19,7 @@ namespace vara::feature {
 
 class ConstraintVisitor;
 
-/// \brief Tree like representation of constraints between features
+/// \brief Tree like representation of constraints between features3
 class Constraint {
 public:
   enum class ConstraintKind {
@@ -49,7 +49,7 @@ public:
 
   Constraint(ConstraintKind Kind) : Kind(Kind) {}
   Constraint(const Constraint &) = delete;
-  Constraint &operator=(const Constraint &) = delete;
+  Constraint &operator=(Constraint &) = delete;
   Constraint(Constraint &&) = delete;
   Constraint &operator=(Constraint &&) = delete;
   virtual ~Constraint() = default;

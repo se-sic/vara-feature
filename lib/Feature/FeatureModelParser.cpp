@@ -116,7 +116,6 @@ bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
   return true;
 }
 
-// TODO(s9latimm): remove NOLINT
 bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
@@ -125,7 +124,8 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(H), xmlFree)
                                          .get()));
-        // TODO(s9latimm): Implement advanced parsing into constraint tree
+        // TODO(se-passau/VaRA#664): Implement advanced parsing into constraint
+        //  tree
       }
     }
   }

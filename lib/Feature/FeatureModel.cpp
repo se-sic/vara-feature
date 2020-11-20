@@ -78,6 +78,31 @@ bool isSimpleMutex(const Feature *A, const Feature *B) {
       });
 }
 
+/// Collect mutual exclusive feature constraints for clean up.
+llvm::SmallSet<const Constraint *, 3>
+cleanUpMutex(const Feature *A, const llvm::SmallSet<Feature *, 3> &Xor) {
+  llvm::SmallSet<const Constraint *, 3> Remove;
+  for (const auto *E : A->excludes()) {
+    if (const auto *LHS =
+            llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
+        LHS) {
+      if (const auto *RHS =
+              llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
+          RHS) {
+        if (LHS->getFeature() && LHS->getFeature()->getName() == A->getName() &&
+            RHS->getFeature() && Xor.count(RHS->getFeature())) {
+          Remove.insert(LHS);
+        } else if (LHS->getFeature() && Xor.count(LHS->getFeature()) &&
+                   RHS->getFeature() &&
+                   RHS->getFeature()->getName() == A->getName()) {
+          Remove.insert(RHS);
+        }
+      }
+    }
+  }
+  return std::move(Remove);
+}
+
 void FeatureModelBuilder::detectXMLAlternatives() {
   for (const auto &FeatureName : Features.keys()) {
     std::vector<std::string> Frontier(Children[FeatureName].begin(),
@@ -85,12 +110,12 @@ void FeatureModelBuilder::detectXMLAlternatives() {
     while (!Frontier.empty()) {
       const auto &FName = Frontier.back();
       Frontier.pop_back();
-      if (const auto *F = llvm::dyn_cast<Feature>(Features[FName].get());
+      if (auto *F = llvm::dyn_cast<Feature>(Features[FName].get());
           F && !F->isOptional()) {
-        llvm::SmallSet<const Feature *, 3> Xor;
+        llvm::SmallSet<Feature *, 3> Xor;
         Xor.insert(F);
         for (const auto &Name : Frontier) {
-          if (const auto *E =
+          if (auto *E =
                   llvm::dyn_cast<Feature>(Features[Frontier.back()].get());
               E && !E->isOptional()) {
             if (std::all_of(Xor.begin(), Xor.end(), [E](const auto *F) {
@@ -102,11 +127,14 @@ void FeatureModelBuilder::detectXMLAlternatives() {
         }
         if (Xor.size() > 1) {
           std::vector<std::string> V;
-          for (const auto *E : Xor) {
+          for (auto *E : Xor) {
             Frontier.erase(std::remove(Frontier.begin(), Frontier.end(),
                                        E->getName().str()),
                            Frontier.end());
             V.push_back(E->getName().str());
+            for (const auto *R : cleanUpMutex(E, Xor)) {
+              E->removeConstraint(R);
+            }
           }
           emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, V,
                               FeatureName);

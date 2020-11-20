@@ -31,8 +31,10 @@ public:
   using NodeSetType = typename llvm::SmallSet<FeatureTreeNode *, 3>;
 
   FeatureTreeNode(NodeKind Kind) : Kind(Kind){};
-  FeatureTreeNode(const FeatureTreeNode &) = delete;
-  FeatureTreeNode &operator=(const FeatureTreeNode &) = delete;
+  FeatureTreeNode(FeatureTreeNode &) = delete;
+  FeatureTreeNode &operator=(FeatureTreeNode &) = delete;
+  FeatureTreeNode(FeatureTreeNode &&) = delete;
+  FeatureTreeNode &operator=(FeatureTreeNode &&) = delete;
   virtual ~FeatureTreeNode() = default;
 
   [[nodiscard]] NodeKind getKind() const { return Kind; }

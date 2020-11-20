@@ -36,6 +36,8 @@ public:
         Name(std::move(Name)), Opt(false), Source(std::nullopt) {}
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
+  Feature(Feature &&) = delete;
+  Feature &operator=(Feature &&) = delete;
   ~Feature() override = default;
 
   [[nodiscard]] inline std::size_t hash() const {
@@ -158,6 +160,11 @@ private:
     } else if (auto *E = llvm::dyn_cast<ExcludesConstraint>(C->getRoot()); E) {
       Excludes.push_back(E);
     }
+  }
+
+  void removeConstraint(const Constraint *C) {
+    Constraints.erase(std::remove(Constraints.begin(), Constraints.end(), C),
+                      Constraints.end());
   }
 
   friend class FeatureModel;
