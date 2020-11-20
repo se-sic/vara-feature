@@ -143,8 +143,6 @@ int FeatureModelXmlWriter::writeNumericFeatures(xmlTextWriterPtr Writer) {
   return RC;
 }
 
-// TODO(s9latimm): Refactor with new Constraints representation
-// TODO(s9latimm): remove NOLINT
 int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
     xmlTextWriterPtr Writer) {                      // NOLINT
   int RC;
@@ -187,7 +185,8 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
     CHECK_RC
   }
 
-  // TODO write other boolean constraints if they are parsed
+  // TODO(se-passau/VaRA#664): write other boolean constraints if they are
+  //  parsed
 
   RC = xmlTextWriterEndElement(Writer); // BOOLEANCONSTRAINT
   return RC;

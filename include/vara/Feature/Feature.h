@@ -152,6 +152,12 @@ protected:
       : FeatureTreeNode(NodeKind::NK_FEATURE, Parent, Children), Kind(Kind),
         Name(std::move(Name)), Source(std::move(Source)), Opt(Opt) {}
 
+  Feature(FeatureKind Kind, string Name, bool Opt,
+          std::optional<FeatureSourceRange> Source, FeatureTreeNode *Parent,
+          const std::vector<FeatureTreeNode *> &Children)
+      : FeatureTreeNode(NodeKind::NK_FEATURE, Parent, Children), Kind(Kind),
+        Name(std::move(Name)), Source(std::move(Source)), Opt(Opt) {}
+
 private:
   void addConstraint(Constraint *C) {
     Constraints.push_back(C);
@@ -188,6 +194,11 @@ public:
       : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc),
                 Parent, Children) {}
 
+  BinaryFeature(const string &Name, bool Opt,
+                const std::optional<FeatureSourceRange> &Loc, Feature *Parent,
+                const std::vector<FeatureTreeNode *> &Children)
+      : Feature(FeatureKind::FK_BINARY, Name, Opt, Loc, Parent, Children) {}
+
   [[nodiscard]] string toString() const override;
 
   static bool classof(const Feature *F) {
@@ -206,6 +217,12 @@ public:
                  Feature *Parent = nullptr, const NodeSetType &Children = {})
       : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc),
                 Parent, Children),
+        Values(std::move(Values)) {}
+
+  NumericFeature(const string &Name, ValuesVariantType Values, bool Opt,
+                 const std::optional<FeatureSourceRange> &Loc, Feature *Parent,
+                 const std::vector<FeatureTreeNode *> &Children)
+      : Feature(FeatureKind::FK_NUMERIC, Name, Opt, Loc, Parent, Children),
         Values(std::move(Values)) {}
 
   [[nodiscard]] ValuesVariantType getValues() const { return Values; }

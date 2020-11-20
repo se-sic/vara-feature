@@ -34,7 +34,7 @@ TEST(FeatureModelBuilder, addOptionalFeature) {
   EXPECT_TRUE(FM->getFeature("a")->isOptional());
 }
 
-// TODO(s9latimm): Replace string equals with subtree comparison
+// TODO(se-passau/VaRA#701): Replace string equals with subtree comparison
 TEST(FeatureModelBuilder, addExcludeConstraint) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
@@ -57,7 +57,7 @@ TEST(FeatureModelBuilder, addExcludeConstraint) {
       Expected);
 }
 
-// TODO(s9latimm): Replace string equals with subtree comparison
+// TODO(se-passau/VaRA#701): Replace string equals with subtree comparison
 TEST(FeatureModelBuilder, addImplicationConstraint) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
@@ -78,7 +78,7 @@ TEST(FeatureModelBuilder, addImplicationConstraint) {
       Expected);
 }
 
-// TODO(s9latimm): Replace string equals with subtree comparison
+// TODO(se-passau/VaRA#701): Replace string equals with subtree comparison
 TEST(FeatureModelBuilder, addOrConstraint) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");

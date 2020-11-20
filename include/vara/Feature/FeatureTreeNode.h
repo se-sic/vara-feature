@@ -29,6 +29,7 @@ public:
   enum class NodeKind { NK_FEATURE, NK_RELATIONSHIP };
 
   using NodeSetType = typename llvm::SmallSet<FeatureTreeNode *, 3>;
+  using InitListType = typename std::initializer_list<FeatureTreeNode>;
 
   FeatureTreeNode(NodeKind Kind) : Kind(Kind){};
   FeatureTreeNode(FeatureTreeNode &) = delete;
@@ -73,6 +74,12 @@ public:
 protected:
   FeatureTreeNode(NodeKind Kind, FeatureTreeNode *Parent,
                   const llvm::SmallPtrSetImpl<FeatureTreeNode *> &Children)
+      : Kind(Kind), Parent(Parent) {
+    this->Edges.insert(Children.begin(), Children.end());
+  }
+
+  FeatureTreeNode(NodeKind Kind, FeatureTreeNode *Parent,
+                  const std::vector<FeatureTreeNode *> &Children)
       : Kind(Kind), Parent(Parent) {
     this->Edges.insert(Children.begin(), Children.end());
   }
