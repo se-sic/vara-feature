@@ -267,19 +267,28 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
           : std::nullopt;
   switch (F.getKind()) {
   case Feature::FeatureKind::FK_BINARY: {
-    auto *BF = llvm::dyn_cast<BinaryFeature>(&F);
-    assert(BF);
-    if (!makeFeature<BinaryFeature>(std::string(BF->getName()),
-                                    BF->isOptional(), Loc)) {
+    if (auto *BF = llvm::dyn_cast<BinaryFeature>(&F); BF) {
+      if (!makeFeature<BinaryFeature>(std::string(BF->getName()),
+                                      BF->isOptional(), Loc)) {
+        return false;
+      }
+    } else {
+      llvm::errs() << "error: Could not cast \'" << F.getName()
+                   << "\' to \'BinaryFeature\'.\n";
       return false;
     }
     break;
   }
   case Feature::FeatureKind::FK_NUMERIC: {
-    auto *NF = llvm::dyn_cast<NumericFeature>(&F);
-    assert(NF);
-    if (!makeFeature<NumericFeature>(std::string(NF->getName()),
-                                     NF->getValues(), NF->isOptional(), Loc)) {
+    if (auto *NF = llvm::dyn_cast<NumericFeature>(&F); NF) {
+      if (!makeFeature<NumericFeature>(std::string(NF->getName()),
+                                       NF->getValues(), NF->isOptional(),
+                                       Loc)) {
+        return false;
+      }
+    } else {
+      llvm::errs() << "error: Could not cast \'" << F.getName()
+                   << "\' to \'NumericFeature\'.\n";
       return false;
     }
     break;

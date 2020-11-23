@@ -57,10 +57,13 @@ TEST(NumericFeature, NumericFeatureChildren) {
   EXPECT_EQ(
       std::distance(FM->getFeature("F")->begin(), FM->getFeature("F")->end()),
       1);
-  auto *F =
-      llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("F")->begin());
-  assert(F);
-  EXPECT_EQ("A", F->getName());
+  if (auto *F =
+          llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("F")->begin());
+      F) {
+    EXPECT_EQ("A", F->getName());
+  } else {
+    FAIL();
+  }
 }
 
 } // namespace vara::feature
