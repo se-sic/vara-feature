@@ -79,14 +79,15 @@ bool isSimpleMutex(const Feature *A, const Feature *B) {
 }
 
 /// Collect mutual exclusive feature constraints for clean up.
-llvm::SmallSet<const Constraint *, 3>
-cleanUpMutex(const Feature *A, const llvm::SmallSet<Feature *, 3> &Xor) {
-  llvm::SmallSet<const Constraint *, 3> Remove;
+llvm::SmallSet<Constraint *, 3>
+cleanUpMutualExclusiveConstraints(const Feature *A,
+                                  const llvm::SmallSet<Feature *, 3> &Xor) {
+  llvm::SmallSet<Constraint *, 3> Remove;
   for (const auto *E : A->excludes()) {
-    if (const auto *LHS =
+    if (auto *LHS =
             llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand());
         LHS) {
-      if (const auto *RHS =
+      if (auto *RHS =
               llvm::dyn_cast<PrimaryFeatureConstraint>(E->getRightOperand());
           RHS) {
         if (LHS->getFeature() && LHS->getFeature()->getName() == A->getName() &&
@@ -100,7 +101,7 @@ cleanUpMutex(const Feature *A, const llvm::SmallSet<Feature *, 3> &Xor) {
       }
     }
   }
-  return std::move(Remove);
+  return Remove;
 }
 
 void FeatureModelBuilder::detectXMLAlternatives() {
@@ -132,8 +133,8 @@ void FeatureModelBuilder::detectXMLAlternatives() {
                                        E->getName().str()),
                            Frontier.end());
             V.push_back(E->getName().str());
-            for (const auto *R : cleanUpMutex(E, Xor)) {
-              E->removeConstraint(R);
+            for (auto *R : cleanUpMutualExclusiveConstraints(E, Xor)) {
+              E->removeConstraintNonPreserve(R);
             }
           }
           emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, V,

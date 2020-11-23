@@ -19,7 +19,7 @@ namespace vara::feature {
 
 class ConstraintVisitor;
 
-/// \brief Tree like representation of constraints between features3
+/// \brief Tree like representation of constraints between features
 class Constraint {
 public:
   enum class ConstraintKind {

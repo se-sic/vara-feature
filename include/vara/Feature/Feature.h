@@ -168,9 +168,17 @@ private:
     }
   }
 
-  void removeConstraint(const Constraint *C) {
+  void removeConstraintNonPreserve(Constraint *C) {
     Constraints.erase(std::remove(Constraints.begin(), Constraints.end(), C),
                       Constraints.end());
+    if (auto *I = llvm::dyn_cast<ImpliesConstraint>(C->getRoot()); I) {
+      Implications.erase(
+          std::remove(Implications.begin(), Implications.end(), I),
+          Implications.end());
+    } else if (auto *E = llvm::dyn_cast<ExcludesConstraint>(C->getRoot()); E) {
+      Excludes.erase(std::remove(Excludes.begin(), Excludes.end(), E),
+                     Excludes.end());
+    }
   }
 
   friend class FeatureModel;

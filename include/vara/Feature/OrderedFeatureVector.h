@@ -13,39 +13,50 @@ namespace vara::feature {
 /// Feature::operator<.
 class OrderedFeatureVector {
 public:
-  using ordered_feature_iterator = typename std::vector<Feature *>::iterator;
+  using ordered_feature_iterator =
+      typename llvm::SmallVector<Feature *, 3>::iterator;
   using const_ordered_feature_iterator =
-      typename std::vector<Feature *>::const_iterator;
+      typename llvm::SmallVector<Feature *, 3>::const_iterator;
 
   OrderedFeatureVector() = default;
+  OrderedFeatureVector(std::initializer_list<Feature *> Init) { insert(Init); }
   template <class FeatureIterTy>
-  OrderedFeatureVector(FeatureIterTy Start, FeatureIterTy End) {
-    insert(llvm::iterator_range(std::move(Start), std::move(End)));
+  OrderedFeatureVector(FeatureIterTy Begin, FeatureIterTy End) {
+    insert(std::move(Begin), std::move(End));
   }
+  OrderedFeatureVector(const OrderedFeatureVector &OFV) = delete;
+  OrderedFeatureVector &operator=(const OrderedFeatureVector &) = delete;
+  OrderedFeatureVector(OrderedFeatureVector &&) = delete;
+  OrderedFeatureVector &operator=(OrderedFeatureVector &&) = delete;
+  ~OrderedFeatureVector() = default;
 
   /// Insert feature while preserving ordering.
   void insert(Feature *F);
 
-  void insert(const OrderedFeatureVector &OFV) {
-    for (const auto &F : OFV) {
+  template <class FeatureIterTy>
+  void insert(llvm::iterator_range<FeatureIterTy> Iter) {
+    for (const auto &F : Iter) {
       insert(F);
     }
   }
 
-  template <typename... Args> void insert(Feature *F, Args... FF) {
-    insert(F);
-    insert(FF...);
+  template <class FeatureIterTy>
+  void insert(FeatureIterTy Begin, FeatureIterTy End) {
+    insert(llvm::make_range(Begin, End));
   }
 
-  template <typename T> void insert(llvm::iterator_range<T> Iter) {
-    for (const auto &Ptr : Iter) {
-      if (auto *F = llvm::dyn_cast<Feature>(Ptr); F) {
-        insert(F);
-      }
-    }
+  void insert(std::initializer_list<Feature *> Init) {
+    insert(Init.begin(), Init.end());
   }
 
   [[nodiscard]] unsigned int size() { return Features.size(); }
+
+  [[nodiscard]] bool empty() { return Features.empty(); }
+
+  bool erase(const Feature *F) {
+    return Features.erase(std::remove(Features.begin(), Features.end(), F),
+                          Features.end());
+  }
 
   ordered_feature_iterator begin() { return Features.begin(); }
   [[nodiscard]] const_ordered_feature_iterator begin() const {
@@ -58,7 +69,7 @@ public:
   }
 
 private:
-  std::vector<Feature *> Features;
+  llvm::SmallVector<Feature *, 5> Features;
 };
 } // namespace vara::feature
 

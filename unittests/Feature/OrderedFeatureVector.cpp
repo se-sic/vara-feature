@@ -68,9 +68,10 @@ TEST(OrderedFeatureVector, insertVariadic) {
   assert(FM);
   OrderedFeatureVector OFV;
 
-  OFV.insert(FM->getFeature("a"), FM->getFeature("root"), FM->getFeature("ab"));
-  OFV.insert(FM->getFeature("aa"), FM->getFeature("b"), FM->getFeature("bb"),
-             FM->getFeature("ba"));
+  OFV.insert(
+      {FM->getFeature("a"), FM->getFeature("root"), FM->getFeature("ab")});
+  OFV.insert({FM->getFeature("aa"), FM->getFeature("b"), FM->getFeature("bb"),
+              FM->getFeature("ba")});
 
   EXPECT_EQ(OFV.size(), FM->size());
   auto Iter = OFV.begin();

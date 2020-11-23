@@ -192,16 +192,14 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
   return RC;
 }
 
-OrderedFeatureVector getChildrenFeatures(FeatureTreeNode *N) {
-  OrderedFeatureVector V;
+void searchChildrenFeatures(FeatureTreeNode *N, OrderedFeatureVector *Result) {
   for (FeatureTreeNode *C : N->children()) {
     if (auto *F = llvm::dyn_cast<Feature>(C); F) {
-      V.insert(F);
+      Result->insert(F);
     } else {
-      V.insert(getChildrenFeatures(C));
+      searchChildrenFeatures(C, Result);
     }
   }
-  return std::move(V);
 }
 
 int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
@@ -224,8 +222,11 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // children
-  OrderedFeatureVector Children = getChildrenFeatures(&Feature1);
-  if (Children.size() > 0) {
+  OrderedFeatureVector Children;
+
+  searchChildrenFeatures(&Feature1, &Children);
+
+  if (!Children.empty()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CHILDREN);
     CHECK_RC
 
@@ -240,7 +241,8 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // implications
-  llvm::SmallSet<Feature *, 3> Implications;
+  OrderedFeatureVector Implications;
+
   for (const auto *C : Feature1.implications()) {
     if (const auto *LHS =
             llvm::dyn_cast<PrimaryFeatureConstraint>(C->getLeftOperand());
@@ -272,7 +274,14 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // excludes
-  llvm::SmallSet<Feature *, 3> Excludes;
+  OrderedFeatureVector Excludes;
+
+  if (!Feature1.isRoot() && llvm::isa<Relationship>(Feature1.getParent())) {
+    OrderedFeatureVector OFV;
+    searchChildrenFeatures(Feature1.getParent(), &OFV);
+    Excludes.insert(OFV.begin(), OFV.end());
+    Excludes.erase(&Feature1);
+  }
   for (const auto *C : Feature1.excludes()) {
     if (const auto *LHS =
             llvm::dyn_cast<PrimaryFeatureConstraint>(C->getLeftOperand());
@@ -288,6 +297,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
       }
     }
   }
+
   if (!Excludes.empty()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::EXCLUDEDOPTIONS);
     CHECK_RC
