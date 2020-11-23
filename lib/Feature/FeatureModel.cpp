@@ -191,9 +191,8 @@ bool FeatureModelBuilder::buildTree(const string &FeatureName,
           llvm::errs() << "error: Related node \'" << Child
                        << "\' is not child of \'" << FeatureName << "\'.\n";
           return false;
-        } else {
-          Skip.insert(Child);
         }
+        Skip.insert(Child);
         R->addEdge(Features[Child].get());
         Features[Child]->setParent(R.get());
       }

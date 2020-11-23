@@ -313,7 +313,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   ///
   /// \param[in] Node Root of subtree.
   /// \param[in] Indent Value to indent statements in dot file.
-  void emitCluster(const NodeRef Node, const int Indent = 0) {
+  void emitCluster(NodeRef Node, const int Indent = 0) {
     O.indent(Indent);
     emitNode(Node);
     if (Node->begin() != Node->end()) {
@@ -344,7 +344,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   }
 
   /// Output \a Feature node with custom attributes.
-  void emitNode(const NodeRef Node) {
+  void emitNode(NodeRef Node) {
     std::string Label;
     std::string Shape;
     if (auto *F = llvm::dyn_cast<vara::feature::Feature>(Node); F) {
@@ -389,7 +389,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
                 << Label << "];\n";
   }
 
-  void emitEdge(const NodeRef SrcNode, const NodeRef DestNode,
+  void emitEdge(NodeRef SrcNode, NodeRef DestNode,
                 const std::string &Attrs = "") {
     O.indent(2) << "node_" << static_cast<void *>(SrcNode) << " -> node_"
                 << static_cast<void *>(DestNode);
@@ -399,6 +399,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     O << ";\n";
   }
 };
+
 } // namespace llvm
 
 #endif // VARA_FEATURE_FEATUREMODEL_H
