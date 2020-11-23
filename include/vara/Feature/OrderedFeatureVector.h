@@ -53,11 +53,6 @@ public:
 
   [[nodiscard]] bool empty() { return Features.empty(); }
 
-  bool erase(const Feature *F) {
-    return Features.erase(std::remove(Features.begin(), Features.end(), F),
-                          Features.end());
-  }
-
   ordered_feature_iterator begin() { return Features.begin(); }
   [[nodiscard]] const_ordered_feature_iterator begin() const {
     return Features.begin();

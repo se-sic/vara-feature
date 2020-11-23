@@ -192,16 +192,6 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
   return RC;
 }
 
-void searchChildrenFeatures(FeatureTreeNode *N, OrderedFeatureVector *Result) {
-  for (FeatureTreeNode *C : N->children()) {
-    if (auto *F = llvm::dyn_cast<Feature>(C); F) {
-      Result->insert(F);
-    } else {
-      searchChildrenFeatures(C, Result);
-    }
-  }
-}
-
 int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
                                         Feature &Feature1) {
   int RC;
@@ -222,9 +212,8 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // children
-  OrderedFeatureVector Children;
-
-  searchChildrenFeatures(&Feature1, &Children);
+  auto FS = Feature1.getChildren<Feature>();
+  auto Children = OrderedFeatureVector(FS.begin(), FS.end());
 
   if (!Children.empty()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CHILDREN);
@@ -277,10 +266,9 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   OrderedFeatureVector Excludes;
 
   if (!Feature1.isRoot() && llvm::isa<Relationship>(Feature1.getParent())) {
-    OrderedFeatureVector OFV;
-    searchChildrenFeatures(Feature1.getParent(), &OFV);
-    Excludes.insert(OFV.begin(), OFV.end());
-    Excludes.erase(&Feature1);
+    auto ES = Feature1.getParent()->getChildren<Feature>();
+    ES.erase(&Feature1);
+    Excludes.insert(ES.begin(), ES.end());
   }
   for (const auto *C : Feature1.excludes()) {
     if (const auto *LHS =

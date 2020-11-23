@@ -29,7 +29,6 @@ public:
   enum class NodeKind { NK_FEATURE, NK_RELATIONSHIP };
 
   using NodeSetType = typename llvm::SmallSet<FeatureTreeNode *, 3>;
-  using InitListType = typename std::initializer_list<FeatureTreeNode>;
 
   FeatureTreeNode(NodeKind Kind) : Kind(Kind){};
   FeatureTreeNode(FeatureTreeNode &) = delete;
@@ -71,6 +70,13 @@ public:
     return std::find(begin(), end(), &N) != end();
   }
 
+  /// Search all children of given type in tree structure.
+  template <typename T> llvm::SmallSet<T *, 3> getChildren() {
+    llvm::SmallSet<T *, 3> FS;
+    getChildrenImpl(this, &FS);
+    return FS;
+  }
+
 protected:
   FeatureTreeNode(NodeKind Kind, FeatureTreeNode *Parent,
                   const llvm::SmallPtrSetImpl<FeatureTreeNode *> &Children)
@@ -92,6 +98,18 @@ private:
   void setParent(FeatureTreeNode *Feature) { Parent = Feature; }
 
   bool addEdge(FeatureTreeNode *Feature) { return DGNode::addEdge(*Feature); }
+
+  template <typename T>
+  static void getChildrenImpl(FeatureTreeNode *N,
+                              llvm::SmallPtrSetImpl<T *> *FS) {
+    for (auto *C : N->children()) {
+      if (auto *F = llvm::dyn_cast<T>(C); F) {
+        FS->insert(F);
+      } else {
+        getChildrenImpl(C, FS);
+      }
+    }
+  }
 
   const NodeKind Kind;
   FeatureTreeNode *Parent{nullptr};

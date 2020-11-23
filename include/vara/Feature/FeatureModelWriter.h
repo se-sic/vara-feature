@@ -28,7 +28,6 @@ public:
   /// \returns an instance of \a FeatureModel or \a nullptr
   virtual int writeFeatureModel(std::string Path) = 0;
   virtual std::optional<std::string> writeFeatureModel() = 0;
-
 };
 
 //===----------------------------------------------------------------------===//
@@ -38,7 +37,7 @@ public:
 /// \brief Parsers for feature models in XML.
 class FeatureModelXmlWriter : public FeatureModelWriter {
 public:
-  explicit FeatureModelXmlWriter(const FeatureModel &Fm) : Fm{Fm}{}
+  explicit FeatureModelXmlWriter(const FeatureModel &Fm) : Fm{Fm} {}
 
   int writeFeatureModel(std::string Path) override;
   std::optional<std::string> writeFeatureModel() override;
@@ -50,7 +49,8 @@ private:
   int writeNumericFeatures(xmlTextWriterPtr Writer);
   int writeBooleanConstraints(xmlTextWriterPtr Writer);
   static int writeFeature(xmlTextWriterPtr Writer, Feature &Feature1);
-  static int writeSourceRange(xmlTextWriterPtr Writer, FeatureSourceRange &Location);
+  static int writeSourceRange(xmlTextWriterPtr Writer,
+                              FeatureSourceRange &Location);
 
   const FeatureModel &Fm;
 };
