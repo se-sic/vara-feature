@@ -60,7 +60,7 @@ endif ()
 # Setup custom targets
 
 find_program(VARA_FEATURE_RUN_CLANG_TIDY
-  NAMES run-clang-tidy-10.py run-clang-tidy-10 run-clang-tidy.py run-clang-tidy clang-tidy-10
+  NAMES run-clang-tidy-11.py run-clang-tidy-11 run-clang-tidy.py run-clang-tidy clang-tidy-11
   PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
   )
 
@@ -83,8 +83,8 @@ if (NOT VARA_FEATURE_IN_TREE)
     message(STATUS "Using LLVM ${LLVM_REQUESTED_VERSION}")
     find_package(LLVM ${LLVM_REQUESTED_VERSION} REQUIRED CONFIG)
   else ()
-    message(STATUS "Using LLVM 10")
-    find_package(LLVM 10 REQUIRED CONFIG)
+    message(STATUS "Using LLVM 11")
+    find_package(LLVM 11 REQUIRED CONFIG)
   endif ()
 
   if (NOT "${LLVM_VERSION_MAJOR}" GREATER_EQUAL "${MIN_LLVM_REQUIRED}")
