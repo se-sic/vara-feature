@@ -304,12 +304,9 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   static bool
   visited(std::pair<vara::feature::Feature *, vara::feature::Feature *> Edge,
           const FeatureEdgeSetTy &Skip) {
-    for (const auto &P : Skip) {
-      if (P.first == Edge.first && P.second == Edge.second) {
-        return true;
-      }
-    }
-    return false;
+    return std::any_of(Skip.begin(), Skip.end(), [Edge](const auto &P) {
+      return P.first == Edge.first && P.second == Edge.second;
+    });
   }
 
   /// Output feature model (tree) recursively.

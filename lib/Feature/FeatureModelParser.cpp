@@ -222,9 +222,8 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
     if (Ctxt->vctxt.valid) {
       return Doc;
-    } else {
-      std::cerr << "Failed to validate DTD." << std::endl;
     }
+    std::cerr << "Failed to validate DTD." << std::endl;
   } else {
     std::cerr << "Failed to parse / validate XML." << std::endl;
   }

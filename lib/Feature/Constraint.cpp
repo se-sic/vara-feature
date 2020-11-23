@@ -17,9 +17,8 @@ void PrimaryFeatureConstraint::accept(ConstraintVisitor &V) {
 Feature *PrimaryFeatureConstraint::getFeature() const {
   if (std::holds_alternative<Feature *>(FV)) {
     return std::get<Feature *>(FV);
-  } else {
-    return std::get<std::unique_ptr<Feature>>(FV).get();
   }
+  return std::get<std::unique_ptr<Feature>>(FV).get();
 }
 std::string PrimaryFeatureConstraint::toString() const {
   return llvm::formatv("{0}", getFeature()->getName());
