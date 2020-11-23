@@ -62,16 +62,16 @@ TEST(FeatureModel, iter) {
                                                            {"root", "a"},
                                                            {"b", "ba"}});
   assert(FM);
+  std::vector<Feature *> Expected = {
+      FM->getFeature("bb"),  FM->getFeature("ba"), FM->getFeature("b"),
+      FM->getFeature("ab"),  FM->getFeature("aa"), FM->getFeature("a"),
+      FM->getFeature("root")};
 
-  auto Iter = FM->begin();
-  EXPECT_EQ(**Iter++, *FM->getFeature("root"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("a"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("aa"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ab"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("b"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ba"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("bb"));
-  EXPECT_EQ(Iter, FM->end());
+  EXPECT_EQ(Expected.size(), FM->size());
+  for (const auto *F : FM->features()) {
+    EXPECT_EQ(*Expected.back(), *F);
+    Expected.pop_back();
+  }
 }
 
 TEST(FeatureModel, disjunct) {
@@ -193,4 +193,5 @@ TEST(FeatureModel, gtSimple) {
   EXPECT_GT(*FM->getFeature("b"), *FM->getFeature("root"));
   EXPECT_GT(*FM->getFeature("b"), *FM->getFeature("a"));
 }
+
 } // namespace vara::feature

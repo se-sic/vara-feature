@@ -13,6 +13,10 @@ TEST(OrderedFeatureVector, insert) {
                                                            {"b", "ba"}});
   assert(FM);
   OrderedFeatureVector OFV;
+  std::vector<Feature *> Expected = {
+      FM->getFeature("bb"),  FM->getFeature("ba"), FM->getFeature("b"),
+      FM->getFeature("ab"),  FM->getFeature("aa"), FM->getFeature("a"),
+      FM->getFeature("root")};
 
   OFV.insert(FM->getFeature("a"));
   OFV.insert(FM->getFeature("root"));
@@ -23,15 +27,11 @@ TEST(OrderedFeatureVector, insert) {
   OFV.insert(FM->getFeature("bb"));
 
   EXPECT_EQ(OFV.size(), FM->size());
-  auto Iter = OFV.begin();
-  EXPECT_EQ(**Iter++, *FM->getFeature("root"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("a"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("aa"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ab"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("b"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ba"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("bb"));
-  EXPECT_EQ(Iter, OFV.end());
+  EXPECT_EQ(Expected.size(), FM->size());
+  for (const auto *F : FM->features()) {
+    EXPECT_EQ(*Expected.back(), *F);
+    Expected.pop_back();
+  }
 }
 
 TEST(OrderedFeatureVector, insertFM) {
@@ -43,19 +43,19 @@ TEST(OrderedFeatureVector, insertFM) {
                                                            {"b", "ba"}});
   assert(FM);
   OrderedFeatureVector OFV;
+  std::vector<Feature *> Expected = {
+      FM->getFeature("bb"),  FM->getFeature("ba"), FM->getFeature("b"),
+      FM->getFeature("ab"),  FM->getFeature("aa"), FM->getFeature("a"),
+      FM->getFeature("root")};
 
   OFV.insert(FM->features());
 
   EXPECT_EQ(OFV.size(), FM->size());
-  auto Iter = OFV.begin();
-  EXPECT_EQ(**Iter++, *FM->getFeature("root"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("a"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("aa"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ab"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("b"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ba"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("bb"));
-  EXPECT_EQ(Iter, OFV.end());
+  EXPECT_EQ(Expected.size(), FM->size());
+  for (const auto *F : FM->features()) {
+    EXPECT_EQ(*Expected.back(), *F);
+    Expected.pop_back();
+  }
 }
 
 TEST(OrderedFeatureVector, insertVariadic) {
@@ -67,6 +67,10 @@ TEST(OrderedFeatureVector, insertVariadic) {
                                                            {"b", "ba"}});
   assert(FM);
   OrderedFeatureVector OFV;
+  std::vector<Feature *> Expected = {
+      FM->getFeature("bb"),  FM->getFeature("ba"), FM->getFeature("b"),
+      FM->getFeature("ab"),  FM->getFeature("aa"), FM->getFeature("a"),
+      FM->getFeature("root")};
 
   OFV.insert(
       {FM->getFeature("a"), FM->getFeature("root"), FM->getFeature("ab")});
@@ -74,14 +78,11 @@ TEST(OrderedFeatureVector, insertVariadic) {
               FM->getFeature("ba")});
 
   EXPECT_EQ(OFV.size(), FM->size());
-  auto Iter = OFV.begin();
-  EXPECT_EQ(**Iter++, *FM->getFeature("root"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("a"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("aa"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ab"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("b"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ba"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("bb"));
-  EXPECT_EQ(Iter, OFV.end());
+  EXPECT_EQ(Expected.size(), FM->size());
+  for (const auto *F : FM->features()) {
+    EXPECT_EQ(*Expected.back(), *F);
+    Expected.pop_back();
+  }
 }
+
 } // namespace vara::feature
