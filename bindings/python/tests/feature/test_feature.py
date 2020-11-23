@@ -36,8 +36,8 @@ class TestFeature(unittest.TestCase):
 
         root_feature = feature.BinaryFeature("root", False,
                                              feature.Location(""), None,
-                                             {test_feature_1,
-                                              test_feature_2})
+                                             [test_feature_1,
+                                              test_feature_2])
 
         self.assertEqual(set(iter(root_feature)),
                          set(root_feature.children()))

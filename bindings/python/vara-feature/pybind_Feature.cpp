@@ -10,16 +10,11 @@
 namespace vf = vara::feature;
 namespace py = pybind11;
 
-void init_feature_module_feature(py::module &M) {
-  py::class_<vf::Feature>(M, "Feature")
-      .def("__hash__", &vf::Feature::hash)
-      .def_property_readonly("name", &vf::Feature::getName,
-                             R"pbdoc(The name of the feature.)pbdoc")
-      .def("is_optional", &vf::Feature::isOptional,
-           R"pbdoc(`True` if the feature is optional.)pbdoc")
-      .def(
-          "is_root", &vf::Feature::isRoot,
-          R"pbdoc(`True` if this is the root feature of a `FeatureModel`.)pbdoc")
+void init_feature_module_feature_tree_node(py::module &M) {
+  py::class_<vf::FeatureTreeNode>(M, "FeatureTreeNode")
+      .def("is_root", &vf::FeatureTreeNode::isRoot,
+           R"pbdoc(`True` if this is the root of a `FeatureModel`.)pbdoc")
+
       //===----------------------------------------------------------------===//
       // Children
       .def(
@@ -27,19 +22,31 @@ void init_feature_module_feature(py::module &M) {
           [](vf::FeatureTreeNode &F) {
             return py::make_iterator(F.begin(), F.end());
           },
-          py::keep_alive<0, 1>(), R"pbdoc(Child features)pbdoc")
+          py::keep_alive<0, 1>(), R"pbdoc(Child nodes.)pbdoc")
       .def(
           "__iter__",
-          [](vf::Feature &F) { return py::make_iterator(F.begin(), F.end()); },
+          [](vf::FeatureTreeNode &F) {
+            return py::make_iterator(F.begin(), F.end());
+          },
           py::keep_alive<0, 1>())
-      .def("is_child", &vf::Feature::hasEdgeTo,
-           R"pbdoc(Checks if a Feature is a child of this one.)pbdoc")
+      .def("is_child", &vf::FeatureTreeNode::hasEdgeTo,
+           R"pbdoc(Checks if a node is a child of this one.)pbdoc")
+
       //===----------------------------------------------------------------===//
       // Parent
-      .def("parent", &vf::Feature::getParent,
+      .def("parent", &vf::FeatureTreeNode::getParent,
            py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
-      .def("is_parent", &vf::Feature::hasEdgeFrom,
-           R"pbdoc(Checks if a Feature is a parent of this one.)pbdoc")
+      .def("is_parent", &vf::FeatureTreeNode::hasEdgeFrom,
+           R"pbdoc(Checks if a node is a parent of this one.)pbdoc");
+}
+
+void init_feature_module_feature(py::module &M) {
+  py::class_<vf::Feature, vf::FeatureTreeNode>(M, "Feature")
+      .def("__hash__", &vf::Feature::hash)
+      .def_property_readonly("name", &vf::Feature::getName,
+                             R"pbdoc(The name of the feature.)pbdoc")
+      .def("is_optional", &vf::Feature::isOptional,
+           R"pbdoc(`True` if the feature is optional.)pbdoc")
       .def_property("location", &vf::Feature::getFeatureSourceRange,
                     &vf::Feature::setFeatureSourceRange,
                     R"pbdoc(The name of the feature.)pbdoc")
@@ -79,6 +86,7 @@ void init_feature_module_numeric_feature(py::module &M) {
 }
 
 void init_feature_module(py::module &M) {
+  init_feature_module_feature_tree_node(M);
   init_feature_module_feature(M);
   init_feature_module_binary_feature(M);
   init_feature_module_numeric_feature(M);
