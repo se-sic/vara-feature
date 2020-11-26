@@ -1,5 +1,5 @@
 # VaRA feature library
-[![Build Status](https://travis-ci.org/se-passau/vara-feature.svg?branch=vara-dev)](https://travis-ci.org/se-passau/vara-feature) [![Documentation Status](https://readthedocs.org/projects/vara/badge/?version=vara-dev)](https://vara.readthedocs.io/en/vara-dev/?badge=vara-dev)
+[![Build Status](https://travis-ci.org/se-sic/vara-feature.svg?branch=vara-dev)](https://travis-ci.org/se-passau/vara-feature) [![Documentation Status](https://readthedocs.org/projects/vara/badge/?version=vara-dev)](https://vara.readthedocs.io/en/vara-dev/?badge=vara-dev)
 
 Installation
 ------------
