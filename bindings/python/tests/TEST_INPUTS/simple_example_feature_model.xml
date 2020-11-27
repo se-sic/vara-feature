@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<vm name="Children" root="test">
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="Children" root="test/path/to/root/">
   <binaryOptions>
     <configurationOption>
       <name>root</name>

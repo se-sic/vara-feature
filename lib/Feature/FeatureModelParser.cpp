@@ -5,6 +5,8 @@
 #include <iostream>
 #include <regex>
 
+using std::make_unique;
+
 namespace vara::feature {
 
 bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
@@ -33,7 +35,25 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
                   xmlNodeGetContent(Child), xmlFree);
-              FMB.addExclude(Name, reinterpret_cast<char *>(CCnt.get()));
+              FMB.addConstraint(make_unique<ExcludesConstraint>(
+                  make_unique<PrimaryFeatureConstraint>(
+                      make_unique<Feature>(Name)),
+                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
+                      reinterpret_cast<char *>(CCnt.get())))));
+            }
+          }
+        }
+      } else if (!xmlStrcmp(Head->name, XmlConstants::IMPLIEDOPTIONS)) {
+        for (xmlNode *Child = Head->children; Child; Child = Child->next) {
+          if (Child->type == XML_ELEMENT_NODE) {
+            if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
+              std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
+                  xmlNodeGetContent(Child), xmlFree);
+              FMB.addConstraint(make_unique<ImpliesConstraint>(
+                  make_unique<PrimaryFeatureConstraint>(
+                      make_unique<Feature>(Name)),
+                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
+                      reinterpret_cast<char *>(CCnt.get())))));
             }
           }
         }
@@ -96,7 +116,7 @@ bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
   return true;
 }
 
-bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
+bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
@@ -104,19 +124,8 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(H), xmlFree)
                                          .get()));
-        const std::regex Regex(R"((!?\w+))");
-        std::smatch Matches;
-        FeatureModel::ConstraintTy Constraint;
-        for (string Suffix = Cnt; regex_search(Suffix, Matches, Regex);
-             Suffix = Matches.suffix()) {
-          string B = Matches.str(0);
-          if (B.length() > 1 && B[0] == '!') {
-            Constraint.emplace_back(B.substr(1, B.length()), false);
-          } else {
-            Constraint.emplace_back(B, true);
-          }
-        }
-        FMB.addConstraint(Constraint);
+        // TODO(se-passau/VaRA#664): Implement advanced parsing into constraint
+        //  tree
       }
     }
   }
@@ -125,13 +134,13 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
 
 bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::NAME),
-                                                   xmlFree);
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
+        xmlGetProp(Node, XmlConstants::NAME), xmlFree);
     FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
   }
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::ROOT),
-                                                   xmlFree);
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
+        xmlGetProp(Node, XmlConstants::ROOT), xmlFree);
     FMB.setPath(Cnt ? fs::path(reinterpret_cast<char *>(Cnt.get()))
                     : fs::current_path());
   }
@@ -213,9 +222,8 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
     if (Ctxt->vctxt.valid) {
       return Doc;
-    } else {
-      std::cerr << "Failed to validate DTD." << std::endl;
     }
+    std::cerr << "Failed to validate DTD." << std::endl;
   } else {
     std::cerr << "Failed to parse / validate XML." << std::endl;
   }

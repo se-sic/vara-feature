@@ -34,53 +34,77 @@ TEST(FeatureModelBuilder, addOptionalFeature) {
   EXPECT_TRUE(FM->getFeature("a")->isOptional());
 }
 
-TEST(FeatureModelBuilder, addExclude) {
+// TODO(se-passau/VaRA#701): Replace string equals with subtree comparison
+TEST(FeatureModelBuilder, addExcludeConstraint) {
   FeatureModelBuilder B;
-
   B.makeFeature<BinaryFeature>("a");
-  B.addExclude("a", "b")->makeFeature<BinaryFeature>("b");
+  B.makeFeature<BinaryFeature>("b");
+  auto C = std::make_unique<ImpliesConstraint>(
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<Feature>("a")),
+      std::make_unique<NotConstraint>(
+          std::make_unique<PrimaryFeatureConstraint>(
+              std::make_unique<Feature>("b"))));
+  auto Expected = C->toString();
+
+  B.addConstraint(std::move(C));
+
   auto FM = B.buildFeatureModel();
   assert(FM);
 
-  EXPECT_TRUE(FM->getFeature("a")->isExcluded(FM->getFeature("b")));
+  EXPECT_EQ(
+      (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
+      Expected);
 }
 
-TEST(FeatureModelBuilder, addAlternative) {
+// TODO(se-passau/VaRA#701): Replace string equals with subtree comparison
+TEST(FeatureModelBuilder, addImplicationConstraint) {
   FeatureModelBuilder B;
-
   B.makeFeature<BinaryFeature>("a");
-  B.addConstraint({{"a", true}, {"b", true}})->makeFeature<BinaryFeature>("b");
+  B.makeFeature<BinaryFeature>("b");
+  auto C = std::make_unique<ImpliesConstraint>(
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<Feature>("a")),
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<Feature>("b")));
+  auto Expected = C->toString();
+
+  B.addConstraint(std::move(C));
   auto FM = B.buildFeatureModel();
   assert(FM);
 
-  EXPECT_TRUE(FM->getFeature("a")->isAlternative(FM->getFeature("b")));
-  EXPECT_TRUE(FM->getFeature("b")->isAlternative(FM->getFeature("a")));
+  EXPECT_EQ(
+      (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
+      Expected);
 }
 
-TEST(FeatureModelBuilder, addImplication) {
+// TODO(se-passau/VaRA#701): Replace string equals with subtree comparison
+TEST(FeatureModelBuilder, addOrConstraint) {
   FeatureModelBuilder B;
-
   B.makeFeature<BinaryFeature>("a");
-  B.addConstraint({{"a", false}, {"b", true}})->makeFeature<BinaryFeature>("b");
+  B.makeFeature<BinaryFeature>("b");
+  auto C =
+      std::make_unique<OrConstraint>(std::make_unique<PrimaryFeatureConstraint>(
+                                         std::make_unique<Feature>("a")),
+                                     std::make_unique<PrimaryFeatureConstraint>(
+                                         std::make_unique<Feature>("b")));
+  auto Expected = C->toString();
+
+  B.addConstraint(std::move(C));
   auto FM = B.buildFeatureModel();
   assert(FM);
 
-  EXPECT_TRUE(FM->getFeature("a")->isImplied(FM->getFeature("b")));
-}
-
-TEST(FeatureModelBuilder, duplicate) {
-  FeatureModelBuilder B;
-
-  B.addParent("a", "root")->makeFeature<BinaryFeature>("a", true);
-
-  EXPECT_FALSE(B.makeFeature<BinaryFeature>("a", true));
+  EXPECT_EQ(
+      (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
+      Expected);
 }
 
 TEST(FeatureModelBuilder, addBinaryFeatureRef) {
   FeatureModelBuilder B;
   BinaryFeature AA("aa");
-  BinaryFeature A("a", false, std::nullopt, nullptr, {&AA}, {&AA}, {&AA},
-                  {&AA});
+  auto CS = Feature::NodeSetType();
+  CS.insert(&AA);
+  BinaryFeature A("a", false, std::nullopt, nullptr, CS);
 
   B.addFeature(AA);
   B.addParent("aa", "a")->addFeature(A);
@@ -88,17 +112,16 @@ TEST(FeatureModelBuilder, addBinaryFeatureRef) {
   assert(FM);
 
   EXPECT_EQ(FM->getFeature("a")->getKind(), Feature::FeatureKind::FK_BINARY);
-  EXPECT_TRUE(FM->getFeature("a")->isChild(FM->getFeature("aa")));
-  EXPECT_TRUE(FM->getFeature("a")->isExcluded(FM->getFeature("aa")));
-  EXPECT_TRUE(FM->getFeature("a")->isImplied(FM->getFeature("aa")));
-  EXPECT_TRUE(FM->getFeature("a")->isAlternative(FM->getFeature("aa")));
+  EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
 }
 
 TEST(FeatureModelBuilder, addNumericFeatureRef) {
   FeatureModelBuilder B;
   BinaryFeature AA("aa");
+  auto CS = Feature::NodeSetType();
+  CS.insert(&AA);
   NumericFeature A("a", std::vector<int>{1, 2, 3}, false, std::nullopt, nullptr,
-                   {&AA}, {&AA}, {&AA}, {&AA});
+                   CS);
 
   B.addFeature(AA);
   B.addParent("aa", "a")->addFeature(A);
@@ -106,9 +129,6 @@ TEST(FeatureModelBuilder, addNumericFeatureRef) {
   assert(FM);
 
   EXPECT_EQ(FM->getFeature("a")->getKind(), Feature::FeatureKind::FK_NUMERIC);
-  EXPECT_TRUE(FM->getFeature("a")->isChild(FM->getFeature("aa")));
-  EXPECT_TRUE(FM->getFeature("a")->isExcluded(FM->getFeature("aa")));
-  EXPECT_TRUE(FM->getFeature("a")->isImplied(FM->getFeature("aa")));
-  EXPECT_TRUE(FM->getFeature("a")->isAlternative(FM->getFeature("aa")));
+  EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
 }
 } // namespace vara::feature

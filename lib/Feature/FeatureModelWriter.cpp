@@ -74,6 +74,9 @@ int FeatureModelXmlWriter::writeFeatureModel(xmlTextWriterPtr Writer) {
 
   RC = xmlTextWriterStartDocument(Writer, "1.0", ENCODING, nullptr);
   CHECK_RC
+  RC = xmlTextWriterWriteDTD(Writer, BAD_CAST "vm", nullptr, BAD_CAST "vm.dtd",
+                             nullptr);
+  CHECK_RC
   RC = writeVm(Writer);
 
   return RC;
@@ -140,7 +143,8 @@ int FeatureModelXmlWriter::writeNumericFeatures(xmlTextWriterPtr Writer) {
   return RC;
 }
 
-int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
+int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
+    xmlTextWriterPtr Writer) {                      // NOLINT
   int RC;
 
   RC = xmlTextWriterStartElement(Writer, XmlConstants::BOOLEANCONSTRAINTS);
@@ -151,16 +155,16 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
     bool operator()(Feature *F1, Feature *F2) const { return *F1 < *F2; }
   };
   std::set<std::set<Feature *, FeatureCompare>> AltGroups;
-  for (auto *F : Fm.features()) {
-    // skip empty groups
-    if (F->alternatives().begin() == F->alternatives().end()) {
-      continue;
-    }
-    std::set<Feature *, FeatureCompare> AltGroup(F->alternatives_begin(),
-                                                 F->alternatives_end());
-    AltGroup.insert(F);
-    AltGroups.insert(std::move(AltGroup));
-  }
+  //  for (auto *F : Fm.features()) {
+  //    // skip empty groups
+  //    if (F->alternatives().begin() == F->alternatives().end()) {
+  //      continue;
+  //    }
+  //    std::set<Feature *, FeatureCompare> AltGroup(F->alternatives_begin(),
+  //                                                 F->alternatives_end());
+  //    AltGroup.insert(F);
+  //    AltGroups.insert(std::move(AltGroup));
+  //  }
 
   for (const auto &Group : AltGroups) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
@@ -181,7 +185,8 @@ int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
     CHECK_RC
   }
 
-  // TODO write other boolean constraints if they are parsed
+  // TODO(se-passau/VaRA#664): write other boolean constraints if they are
+  //  parsed
 
   RC = xmlTextWriterEndElement(Writer); // BOOLEANCONSTRAINT
   return RC;
@@ -202,17 +207,18 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   if (!Feature1.isRoot()) {
     RC = xmlTextWriterWriteElement(
         Writer, XmlConstants::PARENT,
-        BAD_CAST Feature1.getParent()->getName().data());
+        BAD_CAST Feature1.getParentFeature()->getName().data());
     CHECK_RC
   }
 
   // children
-  if (Feature1.children_begin() != Feature1.children_end()) {
+  auto FS = Feature1.getChildren<Feature>();
+  auto Children = OrderedFeatureVector(FS.begin(), FS.end());
+
+  if (!Children.empty()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CHILDREN);
     CHECK_RC
 
-    OrderedFeatureVector Children{Feature1.children_begin(),
-                                  Feature1.children_end()};
     for (Feature *F : Children) {
       RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                      BAD_CAST F->getName().data());
@@ -224,13 +230,29 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // implications
-  if (Feature1.implications_begin() != Feature1.implications_end()) {
+  OrderedFeatureVector Implications;
+
+  for (const auto *C : Feature1.implications()) {
+    if (const auto *LHS =
+            llvm::dyn_cast<PrimaryFeatureConstraint>(C->getLeftOperand());
+        LHS) {
+      if (const auto *RHS =
+              llvm::dyn_cast<PrimaryFeatureConstraint>(C->getRightOperand());
+          RHS) {
+        if (LHS->getFeature() &&
+            LHS->getFeature()->getName() == Feature1.getName() &&
+            RHS->getFeature()) {
+          Implications.insert(RHS->getFeature());
+        }
+      }
+    }
+  }
+
+  if (!Implications.empty()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::IMPLIEDOPTIONS);
     CHECK_RC
 
-    OrderedFeatureVector Implies{Feature1.implications_begin(),
-                                 Feature1.implications_end()};
-    for (Feature *F : Implies) {
+    for (Feature *F : Implications) {
       RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                      BAD_CAST F->getName().data());
       CHECK_RC
@@ -241,13 +263,34 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // excludes
-  if (Feature1.excludes_begin() != Feature1.excludes_end()) {
+  OrderedFeatureVector Excludes;
+
+  if (!Feature1.isRoot() && llvm::isa<Relationship>(Feature1.getParent())) {
+    auto ES = Feature1.getParent()->getChildren<Feature>();
+    ES.erase(&Feature1);
+    Excludes.insert(ES.begin(), ES.end());
+  }
+  for (const auto *C : Feature1.excludes()) {
+    if (const auto *LHS =
+            llvm::dyn_cast<PrimaryFeatureConstraint>(C->getLeftOperand());
+        LHS) {
+      if (const auto *RHS =
+              llvm::dyn_cast<PrimaryFeatureConstraint>(C->getRightOperand());
+          RHS) {
+        if (LHS->getFeature() &&
+            LHS->getFeature()->getName() == Feature1.getName() &&
+            RHS->getFeature()) {
+          Excludes.insert(RHS->getFeature());
+        }
+      }
+    }
+  }
+
+  if (!Excludes.empty()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::EXCLUDEDOPTIONS);
     CHECK_RC
 
-    OrderedFeatureVector Exludes{Feature1.excludes_begin(),
-                                 Feature1.excludes_end()};
-    for (Feature *F : Exludes) {
+    for (Feature *F : Excludes) {
       RC = xmlTextWriterWriteElement(Writer, XmlConstants::OPTIONS,
                                      BAD_CAST F->getName().data());
       CHECK_RC

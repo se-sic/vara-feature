@@ -13,31 +13,45 @@ namespace vara::feature {
 /// Feature::operator<.
 class OrderedFeatureVector {
 public:
-  using ordered_feature_iterator = typename std::vector<Feature *>::iterator;
+  using ordered_feature_iterator =
+      typename llvm::SmallVector<Feature *, 3>::iterator;
   using const_ordered_feature_iterator =
-      typename std::vector<Feature *>::const_iterator;
+      typename llvm::SmallVector<Feature *, 3>::const_iterator;
 
   OrderedFeatureVector() = default;
-  template<class FeatureIterTy> OrderedFeatureVector(FeatureIterTy Start, FeatureIterTy End)
-  {
-    insert(llvm::iterator_range(std::move(Start), std::move(End)));
+  OrderedFeatureVector(std::initializer_list<Feature *> Init) { insert(Init); }
+  template <class FeatureIterTy>
+  OrderedFeatureVector(FeatureIterTy Begin, FeatureIterTy End) {
+    insert(std::forward<FeatureIterTy>(Begin), std::forward<FeatureIterTy>(End));
   }
+  OrderedFeatureVector(const OrderedFeatureVector &OFV) = delete;
+  OrderedFeatureVector &operator=(const OrderedFeatureVector &) = delete;
+  OrderedFeatureVector(OrderedFeatureVector &&) = delete;
+  OrderedFeatureVector &operator=(OrderedFeatureVector &&) = delete;
+  ~OrderedFeatureVector() = default;
 
   /// Insert feature while preserving ordering.
   void insert(Feature *F);
 
-  template <typename... Args> void insert(Feature *F, Args... FF) {
-    insert(F);
-    insert(FF...);
-  }
-
-  template <typename T> void insert(llvm::iterator_range<T> FF) {
-    for (const auto &F : FF) {
+  template <class FeatureIterTy>
+  void insert(llvm::iterator_range<FeatureIterTy> Iter) {
+    for (const auto &F : Iter) {
       insert(F);
     }
   }
 
+  template <class FeatureIterTy>
+  void insert(FeatureIterTy Begin, FeatureIterTy End) {
+    insert(llvm::make_range(std::forward<FeatureIterTy>(Begin), std::forward<FeatureIterTy>(End)));
+  }
+
+  void insert(std::initializer_list<Feature *> Init) {
+    insert(Init.begin(), Init.end());
+  }
+
   [[nodiscard]] unsigned int size() { return Features.size(); }
+
+  [[nodiscard]] bool empty() { return Features.empty(); }
 
   ordered_feature_iterator begin() { return Features.begin(); }
   [[nodiscard]] const_ordered_feature_iterator begin() const {
@@ -50,7 +64,7 @@ public:
   }
 
 private:
-  std::vector<Feature *> Features;
+  llvm::SmallVector<Feature *, 5> Features;
 };
 } // namespace vara::feature
 

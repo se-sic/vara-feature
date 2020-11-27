@@ -36,41 +36,14 @@ class TestFeature(unittest.TestCase):
 
         root_feature = feature.BinaryFeature("root", False,
                                              feature.Location(""), None,
-                                             {test_feature_1, test_feature_2})
+                                             [test_feature_1,
+                                              test_feature_2])
 
         self.assertEqual(set(iter(root_feature)),
                          set(root_feature.children()))
         self.assertEqual({test_feature_1, test_feature_2},
                          set(root_feature.children()))
         self.assertTrue(root_feature.is_child(test_feature_1))
-
-    def test_iter_excludes(self):
-        """ Checks if we can iterate over a features children. """
-        test_feature_1 = feature.BinaryFeature("a", False)
-        test_feature_2 = feature.BinaryFeature("b", True)
-
-        root_feature = feature.BinaryFeature("root", False,
-                                             feature.Location(""), None,
-                                             set(),
-                                             {test_feature_1, test_feature_2})
-
-        self.assertEqual({test_feature_1, test_feature_2},
-                         set(root_feature.excludes()))
-        self.assertTrue(root_feature.is_excluded(test_feature_1))
-
-    def test_iter_implications(self):
-        """ Checks if we can iterate over a features children. """
-        test_feature_1 = feature.BinaryFeature("a", False)
-        test_feature_2 = feature.BinaryFeature("b", True)
-
-        root_feature = feature.BinaryFeature("root", False,
-                                             feature.Location(""), None,
-                                             set(), set(),
-                                             {test_feature_1, test_feature_2})
-
-        self.assertEqual({test_feature_1, test_feature_2},
-                         set(root_feature.implications()))
-        self.assertTrue(root_feature.is_implied_by(test_feature_1))
 
     def test_parent(self):
         """ Checks if we can iterate over a features children. """

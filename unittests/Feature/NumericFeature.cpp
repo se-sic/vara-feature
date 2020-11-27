@@ -54,54 +54,16 @@ TEST(NumericFeature, NumericFeatureChildren) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
       {{"F", "A"}}, {{"root", {"F", std::pair<int, int>(0, 1)}}});
 
-  EXPECT_EQ(std::distance(FM->getFeature("F")->children_begin(),
-                          FM->getFeature("F")->children_end()),
-            1);
-  EXPECT_EQ("A", (*FM->getFeature("F")->children_begin())->getName());
+  EXPECT_EQ(
+      std::distance(FM->getFeature("F")->begin(), FM->getFeature("F")->end()),
+      1);
+  if (auto *F =
+          llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("F")->begin());
+      F) {
+    EXPECT_EQ("A", F->getName());
+  } else {
+    FAIL();
+  }
 }
 
-TEST(NumericFeature, NumericFeatureExclude) {
-  auto B = FeatureModelBuilder();
-
-  B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
-  B.makeFeature<NumericFeature>("G", std::pair<int, int>(0, 1));
-  B.addExclude("F", "G");
-
-  auto FM = B.buildFeatureModel();
-
-  EXPECT_EQ(std::distance(FM->getFeature("F")->excludes_begin(),
-                          FM->getFeature("F")->excludes_end()),
-            1);
-  EXPECT_EQ("G", (*FM->getFeature("F")->excludes_begin())->getName());
-}
-
-TEST(NumericFeature, NumericFeatureImplications) {
-  auto B = FeatureModelBuilder();
-
-  B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
-  B.makeFeature<NumericFeature>("G", std::pair<int, int>(0, 1));
-  B.addConstraint({{"F", false}, {"G", true}});
-
-  auto FM = B.buildFeatureModel();
-
-  EXPECT_EQ(std::distance(FM->getFeature("F")->implications_begin(),
-                          FM->getFeature("F")->implications_end()),
-            1);
-  EXPECT_EQ("G", (*FM->getFeature("F")->implications_begin())->getName());
-}
-
-TEST(NumericFeature, NumericFeatureAlternatives) {
-  auto B = FeatureModelBuilder();
-
-  B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
-  B.makeFeature<NumericFeature>("G", std::pair<int, int>(0, 1));
-  B.addConstraint({{"F", true}, {"G", true}});
-
-  auto FM = B.buildFeatureModel();
-
-  EXPECT_EQ(std::distance(FM->getFeature("F")->alternatives_begin(),
-                          FM->getFeature("F")->alternatives_end()),
-            1);
-  EXPECT_EQ("G", (*FM->getFeature("F")->alternatives_begin())->getName());
-}
 } // namespace vara::feature

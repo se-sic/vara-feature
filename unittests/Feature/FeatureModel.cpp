@@ -1,3 +1,4 @@
+#include "llvm/ADT/SetVector.h"
 #include <vara/Feature/FeatureModel.h>
 
 #include "gtest/gtest.h"
@@ -24,24 +25,26 @@ TEST(FeatureModel, addFeature) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
       {{"a", "aa"}, {"root", "aba"}, {"root", "a"}});
   assert(FM);
+  auto CS = Feature::NodeSetType();
+  CS.insert(FM->getFeature("aba"));
 
-  FM->addFeature(std::make_unique<BinaryFeature>(
-      "ab", false, std::nullopt, FM->getFeature("a"),
-      Feature::FeatureSetType({FM->getFeature("aba")})));
+  FM->addFeature(std::make_unique<BinaryFeature>("ab", false, std::nullopt,
+                                                 FM->getFeature("a"), CS));
 
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
-  EXPECT_EQ(*FM->getFeature("aba")->getParent(), *FM->getFeature("ab"));
+  EXPECT_EQ(*FM->getFeature("aba")->getParentFeature(), *FM->getFeature("ab"));
 }
 
 TEST(FeatureModel, newRoot) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
       {{"root", "b"}, {"root", "a"}});
   assert(FM);
+  auto CS = Feature::NodeSetType();
+  CS.insert(FM->getFeature("root"));
 
-  FM->addFeature(std::make_unique<BinaryFeature>(
-      "new_root", false, std::nullopt, nullptr,
-      Feature::FeatureSetType({FM->getFeature("root")})));
+  FM->addFeature(std::make_unique<BinaryFeature>("new_root", false,
+                                                 std::nullopt, nullptr, CS));
 
   EXPECT_TRUE(FM->getFeature("new_root")->isRoot());
   EXPECT_FALSE(FM->getFeature("root")->isRoot());
@@ -59,16 +62,16 @@ TEST(FeatureModel, iter) {
                                                            {"root", "a"},
                                                            {"b", "ba"}});
   assert(FM);
+  std::vector<Feature *> Expected = {
+      FM->getFeature("bb"),  FM->getFeature("ba"), FM->getFeature("b"),
+      FM->getFeature("ab"),  FM->getFeature("aa"), FM->getFeature("a"),
+      FM->getFeature("root")};
 
-  auto Iter = FM->begin();
-  EXPECT_EQ(**Iter++, *FM->getFeature("root"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("a"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("aa"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ab"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("b"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("ba"));
-  EXPECT_EQ(**Iter++, *FM->getFeature("bb"));
-  EXPECT_EQ(Iter, FM->end());
+  EXPECT_EQ(Expected.size(), FM->size());
+  for (const auto *F : FM->features()) {
+    EXPECT_EQ(*Expected.back(), *F);
+    Expected.pop_back();
+  }
 }
 
 TEST(FeatureModel, disjunct) {
@@ -190,4 +193,5 @@ TEST(FeatureModel, gtSimple) {
   EXPECT_GT(*FM->getFeature("b"), *FM->getFeature("root"));
   EXPECT_GT(*FM->getFeature("b"), *FM->getFeature("a"));
 }
+
 } // namespace vara::feature

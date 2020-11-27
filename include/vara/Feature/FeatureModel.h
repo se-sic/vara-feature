@@ -1,7 +1,9 @@
 #ifndef VARA_FEATURE_FEATUREMODEL_H
 #define VARA_FEATURE_FEATUREMODEL_H
 
+#include "vara/Feature/Constraint.h"
 #include "vara/Feature/OrderedFeatureVector.h"
+#include "vara/Feature/Relationship.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
@@ -21,13 +23,17 @@ class FeatureModel {
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
   using OrderedFeatureTy = OrderedFeatureVector;
-  using ConstraintTy = llvm::SmallVector<std::pair<std::string, bool>, 3>;
-  using ConstraintsTy = std::vector<ConstraintTy>;
+  using ConstraintTy = Constraint;
+  using ConstraintContainerTy = std::vector<std::unique_ptr<ConstraintTy>>;
+  using RelationshipTy = Relationship;
+  using RelationshipContainerTy = std::vector<std::unique_ptr<RelationshipTy>>;
 
   FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
-               Feature *Root)
-      : Name(std::move(Name)), Path(std::move(RootPath)), Root(Root),
-        Features(std::move(Features)) {
+               ConstraintContainerTy Constraints,
+               RelationshipContainerTy Relationships, Feature *Root)
+      : Name(std::move(Name)), Path(std::move(RootPath)),
+        Features(std::move(Features)), Constraints(std::move(Constraints)),
+        Relationships(std::move(Relationships)), Root(Root) {
     // Insert all values into ordered data structure.
     for (const auto &KV : this->Features) {
       OrderedFeatures.insert(KV.getValue().get());
@@ -94,7 +100,11 @@ protected:
   string Name;
   fs::path Path;
   FeatureMapTy Features;
-  Feature *Root;
+  ConstraintContainerTy Constraints;
+  RelationshipContainerTy Relationships;
+  Feature *Root{nullptr};
+
+  FeatureModel() = default;
 
 private:
   OrderedFeatureTy OrderedFeatures;
@@ -107,8 +117,6 @@ private:
 /// \brief Builder for \a FeatureModel which can be used while parsing.
 class FeatureModelBuilder : private FeatureModel {
 public:
-  FeatureModelBuilder() : FeatureModel("", "", {}, nullptr){};
-
   void init() {
     Name = "";
     Path = "";
@@ -117,7 +125,6 @@ public:
     Constraints.clear();
     Parents.clear();
     Children.clear();
-    Excludes.clear();
   }
 
   /// Try to create and add a new \a Feature to the \a FeatureModel.
@@ -146,15 +153,17 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *addExclude(const std::string &FeatureName,
-                                  const std::string &ExcludeName) {
-    Excludes[FeatureName].insert(ExcludeName);
+  FeatureModelBuilder *
+  emplaceRelationship(Relationship::RelationshipKind RK,
+                      const std::vector<std::string> &FeatureNames,
+                      const std::string &ParentName) {
+    RelationshipEdges[ParentName].emplace_back(RK, FeatureNames);
     return this;
   }
 
   FeatureModelBuilder *
-  addConstraint(const FeatureModel::ConstraintTy &Constraint) {
-    Constraints.push_back(Constraint);
+  addConstraint(std::unique_ptr<FeatureModel::ConstraintTy> C) {
+    Constraints.push_back(std::move(C));
     return this;
   }
 
@@ -182,20 +191,43 @@ public:
   /// \param[in] N edges with \a NumericFeature
   /// \return instance of \a FeatureModel
   std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
-      const std::vector<std::pair<std::string, std::string>> &B,
-      const std::vector<std::pair<
+      const std::initializer_list<std::pair<std::string, std::string>> &B,
+      const std::initializer_list<std::pair<
           std::string,
           std::pair<std::string, NumericFeature::ValuesVariantType>>> &N = {});
 
 private:
-  using EdgeMapType = typename llvm::StringMap<llvm::SmallSet<std::string, 3>>;
+  class BuilderVisitor : public ConstraintVisitor {
 
-  FeatureModel::ConstraintsTy Constraints;
+  public:
+    BuilderVisitor(FeatureModelBuilder *Builder) : Builder(Builder) {}
+
+    void visit(PrimaryFeatureConstraint *C) override {
+      auto *F = Builder->getFeature(C->getFeature()->getName());
+      C->setFeature(F);
+      F->addConstraint(C);
+    };
+
+  private:
+    FeatureModelBuilder *Builder;
+  };
+
+  using EdgeMapType = typename llvm::StringMap<llvm::SmallSet<std::string, 3>>;
+  using RelationshipEdgeType = typename llvm::StringMap<std::vector<
+      std::pair<Relationship::RelationshipKind, std::vector<std::string>>>>;
+
+  FeatureModel::ConstraintContainerTy Constraints;
+  FeatureModel::RelationshipContainerTy Relationships;
   llvm::StringMap<std::string> Parents;
   EdgeMapType Children;
-  EdgeMapType Excludes;
+  RelationshipEdgeType RelationshipEdges;
 
   bool buildConstraints();
+
+  /// This method is solely relevant for parsing XML, as alternatives are
+  /// represented als mutual excluded but non-optional features (which requires
+  /// additional processing).
+  void detectXMLAlternatives();
 
   bool buildTree(const std::string &FeatureName,
                  std::set<std::string> &Visited);
@@ -226,7 +258,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   raw_ostream &O;
   const GraphType &G;
 
-  using NodeRef = typename vara::feature::Feature *;
+  using NodeRef = typename vara::feature::FeatureTreeNode *;
 
   GraphWriter(raw_ostream &O, const GraphType &G, bool SN) : O(O), G(G) {}
 
@@ -258,15 +290,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   }
 
   /// Output tree structure of feature model and additional edges.
-  void writeNodes() {
-    emitCluster(G->getRoot());
-    (O << '\n').indent(2) << "// Excludes\n";
-    emitExcludeEdges();
-    (O << '\n').indent(2) << "// Implications\n";
-    emitImplicationEdges();
-    (O << '\n').indent(2) << "// Alternatives\n";
-    emitAlternativeEdges();
-  }
+  void writeNodes() { emitCluster(G->getRoot()); }
 
   void writeFooter() { O << "}\n"; }
 
@@ -280,75 +304,19 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   static bool
   visited(std::pair<vara::feature::Feature *, vara::feature::Feature *> Edge,
           const FeatureEdgeSetTy &Skip) {
-    for (const auto &P : Skip) {
-      if (P.first == Edge.first && P.second == Edge.second) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  void emitExcludeEdges() {
-    FeatureEdgeSetTy Skip;
-    for (auto *Node : *G) {
-      for (const auto &Exclude : Node->excludes()) {
-        if (visited(std::make_pair(Node, Exclude), Skip)) {
-          continue;
-        }
-        if (std::find(Exclude->excludes_begin(), Exclude->excludes_end(),
-                      Node) != Exclude->excludes_end()) {
-          emitEdge(Node, Exclude, "color=red dir=both constraint=false");
-          Skip.insert(std::make_pair<>(Exclude, Node));
-        } else {
-          emitEdge(Node, Exclude, "color=red");
-        }
-        Skip.insert(std::make_pair<>(Node, Exclude));
-      }
-    }
-  }
-
-  void emitAlternativeEdges() {
-    FeatureEdgeSetTy Skip;
-    for (auto *Node : *G) {
-      for (const auto &Alternative : Node->alternatives()) {
-        if (visited(std::make_pair(Node, Alternative), Skip)) {
-          continue;
-        }
-        emitEdge(Node, Alternative, "color=green dir=none constraint=false");
-        Skip.insert(std::make_pair<>(Alternative, Node));
-        Skip.insert(std::make_pair<>(Node, Alternative));
-      }
-    }
-  }
-
-  void emitImplicationEdges() {
-    FeatureEdgeSetTy Skip;
-    for (auto *Node : *G) {
-      for (const auto &Implication : Node->implications()) {
-        if (visited(std::make_pair(Node, Implication), Skip)) {
-          continue;
-        }
-        if (std::find(Implication->implications_begin(),
-                      Implication->implications_end(),
-                      Node) != Implication->implications_end()) {
-          emitEdge(Node, Implication, "color=blue dir=both constraint=false");
-          Skip.insert(std::make_pair<>(Implication, Node));
-        } else {
-          emitEdge(Node, Implication, "color=blue constraint=false");
-        }
-        Skip.insert(std::make_pair<>(Node, Implication));
-      }
-    }
+    return std::any_of(Skip.begin(), Skip.end(), [Edge](const auto &P) {
+      return P.first == Edge.first && P.second == Edge.second;
+    });
   }
 
   /// Output feature model (tree) recursively.
   ///
   /// \param[in] Node Root of subtree.
   /// \param[in] Indent Value to indent statements in dot file.
-  void emitCluster(const NodeRef Node, const int Indent = 0) {
+  void emitCluster(NodeRef Node, const int Indent = 0) {
     O.indent(Indent);
     emitNode(Node);
-    if (Node->children_begin() != Node->children_end()) {
+    if (Node->begin() != Node->end()) {
       O.indent(Indent + 2) << "subgraph cluster_" << static_cast<void *>(Node)
                            << " {\n";
       O.indent(Indent + 4) << "label=\"\";\n";
@@ -357,9 +325,13 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
       for (auto *Child : *Node) {
         emitCluster(Child, Indent + 2);
         O.indent(Indent + 2);
-        emitEdge(Node, Child,
-                 llvm::formatv("arrowhead={0}",
-                               Child->isOptional() ? "odot" : "dot"));
+        if (auto *F = llvm::dyn_cast<vara::feature::Feature>(Child); F) {
+          emitEdge(
+              Node, F,
+              llvm::formatv("arrowhead={0}", F->isOptional() ? "odot" : "dot"));
+        } else {
+          emitEdge(Node, Child, "arrowhead=none");
+        }
       }
       O.indent(Indent + 4) << "{\n";
       O.indent(Indent + 6) << "rank=same;\n";
@@ -371,26 +343,53 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     }
   }
 
-  /// Output \a Node with custom attributes.
-  void emitNode(const NodeRef Node) {
-    std::string Label = llvm::formatv(
-        "<<table align=\"center\" valign=\"middle\" border=\"0\" "
-        "cellborder=\"0\" "
-        "cellpadding=\"5\"><tr><td>{0}{1}</td></tr></"
-        "table>>",
-        DOT::EscapeString(Node->getName().str()),
-        (Node->getFeatureSourceRange()
-             ? "</td></tr><hr/><tr><td>" +
-                   DOT::EscapeString(Node->getFeatureSourceRange()->toString())
-             : ""));
-
+  /// Output \a Feature node with custom attributes.
+  void emitNode(NodeRef Node) {
+    std::string Label;
+    std::string Shape;
+    if (auto *F = llvm::dyn_cast<vara::feature::Feature>(Node); F) {
+      Shape = "box";
+      std::stringstream CS;
+      for (const auto &C : F->constraints()) {
+        CS << "<tr><td>" << DOT::EscapeString(C->getRoot()->toHTML())
+           << "</td></tr>";
+      }
+      Label = llvm::formatv(
+          "<<table align=\"center\" valign=\"middle\" border=\"0\" "
+          "cellborder=\"0\" "
+          "cellpadding=\"5\">{0}{1}{2}</table>>",
+          llvm::formatv("<tr><td><b>{0}</b></td></tr>",
+                        DOT::EscapeString(F->getName().str())),
+          CS.str(),
+          (F->getFeatureSourceRange()
+               ? llvm::formatv(
+                     "<hr/><tr><td>{0}</td></tr>",
+                     DOT::EscapeString(F->getFeatureSourceRange()->toString()))
+                     .str()
+               : ""));
+    } else {
+      Shape = "ellipse";
+      if (auto *R = llvm::dyn_cast<vara::feature::Relationship>(Node); R) {
+        switch (R->getKind()) {
+        case vara::feature::Relationship::RelationshipKind::RK_ALTERNATIVE:
+          Label = "ALTERNATIVE";
+          break;
+        case vara::feature::Relationship::RelationshipKind::RK_OR:
+          Label = "OR";
+          break;
+        }
+      } else {
+        Label = "error";
+      }
+    }
     O.indent(2) << "node_" << static_cast<void *>(Node) << " ["
-                << "shape=box margin=.1 fontsize=12 fontname=\"CMU "
+                << "shape=" << Shape
+                << " margin=.1 fontsize=12 fontname=\"CMU "
                    "Typewriter\" label="
                 << Label << "];\n";
   }
 
-  void emitEdge(const NodeRef SrcNode, const NodeRef DestNode,
+  void emitEdge(NodeRef SrcNode, NodeRef DestNode,
                 const std::string &Attrs = "") {
     O.indent(2) << "node_" << static_cast<void *>(SrcNode) << " -> node_"
                 << static_cast<void *>(DestNode);
@@ -400,6 +399,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     O << ";\n";
   }
 };
+
 } // namespace llvm
 
 #endif // VARA_FEATURE_FEATUREMODEL_H

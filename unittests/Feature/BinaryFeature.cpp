@@ -37,54 +37,16 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
       {{"F", "A"}, {"root", {"F"}}});
 
-  EXPECT_EQ(std::distance(FM->getFeature("F")->children_begin(),
-                          FM->getFeature("F")->children_end()),
-            1);
-  EXPECT_EQ("A", (*FM->getFeature("F")->children_begin())->getName());
+  EXPECT_EQ(
+      std::distance(FM->getFeature("F")->begin(), FM->getFeature("F")->end()),
+      1);
+  if (auto *F =
+          llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("F")->begin());
+      F) {
+    EXPECT_EQ("A", F->getName());
+  } else {
+    FAIL();
+  }
 }
 
-TEST(BinaryFeature, BinaryFeatureExclude) {
-  auto B = FeatureModelBuilder();
-
-  B.makeFeature<BinaryFeature>("F");
-  B.makeFeature<BinaryFeature>("G");
-  B.addExclude("F", "G");
-
-  auto FM = B.buildFeatureModel();
-
-  EXPECT_EQ(std::distance(FM->getFeature("F")->excludes_begin(),
-                          FM->getFeature("F")->excludes_end()),
-            1);
-  EXPECT_EQ("G", (*FM->getFeature("F")->excludes_begin())->getName());
-}
-
-TEST(BinaryFeature, BinaryFeatureImplications) {
-  auto B = FeatureModelBuilder();
-
-  B.makeFeature<BinaryFeature>("F");
-  B.makeFeature<BinaryFeature>("G");
-  B.addConstraint({{"F", false}, {"G", true}});
-
-  auto FM = B.buildFeatureModel();
-
-  EXPECT_EQ(std::distance(FM->getFeature("F")->implications_begin(),
-                          FM->getFeature("F")->implications_end()),
-            1);
-  EXPECT_EQ("G", (*FM->getFeature("F")->implications_begin())->getName());
-}
-
-TEST(BinaryFeature, BinaryFeatureAlternatives) {
-  auto B = FeatureModelBuilder();
-
-  B.makeFeature<BinaryFeature>("F");
-  B.makeFeature<BinaryFeature>("G");
-  B.addConstraint({{"F", true}, {"G", true}});
-
-  auto FM = B.buildFeatureModel();
-
-  EXPECT_EQ(std::distance(FM->getFeature("F")->alternatives_begin(),
-                          FM->getFeature("F")->alternatives_end()),
-            1);
-  EXPECT_EQ("G", (*FM->getFeature("F")->alternatives_begin())->getName());
-}
 } // namespace vara::feature
