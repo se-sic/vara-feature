@@ -127,16 +127,6 @@ private:
   /// \returns true iff parsing and processing the constraints was successful
   static bool parseConstraints(xmlChar *Constraints);
 
-  /// This method counts the occurrences of the second argument in the first argument.
-  /// The intended use of this method is to count the indentation level of the feature
-  /// tree in the sxfm format.
-  ///
-  /// \param StringToSearch the string to search in
-  /// \param StringToFind the string to count the occurrences of
-  ///
-  /// \returns the number of occurrences
-  static int countOccurrences(const string& Target, const string& StringToSearch);
-
   /// This method extracts the cardinality from the given line.
   /// The cardinality is wrapped in square brackets (e.g., [1,1])
   ///
@@ -155,16 +145,6 @@ private:
   /// \returns an optional that contains no integer in case of failure or UINT_MAX
   /// for wildcard, or the number itself.
   static std::optional<int> parseCardinality(const string& CardinalityString);
-
-  /// This method reads beginning from a certain starting position and reads in
-  /// every character until CharToSearch is found.
-  ///
-  /// \param StringToReadFrom string to read from
-  /// \param CharToSearch character to search for
-  /// \param Start the starting position to start reading
-  ///
-  /// \returns the string read until the given character is found
-  static string readUntil(const string& StringToReadFrom, const char& CharToSearch, std::string::size_type Start);
 };
 
 } // namespace vara::feature

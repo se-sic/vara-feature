@@ -388,7 +388,9 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
         return false;
       }
 
-      int CurrentIndentationLevel = countOccurrences(readUntil(To, ':', 0), Indentation);
+      llvm::StringRef ToStringRef = llvm::StringRef(To);
+      llvm::StringRef IndentationString = ToStringRef.substr(0, ToStringRef.find(':'));
+      int CurrentIndentationLevel = IndentationString.count(Indentation);
       int Diff = CurrentIndentationLevel - LastIndentationLevel;
 
       // Remember the root indentation for later checks
@@ -427,17 +429,17 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
         break;
       }
       // Extract the name
-      Name = readUntil(To, ' ', Pos + 1);
+      Name = ToStringRef.substr(0, ToStringRef.find(' ', Pos + 1)).str();
 
       // Note that we ignore the ID and use the name of the feature
       // as unique identifier.
       if (Name.find_first_of('(') != std::string::npos) {
-        Name = readUntil(Name, '(', 0);
+        Name = ToStringRef.substr(0, ToStringRef.find('(', Pos + 1)).str();
       }
 
       // Remove the cardinality
       if (Name.find_first_of('[') != std::string::npos) {
-        Name = readUntil(Name, '[', 0);
+        Name = ToStringRef.substr(0, ToStringRef.find('[', Pos + 1)).str();
       }
 
       // If there is no name, provide an artificial one
@@ -502,17 +504,6 @@ bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
   return true;
 }
 
-int FeatureModelSxfmParser::countOccurrences(const string& StringToSearch, const string& StringToFind) {
-  int Occurrences = 0;
-  std::string::size_type Pos = 0;
-
-  while ((Pos = StringToSearch.find(StringToFind, Pos )) != std::string::npos) {
-    ++Occurrences;
-    Pos += StringToFind.length();
-  }
-  return Occurrences;
-}
-
 std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(const string& StringToExtractFrom) {
   std::optional<int> MinCardinality;
   std::optional<int> MaxCardinality;
@@ -524,9 +515,11 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(c
     std::cerr << "No cardinality given in or group!" << std::endl;
     return std::optional<std::tuple<int, int>>();
   }
-  MinCardinality = parseCardinality(readUntil(StringToExtractFrom, ',', Pos + 1));
-  Pos = StringToExtractFrom.find_first_of(',', Pos);
-  MaxCardinality = parseCardinality(readUntil(StringToExtractFrom, ']', Pos + 1));
+  auto CardinalityString = llvm::StringRef(StringToExtractFrom);
+  size_t CommaPos = CardinalityString.find(',', Pos + 1);
+  MinCardinality = parseCardinality(CardinalityString.substr(Pos + 1, CommaPos - Pos - 1));
+  Pos = CommaPos;
+  MaxCardinality = parseCardinality(CardinalityString.substr(Pos + 1, CardinalityString.find(']', Pos + 1) - Pos - 1));
 
   if (!MinCardinality.has_value() || !MaxCardinality.has_value()) {
     std::cerr << "No parsable cardinality!" << std::endl;
@@ -561,21 +554,6 @@ std::optional<int> FeatureModelSxfmParser::parseCardinality(const string& Cardin
     }
   }
 
-  return Result;
-}
-
-string FeatureModelSxfmParser::readUntil(const string& StringToReadFrom, const char& CharToSearch, std::string::size_type Start) {
-  string Result;
-  std::string::size_type Pos = Start;
-  if (Pos > StringToReadFrom.length()) {
-    std::cerr << "Position out of bounds!" << std::endl;
-    return "";
-  }
-
-  while ((Pos < StringToReadFrom.length()) && (StringToReadFrom.at(Pos) != CharToSearch)) {
-    Result += StringToReadFrom.at(Pos);
-    Pos++;
-  }
   return Result;
 }
 
