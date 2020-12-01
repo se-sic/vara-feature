@@ -256,6 +256,17 @@ bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 //                        FeatureModelSxfmParser Class
 //===----------------------------------------------------------------------===//
 
+std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
+  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc = parseDoc();
+  if (!Doc) {
+    return nullptr;
+  }
+
+  FMB.init();
+  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
+                                                  : nullptr;
+}
+
 std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
 FeatureModelSxfmParser::createDtd() {
   std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
@@ -268,6 +279,76 @@ FeatureModelSxfmParser::createDtd() {
   xmlCleanupParser();
   assert(Dtd && "Failed to parse DTD.");
   return Dtd;
+}
+
+std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelSxfmParser::parseDoc() {
+  // Initialize the XML parser
+  std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
+      xmlNewParserCtxt(), xmlFreeParserCtxt);
+  // Parse the given model by libxml2
+  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc(
+      xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(), Sxfm.length(), nullptr, nullptr,
+                        XML_PARSE_NOBLANKS),
+      xmlFreeDoc);
+  xmlCleanupParser();
+
+  // In the following, the document is validated.
+  // Therefore, (1) check whether it could be parsed
+  if (Doc && Ctxt->valid) {
+    // (2) validate the sxfm format by using the dtd (document type definition) file
+    xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
+    if (Ctxt->vctxt.valid) {
+      // TODO (CK):
+      // and (3) check the tree-like structure of the embedded feature model
+      // as well as constraints
+      return Doc;
+    } else {
+      std::cerr << "Failed to validate DTD." << std::endl;
+    }
+  } else {
+    std::cerr << "Failed to parse / validate XML." << std::endl;
+  }
+  return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
+}
+
+bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
+  // Parse the name first. This procedure is the similar to parsing the
+  // XML file.
+  {
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::NAME),
+                                                   xmlFree);
+    FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
+  }
+  // After the feature model tag, some metadata is provided.
+  // Currently, we skip the metadata and continue with parsing the feature tree
+
+  for (xmlNode *H = Node->children; H; H = H->next) {
+    if (H->type == XML_ELEMENT_NODE) {
+      if (!xmlStrcmp(H->name, SxfmConstants::FEATURE_TREE)) {
+        // Check whether a custom indentation is defined in the feature tree and
+        // set it accordingly
+        {
+          std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(H, SxfmConstants::INDENTATION),
+                                                         xmlFree);
+          if (Cnt) {
+            Indentation = reinterpret_cast<char*>(Cnt.get());
+          }
+        }
+
+        // Parse the feature tree with all its features and relations among them.
+        if (!parseFeatureTree(xmlNodeGetContent(H))) {
+          return false;
+        }
+
+        // Finally, parse the cross-tree-constraints in the constraints tag.
+      } else if (!xmlStrcmp(H->name, SxfmConstants::CONSTRAINTS)) {
+        if (!parseConstraints(xmlNodeGetContent(H))) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
 }
 
 bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
@@ -417,10 +498,22 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
   return true;
 }
 
-/// This method extracts the cardinality from the given line.
-/// The cardinality is wrapped in square brackets (e.g., [1,1])
-/// \param StringToExtractFrom the string to extract the cardinality from
-/// \return
+bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
+  // TODO: This has to wait until the constraint part is implemented
+  return true;
+}
+
+int FeatureModelSxfmParser::countOccurrences(const string& StringToSearch, const string& StringToFind) {
+  int Occurrences = 0;
+  std::string::size_type Pos = 0;
+
+  while ((Pos = StringToSearch.find(StringToFind, Pos )) != std::string::npos) {
+    ++Occurrences;
+    Pos += StringToFind.length();
+  }
+  return Occurrences;
+}
+
 std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(const string& StringToExtractFrom) {
   std::optional<int> MinCardinality;
   std::optional<int> MaxCardinality;
@@ -449,13 +542,6 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(c
   return std::optional<std::tuple<int, int>>(std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()});
 }
 
-
-/// This method parses the given cardinality and returns an optional.
-/// If the optional is empty, the process failed; otherwise the result contains
-/// either UINT_MAX for the wildcard or the cardinality number as integer.
-/// \param CardinalityString the cardinality to parse
-/// \return an optional that contains no integer in case of failure or UINT_MAX
-/// for wildcard, or the number itself.
 std::optional<int> FeatureModelSxfmParser::parseCardinality(const string& CardinalityString) {
   std::optional<int> Result = std::optional<int>();
   if (CardinalityString == "*") {
@@ -479,12 +565,6 @@ std::optional<int> FeatureModelSxfmParser::parseCardinality(const string& Cardin
   return Result;
 }
 
-/// This method reads beginning from a certain starting position and reads in
-/// every character until CharToSearch is found.
-/// \param StringToReadFrom string to read from
-/// \param CharToSearch character to search for
-/// \param Start the starting position to start reading
-/// \return the string read until the given character is found
 string FeatureModelSxfmParser::readUntil(const string& StringToReadFrom, const char& CharToSearch, std::string::size_type Start) {
   string Result;
   std::string::size_type Pos = Start;
@@ -499,114 +579,5 @@ string FeatureModelSxfmParser::readUntil(const string& StringToReadFrom, const c
   }
   return Result;
 }
-
-/// This method counts the occurrences of the second argument in the first argument.
-/// The intended use of this method is to count the indentation level of the feature
-/// tree in the sxfm format.
-/// \param StringToSearch the string to search in
-/// \param StringToFind the string to count the occurrences of
-/// \return the number of occurrences
-int FeatureModelSxfmParser::countOccurrences(const string& StringToSearch, const string& StringToFind) {
-  int Occurrences = 0;
-  std::string::size_type Pos = 0;
-
-  while ((Pos = StringToSearch.find(StringToFind, Pos )) != std::string::npos) {
-    ++Occurrences;
-    Pos += StringToFind.length();
-  }
-  return Occurrences;
-}
-
-bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
-  // TODO (CK): This has to wait until the constraint part is implemented in
-  // the FeatureModelBuilder (issue #24)
-  return true;
-}
-
-bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
-  // Parse the name first. This procedure is the same as for parsing the
-  // XML file.
-  {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::NAME),
-                                                   xmlFree);
-    FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
-  }
-  // After the feature model tag, some metadata is provided.
-  // Currently, we skip the metadata and continue with parsing the feature tree
-
-  for (xmlNode *H = Node->children; H; H = H->next) {
-    if (H->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(H->name, SxfmConstants::FEATURE_TREE)) {
-        // Check whether a custom indentation is defined in the feature tree and
-        // set it accordingly
-        {
-          std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(H, SxfmConstants::INDENTATION),
-                                                         xmlFree);
-          if (Cnt) {
-            Indentation = reinterpret_cast<char*>(Cnt.get());
-          }
-
-        }
-
-        // Parse the feature tree with all its features and relations among them.
-        if (!parseFeatureTree(xmlNodeGetContent(H))) {
-          return false;
-        }
-
-      // Finally, parse the cross-tree-constraints in the constraints tag.
-      } else if (!xmlStrcmp(H->name, SxfmConstants::CONSTRAINTS)) {
-        if (!parseConstraints(xmlNodeGetContent(H))) {
-          return false;
-        }
-      }
-    }
-  }
-  return true;
-}
-
-std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc = parseDoc();
-  if (!Doc) {
-    return nullptr;
-  }
-
-  FMB.init();
-  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
-                                                  : nullptr;
-}
-
-std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelSxfmParser::parseDoc() {
-  // Initialize the XML parser
-  std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
-      xmlNewParserCtxt(), xmlFreeParserCtxt);
-  // Parse the given model by libxml2
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc(
-      xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(), Sxfm.length(), nullptr, nullptr,
-                        XML_PARSE_NOBLANKS),
-      xmlFreeDoc);
-  xmlCleanupParser();
-
-  // In the following, the document is validated.
-  // Therefore, (1) check whether it could be parsed
-  if (Doc && Ctxt->valid) {
-    // (2) validate the sxfm format by using the dtd (document type definition) file
-    xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
-    if (Ctxt->vctxt.valid) {
-      // TODO (CK):
-      // and (3) check the tree-like structure of the embedded feature model
-      // as well as constraints
-      return Doc;
-    } else {
-      std::cerr << "Failed to validate DTD." << std::endl;
-    }
-  } else {
-    std::cerr << "Failed to parse / validate XML." << std::endl;
-  }
-  return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
-}
-
-/// This method checks if the given feature model is valid
-/// \return true iff the feature model is valid
-bool FeatureModelSxfmParser::verifyFeatureModel() { return parseDoc().get(); }
 
 } // namespace vara::feature
