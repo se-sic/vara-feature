@@ -16,7 +16,6 @@ public:
 
 
   static constexpr xmlChar NAME[] = "name";
-  static constexpr xmlChar ROOT[] = "root";
   static constexpr xmlChar FEATURE_TREE[] = "feature_tree";
   static constexpr xmlChar CONSTRAINTS[] = "constraints";
   static constexpr xmlChar INDENTATION[] = "indentation_string";

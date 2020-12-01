@@ -312,8 +312,7 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelSxfmParser::parseDoc() 
 }
 
 bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
-  // Parse the name first. This procedure is the similar to parsing the
-  // XML file.
+  // Parse the name first.
   {
     std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::NAME),
                                                    xmlFree);
@@ -499,7 +498,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
 }
 
 bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
-  // TODO: This has to wait until the constraint part is implemented
+  // TODO (se-passau/VaRA#702): This has to wait until the constraint part is implemented
   return true;
 }
 
