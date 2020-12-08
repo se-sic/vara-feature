@@ -16,16 +16,21 @@ public:
 
   static constexpr xmlChar VM[] = "vm";
   static constexpr xmlChar NAME[] = "name";
+  static constexpr xmlChar COMMIT[] = "commit";
   static constexpr xmlChar OPTIONAL[] = "optional";
   static constexpr xmlChar PARENT[] = "parent";
   static constexpr xmlChar CHILDREN[] = "children";
   static constexpr xmlChar IMPLIEDOPTIONS[] = "impliedOptions";
   static constexpr xmlChar EXCLUDEDOPTIONS[] = "excludedOptions";
   static constexpr xmlChar OPTIONS[] = "options";
-  static constexpr xmlChar LOCATION[] = "location";
+  static constexpr xmlChar LOCATIONS[] = "locations";
+  static constexpr xmlChar SOURCERANGE[] = "sourceRange";
   static constexpr xmlChar PATH[] = "path";
   static constexpr xmlChar START[] = "start";
   static constexpr xmlChar END[] = "end";
+  static constexpr xmlChar CATEGORY[] = "category";
+  static constexpr xmlChar NECESSARY[] = "necessary";
+  static constexpr xmlChar INESSENTIAL[] = "inessential";
   static constexpr xmlChar MINVALUE[] = "minValue";
   static constexpr xmlChar MAXVALUE[] = "maxValue";
   static constexpr xmlChar STEPFUNCTION[] = "stepFunction";
@@ -43,7 +48,7 @@ public:
   static inline const std::string DtdRaw =
       "<!ELEMENT vm (binaryOptions, numericOptions?, booleanConstraints?, "
       "nonBooleanConstraints?, mixedConstraints?)>\n"
-      "<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED>\n"
+      "<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED commit CDATA #IMPLIED>\n"
       "<!ELEMENT binaryOptions (configurationOption*)>\n"
       "<!ELEMENT numericOptions (configurationOption*)>\n"
       "<!ELEMENT booleanConstraints (constraint*)>\n"
@@ -53,7 +58,7 @@ public:
       "(postfix | postFix)?, parent?, children?, impliedOptions?, "
       "excludedOptions?, defaultValue?, optional?, ((minValue, maxValue) | "
       "values)?, "
-      "stepFunction?, location?)>\n"
+      "stepFunction?, locations?)>\n"
       "<!ELEMENT constraint (#PCDATA)>\n"
       "<!ATTLIST constraint req CDATA #IMPLIED exprKind CDATA #IMPLIED>\n"
       "<!ELEMENT name (#PCDATA)>\n"
@@ -73,7 +78,9 @@ public:
       "<!ELEMENT maxValue (#PCDATA)>\n"
       "<!ELEMENT values (#PCDATA)>\n"
       "<!ELEMENT stepFunction (#PCDATA)>\n"
-      "<!ELEMENT location (path, start?, end?)>\n"
+      "<!ELEMENT locations (sourceRange*)>\n"
+      "<!ELEMENT sourceRange (path, start, end)>\n"
+      "<!ATTLIST sourceRange category (necessary|inessential) \"necessary\">\n"
       "<!ELEMENT path (#PCDATA)>\n"
       "<!ELEMENT start (line, column)>\n"
       "<!ELEMENT end (line, column)>\n"

@@ -59,8 +59,8 @@ TEST(FeatureSourceRange, basicAccessors) {
 }
 
 TEST(FeatureSourceRange, onlyStart) {
-  auto L = FeatureSourceRange(fs::current_path(),
-                              FeatureSourceRange::FeatureSourceLocation(1, 4));
+  auto L = FeatureSourceRange(fs::current_path(), FeatureSourceRange::FeatureSourceLocation(1, 4)
+                              );
 
   EXPECT_TRUE(L.hasStart());
   EXPECT_FALSE(L.hasEnd());
@@ -68,7 +68,8 @@ TEST(FeatureSourceRange, onlyStart) {
 
 TEST(FeatureSourceRange, onlyEnd) {
   auto L = FeatureSourceRange(fs::current_path(), std::nullopt,
-                              FeatureSourceRange::FeatureSourceLocation(3, 5));
+                              FeatureSourceRange::FeatureSourceLocation(3, 5)
+                              );
 
   EXPECT_FALSE(L.hasStart());
   EXPECT_TRUE(L.hasEnd());

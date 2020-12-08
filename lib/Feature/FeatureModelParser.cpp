@@ -16,7 +16,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   int MinValue = 0;
   int MaxValue = 0;
   std::vector<int> Values;
-  std::optional<FeatureSourceRange> Loc;
+  std::vector<FeatureSourceRange> SourceRanges;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       string Cnt = std::string(
@@ -57,26 +57,14 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
             }
           }
         }
-      } else if (!xmlStrcmp(Head->name, XmlConstants::LOCATION)) {
-        fs::path Path;
-        std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
-        std::optional<FeatureSourceRange::FeatureSourceLocation> End;
+      } else if (!xmlStrcmp(Head->name, XmlConstants::LOCATIONS)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
-            if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
-              Path = fs::path(reinterpret_cast<char *>(
-                  std::unique_ptr<xmlChar, void (*)(void *)>(
-                      xmlNodeGetContent(Child), xmlFree)
-                      .get()));
-
-            } else if (!xmlStrcmp(Child->name, XmlConstants::START)) {
-              Start = createFeatureSourceLocation(Child);
-            } else if (!xmlStrcmp(Child->name, XmlConstants::END)) {
-              End = createFeatureSourceLocation(Child);
+            if (xmlStrcmp(Child->name, XmlConstants::SOURCERANGE)) {
+              SourceRanges.push_back(createFeatureSourceRange(Head));
             }
           }
         }
-        Loc = FeatureSourceRange(Path, Start, End);
       } else if (Num) {
         if (!xmlStrcmp(Head->name, XmlConstants::MINVALUE)) {
           MinValue = std::stoi(Cnt);
@@ -93,14 +81,51 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       }
     }
   }
+  std::optional<std::vector<FeatureSourceRange>> Locations =
+      SourceRanges.empty() ? std::nullopt : std::make_optional(SourceRanges);
   if (Num) {
     if (Values.empty()) {
-      return FMB.makeFeature<NumericFeature>(
-          Name, std::make_pair(MinValue, MaxValue), Opt, std::move(Loc));
+      return FMB.makeFeature<NumericFeature>(Name,
+                                             std::make_pair(MinValue, MaxValue),
+                                             Opt, std::move(Locations));
     }
-    return FMB.makeFeature<NumericFeature>(Name, Values, Opt, std::move(Loc));
+    return FMB.makeFeature<NumericFeature>(Name, Values, Opt,
+                                           std::move(Locations));
   }
-  return FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(Loc));
+  return FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(Locations));
+}
+
+FeatureSourceRange
+FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) const {
+  fs::path Path;
+  std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
+  std::optional<FeatureSourceRange::FeatureSourceLocation> End;
+  enum FeatureSourceRange::Category Category;
+  std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
+      xmlGetProp(Head, XmlConstants::CATEGORY), xmlFree);
+  if (xmlStrcmp(Tmp.get(), XmlConstants::NECESSARY) == 0) {
+    Category = FeatureSourceRange::Category::necessary;
+  } else if (xmlStrcmp(Tmp.get(), XmlConstants::INESSENTIAL) == 0) {
+    Category = FeatureSourceRange::Category::inessenatial;
+  } else {
+    // unreachable, xmllib should set default value "necessary"
+  }
+  for (xmlNode *Child = Head->children; Child; Child = Child->next) {
+    if (Child->type == XML_ELEMENT_NODE) {
+      if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
+        Path = fs::path(
+            reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
+                                         xmlNodeGetContent(Child), xmlFree)
+                                         .get()));
+
+      } else if (!xmlStrcmp(Child->name, XmlConstants::START)) {
+        Start = createFeatureSourceLocation(Child);
+      } else if (!xmlStrcmp(Child->name, XmlConstants::END)) {
+        End = createFeatureSourceLocation(Child);
+      }
+    }
+  }
+  return FeatureSourceRange(Path, Start, End, Category);
 }
 
 bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
@@ -143,6 +168,11 @@ bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
         xmlGetProp(Node, XmlConstants::ROOT), xmlFree);
     FMB.setPath(Cnt ? fs::path(reinterpret_cast<char *>(Cnt.get()))
                     : fs::current_path());
+  }
+  {
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
+        xmlGetProp(Node, XmlConstants::COMMIT), xmlFree);
+    FMB.setCommit(Cnt ? reinterpret_cast<char *>(Cnt.get()) : "");
   }
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {

@@ -237,7 +237,7 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
       !buildTree(std::string(Root->getName()), Visited)) {
     return nullptr;
   }
-  return std::make_unique<FeatureModel>(Name, Path, std::move(Features),
+  return std::make_unique<FeatureModel>(Name, Path, Commit, std::move(Features),
                                         std::move(Constraints),
                                         std::move(Relationships), Root);
 }
@@ -261,9 +261,9 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
   return std::move(buildFeatureModel());
 }
 bool FeatureModelBuilder::addFeature(Feature &F) {
-  std::optional<FeatureSourceRange> Loc =
-      F.getFeatureSourceRange()
-          ? std::make_optional(FeatureSourceRange(*F.getFeatureSourceRange()))
+  std::optional<std::vector<FeatureSourceRange>> Loc =
+      F.hasLocations()
+          ? std::make_optional(*F.getLocations())
           : std::nullopt;
   switch (F.getKind()) {
   case Feature::FeatureKind::FK_BINARY: {

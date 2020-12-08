@@ -21,22 +21,22 @@ namespace py = pybind11;
 void init_feature_location_module(py::module &M) {
   py::class_<vf::FeatureSourceRange>(M, "Location")
       .def(py::init([](std::string Path) {
-        return vf::FeatureSourceRange(fs::path(std::move(Path)), std::nullopt,
-                                      std::nullopt);
+        return vf::FeatureSourceRange(std::nullopt, std::nullopt,
+                                      fs::path(std::move(Path)));
       }))
       .def(py::init(
           [](std::string Path,
              std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
                  Start) {
-            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start,
-                                          std::nullopt);
+            return vf::FeatureSourceRange(Start, std::nullopt,
+                                          fs::path(std::move(Path)));
           }))
       .def(py::init(
           [](std::string Path,
              std::optional<vf::FeatureSourceRange::FeatureSourceLocation> Start,
              std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End) {
-            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start,
-                                          End);
+            return vf::FeatureSourceRange(Start, End,
+                                          fs::path(std::move(Path)));
           }))
       .def_property(
           "path",
