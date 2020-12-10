@@ -33,7 +33,7 @@ public:
 
   Feature(std::string Name)
       : FeatureTreeNode(NodeKind::NK_FEATURE), Kind(FeatureKind::FK_UNKNOWN),
-        Name(std::move(Name)), Opt(false), Source(std::nullopt) {}
+        Name(std::move(Name)), Source(std::nullopt), Opt(false) {}
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
   Feature(Feature &&) = delete;
