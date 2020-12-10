@@ -30,7 +30,7 @@ TEST(ConstraintParser, lexEquivalent) {
 
   auto TokenList = L.buildTokenList();
 
-  EXPECT_EQ(TokenList.size(), 3);
+  EXPECT_EQ(TokenList.size(), 4);
   EXPECT_EQ(TokenList[0]->getKind(),
             ConstraintToken::ConstraintTokenKind::IDENTIFIER);
   EXPECT_EQ(*TokenList[0]->getValue(), "feature_A");
@@ -39,6 +39,8 @@ TEST(ConstraintParser, lexEquivalent) {
   EXPECT_EQ(TokenList[2]->getKind(),
             ConstraintToken::ConstraintTokenKind::IDENTIFIER);
   EXPECT_EQ(*TokenList[2]->getValue(), "feature_B");
+  EXPECT_EQ(TokenList[3]->getKind(),
+            ConstraintToken::ConstraintTokenKind::END_OF_FILE);
 }
 
 } // namespace vara::feature
