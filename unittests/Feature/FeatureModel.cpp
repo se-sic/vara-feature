@@ -28,8 +28,8 @@ TEST(FeatureModel, addFeature) {
   auto CS = Feature::NodeSetType();
   CS.insert(FM->getFeature("aba"));
 
-  FM->addFeature(std::make_unique<BinaryFeature>("ab", false, std::nullopt,
-                                                 FM->getFeature("a"), CS));
+  FM->addFeature(std::make_unique<BinaryFeature>(
+      "ab", false, std::vector<FeatureSourceRange>(), FM->getFeature("a"), CS));
 
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
@@ -43,8 +43,8 @@ TEST(FeatureModel, newRoot) {
   auto CS = Feature::NodeSetType();
   CS.insert(FM->getFeature("root"));
 
-  FM->addFeature(std::make_unique<BinaryFeature>("new_root", false,
-                                                 std::nullopt, nullptr, CS));
+  FM->addFeature(std::make_unique<BinaryFeature>(
+      "new_root", false, std::vector<FeatureSourceRange>(), nullptr, CS));
 
   EXPECT_TRUE(FM->getFeature("new_root")->isRoot());
   EXPECT_FALSE(FM->getFeature("root")->isRoot());

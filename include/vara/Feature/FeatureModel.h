@@ -28,7 +28,7 @@ public:
   using RelationshipTy = Relationship;
   using RelationshipContainerTy = std::vector<std::unique_ptr<RelationshipTy>>;
 
-  FeatureModel(string Name, fs::path RootPath, string Commit,
+  FeatureModel(std::string Name, fs::path RootPath, std::string Commit,
                FeatureMapTy Features, ConstraintContainerTy Constraints,
                RelationshipContainerTy Relationships, Feature *Root)
       : Name(std::move(Name)), Path(std::move(RootPath)),
@@ -100,9 +100,9 @@ public:
   void dump() const;
 
 protected:
-  string Name;
+  std::string Name;
   fs::path Path;
-  string Commit;
+  std::string Commit;
   FeatureMapTy Features;
   ConstraintContainerTy Constraints;
   RelationshipContainerTy Relationships;
@@ -121,7 +121,7 @@ private:
 /// \brief Builder for \a FeatureModel which can be used while parsing.
 class FeatureModelBuilder : private FeatureModel {
 public:
-  FeatureModelBuilder() {}
+  FeatureModelBuilder() = default;
   void init() {
     Name = "";
     Path = "";
@@ -372,7 +372,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
           llvm::formatv("<tr><td><b>{0}</b></td></tr>",
                         DOT::EscapeString(F->getName().str())),
           CS.str(),
-          (F->getLocations()
+          (F->hasLocations()
                ? llvm::formatv(
                      "<hr/><tr><td>{0}</td></tr>",
                      DOT::EscapeString(""))

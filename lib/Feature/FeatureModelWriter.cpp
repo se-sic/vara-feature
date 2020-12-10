@@ -338,7 +338,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
     RC = xmlTextWriterStartElement(Writer, XmlConstants::LOCATIONS);
     CHECK_RC
     auto Locations = Feature1.getLocations();
-    for (FeatureSourceRange &Fsr : *Locations) {
+    for (FeatureSourceRange &Fsr : Locations) {
       RC = writeSourceRange(Writer, Fsr);
       CHECK_RC
     }

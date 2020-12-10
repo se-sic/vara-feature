@@ -261,10 +261,7 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
   return std::move(buildFeatureModel());
 }
 bool FeatureModelBuilder::addFeature(Feature &F) {
-  std::optional<std::vector<FeatureSourceRange>> Loc =
-      F.hasLocations()
-          ? std::make_optional(*F.getLocations())
-          : std::nullopt;
+  std::vector<FeatureSourceRange> Loc = F.Locations;
   switch (F.getKind()) {
   case Feature::FeatureKind::FK_BINARY: {
     if (auto *BF = llvm::dyn_cast<BinaryFeature>(&F); BF) {

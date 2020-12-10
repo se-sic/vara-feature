@@ -17,61 +17,68 @@ TEST(Feature, equal) {
 TEST(Feature, locationAccessors) {
   FeatureSourceRange::FeatureSourceLocation Start(3, 4);
   FeatureSourceRange::FeatureSourceLocation End(3, 20);
-  BinaryFeature TestLCO("TEST", false, FeatureSourceRange("path", Start, End));
+  BinaryFeature TestLCO("TEST", false,
+                        {FeatureSourceRange("path", Start, End)});
 
-  EXPECT_EQ(TestLCO.getLocations()->getStart()->getLineNumber(), 3);
-  EXPECT_EQ(TestLCO.getLocations()->getStart()->getColumnOffset(), 4);
-  EXPECT_EQ(TestLCO.getLocations()->getEnd()->getLineNumber(), 3);
-  EXPECT_EQ(TestLCO.getLocations()->getEnd()->getColumnOffset(), 20);
+  FeatureSourceRange Fsr = *TestLCO.getLocationsBegin();
+  EXPECT_EQ(Fsr.getPath(), "path");
+  EXPECT_EQ(Fsr.getCategory(), FeatureSourceRange::Category::necessary);
+  EXPECT_EQ(Fsr.getStart()->getLineNumber(), 3);
+  EXPECT_EQ(Fsr.getStart()->getColumnOffset(), 4);
+  EXPECT_EQ(Fsr.getEnd()->getLineNumber(), 3);
+  EXPECT_EQ(Fsr.getEnd()->getColumnOffset(), 20);
 }
 
-TEST(Feature, locationSetters) {
+TEST(Feature, locationInit) {
   FeatureSourceRange::FeatureSourceLocation Start(3, 4);
   FeatureSourceRange::FeatureSourceLocation End(3, 20);
-  BinaryFeature TestLCO("TEST", false, FeatureSourceRange("path", Start, End));
+  BinaryFeature TestLCO("TEST", false,
+                        {FeatureSourceRange("path", Start, End)});
 
-  TestLCO.getLocations()->getStart()->setLineNumber(4);
-  TestLCO.getLocations()->getStart()->setColumnOffset(2);
-  TestLCO.getLocations()->getEnd()->setLineNumber(4);
-  TestLCO.getLocations()->getEnd()->setColumnOffset(18);
+  TestLCO.getLocationsBegin()->getStart()->setLineNumber(4);
+  TestLCO.getLocationsBegin()->getStart()->setColumnOffset(2);
+  TestLCO.getLocationsBegin()->getEnd()->setLineNumber(4);
+  TestLCO.getLocationsBegin()->getEnd()->setColumnOffset(18);
 
-  EXPECT_EQ(TestLCO.getLocations()->getStart()->getLineNumber(), 4);
-  EXPECT_EQ(TestLCO.getLocations()->getStart()->getColumnOffset(), 2);
-  EXPECT_EQ(TestLCO.getLocations()->getEnd()->getLineNumber(), 4);
-  EXPECT_EQ(TestLCO.getLocations()->getEnd()->getColumnOffset(), 18);
+  EXPECT_EQ(TestLCO.getLocationsBegin()->getStart()->getLineNumber(), 4);
+  EXPECT_EQ(TestLCO.getLocationsBegin()->getStart()->getColumnOffset(), 2);
+  EXPECT_EQ(TestLCO.getLocationsBegin()->getEnd()->getLineNumber(), 4);
+  EXPECT_EQ(TestLCO.getLocationsBegin()->getEnd()->getColumnOffset(), 18);
 }
 
-TEST(Feature, locationSetter) {
-    FeatureSourceRange::FeatureSourceLocation Start(3, 4);
-    FeatureSourceRange::FeatureSourceLocation End(3, 20);
-    BinaryFeature TestLCO("TEST", false,
-                          FeatureSourceRange(Start, End, "path"));
+TEST(Feature, locationAdd) {
+  BinaryFeature TestLCO("TEST", false);
+  EXPECT_FALSE(TestLCO.hasLocations());
 
-    Start = FeatureSourceRange::FeatureSourceLocation(4, 4);
-    End = FeatureSourceRange::FeatureSourceLocation(5,20);
-    FeatureSourceRange OtherLocation(Start, End, "path2");
-    TestLCO.setFeatureSourceRange(OtherLocation);
+  FeatureSourceRange::FeatureSourceLocation Start(4, 4);
+  FeatureSourceRange::FeatureSourceLocation End(5, 20);
+  FeatureSourceRange Location("path2", Start, End);
+  TestLCO.addLocation(Location);
 
-    EXPECT_EQ(TestLCO.getLocations()->getPath(), "path2");
-    EXPECT_EQ(TestLCO.getLocations()->getStart()->getLineNumber(), 4);
-    EXPECT_EQ(TestLCO.getLocations()->getStart()->getColumnOffset(), 4);
-    EXPECT_EQ(TestLCO.getLocations()->getEnd()->getLineNumber(), 5);
-    EXPECT_EQ(TestLCO.getLocations()->getEnd()->getColumnOffset(), 20);
-  }
+  EXPECT_TRUE(TestLCO.hasLocations());
+  EXPECT_EQ(TestLCO.getLocationsBegin()->getPath(), "path2");
+  EXPECT_EQ(TestLCO.getLocationsBegin()->getStart()->getLineNumber(), 4);
+  EXPECT_EQ(TestLCO.getLocationsBegin()->getStart()->getColumnOffset(), 4);
+  EXPECT_EQ(TestLCO.getLocationsBegin()->getEnd()->getLineNumber(), 5);
+  EXPECT_EQ(TestLCO.getLocationsBegin()->getEnd()->getColumnOffset(), 20);
+}
 
-TEST(Feature, locationSetOnOwnLocation) {
-    FeatureSourceRange::FeatureSourceLocation Start(3, 4);
-    FeatureSourceRange::FeatureSourceLocation End(3, 20);
-    BinaryFeature TestLCO("TEST", false,
-                          FeatureSourceRange(Start, End, "path"));
+TEST(Feature, locationRemove) {
+  FeatureSourceRange::FeatureSourceLocation Start1(3, 4);
+  FeatureSourceRange::FeatureSourceLocation End1(3, 20);
+  FeatureSourceRange::FeatureSourceLocation Start2(4, 4);
+  FeatureSourceRange::FeatureSourceLocation End2(4, 20);
+  BinaryFeature TestLCO("TEST", false,
+                        {FeatureSourceRange("path1", Start1, End1),
+                         FeatureSourceRange("path2", Start2, End2)});
 
-    TestLCO.setFeatureSourceRange(*(TestLCO.getLocations()));
-    EXPECT_EQ(TestLCO.getLocations()->getPath(), "path");
-    EXPECT_EQ(TestLCO.getLocations()->getStart()->getLineNumber(), 3);
-    EXPECT_EQ(TestLCO.getLocations()->getStart()->getColumnOffset(), 4);
-    EXPECT_EQ(TestLCO.getLocations()->getEnd()->getLineNumber(), 3);
-    EXPECT_EQ(TestLCO.getLocations()->getEnd()->getColumnOffset(), 20);
-  }
-
+  EXPECT_TRUE(TestLCO.hasLocations());
+  FeatureSourceRange Fsr = FeatureSourceRange("path1", Start1, End1);
+  TestLCO.removeLocation(Fsr);
+  Fsr = FeatureSourceRange("path2", Start2, End2);
+  EXPECT_EQ(*TestLCO.getLocationsBegin(), Fsr);
+  TestLCO.removeLocation(Fsr);
+  EXPECT_FALSE(TestLCO.hasLocations());
+}
 
 } // namespace vara::feature

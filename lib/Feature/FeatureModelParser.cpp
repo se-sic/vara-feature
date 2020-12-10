@@ -60,8 +60,8 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       } else if (!xmlStrcmp(Head->name, XmlConstants::LOCATIONS)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
-            if (xmlStrcmp(Child->name, XmlConstants::SOURCERANGE)) {
-              SourceRanges.push_back(createFeatureSourceRange(Head));
+            if (!xmlStrcmp(Child->name, XmlConstants::SOURCERANGE)) {
+              SourceRanges.push_back(createFeatureSourceRange(Child));
             }
           }
         }
@@ -81,18 +81,16 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       }
     }
   }
-  std::optional<std::vector<FeatureSourceRange>> Locations =
-      SourceRanges.empty() ? std::nullopt : std::make_optional(SourceRanges);
   if (Num) {
     if (Values.empty()) {
       return FMB.makeFeature<NumericFeature>(Name,
                                              std::make_pair(MinValue, MaxValue),
-                                             Opt, std::move(Locations));
+                                             Opt, std::move(SourceRanges));
     }
     return FMB.makeFeature<NumericFeature>(Name, Values, Opt,
-                                           std::move(Locations));
+                                           std::move(SourceRanges));
   }
-  return FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(Locations));
+  return FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges));
 }
 
 FeatureSourceRange

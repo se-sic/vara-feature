@@ -12,7 +12,7 @@ TEST(Relationship, orTree) {
   auto CS = Feature::NodeSetType();
   CS.insert(&AA);
   CS.insert(&AB);
-  NumericFeature A("a", std::vector<int>{1, 2, 3}, false, std::nullopt, nullptr,
+  NumericFeature A("a", std::vector<int>{1, 2, 3}, false, {}, nullptr,
                    CS);
   B.addFeature(A);
   B.addParent("aa", "a")->addFeature(AA);
@@ -39,7 +39,7 @@ TEST(Relationship, alternativeTree) {
   auto CS = Feature::NodeSetType();
   CS.insert(&AA);
   CS.insert(&AB);
-  NumericFeature A("a", std::vector<int>{1, 2, 3}, false, std::nullopt, nullptr,
+  NumericFeature A("a", std::vector<int>{1, 2, 3}, false, {}, nullptr,
                    CS);
   B.addFeature(A);
   B.addParent("aa", "a")->addFeature(AA);
