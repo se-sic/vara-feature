@@ -1,6 +1,7 @@
 #include "vara/Feature/FeatureModelParser.h"
 
 #include "XmlConstants.h"
+#include "SxfmConstants.h"
 
 #include <iostream>
 #include <regex>
@@ -232,5 +233,310 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
 
 // TODO(s9latimm): replace with builder err
 bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
+
+//===----------------------------------------------------------------------===//
+//                        FeatureModelSxfmParser Class
+//===----------------------------------------------------------------------===//
+
+std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
+  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc = parseDoc();
+  if (!Doc) {
+    return nullptr;
+  }
+
+  FMB.init();
+  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
+                                                  : nullptr;
+}
+
+std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
+FeatureModelSxfmParser::createDtd() {
+  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
+      xmlIOParseDTD(nullptr,
+                    xmlParserInputBufferCreateMem(SxfmConstants::DtdRaw.c_str(),
+                                                  SxfmConstants::DtdRaw.length(),
+                                                  XML_CHAR_ENCODING_UTF8),
+                    XML_CHAR_ENCODING_UTF8),
+      xmlFreeDtd);
+  xmlCleanupParser();
+  assert(Dtd && "Failed to parse DTD.");
+  return Dtd;
+}
+
+std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelSxfmParser::parseDoc() {
+  // Initialize the XML parser
+  std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
+      xmlNewParserCtxt(), xmlFreeParserCtxt);
+  // Parse the given model by libxml2
+  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc(
+      xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(), Sxfm.length(), nullptr, nullptr,
+                        XML_PARSE_NOBLANKS),
+      xmlFreeDoc);
+  xmlCleanupParser();
+
+  // In the following, the document is validated.
+  // Therefore, (1) check whether it could be parsed
+  if (Doc && Ctxt->valid) {
+    // (2) validate the sxfm format by using the dtd (document type definition) file
+    xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
+    if (Ctxt->vctxt.valid) {
+      // TODO (CK):
+      // and (3) check the tree-like structure of the embedded feature model
+      // as well as constraints
+      return Doc;
+    } else {
+      std::cerr << "Failed to validate DTD." << std::endl;
+    }
+  } else {
+    std::cerr << "Failed to parse / validate XML." << std::endl;
+  }
+  return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
+}
+
+bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
+  // Parse the name first.
+  {
+    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(Node, XmlConstants::NAME),
+                                                   xmlFree);
+    FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
+  }
+  // After the feature model tag, some metadata is provided.
+  // Currently, we skip the metadata and continue with parsing the feature tree
+
+  for (xmlNode *H = Node->children; H; H = H->next) {
+    if (H->type == XML_ELEMENT_NODE) {
+      if (!xmlStrcmp(H->name, SxfmConstants::FEATURE_TREE)) {
+        // Check whether a custom indentation is defined in the feature tree and
+        // set it accordingly
+        {
+          std::unique_ptr<xmlChar, void (*)(void *)> Cnt(xmlGetProp(H, SxfmConstants::INDENTATION),
+                                                         xmlFree);
+          if (Cnt) {
+            Indentation = reinterpret_cast<char*>(Cnt.get());
+          }
+        }
+
+        // Parse the feature tree with all its features and relations among them.
+        if (!parseFeatureTree(xmlNodeGetContent(H))) {
+          return false;
+        }
+
+        // Finally, parse the cross-tree-constraints in the constraints tag.
+      } else if (!xmlStrcmp(H->name, SxfmConstants::CONSTRAINTS)) {
+        if (!parseConstraints(xmlNodeGetContent(H))) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
+  // Split the lines of the feature tree by new lines
+  {
+    std::stringstream Ss(reinterpret_cast<const char *>(FeatureTree));
+    std::string To;
+    string Name;
+    bool Opt;
+    int LastIndentationLevel = -1;
+    int RootIndentation = -1;
+    int OrGroupCounter = 0;
+    std::map<int, string> IndentationToParentMapping;
+
+    // This map is used for the or group mapping
+    // Each entry represents an or group as a tuple where the first value is
+    // the name of the parent, the second is the relationship kind, and the
+    // third a vector consisting of the name of the children
+    std::map<int, std::tuple<string, Relationship::RelationshipKind, std::vector<string>>> OrGroupMapping;
+
+    if (FeatureTree == nullptr) {
+      std::cerr << "Failed to read in feature tree. Is it empty?" << std::endl;
+      return false;
+    }
+
+    while (std::getline(Ss, To)) {
+      Opt = false;
+
+      if (To.empty() || std::all_of(To.begin(),To.end(),isspace)) {
+        continue;
+      }
+
+      // For every line, count the indentation
+      // not more than 1 additional indentations are allowed to the original one
+      // However, we may have arbitrarily less indentations
+      if ((To.find(':', 0 )) == std::string::npos) {
+        std::cerr << "Colon is missing in line" << To << std::endl;
+        return false;
+      }
+
+      llvm::StringRef ToStringRef = llvm::StringRef(To);
+      llvm::StringRef IndentationString = ToStringRef.substr(0, ToStringRef.find(':'));
+      int CurrentIndentationLevel = IndentationString.count(Indentation);
+      int Diff = CurrentIndentationLevel - LastIndentationLevel;
+
+      // Remember the root indentation for later checks
+      if (LastIndentationLevel == -1) {
+        RootIndentation = CurrentIndentationLevel;
+      }
+
+      if ((LastIndentationLevel != -1) && Diff > 1) {
+        std::cerr << "Indentation error in feature tree in line " << To << std::endl;
+        return false;
+      }
+
+      // Move pointer to first character after indentation
+      // The first character has to be a colon followed by the type of
+      // the feature (m for mandatory, o for optional, a for alternative)
+      std::string::size_type Pos = CurrentIndentationLevel * Indentation.length() + 2;
+      std::optional<std::tuple<int, int>> Cardinalities;
+
+      switch (To.at(Pos - 1)) {
+      case 'o':
+        // Code for optional
+        Opt = true;
+        break;
+      case 'g':
+        // Code for an or group with different cardinalities
+        Opt = false;
+        // Extract the cardinality
+        Cardinalities = extractCardinality(To);
+        if (!Cardinalities.has_value()) {
+          return false;
+        }
+        break;
+      case ' ':
+        // Code for alternative child
+        Pos--;
+        break;
+      }
+      // Extract the name
+      Name = ToStringRef.substr(0, ToStringRef.find(' ', Pos + 1)).str();
+
+      // Note that we ignore the ID and use the name of the feature
+      // as unique identifier.
+      if (Name.find_first_of('(') != std::string::npos) {
+        Name = ToStringRef.substr(0, ToStringRef.find('(', Pos + 1)).str();
+      }
+
+      // Remove the cardinality
+      if (Name.find_first_of('[') != std::string::npos) {
+        Name = ToStringRef.substr(0, ToStringRef.find('[', Pos + 1)).str();
+      }
+
+      // If there is no name, provide an artificial one
+      if (Name.empty()) {
+        OrGroupCounter++;
+        Name = "group_" + std::to_string(OrGroupCounter);
+      }
+
+      // Create the feature
+      FMB.makeFeature<BinaryFeature>(Name, Opt);
+      IndentationToParentMapping[CurrentIndentationLevel] = Name;
+
+      // Add parent from the upper indentation level if there is one
+      if (LastIndentationLevel != -1 && CurrentIndentationLevel == RootIndentation) {
+        std::cerr << "Only one feature can be root and have the same indentation as root." << std::endl;
+        return false;
+      }
+
+      if (LastIndentationLevel != -1) {
+        auto Parent = IndentationToParentMapping.find(CurrentIndentationLevel - 1);
+        assert(Parent != IndentationToParentMapping.end());
+        FMB.addParent(Name, Parent->second);
+      }
+
+      // Add the or group to the feature model if it is completely parsed
+      auto OrGroup = OrGroupMapping.find(CurrentIndentationLevel);
+      if (OrGroup != OrGroupMapping.end()) {
+        FMB.emplaceRelationship(std::get<1>(OrGroup->second), std::get<2>(OrGroup->second), std::get<0>(OrGroup->second));
+        OrGroupMapping.erase(CurrentIndentationLevel);
+      }
+
+      // Remember the new or group parent if there is one
+      if (Cardinalities.has_value()) {
+        Relationship::RelationshipKind GroupKind = Relationship::RelationshipKind::RK_ALTERNATIVE;
+        if (std::get<1>(Cardinalities.value()) == UINT_MAX) {
+          GroupKind = Relationship::RelationshipKind::RK_OR;
+        }
+        OrGroupMapping[CurrentIndentationLevel] = std::tuple<string, Relationship::RelationshipKind, std::vector<string>>(Name, GroupKind, std::vector<string>());
+      }
+
+      // Add a child
+      OrGroup = OrGroupMapping.find(CurrentIndentationLevel - 1);
+      if (OrGroup != OrGroupMapping.end()) {
+        std::get<2>(OrGroup->second).push_back(Name);
+      }
+
+
+      LastIndentationLevel = CurrentIndentationLevel;
+    }
+
+    // Add the remaining or groups
+    for (auto & OrGroup : OrGroupMapping) {
+      FMB.emplaceRelationship(std::get<1>(OrGroup.second), std::get<2>(OrGroup.second), std::get<0>(OrGroup.second));
+    }
+  }
+
+  return true;
+}
+
+bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
+  // TODO (se-passau/VaRA#702): This has to wait until the constraint part is implemented
+  return true;
+}
+
+std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(const string& StringToExtractFrom) {
+  std::optional<int> MinCardinality;
+  std::optional<int> MaxCardinality;
+
+  // Search for the first occurrence of '['; then read in the min cardinality
+  // until the comma. Afterwards, read in the max cardinality until ']'
+  std::string::size_type Pos = StringToExtractFrom.find_first_of('[');
+  if (Pos == std::string::npos) {
+    std::cerr << "No cardinality given in or group!" << std::endl;
+    return std::optional<std::tuple<int, int>>();
+  }
+  auto CardinalityString = llvm::StringRef(StringToExtractFrom);
+  size_t CommaPos = CardinalityString.find(',', Pos + 1);
+  MinCardinality = parseCardinality(CardinalityString.substr(Pos + 1, CommaPos - Pos - 1).str());
+  Pos = CommaPos;
+  MaxCardinality = parseCardinality(CardinalityString.substr(Pos + 1, CardinalityString.find(']', Pos + 1) - Pos - 1).str());
+
+  if (!MinCardinality.has_value() || !MaxCardinality.has_value()) {
+    std::cerr << "No parsable cardinality!" << std::endl;
+    return std::optional<std::tuple<int, int>>();
+  }
+
+  if (MinCardinality.value() != 1 || (MaxCardinality.value() != 1 && MaxCardinality.value() != UINT_MAX)) {
+    std::cerr << "Cardinality unsupported. We support cardinalities [1,1] (alternative) or [1, *] (or group)." << std::endl;
+    return std::optional<std::tuple<int, int>>();
+  }
+
+  return std::optional<std::tuple<int, int>>(std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()});
+}
+
+std::optional<int> FeatureModelSxfmParser::parseCardinality(const string& CardinalityString) {
+  std::optional<int> Result = std::optional<int>();
+  if (CardinalityString == "*") {
+    // We use UINT_MAX as our magic integer (which is -1 as int) to indicate
+    // that the cardinality is a wildcard.
+    Result = UINT_MAX;
+  } else {
+    // Convert the string into an integer in a safe way
+    char *End;
+    long LongNumber;
+    errno = 0;
+    LongNumber = strtol(CardinalityString.c_str(), &End, 0);
+    if (errno == ERANGE || LongNumber < INT_MIN || LongNumber > INT_MAX
+        || *CardinalityString.c_str() == '\0' || *End != '\0') {
+      std::cerr << "The following cardinality is not integer: " << CardinalityString << std::endl;
+    } else {
+      Result = LongNumber;
+    }
+  }
+
+  return Result;
+}
 
 } // namespace vara::feature

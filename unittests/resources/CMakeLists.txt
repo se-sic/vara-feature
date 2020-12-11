@@ -10,6 +10,8 @@ set(FEATURE_LIB_TEST_FILES
   test.xml
   test_children.xml
   test_excludes.xml
+  sxfm/sxfm_example.sxfm
+  sxfm/test.sxfm
   )
 
 foreach(file_name ${FEATURE_LIB_TEST_FILES})
