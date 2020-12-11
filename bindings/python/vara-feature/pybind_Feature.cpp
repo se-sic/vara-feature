@@ -47,9 +47,9 @@ void init_feature_module_feature(py::module &M) {
                              R"pbdoc(The name of the feature.)pbdoc")
       .def("is_optional", &vf::Feature::isOptional,
            R"pbdoc(`True` if the feature is optional.)pbdoc")
-      .def_property("location", &vf::Feature::getLocations,
-                    &vf::Feature::setFeatureSourceRange,
-                    R"pbdoc(The name of the feature.)pbdoc")
+      .def_property_readonly("locations", [](vf::Feature &F) {
+        return py::make_iterator(F.getLocationsBegin(), F.getLocationsEnd());
+      },R"pbdoc(The mapped code locations of the feature.)pbdoc")
 
       //===----------------------------------------------------------------===//
       // Utility functions
@@ -61,10 +61,10 @@ void init_feature_module_feature(py::module &M) {
 void init_feature_module_binary_feature(py::module &M) {
   py::class_<vf::BinaryFeature, vf::Feature>(M, "BinaryFeature")
       .def(py::init<std::string, bool>())
-      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange>())
-      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
+      .def(py::init<std::string, bool, std::vector<vara::feature::FeatureSourceRange>>())
+      .def(py::init<std::string, bool, std::vector<vara::feature::FeatureSourceRange>,
                     vara::feature::Feature *>())
-      .def(py::init<std::string, bool, vara::feature::FeatureSourceRange,
+      .def(py::init<std::string, bool, std::vector<vara::feature::FeatureSourceRange>,
                     vara::feature::Feature *,
                     std::vector<vara::feature::FeatureTreeNode *>>())
       .def(
@@ -79,7 +79,7 @@ void init_feature_module_numeric_feature(py::module &M) {
                    std::variant<std::pair<int, int>, std::vector<int>>, bool>())
       .def(py::init<std::string,
                     std::variant<std::pair<int, int>, std::vector<int>>, bool,
-                    vara::feature::FeatureSourceRange>())
+          std::vector<vara::feature::FeatureSourceRange>>())
       .def(
           "to_string", &vf::NumericFeature::toString,
           R"pbdoc(Returns the string representation of a NumericFeature.)pbdoc");

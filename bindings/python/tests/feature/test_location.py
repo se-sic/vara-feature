@@ -46,7 +46,7 @@ class TestLocation(unittest.TestCase):
 
         loc_0 = Location(path_0)
         loc_1 = Location(path_1, start_lc_offset)
-        loc_2 = Location(path_2, start_lc_offset, end_lc_offset)
+        loc_2 = Location(path_2, start_lc_offset, end_lc_offset, Location.Category.necessary)
 
         self.assertEqual(loc_0.path, path_0)
 
@@ -76,7 +76,7 @@ class TestLocation(unittest.TestCase):
         """ Checks if the end accessor is correctly mapped. """
         start_lc_offset = LineColumnOffset(3, 4)
         end_lc_offset = LineColumnOffset(4, 20)
-        loc = Location("foo/bar/buzz", start_lc_offset, end_lc_offset)
+        loc = Location("foo/bar/buzz", start_lc_offset, end_lc_offset, Location.Category.necessary)
 
         self.assertEqual(loc.start, start_lc_offset)
         self.assertEqual(loc.end, end_lc_offset)

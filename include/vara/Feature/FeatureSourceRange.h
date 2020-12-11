@@ -25,7 +25,7 @@ namespace vara::feature {
 
 class FeatureSourceRange {
 public:
-  enum class Category {necessary, inessenatial};
+  enum Category {necessary, inessential };
 
   class FeatureSourceLocation {
 
@@ -65,12 +65,12 @@ public:
   FeatureSourceRange(fs::path Path,
                      std::optional<FeatureSourceLocation> Start = std::nullopt,
                      std::optional<FeatureSourceLocation> End = std::nullopt,
-                     Category Category = Category::necessary)
-      : Path(std::move(Path)), Start(Start), End(End), Category(Category) {}
+                     Category CategoryKind = Category::necessary)
+      : Path(std::move(Path)), Start(Start), End(End), CategoryKind(CategoryKind) {}
 
-  [[nodiscard]] Category getCategory() const { return this->Category; }
+  [[nodiscard]] Category getCategory() const { return this->CategoryKind; }
   void setCategory(Category Value) {
-    this->Category = Value;
+    this->CategoryKind = Value;
   }
 
   [[nodiscard]] fs::path getPath() const { return Path; }
@@ -102,7 +102,7 @@ public:
   }
 
   inline bool operator==(const FeatureSourceRange &Other) const {
-    return Category == Other.Category and Path == Other.Path and Start == Other.Start and End == Other.End;
+    return CategoryKind == Other.CategoryKind and Path == Other.Path and Start == Other.Start and End == Other.End;
   }
 
   inline bool operator!=(const FeatureSourceRange &Other) const {
@@ -110,7 +110,7 @@ public:
   }
 
 private:
-  Category Category;
+  Category CategoryKind;
   fs::path Path;
   std::optional<FeatureSourceLocation> Start;
   std::optional<FeatureSourceLocation> End;

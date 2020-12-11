@@ -104,7 +104,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) const {
   if (xmlStrcmp(Tmp.get(), XmlConstants::NECESSARY) == 0) {
     Category = FeatureSourceRange::Category::necessary;
   } else if (xmlStrcmp(Tmp.get(), XmlConstants::INESSENTIAL) == 0) {
-    Category = FeatureSourceRange::Category::inessenatial;
+    Category = FeatureSourceRange::Category::inessential;
   } else {
     // unreachable, xmllib should set default value "necessary"
   }

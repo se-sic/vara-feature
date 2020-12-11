@@ -361,7 +361,7 @@ int FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr Writer,
   case FeatureSourceRange::Category::necessary:
     RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::CATEGORY, XmlConstants::NECESSARY);
     break;
-  case FeatureSourceRange::Category::inessenatial:
+  case FeatureSourceRange::Category::inessential:
     RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::CATEGORY, XmlConstants::INESSENTIAL);
     break;
   }
