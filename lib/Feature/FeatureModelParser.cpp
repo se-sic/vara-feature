@@ -278,9 +278,7 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelSxfmParser::parseDoc() 
   // Therefore, (1) check whether it could be parsed
   if (Doc && Ctxt->valid) {
     // (2) validate the sxfm format by using the dtd (document type definition) file
-    xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
-    if (Ctxt->vctxt.valid) {
-      // TODO (CK):
+    if (xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get())) {
       // and (3) check the tree-like structure of the embedded feature model
       // as well as constraints
       return Doc;

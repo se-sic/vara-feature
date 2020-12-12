@@ -12,6 +12,8 @@ set(FEATURE_LIB_TEST_FILES
   test_excludes.xml
   sxfm/sxfm_example.sxfm
   sxfm/test.sxfm
+  sxfm/test_wrong_indentation.sxfm
+  sxfm/test_wrong_xml_format.sxfm
   )
 
 foreach(file_name ${FEATURE_LIB_TEST_FILES})
