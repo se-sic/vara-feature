@@ -109,7 +109,7 @@ void FeatureModelBuilder::detectXMLAlternatives() {
     std::vector<std::string> Frontier(Children[FeatureName].begin(),
                                       Children[FeatureName].end());
     while (!Frontier.empty()) {
-      const auto &FName = Frontier.back();
+      const auto &FName = std::string(Frontier.back());
       Frontier.pop_back();
       if (auto *F = llvm::dyn_cast<Feature>(Features[FName].get());
           F && !F->isOptional()) {

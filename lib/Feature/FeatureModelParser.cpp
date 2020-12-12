@@ -411,17 +411,17 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
         break;
       }
       // Extract the name
-      Name = ToStringRef.substr(0, ToStringRef.find(' ', Pos + 1)).str();
+      Name = ToStringRef.substr(Pos + 1, ToStringRef.find(' ', Pos + 1) - Pos - 1).str();
 
       // Note that we ignore the ID and use the name of the feature
       // as unique identifier.
       if (Name.find_first_of('(') != std::string::npos) {
-        Name = ToStringRef.substr(0, ToStringRef.find('(', Pos + 1)).str();
+        Name = ToStringRef.substr(Pos + 1, ToStringRef.find('(', Pos + 1) - Pos - 1).str();
       }
 
       // Remove the cardinality
       if (Name.find_first_of('[') != std::string::npos) {
-        Name = ToStringRef.substr(0, ToStringRef.find('[', Pos + 1)).str();
+        Name = ToStringRef.substr(Pos + 1, ToStringRef.find('[', Pos + 1) - Pos - 1).str();
       }
 
       // If there is no name, provide an artificial one
