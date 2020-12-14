@@ -94,19 +94,25 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
 }
 
 FeatureSourceRange
-FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) const {
+FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   fs::path Path;
   std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
   std::optional<FeatureSourceRange::FeatureSourceLocation> End;
   enum FeatureSourceRange::Category Category;
+
   std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
       xmlGetProp(Head, XmlConstants::CATEGORY), xmlFree);
-  if (xmlStrcmp(Tmp.get(), XmlConstants::NECESSARY) == 0) {
-    Category = FeatureSourceRange::Category::necessary;
-  } else if (xmlStrcmp(Tmp.get(), XmlConstants::INESSENTIAL) == 0) {
-    Category = FeatureSourceRange::Category::inessential;
+  if (Tmp) {
+    if (xmlStrcmp(Tmp.get(), XmlConstants::NECESSARY) == 0) {
+      Category = FeatureSourceRange::Category::necessary;
+    } else if (xmlStrcmp(Tmp.get(), XmlConstants::INESSENTIAL) == 0) {
+      Category = FeatureSourceRange::Category::inessential;
+    } else {
+      Category = FeatureSourceRange::Category::necessary;
+      std::cerr << "Unknown category " << Tmp.get() << " replaced with default \"necessary\"." << std::endl;
+    }
   } else {
-    // unreachable, xmllib should set default value "necessary"
+    Category = FeatureSourceRange::Category::necessary;
   }
   for (xmlNode *Child = Head->children; Child; Child = Child->next) {
     if (Child->type == XML_ELEMENT_NODE) {
@@ -170,7 +176,7 @@ bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
     std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
         xmlGetProp(Node, XmlConstants::COMMIT), xmlFree);
-    FMB.setCommit(Cnt ? reinterpret_cast<char *>(Cnt.get()) : "");
+    FMB.setCommit(Cnt ? std::string(reinterpret_cast<char *>(Cnt.get())) : "");
   }
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
@@ -249,7 +255,11 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   if (Doc && Ctxt->valid) {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
     if (Ctxt->vctxt.valid) {
-      return Doc;
+      if (xmlValidateDtdFinal(&Ctxt->vctxt, Doc.get()) == 1) {
+        return Doc;
+      }
+      llvm_unreachable("boink");
+      std::cerr << "Failed to validate DTD in final step" << std::endl;
     }
     std::cerr << "Failed to validate DTD." << std::endl;
   } else {

@@ -59,10 +59,10 @@ private:
 
   static FeatureSourceRange::FeatureSourceLocation
   createFeatureSourceLocation(xmlNode *Node);
+  static FeatureSourceRange createFeatureSourceRange(xmlNode *Head);
 
   std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
   static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
-  FeatureSourceRange createFeatureSourceRange(xmlNode *Head) const;
 };
 
 } // namespace vara::feature
