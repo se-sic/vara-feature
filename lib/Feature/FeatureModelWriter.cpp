@@ -14,7 +14,7 @@
 
 namespace vara::feature {
 
-constexpr const unsigned char *charToUChar(const char *CP) {
+const unsigned char *charToUChar(const char *CP) {
   return (const unsigned char *)CP;
 }
 

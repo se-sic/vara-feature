@@ -71,3 +71,15 @@ macro(add_vara_library name)
     ARCHIVE DESTINATION lib${LLVM_LIBDIR_SUFFIX})
   set_property(GLOBAL APPEND PROPERTY LLVM_EXPORTS ${name})
 endmacro(add_vara_library)
+
+function(check_std_filesystems varname)
+  set(OLD_CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
+  set(CMAKE_REQUIRED_FLAGS "-std=c++17 ${CMAKE_REQUIRED_FLAGS}")
+  CHECK_CXX_SOURCE_COMPILES("
+#include <filesystem>
+namespace fs = std::filesystem;
+int main() { return 0; }
+" ${varname})
+  message(STATUS "---> Inner: ${varname} = ${${varname}}")
+  set(CMAKE_REQUIRED_FLAGS ${OLD_CMAKE_REQUIRED_FLAGS})
+endfunction()
