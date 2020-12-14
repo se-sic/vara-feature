@@ -80,6 +80,5 @@ function(check_std_filesystems varname)
 namespace fs = std::filesystem;
 int main() { return 0; }
 " ${varname})
-  message(STATUS "---> Inner: ${varname} = ${${varname}}")
   set(CMAKE_REQUIRED_FLAGS ${OLD_CMAKE_REQUIRED_FLAGS})
 endfunction()
