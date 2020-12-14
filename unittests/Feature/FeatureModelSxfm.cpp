@@ -16,6 +16,14 @@ TEST(SxfmParser, validation) {
   EXPECT_TRUE(FM);
   EXPECT_EQ(FM->size(), 17);
   EXPECT_EQ(FM->getName(), "My feature model");
+
+  // Check features
+  EXPECT_TRUE(FM->getFeature("man1"));
+  EXPECT_TRUE(FM->getFeature("group_1"));
+
+  // Check feature types
+  EXPECT_FALSE(FM->getFeature("man1")->isOptional());
+  EXPECT_EQ(FM->getFeature("group_1")->getKind(), Feature::FeatureKind::FK_BINARY);
 }
 
 TEST(SxfmParser, parsing) {
@@ -25,6 +33,21 @@ TEST(SxfmParser, parsing) {
   EXPECT_TRUE(FM);
   EXPECT_EQ(FM->size(), 37);
   EXPECT_EQ(FM->getName(), "apache");
+
+  // Check features
+  EXPECT_TRUE(FM->getFeature("root"));
+  EXPECT_TRUE(FM->getFeature("threadCount"));
+  EXPECT_TRUE(FM->getFeature("threadCount_64"));
+  EXPECT_TRUE(FM->getFeature("Group_0"));
+  EXPECT_TRUE(FM->getFeature("tlsMoreBits"));
+  EXPECT_TRUE(FM->getFeature("ecdsaCertificate"));
+  EXPECT_TRUE(FM->getFeature("tls"));
+  EXPECT_TRUE(FM->getFeature("compressionLevel"));
+
+  // Check feature types
+  EXPECT_TRUE(FM->getFeature("tls")->isOptional());
+  EXPECT_FALSE(FM->getFeature("compressionLevel")->isOptional());
+  EXPECT_EQ(FM->getFeature("compressionLevel")->getKind(), Feature::FeatureKind::FK_BINARY);
 }
 
 TEST(SxfmParser, wrong_indentation) {
