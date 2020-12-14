@@ -88,8 +88,18 @@ public:
     Locations.push_back(std::move(Fsr));
   }
   std::vector<FeatureSourceRange>::iterator
-  removeLocation(FeatureSourceRange &Fsr) {
+  removeLocation(const FeatureSourceRange &Fsr) {
     return Locations.erase(std::find(Locations.begin(), Locations.end(), Fsr));
+  }
+
+  bool updateLocation(const FeatureSourceRange &OldFsr,
+                      FeatureSourceRange NewFsr) {
+    auto Loc = std::find(Locations.begin(), Locations.end(), OldFsr);
+    if (Loc != Locations.end()) {
+      *Loc = std::move(NewFsr);
+      return true;
+    }
+    return false;
   }
 
   [[nodiscard]] std::vector<FeatureSourceRange>::iterator getLocationsBegin() {
@@ -98,8 +108,7 @@ public:
   [[nodiscard]] std::vector<FeatureSourceRange>::iterator getLocationsEnd() {
     return Locations.end();
   }
-  using locations_iterator =
-      typename std::vector<FeatureSourceRange>::iterator;
+  using locations_iterator = typename std::vector<FeatureSourceRange>::iterator;
   [[nodiscard]] llvm::iterator_range<locations_iterator> getLocations() {
     return llvm::make_range(Locations.begin(), Locations.end());
   }

@@ -47,9 +47,26 @@ void init_feature_module_feature(py::module &M) {
                              R"pbdoc(The name of the feature.)pbdoc")
       .def("is_optional", &vf::Feature::isOptional,
            R"pbdoc(`True` if the feature is optional.)pbdoc")
-      .def_property_readonly("locations", [](vf::Feature &F) {
-        return py::make_iterator(F.getLocationsBegin(), F.getLocationsEnd());
-      },R"pbdoc(The mapped code locations of the feature.)pbdoc")
+      .def_property_readonly(
+          "locations",
+          [](vf::Feature &F) {
+            return py::make_iterator(F.getLocationsBegin(),
+                                     F.getLocationsEnd());
+          },
+          R"pbdoc(The mapped code locations of the feature.)pbdoc")
+      .def("addLocation",
+           [](vf::Feature &F, vf::FeatureSourceRange &Fsr) {
+             F.addLocation(Fsr);
+           })
+      .def("updateLocation",
+           [](vf::Feature &F, const vf::FeatureSourceRange &OldFsr,
+              vf::FeatureSourceRange &NewFsr) {
+             return F.updateLocation(OldFsr, NewFsr);
+           })
+      .def("removeLocation",
+           [](vf::Feature &F, const vf::FeatureSourceRange &Fsr) {
+             F.removeLocation(Fsr);
+           })
 
       //===----------------------------------------------------------------===//
       // Utility functions

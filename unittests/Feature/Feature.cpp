@@ -81,4 +81,17 @@ TEST(Feature, locationRemove) {
   EXPECT_FALSE(TestLCO.hasLocations());
 }
 
+TEST(Feature, locationUpdate) {
+  FeatureSourceRange::FeatureSourceLocation Start1(3, 4);
+  FeatureSourceRange::FeatureSourceLocation End1(3, 20);
+  FeatureSourceRange::FeatureSourceLocation Start2(4, 4);
+  FeatureSourceRange::FeatureSourceLocation End2(4, 20);
+  FeatureSourceRange Fsr1 = FeatureSourceRange("path1", Start1, End1);
+  FeatureSourceRange Fsr2 = FeatureSourceRange("path2", Start2, End2);
+  BinaryFeature TestLCO("TEST", false, {Fsr1});
+
+  EXPECT_TRUE(TestLCO.updateLocation(Fsr1, Fsr2));
+  EXPECT_EQ(*TestLCO.getLocationsBegin(), Fsr2);
+}
+
 } // namespace vara::feature
