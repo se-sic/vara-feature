@@ -27,7 +27,7 @@ public:
   enum class RelationshipKind { RK_ALTERNATIVE, RK_OR };
 
   Relationship(RelationshipKind Kind)
-      : Kind(Kind), FeatureTreeNode(NodeKind::NK_RELATIONSHIP) {}
+      : FeatureTreeNode(NodeKind::NK_RELATIONSHIP), Kind(Kind) {}
 
   [[nodiscard]] RelationshipKind getKind() const { return Kind; }
 

@@ -87,8 +87,8 @@ class BinaryConstraint : public Constraint {
 public:
   BinaryConstraint(ConstraintKind Kind, std::unique_ptr<Constraint> LeftOperand,
                    std::unique_ptr<Constraint> RightOperand)
-      : LeftOperand(std::move(LeftOperand)),
-        RightOperand(std::move(RightOperand)), Constraint(Kind) {
+      : Constraint(Kind), LeftOperand(std::move(LeftOperand)),
+        RightOperand(std::move(RightOperand)) {
     this->LeftOperand->setParent(this);
     this->RightOperand->setParent(this);
   }
@@ -408,7 +408,7 @@ public:
 class UnaryConstraint : public Constraint {
 public:
   UnaryConstraint(ConstraintKind Kind, std::unique_ptr<Constraint> Operand)
-      : Operand(std::move(Operand)), Constraint(Kind) {
+      : Constraint(Kind), Operand(std::move(Operand)) {
     this->Operand->setParent(this);
   }
 
@@ -458,7 +458,7 @@ public:
 class PrimaryIntegerConstraint : public PrimaryConstraint {
 public:
   PrimaryIntegerConstraint(int Value)
-      : Value(Value), PrimaryConstraint(ConstraintKind::CK_INTEGER) {}
+      : PrimaryConstraint(ConstraintKind::CK_INTEGER), Value(Value)  {}
 
   [[nodiscard]] int getValue() const { return Value; }
 
@@ -481,7 +481,7 @@ class Feature;
 class PrimaryFeatureConstraint : public PrimaryConstraint {
 public:
   PrimaryFeatureConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
-      : FV(std::move(FV)), PrimaryConstraint(ConstraintKind::CK_FEATURE) {}
+      : PrimaryConstraint(ConstraintKind::CK_FEATURE), FV(std::move(FV))  {}
 
   [[nodiscard]] Feature *getFeature() const;
 
@@ -503,6 +503,8 @@ private:
 
 class ConstraintVisitor {
 public:
+  virtual ~ConstraintVisitor() = default;
+
   virtual void visit(BinaryConstraint *C) {
     C->getLeftOperand()->accept(*this);
     C->getRightOperand()->accept(*this);

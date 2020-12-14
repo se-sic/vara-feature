@@ -258,7 +258,7 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
     makeFeature<NumericFeature>(Numeric.second.first, Numeric.second.second);
     addParent(Numeric.second.first, Numeric.first);
   }
-  return std::move(buildFeatureModel());
+  return buildFeatureModel();
 }
 bool FeatureModelBuilder::addFeature(Feature &F) {
   std::vector<FeatureSourceRange> Loc = F.Locations;
