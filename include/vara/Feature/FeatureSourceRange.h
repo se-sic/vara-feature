@@ -3,12 +3,12 @@
 
 #include "llvm/Support/FormatVariadic.h"
 
-#ifdef STD_EXPERIMENTAL_FILESYSTEM
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#else
+#if __has_include(<filesystem>)
 #include <filesystem>
 namespace fs = std::filesystem;
+#else
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
 #endif
 
 #include <optional>
