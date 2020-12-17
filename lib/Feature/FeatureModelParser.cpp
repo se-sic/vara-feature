@@ -108,8 +108,8 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
     } else if (xmlStrcmp(Tmp.get(), XmlConstants::INESSENTIAL) == 0) {
       Category = FeatureSourceRange::Category::inessential;
     } else {
-      Category = FeatureSourceRange::Category::necessary;
-      std::cerr << "Unknown category " << Tmp.get() << " replaced with default \"necessary\"." << std::endl;
+      llvm_unreachable("DTD check should have rejected this file or this code "
+                       "was not updated to handle new values.");
     }
   } else {
     Category = FeatureSourceRange::Category::necessary;
@@ -258,8 +258,7 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
       if (xmlValidateDtdFinal(&Ctxt->vctxt, Doc.get()) == 1) {
         return Doc;
       }
-      llvm_unreachable("boink");
-      std::cerr << "Failed to validate DTD in final step" << std::endl;
+      llvm::errs() << "Failed to validate DTD in final step\n";
     }
     std::cerr << "Failed to validate DTD." << std::endl;
   } else {
