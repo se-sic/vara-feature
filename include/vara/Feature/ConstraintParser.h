@@ -4,6 +4,8 @@
 #include "vara/Feature/Constraint.h"
 #include "vara/Feature/Feature.h"
 
+#include "llvm/ADT/StringExtras.h"
+
 #include <iostream>
 
 namespace vara::feature {
@@ -97,15 +99,16 @@ public:
 
   TokenListTy tokenize() {
     TokenListTy TokenList;
-    for (int Pos = 0; Pos < Cnt.size();) {
-      auto Result = munch(Pos);
+
+    for (llvm::StringRef Str = Cnt; !Str.empty();) {
+      auto Result = munch(Str);
       TokenList.push_back(Result.first);
-      Pos += Result.second;
-      if (auto Kind = TokenList.back().getKind();
+      if (auto Kind = Result.first.getKind();
           Kind == ConstraintToken::ConstraintTokenKind::END_OF_FILE ||
           Kind == ConstraintToken::ConstraintTokenKind::ERROR) {
         break;
       }
+      Str = Str.drop_front(Result.second);
     }
 
     // ensure last token is always either EOF or an error
@@ -122,8 +125,8 @@ public:
 private:
   using ResultTy = std::pair<ConstraintToken, int>;
 
-  ResultTy munch(const int Pos) {
-    switch (Cnt[Pos]) {
+  static ResultTy munch(const llvm::StringRef &Str) {
+    switch (Str.front()) {
     case EOF:
     case '\0':
       return {
@@ -131,9 +134,9 @@ private:
           1};
     case ' ':
     case '\t':
-    case '\n':
     case '\r':
-      return munchWhitespace(Pos);
+    case '\n':
+      return munchWhitespace(Str);
     case '(':
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::L_PAR), 1};
     case ')':
@@ -155,43 +158,36 @@ private:
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::OR), 1};
     case '-':
     case '<':
-      return munchOperator(Pos);
+      return munchOperator(Str);
     case '0' ... '9':
-      return munchNumber(Pos);
+      return munchNumber(Str);
     case 'a' ... 'z':
     case 'A' ... 'Z':
-      return munchIdentifier(Pos);
+      return munchIdentifier(Str);
     default:
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::ERROR,
-                              std::string(1, Cnt[Pos])),
+                              Str.take_front()),
               1};
     }
   }
 
-  ResultTy munchWhitespace(const int Pos) {
-    int MunchLength = 0;
-    for (int LL = Pos; LL < Cnt.size(); LL++) {
-      auto Head = Cnt[LL];
-      if (Head == ' ' || Head == '\t' || Head == '\n' || Head == '\r') {
-        MunchLength++;
-      } else {
-        break;
-      }
-    }
+  static ResultTy munchWhitespace(const llvm::StringRef &Str) {
+    auto Munch = Str.take_while(
+        [](auto C) { return C == ' ' || C == '\t' || C == '\r' || C == '\n'; });
     return {ConstraintToken(ConstraintToken::ConstraintTokenKind::WHITESPACE),
-            MunchLength};
+            Munch.size()};
   }
 
-  ResultTy munchOperator(const int Pos) {
-    switch (Cnt[Pos]) {
+  static ResultTy munchOperator(const llvm::StringRef &Str) {
+    switch (Str.front()) {
     case '-':
-      if (Pos + 1 < Cnt.size() && Cnt[Pos + 1] == '>') {
+      if (Str.startswith("->")) {
         return {ConstraintToken(ConstraintToken::ConstraintTokenKind::IMPLIES),
                 2};
       }
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::MINUS), 1};
     case '<':
-      if (Pos + 2 < Cnt.size() && Cnt[Pos + 1] == '-' && Cnt[Pos + 2] == '>') {
+      if (Str.startswith("<->")) {
         return {
             ConstraintToken(ConstraintToken::ConstraintTokenKind::EQUIVALENT),
             3};
@@ -199,44 +195,24 @@ private:
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::LESS), 1};
     default:
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::ERROR,
-                              std::string(1, Cnt[Pos])),
+                              Str.take_front()),
               1};
     }
   }
 
-  ResultTy munchNumber(const int Pos) {
-    std::stringstream Munch;
-    int MunchLength = 0;
-    for (int LL = Pos; LL < Cnt.size(); LL++) {
-      auto Head = Cnt[LL];
-      if ('0' <= Head && Head <= '9') {
-        Munch << Head;
-        MunchLength++;
-      } else {
-        break;
-      }
-    }
-    return {ConstraintToken(ConstraintToken::ConstraintTokenKind::NUMBER,
-                            Munch.str()),
-            MunchLength};
+  static ResultTy munchNumber(const llvm::StringRef &Str) {
+    auto Munch = Str.take_while([](auto C) { return llvm::isDigit(C); });
+    return {
+        ConstraintToken(ConstraintToken::ConstraintTokenKind::NUMBER, Munch),
+        Munch.size()};
   }
 
-  ResultTy munchIdentifier(const int Pos) {
-    std::stringstream Munch;
-    int MunchLength = 0;
-    for (int LL = Pos; LL < Cnt.size(); LL++) {
-      auto Head = Cnt[LL];
-      if (('0' <= Head && Head <= '9') || ('a' <= Head && Head <= 'z') ||
-          ('A' <= Head && Head <= 'Z') || Head == '_') {
-        Munch << Head;
-        MunchLength++;
-      } else {
-        break;
-      }
-    }
+  static ResultTy munchIdentifier(const llvm::StringRef &Str) {
+    auto Munch =
+        Str.take_while([](auto C) { return llvm::isAlnum(C) || C == '_'; });
     return {ConstraintToken(ConstraintToken::ConstraintTokenKind::IDENTIFIER,
-                            Munch.str()),
-            MunchLength};
+                            Munch),
+            Munch.size()};
   }
 
   std::string Cnt;
