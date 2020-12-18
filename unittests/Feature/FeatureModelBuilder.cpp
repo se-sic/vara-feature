@@ -104,7 +104,7 @@ TEST(FeatureModelBuilder, addBinaryFeatureRef) {
   BinaryFeature AA("aa");
   auto CS = Feature::NodeSetType();
   CS.insert(&AA);
-  BinaryFeature A("a", false, std::nullopt, nullptr, CS);
+  BinaryFeature A("a", false, {}, nullptr, CS);
 
   B.addFeature(AA);
   B.addParent("aa", "a")->addFeature(A);
@@ -120,7 +120,7 @@ TEST(FeatureModelBuilder, addNumericFeatureRef) {
   BinaryFeature AA("aa");
   auto CS = Feature::NodeSetType();
   CS.insert(&AA);
-  NumericFeature A("a", std::vector<int>{1, 2, 3}, false, std::nullopt, nullptr,
+  NumericFeature A("a", std::vector<int>{1, 2, 3}, false, {}, nullptr,
                    CS);
 
   B.addFeature(AA);

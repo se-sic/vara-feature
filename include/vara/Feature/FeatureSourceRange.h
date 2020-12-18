@@ -25,6 +25,8 @@ namespace vara::feature {
 
 class FeatureSourceRange {
 public:
+  enum class Category { necessary, inessential };
+
   class FeatureSourceLocation {
 
   public:
@@ -60,12 +62,15 @@ public:
     int Column;
   };
 
-  // TODO(s9latimm): remove NOLINT
-  FeatureSourceRange(
-      fs::path Path,
-      std::optional<FeatureSourceLocation> Start = std::nullopt, // NOLINT
-      std::optional<FeatureSourceLocation> End = std::nullopt)   // NOLINT
-      : Path(std::move(Path)), Start(Start), End(End) {}         // NOLINT
+  FeatureSourceRange(fs::path Path,
+                     std::optional<FeatureSourceLocation> Start = std::nullopt,
+                     std::optional<FeatureSourceLocation> End = std::nullopt,
+                     Category CategoryKind = Category::necessary)
+      : Path(std::move(Path)), Start(Start), End(End),
+        CategoryKind(CategoryKind) {}
+
+  [[nodiscard]] Category getCategory() const { return this->CategoryKind; }
+  void setCategory(Category Value) { this->CategoryKind = Value; }
 
   [[nodiscard]] fs::path getPath() const { return Path; }
   void setPath(const std::string &Value) {
@@ -96,7 +101,8 @@ public:
   }
 
   inline bool operator==(const FeatureSourceRange &Other) const {
-    return Path == Other.Path and Start == Other.Start and End == Other.End;
+    return CategoryKind == Other.CategoryKind and Path == Other.Path and
+           Start == Other.Start and End == Other.End;
   }
 
   inline bool operator!=(const FeatureSourceRange &Other) const {
@@ -107,6 +113,7 @@ private:
   fs::path Path;
   std::optional<FeatureSourceLocation> Start;
   std::optional<FeatureSourceLocation> End;
+  Category CategoryKind;
 };
 } // namespace vara::feature
 

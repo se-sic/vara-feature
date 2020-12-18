@@ -28,11 +28,12 @@ public:
   using RelationshipTy = Relationship;
   using RelationshipContainerTy = std::vector<std::unique_ptr<RelationshipTy>>;
 
-  FeatureModel(string Name, fs::path RootPath, FeatureMapTy Features,
-               ConstraintContainerTy Constraints,
+  FeatureModel(std::string Name, fs::path RootPath, std::string Commit,
+               FeatureMapTy Features, ConstraintContainerTy Constraints,
                RelationshipContainerTy Relationships, Feature *Root)
       : Name(std::move(Name)), Path(std::move(RootPath)),
-        Features(std::move(Features)), Constraints(std::move(Constraints)),
+        Commit(std::move(Commit)), Features(std::move(Features)),
+        Constraints(std::move(Constraints)),
         Relationships(std::move(Relationships)), Root(Root) {
     // Insert all values into ordered data structure.
     for (const auto &KV : this->Features) {
@@ -45,6 +46,8 @@ public:
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
   [[nodiscard]] fs::path getPath() const { return Path; }
+
+  [[nodiscard]] llvm::StringRef getCommit() const { return Commit; }
 
   [[nodiscard]] Feature *getRoot() const {
     assert(Root);
@@ -97,8 +100,9 @@ public:
   void dump() const;
 
 protected:
-  string Name;
+  std::string Name;
   fs::path Path;
+  std::string Commit;
   FeatureMapTy Features;
   ConstraintContainerTy Constraints;
   RelationshipContainerTy Relationships;
@@ -117,9 +121,11 @@ private:
 /// \brief Builder for \a FeatureModel which can be used while parsing.
 class FeatureModelBuilder : private FeatureModel {
 public:
+  FeatureModelBuilder() = default;
   void init() {
     Name = "";
     Path = "";
+    Commit = "";
     Root = nullptr;
     Features.clear();
     Constraints.clear();
@@ -174,6 +180,11 @@ public:
 
   FeatureModelBuilder *setPath(fs::path Path) {
     this->Path = std::move(Path);
+    return this;
+  }
+
+  FeatureModelBuilder *setCommit(std::string Commit) {
+    this->Commit = std::move(Commit);
     return this;
   }
 
@@ -361,10 +372,10 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
           llvm::formatv("<tr><td><b>{0}</b></td></tr>",
                         DOT::EscapeString(F->getName().str())),
           CS.str(),
-          (F->getFeatureSourceRange()
+          (F->hasLocations()
                ? llvm::formatv(
                      "<hr/><tr><td>{0}</td></tr>",
-                     DOT::EscapeString(F->getFeatureSourceRange()->toString()))
+                     DOT::EscapeString(""))
                      .str()
                : ""));
     } else {

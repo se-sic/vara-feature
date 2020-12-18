@@ -19,24 +19,22 @@ namespace vf = vara::feature;
 namespace py = pybind11;
 
 void init_feature_location_module(py::module &M) {
-  py::class_<vf::FeatureSourceRange>(M, "Location")
-      .def(py::init([](std::string Path) {
-        return vf::FeatureSourceRange(fs::path(std::move(Path)), std::nullopt,
-                                      std::nullopt);
+  py::class_<vf::FeatureSourceRange> Loc(M, "Location");
+  Loc.def(py::init([](std::string Path) {
+        return vf::FeatureSourceRange(fs::path(std::move(Path)));
       }))
       .def(py::init(
           [](std::string Path,
              std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
                  Start) {
-            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start,
-                                          std::nullopt);
+            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start);
           }))
       .def(py::init(
           [](std::string Path,
              std::optional<vf::FeatureSourceRange::FeatureSourceLocation> Start,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End) {
-            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start,
-                                          End);
+             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End,
+             vf::FeatureSourceRange::Category Category) {
+            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start, End, Category);
           }))
       .def_property(
           "path",
@@ -49,6 +47,9 @@ void init_feature_location_module(py::module &M) {
       .def_property_readonly(
           "end", &vf::FeatureSourceRange::getEnd,
           R"pbdoc(Get the end `LineColumnOffset` of this `Location`.)pbdoc")
+      .def_property(
+          "category", &vf::FeatureSourceRange::getCategory, &vf::FeatureSourceRange::setCategory,
+          R"pbdoc(Category of Location)pbdoc")
       .def("__str__", &vf::FeatureSourceRange::toString)
       .def(
           "__eq__",
@@ -60,6 +61,9 @@ void init_feature_location_module(py::module &M) {
             return Self == *Other;
           },
           py::arg("Other").none(true));
+  py::enum_<vf::FeatureSourceRange::Category>(Loc, "Category")
+      .value("necessary", vf::FeatureSourceRange::Category::necessary)
+      .value("inessential", vf::FeatureSourceRange::Category::inessential);
 
   py::class_<vf::FeatureSourceRange::FeatureSourceLocation>(M,
                                                             "LineColumnOffset")
