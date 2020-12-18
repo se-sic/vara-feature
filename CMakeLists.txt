@@ -101,12 +101,8 @@ endif ()
 include(CheckCXXSourceCompiles)
 
 # Check whether std::filesystem or std::experimental::filesystem can be included
-CHECK_CXX_SOURCE_COMPILES("#include <filesystem>
-  namespace fs = std::filesystem;
-  int main () { return 0; }"
-  HAS_STD_FILESYSTEM
-  )
-if (NOT HAS_STD_FILESYSTEM)
+check_std_filesystems(VARA_HAS_STD_FILESYSTEM)
+if (NOT VARA_HAS_STD_FILESYSTEM)
   CHECK_CXX_SOURCE_COMPILES("#include <experimental/filesystem>
     namespace fs = std::experimental::filesystem;
     int main () { return 0; }"

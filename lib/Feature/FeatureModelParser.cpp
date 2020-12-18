@@ -1,5 +1,7 @@
 #include "vara/Feature/FeatureModelParser.h"
 
+#include "llvm/Support/raw_ostream.h"
+
 #include "XmlConstants.h"
 
 #include <iostream>
@@ -260,9 +262,9 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
       }
       llvm::errs() << "Failed to validate DTD in final step\n";
     }
-    std::cerr << "Failed to validate DTD." << std::endl;
+    llvm::errs() << "Failed to validate DTD.\n";
   } else {
-    std::cerr << "Failed to parse / validate XML." << std::endl;
+    llvm::errs() << "Failed to parse / validate XML.\n";
   }
   return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
 }
