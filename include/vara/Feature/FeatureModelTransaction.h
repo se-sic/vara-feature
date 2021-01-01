@@ -2,118 +2,21 @@
 #define VARA_FEATURE_FEATUREMODELTRANSACTION_H
 
 #include "vara/Feature/FeatureModel.h"
+
 #include "llvm/ADT/StringRef.h"
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 
 namespace vara::feature {
 
 namespace detail {
-
-struct CopyTransactionMode {};
-struct ModifyTransactionMode {};
-
-class FeatureModelModification {
-public:
-  virtual ~FeatureModelModification() = default;
-
-  virtual void exec(FeatureModel &FM) = 0;
-
-protected:
-  static void setParent(Feature &F, Feature *Parent) { F.setParent(Parent); }
-  static Feature *addFeature(FeatureModel &FM,
-                             std::unique_ptr<Feature> NewFeature) {
-    llvm::StringRef NewFeatureName = NewFeature->getName();
-    FM.addFeature(std::move(NewFeature));
-    return FM.getFeature(NewFeatureName);
-  }
-};
-
-class AddFeatureToModel : public FeatureModelModification {
-public:
-  AddFeatureToModel(std::unique_ptr<Feature> NewFeature, Feature *Parent)
-      : NewFeature(std::move(NewFeature)), Parent(Parent) {}
-
-  void exec(FeatureModel &FM) override { (*this)(FM); }
-
-  Feature *operator()(FeatureModel &FM) {
-    std::string NewFeatureName = NewFeature->getName().str();
-    setParent(*NewFeature, Parent);
-    return addFeature(FM, std::move(NewFeature));
-  }
-
-private:
-  std::unique_ptr<Feature> NewFeature;
-  Feature *Parent;
-};
-
-class FeatureModelCopyTransactionBase {
-protected:
-  FeatureModelCopyTransactionBase(FeatureModel *FM)
-      : FM(nullptr // TODO: figure out how to correctly copy a feature model
-        ) {}
-
-  [[nodiscard]] inline std::unique_ptr<FeatureModel> commitImpl() {
-    return std::move(FM);
-  };
-
-  void abortImpl() { FM.reset(); }
-
-  [[nodiscard]] inline bool isUncommited() const { return FM != nullptr; }
-
-  //===--------------------------------------------------------------------===//
-  // Modifications
-
-  Feature *addFeatureImpl(std::unique_ptr<Feature> NewFeature,
-                          Feature *Parent) {
-    if (!FM) {
-      return nullptr;
-    }
-
-    return AddFeatureToModel(std::move(NewFeature), Parent)(*FM);
-  }
-
-private:
-  std::unique_ptr<FeatureModel> FM;
-};
-
-class FeatureModelModifyTransactionBase {
-protected:
-  FeatureModelModifyTransactionBase(FeatureModel *FM) : FM(FM) {}
-
-  void commitImpl() {
-    assert(FM && "Cannot commit Modifications without a FeatureModel present.");
-    if (FM) {
-      std::for_each(
-          Modifications.begin(), Modifications.end(),
-          [this](const std::unique_ptr<FeatureModelModification> &FMM) {
-            FMM->exec(*FM);
-          });
-      FM = nullptr;
-    }
-  };
-
-  void abortImpl() { Modifications.clear(); };
-
-  [[nodiscard]] inline bool isUncommited() const { return FM != nullptr; }
-
-  //===--------------------------------------------------------------------===//
-  // Modifications
-
-  void addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
-    assert(FM && "");
-
-    Modifications.push_back(
-        std::make_unique<AddFeatureToModel>(std::move(NewFeature), Parent));
-  }
-
-private:
-  FeatureModel *FM;
-  std::vector<std::unique_ptr<FeatureModelModification>> Modifications;
-};
-
+class CopyTransactionMode;
+class ModifyTransactionMode;
+class FeatureModelCopyTransactionBase;
+class FeatureModelModifyTransactionBase;
 } // namespace detail
 
 template <typename CopyMode>
@@ -182,6 +85,10 @@ using FeatureModelCopyTransaction =
 using FeatureModelModifyTransaction =
     FeatureModelTransaction<detail::ModifyTransactionMode>;
 
+//===----------------------------------------------------------------------===//
+//                            Modifiction Helpers
+//===----------------------------------------------------------------------===//
+
 /// Adds a Feature to the FeatureModel
 /// TODO: finish
 ///
@@ -193,6 +100,133 @@ using FeatureModelModifyTransaction =
 /// \param Parent of the new feature
 void addFeature(FeatureModel *FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent = nullptr);
+
+//===----------------------------------------------------------------------===//
+//                    Transaction Implementation Details
+//===----------------------------------------------------------------------===//
+
+namespace detail {
+
+struct CopyTransactionMode {};
+struct ModifyTransactionMode {};
+
+class FeatureModelModification {
+  friend class FeatureModelCopyTransactionBase;
+  friend class FeatureModelModifyTransactionBase;
+
+public:
+  virtual ~FeatureModelModification() = default;
+
+  virtual void exec(FeatureModel &FM) = 0;
+
+protected:
+  static void setParent(Feature &F, Feature *Parent) { F.setParent(Parent); }
+  static Feature *addFeature(FeatureModel &FM,
+                             std::unique_ptr<Feature> NewFeature) {
+    llvm::StringRef NewFeatureName = NewFeature->getName();
+    FM.addFeature(std::move(NewFeature));
+    return FM.getFeature(NewFeatureName);
+  }
+
+  template <typename ModTy, typename... ArgTys>
+  static ModTy make_modification(ArgTys &&...Args) {
+    return ModTy(std::forward<ArgTys>(Args)...);
+  }
+
+  template <typename ModTy, typename... ArgTys>
+  static std::unique_ptr<ModTy> make_unique_modification(ArgTys &&...Args) {
+    return std::unique_ptr<ModTy>(new ModTy(std::forward<ArgTys>(Args)...));
+  }
+};
+
+class AddFeatureToModel : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  Feature *operator()(FeatureModel &FM) {
+    std::string NewFeatureName = NewFeature->getName().str();
+    setParent(*NewFeature, Parent);
+    return addFeature(FM, std::move(NewFeature));
+  }
+
+private:
+  AddFeatureToModel(std::unique_ptr<Feature> NewFeature, Feature *Parent)
+      : NewFeature(std::move(NewFeature)), Parent(Parent) {}
+
+  std::unique_ptr<Feature> NewFeature;
+  Feature *Parent;
+};
+
+class FeatureModelCopyTransactionBase {
+protected:
+  FeatureModelCopyTransactionBase(FeatureModel *FM)
+      : FM(nullptr // TODO: figure out how to correctly copy a feature model
+        ) {}
+
+  [[nodiscard]] inline std::unique_ptr<FeatureModel> commitImpl() {
+    return std::move(FM);
+  };
+
+  void abortImpl() { FM.reset(); }
+
+  [[nodiscard]] inline bool isUncommited() const { return FM != nullptr; }
+
+  //===--------------------------------------------------------------------===//
+  // Modifications
+
+  Feature *addFeatureImpl(std::unique_ptr<Feature> NewFeature,
+                          Feature *Parent) {
+    if (!FM) {
+      return nullptr;
+    }
+
+    return FeatureModelModification::make_modification<AddFeatureToModel>(
+        std::move(NewFeature), Parent)(*FM);
+  }
+
+private:
+  std::unique_ptr<FeatureModel> FM;
+};
+
+class FeatureModelModifyTransactionBase {
+protected:
+  FeatureModelModifyTransactionBase(FeatureModel *FM) : FM(FM) {}
+
+  void commitImpl() {
+    assert(FM && "Cannot commit Modifications without a FeatureModel present.");
+    if (FM) {
+      std::for_each(
+          Modifications.begin(), Modifications.end(),
+          [this](const std::unique_ptr<FeatureModelModification> &FMM) {
+            FMM->exec(*FM);
+          });
+      FM = nullptr;
+    }
+  };
+
+  void abortImpl() { Modifications.clear(); };
+
+  [[nodiscard]] inline bool isUncommited() const { return FM != nullptr; }
+
+  //===--------------------------------------------------------------------===//
+  // Modifications
+
+  void addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
+    assert(FM && "");
+
+    Modifications.push_back(
+        FeatureModelModification::make_unique_modification<AddFeatureToModel>(
+            std::move(NewFeature), Parent));
+  }
+
+private:
+  FeatureModel *FM;
+  std::vector<std::unique_ptr<FeatureModelModification>> Modifications;
+};
+
+} // namespace detail
 
 } // namespace vara::feature
 
