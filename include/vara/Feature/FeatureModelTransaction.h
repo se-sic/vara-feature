@@ -26,12 +26,15 @@ class FeatureModelTransaction
           detail::FeatureModelCopyTransactionBase,
           detail::FeatureModelModifyTransactionBase> {
   static inline constexpr bool IsCopyMode =
-      std::is_same<CopyMode, detail::CopyTransactionMode>::value;
+      std::is_same_v<CopyMode, detail::CopyTransactionMode>;
   using TransactionBaseTy =
       std::conditional_t<IsCopyMode, detail::FeatureModelCopyTransactionBase,
                          detail::FeatureModelModifyTransactionBase>;
 
 public:
+  /// \brief Opens a new Transaction for the given FeatureModel. The Transaction
+  /// enables the user to modify the underlying FeatureModel via a specific
+  /// API, preserving the correctness of the FeatureModel.
   static FeatureModelTransaction openTransaction(FeatureModel *FM) {
     return FeatureModelTransaction(FM);
   }
@@ -48,7 +51,8 @@ public:
       assert(!this->isUncommited() &&
              "Transaction in CopyMode should be commited before destruction.");
     } else {
-      if (this->isUncommited()) {
+      if (this->isUncommited()) { // In modification mode we should ensure that
+                                  // changes are commited before destruction
         commit();
       }
     }
@@ -67,6 +71,10 @@ public:
   /// Abort the current Transaction, throwing away all changes.
   void abort() { this->abortImpl(); }
 
+  /// \brief Add a Feature to the FeatureModel
+  ///
+  /// \returns a pointer to the inserted Feature in CopyMode, otherwise,
+  ///          nothing.
   std::conditional_t<IsCopyMode, Feature *, void>
   addFeature(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
     if constexpr (IsCopyMode) {
@@ -117,10 +125,23 @@ class FeatureModelModification {
 public:
   virtual ~FeatureModelModification() = default;
 
+  /// \brief Execute the modification on the given FeatureModel.
   virtual void exec(FeatureModel &FM) = 0;
 
 protected:
-  static void setParent(Feature &F, Feature *Parent) { F.setParent(Parent); }
+  /// \brief Set the parrent of a Feature.
+  static void setParent(Feature &F, Feature *Parent) {
+    // TODO: If the Feature is already in the model we need to update all other
+    // parent/child relations
+    F.setParent(Parent);
+  }
+
+  /// \brief Adds a new Feature to the FeatureModel.
+  ///
+  /// \param FM model to add to
+  /// \param NewFeature the Feature to add
+  ///
+  /// \returns A pointer to the inserted Feature.
   static Feature *addFeature(FeatureModel &FM,
                              std::unique_ptr<Feature> NewFeature) {
     llvm::StringRef NewFeatureName = NewFeature->getName();

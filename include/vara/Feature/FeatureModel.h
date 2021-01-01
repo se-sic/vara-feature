@@ -121,7 +121,8 @@ private:
   /// ordering.
   ///
   /// \param[in] Feature feature to be inserted
-  /// \return if feature was inserted successfully
+  ///
+  /// \returns true, if feature was inserted successfully
   bool addFeature(std::unique_ptr<Feature> Feature);
 
   OrderedFeatureTy OrderedFeatures;
