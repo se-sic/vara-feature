@@ -14,12 +14,19 @@
 
 namespace vara::feature {
 
+namespace detail {
+class FeatureModelModification;
+} // namespace detail
+
 //===----------------------------------------------------------------------===//
 //                               FeatureModel
 //===----------------------------------------------------------------------===//
 
 /// \brief Tree like representation of features and dependencies.
 class FeatureModel {
+  // Only Modifications are allowed to edit a FeatureModel after creation.
+  friend class detail::FeatureModelModification;
+
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
   using OrderedFeatureTy = OrderedFeatureVector;
@@ -54,13 +61,6 @@ public:
     return Root;
   }
 
-  /// Insert a \a Feature into existing model while keeping consistency and
-  /// ordering.
-  ///
-  /// \param[in] Feature feature to be inserted
-  /// \return if feature was inserted successfully
-  bool addFeature(std::unique_ptr<Feature> Feature);
-
   //===--------------------------------------------------------------------===//
   // Ordered feature iterator
   OrderedFeatureVector::ordered_feature_iterator begin() {
@@ -94,7 +94,13 @@ public:
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
 
-  Feature *getFeature(llvm::StringRef F) { return Features[F].get(); }
+  [[nodiscard]] Feature *getFeature(llvm::StringRef F) const {
+    auto SearchFeature = Features.find(F);
+    if (SearchFeature != Features.end()) {
+      return SearchFeature->getValue().get();
+    }
+    return nullptr;
+  }
 
   LLVM_DUMP_METHOD
   void dump() const;
@@ -111,6 +117,13 @@ protected:
   FeatureModel() = default;
 
 private:
+  /// Insert a \a Feature into existing model while keeping consistency and
+  /// ordering.
+  ///
+  /// \param[in] Feature feature to be inserted
+  /// \return if feature was inserted successfully
+  bool addFeature(std::unique_ptr<Feature> Feature);
+
   OrderedFeatureTy OrderedFeatures;
 };
 

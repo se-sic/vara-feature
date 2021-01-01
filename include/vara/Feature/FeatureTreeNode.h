@@ -20,11 +20,19 @@ using std::string;
 
 namespace vara::feature {
 
+namespace detail {
+class FeatureModelModification;
+} // namespace detail
+
 //===----------------------------------------------------------------------===//
 //                          FeatureTreeNode Class
 //===----------------------------------------------------------------------===//
 
 class FeatureTreeNode : private llvm::DGNode<FeatureTreeNode, FeatureTreeNode> {
+  friend class FeatureModel;
+  friend class FeatureModelBuilder;
+  friend class detail::FeatureModelModification;
+
 public:
   enum class NodeKind { NK_FEATURE, NK_RELATIONSHIP };
 
@@ -91,9 +99,6 @@ protected:
   }
 
 private:
-  friend class FeatureModel;
-  friend class FeatureModelBuilder;
-
   void setParent(FeatureTreeNode &Feature) { Parent = &Feature; }
   void setParent(FeatureTreeNode *Feature) { Parent = Feature; }
 

@@ -22,12 +22,20 @@ using std::string;
 
 namespace vara::feature {
 
+namespace detail {
+class FeatureModelModification;
+} // namespace detail
+
 //===----------------------------------------------------------------------===//
 //                               Feature Class
 //===----------------------------------------------------------------------===//
 
 /// \brief Base class for components of \a FeatureModel.
 class Feature : public FeatureTreeNode {
+  friend class FeatureModel;
+  friend class FeatureModelBuilder;
+  friend class detail::FeatureModelModification;
+
 public:
   enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
 
@@ -207,8 +215,6 @@ private:
     }
   }
 
-  friend class FeatureModel;
-  friend class FeatureModelBuilder;
   const FeatureKind Kind;
   string Name;
   std::vector<FeatureSourceRange> Locations;

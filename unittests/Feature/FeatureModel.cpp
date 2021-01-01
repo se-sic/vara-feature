@@ -1,5 +1,6 @@
+#include "vara/Feature/FeatureModel.h"
+
 #include "llvm/ADT/SetVector.h"
-#include <vara/Feature/FeatureModel.h>
 
 #include "gtest/gtest.h"
 
@@ -21,38 +22,39 @@ TEST(FeatureModel, size) {
   EXPECT_EQ(2, B.buildFeatureModel()->size());
 }
 
-TEST(FeatureModel, addFeature) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"a", "aa"}, {"root", "aba"}, {"root", "a"}});
-  assert(FM);
-  auto CS = Feature::NodeSetType();
-  CS.insert(FM->getFeature("aba"));
-
-  FM->addFeature(std::make_unique<BinaryFeature>(
-      "ab", false, std::vector<FeatureSourceRange>(), FM->getFeature("a"), CS));
-
-  EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
-  EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
-  EXPECT_EQ(*FM->getFeature("aba")->getParentFeature(), *FM->getFeature("ab"));
-}
-
-TEST(FeatureModel, newRoot) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"root", "b"}, {"root", "a"}});
-  assert(FM);
-  auto CS = Feature::NodeSetType();
-  CS.insert(FM->getFeature("root"));
-
-  FM->addFeature(std::make_unique<BinaryFeature>(
-      "new_root", false, std::vector<FeatureSourceRange>(), nullptr, CS));
-
-  EXPECT_TRUE(FM->getFeature("new_root")->isRoot());
-  EXPECT_FALSE(FM->getFeature("root")->isRoot());
-  EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("root"));
-  EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("a"));
-  EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("b"));
-  EXPECT_EQ(*FM->getFeature("new_root"), **FM->begin());
-}
+// TODO: clean up -> FM can no longer be directly modified
+// TEST(FeatureModel, addFeature) {
+//   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+//       {{"a", "aa"}, {"root", "aba"}, {"root", "a"}});
+//   assert(FM);
+//   auto CS = Feature::NodeSetType();
+//   CS.insert(FM->getFeature("aba"));
+// 
+//   FM->addFeature(std::make_unique<BinaryFeature>(
+//       "ab", false, std::vector<FeatureSourceRange>(), FM->getFeature("a"), CS));
+// 
+//   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
+//   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
+//   EXPECT_EQ(*FM->getFeature("aba")->getParentFeature(), *FM->getFeature("ab"));
+// }
+// 
+// TEST(FeatureModel, newRoot) {
+//   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+//       {{"root", "b"}, {"root", "a"}});
+//   assert(FM);
+//   auto CS = Feature::NodeSetType();
+//   CS.insert(FM->getFeature("root"));
+// 
+//   FM->addFeature(std::make_unique<BinaryFeature>(
+//       "new_root", false, std::vector<FeatureSourceRange>(), nullptr, CS));
+// 
+//   EXPECT_TRUE(FM->getFeature("new_root")->isRoot());
+//   EXPECT_FALSE(FM->getFeature("root")->isRoot());
+//   EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("root"));
+//   EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("a"));
+//   EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("b"));
+//   EXPECT_EQ(*FM->getFeature("new_root"), **FM->begin());
+// }
 
 TEST(FeatureModel, iter) {
   auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"a", "aa"},

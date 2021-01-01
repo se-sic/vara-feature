@@ -1,4 +1,4 @@
-#include <vara/Feature/FeatureModel.h>
+#include "vara/Feature/FeatureModel.h"
 
 #include "gtest/gtest.h"
 

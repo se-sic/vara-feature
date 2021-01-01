@@ -1,5 +1,5 @@
 #include "vara/Feature/Feature.h"
-#include <vara/Feature/FeatureModel.h>
+#include "vara/Feature/FeatureModel.h"
 
 #include "llvm/Support/Casting.h"
 

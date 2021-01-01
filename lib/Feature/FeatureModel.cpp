@@ -12,26 +12,28 @@ void FeatureModel::dump() const {
   llvm::outs() << '\n';
 }
 
+// TODO: find one layer where we do the consistency checks
 bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   // TODO(s9latimm): check consistency
   auto FeatureName = std::string(Feature->getName());
   if (!Features.try_emplace(FeatureName, std::move(Feature)).second) {
     return false;
   }
-  auto *Value = Features[FeatureName].get();
-  for (auto *Child : Value->children()) {
-    Child->setParent(*Value);
+  auto *InsertedFeature = Features[FeatureName].get();
+  for (auto *Child : InsertedFeature->children()) {
+    Child->setParent(*InsertedFeature);
   }
-  if (Value->isRoot()) {
-    if (*Root->getParentFeature() == *Value) {
-      Root = Value;
+  if (InsertedFeature->isRoot()) {
+    if (*Root->getParentFeature() == *InsertedFeature) {
+      Root = InsertedFeature;
     } else {
-      Value->setParent(Root);
+      InsertedFeature->setParent(Root);
     }
   } else {
-    Value->getParent()->addEdge(Value);
+    // TODO: this assumes the Features parent is correctly set
+    InsertedFeature->getParent()->addEdge(InsertedFeature);
   }
-  OrderedFeatures.insert(Value);
+  OrderedFeatures.insert(InsertedFeature);
   return true;
 }
 
