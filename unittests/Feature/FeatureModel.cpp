@@ -29,25 +29,27 @@ TEST(FeatureModel, size) {
 //   assert(FM);
 //   auto CS = Feature::NodeSetType();
 //   CS.insert(FM->getFeature("aba"));
-// 
+//
 //   FM->addFeature(std::make_unique<BinaryFeature>(
-//       "ab", false, std::vector<FeatureSourceRange>(), FM->getFeature("a"), CS));
-// 
+//       "ab", false, std::vector<FeatureSourceRange>(), FM->getFeature("a"),
+//       CS));
+//
 //   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
 //   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
-//   EXPECT_EQ(*FM->getFeature("aba")->getParentFeature(), *FM->getFeature("ab"));
+//   EXPECT_EQ(*FM->getFeature("aba")->getParentFeature(),
+//   *FM->getFeature("ab"));
 // }
-// 
+//
 // TEST(FeatureModel, newRoot) {
 //   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
 //       {{"root", "b"}, {"root", "a"}});
 //   assert(FM);
 //   auto CS = Feature::NodeSetType();
 //   CS.insert(FM->getFeature("root"));
-// 
+//
 //   FM->addFeature(std::make_unique<BinaryFeature>(
 //       "new_root", false, std::vector<FeatureSourceRange>(), nullptr, CS));
-// 
+//
 //   EXPECT_TRUE(FM->getFeature("new_root")->isRoot());
 //   EXPECT_FALSE(FM->getFeature("root")->isRoot());
 //   EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("root"));
@@ -194,6 +196,38 @@ TEST(FeatureModel, gtSimple) {
   EXPECT_GT(*FM->getFeature("a"), *FM->getFeature("root"));
   EXPECT_GT(*FM->getFeature("b"), *FM->getFeature("root"));
   EXPECT_GT(*FM->getFeature("b"), *FM->getFeature("a"));
+}
+
+//===----------------------------------------------------------------------===//
+//                    FeatureModelConsistencyChecker Tests
+//===----------------------------------------------------------------------===//
+
+TEST(FeatureModelConsistencyCheckerTest, NoChecksIsTrue) {
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"a", "aa"}, {"a", "ab"}, {"root", "b"}, {"root", "a"}, {"b", "ba"}});
+
+  EXPECT_TRUE(FeatureModelConsistencyChecker<>::isFeatureModelValid(*FM));
+}
+
+TEST(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentValid) {
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"a", "aa"}, {"a", "ab"}, {"root", "b"}, {"root", "a"}, {"b", "ba"}});
+
+  EXPECT_TRUE(FeatureModelConsistencyChecker<
+              EveryFeatureRequiresParent>::isFeatureModelValid(*FM));
+}
+
+TEST(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentMissing) {
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"a", "aa"}, {"a", "ab"}, {"root", "b"}, {"missing", "a"}, {"b", "ba"}});
+
+  // TODO: find save way to construct wrong FeatureModels
+  // FM->deleteFeature("missing");
+
+  FM->dump();
+
+  // EXPECT_FALSE(FeatureModelConsistencyChecker<
+  //             EveryFeatureRequiresParent>::isFeatureModelValid(*FM));
 }
 
 } // namespace vara::feature

@@ -2,6 +2,7 @@
 #define VARA_FEATURE_FEATUREMODEL_H
 
 #include "vara/Feature/Constraint.h"
+#include "vara/Feature/FeatureTreeNode.h"
 #include "vara/Feature/OrderedFeatureVector.h"
 #include "vara/Feature/Relationship.h"
 
@@ -9,6 +10,7 @@
 #include "llvm/Support/GraphWriter.h"
 
 #include <algorithm>
+#include <numeric>
 #include <queue>
 #include <utility>
 
@@ -158,6 +160,7 @@ public:
             typename = typename std::enable_if_t<
                 std::is_base_of_v<Feature, FeatureTy>, int>>
   bool makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
+    // TODO: maybe this should return the created Feature
     return Features
         .try_emplace(FeatureName, std::make_unique<FeatureTy>(
                                       FeatureName, std::move(FurtherArgs)...))
@@ -386,12 +389,10 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
           llvm::formatv("<tr><td><b>{0}</b></td></tr>",
                         DOT::EscapeString(F->getName().str())),
           CS.str(),
-          (F->hasLocations()
-               ? llvm::formatv(
-                     "<hr/><tr><td>{0}</td></tr>",
-                     DOT::EscapeString(""))
-                     .str()
-               : ""));
+          (F->hasLocations() ? llvm::formatv("<hr/><tr><td>{0}</td></tr>",
+                                             DOT::EscapeString(""))
+                                   .str()
+                             : ""));
     } else {
       Shape = "ellipse";
       if (auto *R = llvm::dyn_cast<vara::feature::Relationship>(Node); R) {
@@ -426,5 +427,50 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 };
 
 } // namespace llvm
+
+namespace vara::feature {
+
+//===----------------------------------------------------------------------===//
+//                        FeatureModelConsistencyRules
+//===----------------------------------------------------------------------===//
+
+template <typename... Rules> class FeatureModelConsistencyChecker {
+public:
+  static bool isFeatureModelValid(FeatureModel &FM) {
+    return (Rules::check(FM) && ... && true);
+  }
+};
+
+struct EveryFeatureRequiresParent {
+  static bool check(FeatureModel &FM) {
+    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+      return F->isRoot() || (F->getParent() != nullptr);
+    });
+  }
+};
+
+// TODO: test missing
+struct CheckFeatureParentChildRelationShip {
+  static bool check(FeatureModel &FM) {
+    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+      return F->isRoot() ||
+             // Every parent of a Feature needs to have the Feature as a child.
+             std::any_of(F->getParent()->begin(), F->getParent()->end(),
+                         [F](FeatureTreeNode *Child) { return F == Child; });
+    });
+  }
+};
+
+// TODO: do we need this? need to design the root change API
+struct ExactlyOneRootNode {
+  static bool check(FeatureModel &FM) {
+    return 1 ==
+           std::accumulate(FM.begin(), FM.end(), 0, [](int Sum, Feature *F) {
+             return Sum + F->isRoot();
+           });
+  }
+};
+
+} // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATUREMODEL_H

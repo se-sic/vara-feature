@@ -31,6 +31,10 @@ class FeatureModelTransaction
       std::conditional_t<IsCopyMode, detail::FeatureModelCopyTransactionBase,
                          detail::FeatureModelModifyTransactionBase>;
 
+  using ConsistencyCheck =
+      FeatureModelConsistencyChecker<EveryFeatureRequiresParent,
+                                     CheckFeatureParentChildRelationShip>;
+
 public:
   /// \brief Opens a new Transaction for the given FeatureModel. The Transaction
   /// enables the user to modify the underlying FeatureModel via a specific
