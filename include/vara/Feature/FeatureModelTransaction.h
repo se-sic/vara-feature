@@ -40,6 +40,9 @@ public:
   /// enables the user to modify the underlying FeatureModel via a specific
   /// API, preserving the correctness of the FeatureModel.
   static FeatureModelTransaction openTransaction(FeatureModel *FM) {
+    // TODO: maybe return Optional<FeatureModelTransaciton>?
+    assert(ConsistencyCheck::isFeatureModelValid(*FM) &&
+           "Passed FeatureModel was in an invalid state.");
     return FeatureModelTransaction(FM);
   }
 
@@ -69,6 +72,8 @@ public:
   ///
   /// \returns a FeatureModel or nothing
   std::conditional_t<IsCopyMode, std::unique_ptr<FeatureModel>, void> commit() {
+    // TODO: needs consistency check call after modifications, maybe we should
+    // move this into the base classes.
     return this->commitImpl();
   }
 
