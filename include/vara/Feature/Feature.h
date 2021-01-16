@@ -50,18 +50,6 @@ public:
 
   [[nodiscard]] bool isOptional() const { return Opt; }
 
-  /// Search parent feature in tree structure -- this may not exist or nullptr
-  /// if node is already root.
-  [[nodiscard]] Feature *getParentFeature() const {
-    for (FeatureTreeNode *P = this->getParent(); P; P = P->getParent()) {
-      auto *F = llvm::dyn_cast<Feature>(P);
-      if (F) {
-        return F;
-      }
-    }
-    return nullptr;
-  }
-
   //===--------------------------------------------------------------------===//
   // Operators
 
@@ -225,12 +213,13 @@ public:
   BinaryFeature(
       string Name, bool Opt = false,
       std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
-      Feature *Parent = nullptr, const NodeSetType &Children = {})
+      FeatureTreeNode *Parent = nullptr, const NodeSetType &Children = {})
       : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc),
                 Parent, Children) {}
 
   BinaryFeature(const string &Name, bool Opt,
-                const std::vector<FeatureSourceRange> &Loc, Feature *Parent,
+                const std::vector<FeatureSourceRange> &Loc,
+                FeatureTreeNode *Parent,
                 const std::vector<FeatureTreeNode *> &Children)
       : Feature(FeatureKind::FK_BINARY, Name, Opt, Loc, Parent, Children) {}
 
@@ -250,13 +239,14 @@ public:
   NumericFeature(
       string Name, ValuesVariantType Values, bool Opt = false,
       std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
-      Feature *Parent = nullptr, const NodeSetType &Children = {})
+      FeatureTreeNode *Parent = nullptr, const NodeSetType &Children = {})
       : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc),
                 Parent, Children),
         Values(std::move(Values)) {}
 
   NumericFeature(const string &Name, ValuesVariantType Values, bool Opt,
-                 const std::vector<FeatureSourceRange> &Loc, Feature *Parent,
+                 const std::vector<FeatureSourceRange> &Loc,
+                 FeatureTreeNode *Parent,
                  const std::vector<FeatureTreeNode *> &Children)
       : Feature(FeatureKind::FK_NUMERIC, Name, Opt, Loc, Parent, Children),
         Values(std::move(Values)) {}

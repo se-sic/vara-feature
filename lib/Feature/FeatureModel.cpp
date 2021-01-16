@@ -35,6 +35,67 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> Feature) {
   return true;
 }
 
+std::unique_ptr<FeatureModel> FeatureModel::clone() {
+  FeatureModelBuilder FMB;
+  FMB.setVmName(this->getName().str());
+  FMB.setCommit(this->getCommit().str());
+  FMB.setPath(this->getPath().string());
+  FMB.setRoot(this->getRoot()->getName().str());
+
+  for (const auto &KV : this->Features) {
+    // TODO(s9latimm): Add unittests for cloned FeatureSourceRanges
+    std::vector<FeatureSourceRange> SourceRanges;
+    std::transform(
+        KV.getValue()->getLocations().begin(),
+        KV.getValue()->getLocations().end(), std::back_inserter(SourceRanges),
+        [](const FeatureSourceRange &R) { return FeatureSourceRange(R); });
+
+    switch (KV.getValue()->getKind()) {
+    case Feature::FeatureKind::FK_UNKNOWN:
+      FMB.makeFeature<Feature>(KV.getValue()->getName());
+      break;
+    case Feature::FeatureKind::FK_BINARY:
+      if (auto *F = llvm::dyn_cast<BinaryFeature>(KV.getValue().get()); F) {
+        FMB.makeFeature<BinaryFeature>(F->getName(), F->isOptional(),
+                                       std::move(SourceRanges));
+      }
+      break;
+    case Feature::FeatureKind::FK_NUMERIC:
+      if (auto *F = llvm::dyn_cast<NumericFeature>(KV.getValue().get()); F) {
+        FMB.makeFeature<NumericFeature>(F->getName(), F->getValues(),
+                                        F->isOptional(),
+                                        std::move(SourceRanges));
+      }
+      break;
+    }
+
+    if (auto *P = KV.getValue()->getParentFeature(); P) {
+      FMB.addParent(KV.getValue()->getName(), P->getName());
+    }
+  }
+
+  for (const auto &R : this->Relationships) {
+    std::vector<std::string> FeatureNames;
+    for (auto *C : R->children()) {
+      if (auto *F = llvm::dyn_cast<Feature>(C); F) {
+        FeatureNames.emplace_back(F->getName());
+      }
+    }
+    FMB.emplaceRelationship(R->getKind(), FeatureNames,
+                            R->getParentFeature()->getName());
+  }
+
+  // We can use recursive cloning on constraints, as we can rely on the
+  // builder to update pointers into the feature model correctly if invoked
+  // afterwards.
+  // TODO(s9latimm): Add unittests for cloned Constraints
+  for (const auto &C : this->Constraints) {
+    FMB.addConstraint(std::move(C->clone()));
+  }
+
+  return FMB.buildFeatureModel();
+}
+
 /// Decide whether two features are mutual exclusive. Beware that this method
 /// only detects very simple trees with binary excludes.
 bool isSimpleMutex(const Feature *A, const Feature *B) {

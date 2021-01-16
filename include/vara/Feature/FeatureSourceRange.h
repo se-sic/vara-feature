@@ -31,6 +31,11 @@ public:
 
   public:
     FeatureSourceLocation(int Line, int Column) : Line(Line), Column(Column) {}
+    FeatureSourceLocation(const FeatureSourceLocation &L) = default;
+    FeatureSourceLocation &operator=(const FeatureSourceLocation &) = default;
+    FeatureSourceLocation(FeatureSourceLocation &&) = default;
+    FeatureSourceLocation &operator=(FeatureSourceLocation &&) = default;
+    virtual ~FeatureSourceLocation() = default;
 
     void setLineNumber(int LineNumber) { this->Line = LineNumber; }
     [[nodiscard]] int getLineNumber() const { return this->Line; }
@@ -66,8 +71,13 @@ public:
                      std::optional<FeatureSourceLocation> Start = std::nullopt,
                      std::optional<FeatureSourceLocation> End = std::nullopt,
                      Category CategoryKind = Category::necessary)
-      : Path(std::move(Path)), Start(Start), End(End),
+      : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
         CategoryKind(CategoryKind) {}
+  FeatureSourceRange(const FeatureSourceRange &L) = default;
+  FeatureSourceRange &operator=(const FeatureSourceRange &) = default;
+  FeatureSourceRange(FeatureSourceRange &&) = default;
+  FeatureSourceRange &operator=(FeatureSourceRange &&) = default;
+  virtual ~FeatureSourceRange() = default;
 
   [[nodiscard]] Category getCategory() const { return this->CategoryKind; }
   void setCategory(Category Value) { this->CategoryKind = Value; }
