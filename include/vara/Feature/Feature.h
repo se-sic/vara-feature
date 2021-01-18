@@ -213,13 +213,12 @@ public:
   BinaryFeature(
       string Name, bool Opt = false,
       std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
-      FeatureTreeNode *Parent = nullptr, const NodeSetType &Children = {})
+      Feature *Parent = nullptr, const NodeSetType &Children = {})
       : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc),
                 Parent, Children) {}
 
   BinaryFeature(const string &Name, bool Opt,
-                const std::vector<FeatureSourceRange> &Loc,
-                FeatureTreeNode *Parent,
+                const std::vector<FeatureSourceRange> &Loc, Feature *Parent,
                 const std::vector<FeatureTreeNode *> &Children)
       : Feature(FeatureKind::FK_BINARY, Name, Opt, Loc, Parent, Children) {}
 
@@ -239,14 +238,13 @@ public:
   NumericFeature(
       string Name, ValuesVariantType Values, bool Opt = false,
       std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
-      FeatureTreeNode *Parent = nullptr, const NodeSetType &Children = {})
+      Feature *Parent = nullptr, const NodeSetType &Children = {})
       : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc),
                 Parent, Children),
         Values(std::move(Values)) {}
 
   NumericFeature(const string &Name, ValuesVariantType Values, bool Opt,
-                 const std::vector<FeatureSourceRange> &Loc,
-                 FeatureTreeNode *Parent,
+                 const std::vector<FeatureSourceRange> &Loc, Feature *Parent,
                  const std::vector<FeatureTreeNode *> &Children)
       : Feature(FeatureKind::FK_NUMERIC, Name, Opt, Loc, Parent, Children),
         Values(std::move(Values)) {}

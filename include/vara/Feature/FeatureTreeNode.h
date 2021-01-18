@@ -20,8 +20,6 @@ using std::string;
 
 namespace vara::feature {
 
-class Feature;
-
 //===----------------------------------------------------------------------===//
 //                          FeatureTreeNode Class
 //===----------------------------------------------------------------------===//
@@ -44,9 +42,20 @@ public:
   //===--------------------------------------------------------------------===//
   // Parent
 
-  [[nodiscard]] FeatureTreeNode *getParent() const { return Parent; }
-
   [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
+
+  /// Search parent of given type in tree structure.
+  ///
+  /// \return parent or nullptr if this is root or no parent exists
+  template <typename T = FeatureTreeNode> T *getParent() const {
+    for (FeatureTreeNode *P = this->Parent; P; P = P->Parent) {
+      auto *F = llvm::dyn_cast<T>(P);
+      if (F) {
+        return F;
+      }
+    }
+    return nullptr;
+  }
 
   [[nodiscard]] bool hasEdgeFrom(FeatureTreeNode &N) const {
     return Parent == &N;
@@ -77,18 +86,6 @@ public:
     llvm::SmallSet<T *, 3> FS;
     getChildrenImpl(this, &FS);
     return FS;
-  }
-
-  /// Search parent feature in tree structure -- this may not exist or nullptr
-  /// if node is already root.
-  [[nodiscard]] Feature *getParentFeature() const {
-    for (FeatureTreeNode *P = this->getParent(); P; P = P->getParent()) {
-      auto *F = llvm::dyn_cast<Feature>(P);
-      if (F) {
-        return F;
-      }
-    }
-    return nullptr;
   }
 
 protected:

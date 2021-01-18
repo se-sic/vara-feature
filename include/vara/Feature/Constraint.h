@@ -68,6 +68,11 @@ public:
     return R;
   }
 
+  /// Recursively clones constraint tree. If this tree contains special nodes
+  /// (like \a PrimaryFeatureConstraint) those may need to be updated
+  /// afterwards.
+  ///
+  /// \return root of cloned constraint tree
   [[nodiscard]] virtual std::unique_ptr<Constraint> clone() = 0;
 
   [[nodiscard]] virtual std::string toString() const = 0;
@@ -116,9 +121,8 @@ public:
                          std::move(RightOperand)) {}
 
   std::unique_ptr<Constraint> clone() override {
-    return std::make_unique<OrConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+    return std::make_unique<OrConstraint>(this->getLeftOperand()->clone(),
+                                          this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -139,9 +143,8 @@ public:
                          std::move(RightOperand)) {}
 
   std::unique_ptr<Constraint> clone() override {
-    return std::make_unique<XorConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+    return std::make_unique<XorConstraint>(this->getLeftOperand()->clone(),
+                                           this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -162,9 +165,8 @@ public:
                          std::move(RightOperand)) {}
 
   std::unique_ptr<Constraint> clone() override {
-    return std::make_unique<AndConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+    return std::make_unique<AndConstraint>(this->getLeftOperand()->clone(),
+                                           this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -190,9 +192,8 @@ public:
                          std::move(RightOperand)) {}
 
   std::unique_ptr<Constraint> clone() override {
-    return std::make_unique<EqualsConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+    return std::make_unique<EqualsConstraint>(this->getLeftOperand()->clone(),
+                                              this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -214,8 +215,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<ImpliesConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -242,8 +242,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<ExcludesConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -271,8 +270,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<EquivalenceConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -299,8 +297,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<AdditionConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -323,8 +320,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<SubtractionConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -347,8 +343,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<MultiplicationConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -370,8 +365,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<DivisionConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -392,9 +386,8 @@ public:
                          std::move(RightOperand)) {}
 
   std::unique_ptr<Constraint> clone() override {
-    return std::make_unique<LessConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+    return std::make_unique<LessConstraint>(this->getLeftOperand()->clone(),
+                                            this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -421,8 +414,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<GreaterConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -449,8 +441,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<LessEqualConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -478,8 +469,7 @@ public:
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<GreaterEqualConstraint>(
-        std::move(this->getLeftOperand()->clone()),
-        std::move(this->getRightOperand()->clone()));
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -518,8 +508,7 @@ public:
       : UnaryConstraint(ConstraintKind::CK_NOT, std::move(Operand)) {}
 
   std::unique_ptr<Constraint> clone() override {
-    return std::make_unique<NotConstraint>(
-        std::move(this->getOperand()->clone()));
+    return std::make_unique<NotConstraint>(this->getOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -537,8 +526,7 @@ public:
       : UnaryConstraint(ConstraintKind::CK_NEG, std::move(Operand)) {}
 
   std::unique_ptr<Constraint> clone() override {
-    return std::make_unique<NegConstraint>(
-        std::move(this->getOperand()->clone()));
+    return std::make_unique<NegConstraint>(this->getOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -591,6 +579,11 @@ public:
 
   [[nodiscard]] Feature *getFeature() const;
 
+  /// Creates copy of feature constraint with same feature. If cloning
+  /// an enclosing data structure, the feature pointer may has to be updated
+  /// afterwards.
+  ///
+  /// \return copy of constraint
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<PrimaryFeatureConstraint>(this->getFeature());
   }

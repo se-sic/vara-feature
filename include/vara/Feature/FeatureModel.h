@@ -197,8 +197,7 @@ public:
 
   /// Build \a FeatureModel.
   ///
-  /// @return instance of \a FeatureModel
-
+  /// \return instance of \a FeatureModel
   std::unique_ptr<FeatureModel> buildFeatureModel();
 
   /// Build simple \a FeatureModel from given edges.
