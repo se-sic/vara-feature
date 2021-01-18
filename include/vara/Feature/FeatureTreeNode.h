@@ -49,8 +49,7 @@ public:
   /// \return parent or nullptr if this is root or no parent exists
   template <typename T = FeatureTreeNode> T *getParent() const {
     for (FeatureTreeNode *P = this->Parent; P; P = P->Parent) {
-      auto *F = llvm::dyn_cast<T>(P);
-      if (F) {
+      if (auto *F = llvm::dyn_cast<T>(P); F) {
         return F;
       }
     }
