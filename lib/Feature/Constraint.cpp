@@ -20,6 +20,12 @@ Feature *PrimaryFeatureConstraint::getFeature() const {
   }
   return std::get<std::unique_ptr<Feature>>(FV).get();
 }
+
+std::unique_ptr<Constraint> PrimaryFeatureConstraint::clone() {
+  return std::make_unique<PrimaryFeatureConstraint>(
+      std::make_unique<Feature>(this->getFeature()->getName()));
+}
+
 std::string PrimaryFeatureConstraint::toString() const {
   return llvm::formatv("{0}", getFeature()->getName());
 }

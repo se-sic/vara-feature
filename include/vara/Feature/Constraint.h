@@ -579,14 +579,12 @@ public:
 
   [[nodiscard]] Feature *getFeature() const;
 
-  /// Creates copy of feature constraint with same feature. If cloning
-  /// an enclosing data structure, the feature pointer may has to be updated
-  /// afterwards.
+  /// Creates copy of feature constraint with a shallow feature. If cloning
+  /// an enclosing data structure with additional feature information, the
+  /// feature pointer may has to be updated afterwards.
   ///
   /// \return copy of constraint
-  std::unique_ptr<Constraint> clone() override {
-    return std::make_unique<PrimaryFeatureConstraint>(this->getFeature());
-  }
+  std::unique_ptr<Constraint> clone() override;
 
   [[nodiscard]] std::string toString() const override;
 
