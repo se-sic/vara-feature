@@ -14,10 +14,10 @@ void FeatureModel::dump() const {
   llvm::outs() << '\n';
 }
 
-bool FeatureModel::addFeature(std::unique_ptr<Feature> F) {
+bool FeatureModel::addFeature(std::unique_ptr<Feature> NewFeature) {
   // TODO(s9latimm): check consistency
-  auto FeatureName = std::string(F->getName());
-  if (!Features.try_emplace(FeatureName, std::move(F)).second) {
+  auto FeatureName = std::string(NewFeature->getName());
+  if (!Features.try_emplace(FeatureName, std::move(NewFeature)).second) {
     return false;
   }
   auto *Value = Features[FeatureName].get();
@@ -46,11 +46,9 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
 
   for (const auto &KV : this->Features) {
     // TODO(s9latimm): Add unittests for cloned FeatureSourceRanges
-    std::vector<FeatureSourceRange> SourceRanges;
-    std::transform(
+    std::vector<FeatureSourceRange> SourceRanges(
         KV.getValue()->getLocations().begin(),
-        KV.getValue()->getLocations().end(), std::back_inserter(SourceRanges),
-        [](const FeatureSourceRange &R) { return FeatureSourceRange(R); });
+        KV.getValue()->getLocations().end());
 
     switch (KV.getValue()->getKind()) {
     case Feature::FeatureKind::FK_UNKNOWN:
@@ -71,20 +69,21 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
       break;
     }
 
-    if (auto *P = KV.getValue()->getParentFeature(); P) {
-      FMB.addParent(KV.getValue()->getName().str(), P->getName().str());
+    if (auto *ParentFeature = KV.getValue()->getParentFeature()) {
+      FMB.addParent(KV.getValue()->getName().str(),
+                    ParentFeature->getName().str());
     }
   }
 
-  for (const auto &R : this->Relationships) {
+  for (const auto &Rel : this->Relationships) {
     std::vector<std::string> FeatureNames;
-    for (auto *C : R->children()) {
-      if (auto *F = llvm::dyn_cast<Feature>(C); F) {
-        FeatureNames.emplace_back(F->getName());
+    for (auto *Child : Rel->children()) {
+      if (auto *ChildFeature = llvm::dyn_cast<Feature>(Child)) {
+        FeatureNames.emplace_back(ChildFeature->getName());
       }
     }
-    if (auto *ParentFeature = llvm::dyn_cast<Feature>(R->getParent())) {
-      FMB.emplaceRelationship(R->getKind(), FeatureNames,
+    if (auto *ParentFeature = llvm::dyn_cast<Feature>(Rel->getParent())) {
+      FMB.emplaceRelationship(Rel->getKind(), FeatureNames,
                               ParentFeature->getName().str());
     }
   }
@@ -94,7 +93,7 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
   // afterwards.
   // TODO(s9latimm): Add unittests for cloned Constraints
   for (const auto &C : this->Constraints) {
-    FMB.addConstraint(std::move(C->clone()));
+    FMB.addConstraint(C->clone());
   }
 
   return FMB.buildFeatureModel();

@@ -22,7 +22,7 @@ TEST(FeatureModel, cloneUnique) {
 
   assert(Clone);
   for (const auto &Feature : FM->features()) {
-    EXPECT_NE((void *)Clone->getFeature(Feature->getName()), (void *)Feature);
+    EXPECT_NE(Clone->getFeature(Feature->getName()), Feature);
   }
 }
 

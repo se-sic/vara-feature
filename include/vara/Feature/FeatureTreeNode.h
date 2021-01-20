@@ -42,12 +42,9 @@ public:
   //===--------------------------------------------------------------------===//
   // Parent
 
-  [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
-
-  /// Search parent of given type in tree structure.
-  ///
-  /// \return parent or nullptr if this is root or no parent exists
   [[nodiscard]] FeatureTreeNode *getParent() const { return Parent; }
+
+  [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
 
   [[nodiscard]] bool hasEdgeFrom(FeatureTreeNode &N) const {
     return Parent == &N;
