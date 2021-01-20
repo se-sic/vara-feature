@@ -17,6 +17,10 @@ class CopyTransactionMode;
 class ModifyTransactionMode;
 class FeatureModelCopyTransactionBase;
 class FeatureModelModifyTransactionBase;
+
+using ConsistencyCheck =
+    FeatureModelConsistencyChecker<EveryFeatureRequiresParent,
+                                   CheckFeatureParentChildRelationShip>;
 } // namespace detail
 
 template <typename CopyMode>
@@ -31,17 +35,12 @@ class FeatureModelTransaction
       std::conditional_t<IsCopyMode, detail::FeatureModelCopyTransactionBase,
                          detail::FeatureModelModifyTransactionBase>;
 
-  using ConsistencyCheck =
-      FeatureModelConsistencyChecker<EveryFeatureRequiresParent,
-                                     CheckFeatureParentChildRelationShip>;
-
 public:
   /// \brief Opens a new Transaction for the given FeatureModel. The Transaction
   /// enables the user to modify the underlying FeatureModel via a specific
   /// API, preserving the correctness of the FeatureModel.
   static FeatureModelTransaction openTransaction(FeatureModel *FM) {
-    // TODO: maybe return Optional<FeatureModelTransaciton>?
-    assert(ConsistencyCheck::isFeatureModelValid(*FM) &&
+    assert(detail::ConsistencyCheck::isFeatureModelValid(*FM) &&
            "Passed FeatureModel was in an invalid state.");
     return FeatureModelTransaction(FM);
   }
@@ -72,8 +71,6 @@ public:
   ///
   /// \returns a FeatureModel or nothing
   std::conditional_t<IsCopyMode, std::unique_ptr<FeatureModel>, void> commit() {
-    // TODO: needs consistency check call after modifications, maybe we should
-    // move this into the base classes.
     return this->commitImpl();
   }
 
@@ -107,7 +104,6 @@ using FeatureModelModifyTransaction =
 //===----------------------------------------------------------------------===//
 
 /// Adds a Feature to the FeatureModel
-/// TODO: finish
 ///
 /// If a Parent is passed it needs to be already in the FeatureModel,
 /// otherwise, root is assumed as the parent Feature.
@@ -191,11 +187,10 @@ private:
 
 class FeatureModelCopyTransactionBase {
 protected:
-  FeatureModelCopyTransactionBase(FeatureModel *FM)
-      : FM(nullptr // TODO: figure out how to correctly copy a feature model
-        ) {}
+  FeatureModelCopyTransactionBase(FeatureModel *FM) : FM(FM->clone()) {}
 
   [[nodiscard]] inline std::unique_ptr<FeatureModel> commitImpl() {
+    ConsistencyCheck::isFeatureModelValid(*FM);
     return std::move(FM);
   };
 
@@ -232,6 +227,8 @@ protected:
           [this](const std::unique_ptr<FeatureModelModification> &FMM) {
             FMM->exec(*FM);
           });
+      ConsistencyCheck::isFeatureModelValid(*FM);
+      // TODO (se-passau/VaRA#723): implement rollback
       FM = nullptr;
     }
   };

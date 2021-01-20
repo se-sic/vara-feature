@@ -66,22 +66,23 @@ TEST_F(FeatureModelModificationTest, addFeatureToModel_twoSuccessivley) {
 
 // TODO: rewrite tests to only check transaction framework
 
-// TEST(FeatureModelTransactionCopy, createAndDestroyWithoutChange) {
-//   // TODO: refactor this into a test fixture
-//   FeatureModelBuilder B;
-//   B.addParent("a", "root")->makeFeature<BinaryFeature>("a", true);
-//   auto FM = B.buildFeatureModel();
-//   size_t FMSizeBefore = FM->size();
-//
-//   auto FT = FeatureModelCopyTransaction::openTransaction(FM.get());
-//   // no change
-//   auto UpdatedFM = FT.commit();
-//
-//   EXPECT_EQ(FMSizeBefore, FM->size());
-//   EXPECT_EQ(FMSizeBefore, UpdatedFM->size());
-//   EXPECT_NE(nullptr, UpdatedFM->getFeature("a"));
-//   EXPECT_TRUE(UpdatedFM->getFeature("a")->getParentFeature()->isRoot());
-// }
+TEST(FeatureModelTransactionCopy, createAndDestroyWithoutChange) {
+  // TODO: refactor this into a test fixture
+  FeatureModelBuilder B;
+  B.addParent("a", "root")->makeFeature<BinaryFeature>("a", true);
+  auto FM = B.buildFeatureModel();
+  size_t FMSizeBefore = FM->size();
+
+  auto FT = FeatureModelCopyTransaction::openTransaction(FM.get());
+  // no change
+  auto UpdatedFM = FT.commit();
+
+  EXPECT_NE(FM, UpdatedFM);
+  EXPECT_EQ(FMSizeBefore, FM->size());
+  EXPECT_EQ(FMSizeBefore, UpdatedFM->size());
+  EXPECT_NE(nullptr, UpdatedFM->getFeature("a"));
+  EXPECT_TRUE(UpdatedFM->getFeature("a")->getParentFeature()->isRoot());
+}
 
 TEST(FeatureModelTransactionMove, createAndDestroyWithoutChange) {
   // TODO: refactor this into a test fixture
