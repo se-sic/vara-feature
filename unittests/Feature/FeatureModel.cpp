@@ -106,8 +106,7 @@ TEST(FeatureModel, addFeature) {
 
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
-  EXPECT_EQ(*FM->getFeature("aba")->getParent<Feature>(),
-            *FM->getFeature("ab"));
+  EXPECT_EQ(*FM->getFeature("aba")->getParentFeature(), *FM->getFeature("ab"));
 }
 
 TEST(FeatureModel, newRoot) {

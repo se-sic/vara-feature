@@ -1,5 +1,7 @@
 #include "vara/Feature/FeatureModel.h"
 
+#include "llvm/Support/Casting.h"
+
 #include <algorithm>
 
 namespace vara::feature {
@@ -23,7 +25,7 @@ bool FeatureModel::addFeature(std::unique_ptr<Feature> F) {
     Child->setParent(*Value);
   }
   if (Value->isRoot()) {
-    if (*Root->getParent<Feature>() == *Value) {
+    if (*Root->getParentFeature() == *Value) {
       Root = Value;
     } else {
       Value->setParent(Root);
@@ -52,25 +54,25 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
 
     switch (KV.getValue()->getKind()) {
     case Feature::FeatureKind::FK_UNKNOWN:
-      FMB.makeFeature<Feature>(KV.getValue()->getName());
+      FMB.makeFeature<Feature>(KV.getValue()->getName().str());
       break;
     case Feature::FeatureKind::FK_BINARY:
       if (auto *F = llvm::dyn_cast<BinaryFeature>(KV.getValue().get()); F) {
-        FMB.makeFeature<BinaryFeature>(F->getName(), F->isOptional(),
+        FMB.makeFeature<BinaryFeature>(F->getName().str(), F->isOptional(),
                                        std::move(SourceRanges));
       }
       break;
     case Feature::FeatureKind::FK_NUMERIC:
       if (auto *F = llvm::dyn_cast<NumericFeature>(KV.getValue().get()); F) {
-        FMB.makeFeature<NumericFeature>(F->getName(), F->getValues(),
+        FMB.makeFeature<NumericFeature>(F->getName().str(), F->getValues(),
                                         F->isOptional(),
                                         std::move(SourceRanges));
       }
       break;
     }
 
-    if (auto *P = KV.getValue()->getParent<Feature>(); P) {
-      FMB.addParent(KV.getValue()->getName(), P->getName());
+    if (auto *P = KV.getValue()->getParentFeature(); P) {
+      FMB.addParent(KV.getValue()->getName().str(), P->getName().str());
     }
   }
 
@@ -81,8 +83,10 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
         FeatureNames.emplace_back(F->getName());
       }
     }
-    FMB.emplaceRelationship(R->getKind(), FeatureNames,
-                            R->getParent<Feature>()->getName());
+    if (auto *ParentFeature = llvm::dyn_cast<Feature>(R->getParent())) {
+      FMB.emplaceRelationship(R->getKind(), FeatureNames,
+                              ParentFeature->getName().str());
+    }
   }
 
   // We can use recursive cloning on constraints, as we can rely on the
@@ -356,7 +360,7 @@ bool FeatureModelBuilder::addFeature(Feature &F) {
   }
   if (!F.isRoot()) {
     this->addParent(std::string(F.getName()),
-                    std::string(F.getParent<Feature>()->getName()));
+                    std::string(F.getParentFeature()->getName()));
   }
   for (const auto *Child : F.children()) {
     if (const auto *C = llvm::dyn_cast<vara::feature::Feature>(Child); C) {

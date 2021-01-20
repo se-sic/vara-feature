@@ -212,7 +212,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   if (!Feature1.isRoot()) {
     RC = xmlTextWriterWriteElement(
         Writer, XmlConstants::PARENT,
-        charToUChar(Feature1.getParent<Feature>()->getName().data()));
+        charToUChar(Feature1.getParentFeature()->getName().data()));
     CHECK_RC
   }
 

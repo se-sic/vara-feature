@@ -47,14 +47,7 @@ public:
   /// Search parent of given type in tree structure.
   ///
   /// \return parent or nullptr if this is root or no parent exists
-  template <typename T = FeatureTreeNode> T *getParent() const {
-    for (FeatureTreeNode *P = this->Parent; P; P = P->Parent) {
-      if (auto *F = llvm::dyn_cast<T>(P); F) {
-        return F;
-      }
-    }
-    return nullptr;
-  }
+  [[nodiscard]] FeatureTreeNode *getParent() const { return Parent; }
 
   [[nodiscard]] bool hasEdgeFrom(FeatureTreeNode &N) const {
     return Parent == &N;
