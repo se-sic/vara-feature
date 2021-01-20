@@ -68,6 +68,13 @@ public:
     return R;
   }
 
+  /// Recursively clones constraint tree. If this tree contains special nodes
+  /// (like \a PrimaryFeatureConstraint) those may need to be updated
+  /// afterwards.
+  ///
+  /// \return root of cloned constraint tree
+  [[nodiscard]] virtual std::unique_ptr<Constraint> clone() = 0;
+
   [[nodiscard]] virtual std::string toString() const = 0;
 
   [[nodiscard]] virtual std::string toHTML() const { return toString(); }
@@ -113,6 +120,11 @@ public:
       : BinaryConstraint(ConstraintKind::CK_OR, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<OrConstraint>(this->getLeftOperand()->clone(),
+                                          this->getRightOperand()->clone());
+  }
+
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} | {1})", LeftOperand->toString(),
                          RightOperand->toString());
@@ -130,6 +142,11 @@ public:
       : BinaryConstraint(ConstraintKind::CK_XOR, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<XorConstraint>(this->getLeftOperand()->clone(),
+                                           this->getRightOperand()->clone());
+  }
+
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} ^ {1})", LeftOperand->toString(),
                          RightOperand->toString());
@@ -146,6 +163,11 @@ public:
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_AND, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<AndConstraint>(this->getLeftOperand()->clone(),
+                                           this->getRightOperand()->clone());
+  }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} & {1})", LeftOperand->toString(),
@@ -169,6 +191,11 @@ public:
       : BinaryConstraint(ConstraintKind::CK_EQUALS, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<EqualsConstraint>(this->getLeftOperand()->clone(),
+                                              this->getRightOperand()->clone());
+  }
+
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} = {1})", LeftOperand->toString(),
                          RightOperand->toString());
@@ -185,6 +212,11 @@ public:
                     std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_IMPLIES, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<ImpliesConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} => {1})", LeftOperand->toString(),
@@ -207,6 +239,11 @@ public:
                      std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_EXCLUDES, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<ExcludesConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} => !{1})", LeftOperand->toString(),
@@ -231,6 +268,11 @@ public:
       : BinaryConstraint(ConstraintKind::CK_EQUIVALENCE, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<EquivalenceConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
+
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} <=> {1})", LeftOperand->toString(),
                          RightOperand->toString());
@@ -253,6 +295,11 @@ public:
       : BinaryConstraint(ConstraintKind::CK_ADDITION, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<AdditionConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
+
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} + {1})", LeftOperand->toString(),
                          RightOperand->toString());
@@ -270,6 +317,11 @@ public:
                         std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_SUBTRACTION, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<SubtractionConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} - {1})", LeftOperand->toString(),
@@ -289,6 +341,11 @@ public:
       : BinaryConstraint(ConstraintKind::CK_MULTIPLICATION,
                          std::move(LeftOperand), std::move(RightOperand)) {}
 
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<MultiplicationConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
+
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} * {1})", LeftOperand->toString(),
                          RightOperand->toString());
@@ -306,6 +363,11 @@ public:
       : BinaryConstraint(ConstraintKind::CK_DIVISION, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<DivisionConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
+
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} / {1})", LeftOperand->toString(),
                          RightOperand->toString());
@@ -322,6 +384,11 @@ public:
                  std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_LESS, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<LessConstraint>(this->getLeftOperand()->clone(),
+                                            this->getRightOperand()->clone());
+  }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} < {1})", LeftOperand->toString(),
@@ -345,6 +412,11 @@ public:
       : BinaryConstraint(ConstraintKind::CK_GREATER, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<GreaterConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
+
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} > {1})", LeftOperand->toString(),
                          RightOperand->toString());
@@ -366,6 +438,11 @@ public:
                       std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_LESSEQUAL, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<LessEqualConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} <= {1})", LeftOperand->toString(),
@@ -389,6 +466,11 @@ public:
                          std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_GREATEREQUAL,
                          std::move(LeftOperand), std::move(RightOperand)) {}
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<GreaterEqualConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("({0} >= {1})", LeftOperand->toString(),
@@ -425,6 +507,10 @@ public:
   NotConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(ConstraintKind::CK_NOT, std::move(Operand)) {}
 
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<NotConstraint>(this->getOperand()->clone());
+  }
+
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("!{0}", Operand->toString());
   }
@@ -438,6 +524,10 @@ class NegConstraint : public UnaryConstraint, public NumericConstraint {
 public:
   NegConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(ConstraintKind::CK_NEG, std::move(Operand)) {}
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<NegConstraint>(this->getOperand()->clone());
+  }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("~{0}", Operand->toString());
@@ -458,9 +548,13 @@ public:
 class PrimaryIntegerConstraint : public PrimaryConstraint {
 public:
   PrimaryIntegerConstraint(int Value)
-      : PrimaryConstraint(ConstraintKind::CK_INTEGER), Value(Value)  {}
+      : PrimaryConstraint(ConstraintKind::CK_INTEGER), Value(Value) {}
 
   [[nodiscard]] int getValue() const { return Value; }
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<PrimaryIntegerConstraint>(this->getValue());
+  }
 
   [[nodiscard]] std::string toString() const override {
     return llvm::formatv("{0}", Value);
@@ -481,9 +575,16 @@ class Feature;
 class PrimaryFeatureConstraint : public PrimaryConstraint {
 public:
   PrimaryFeatureConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
-      : PrimaryConstraint(ConstraintKind::CK_FEATURE), FV(std::move(FV))  {}
+      : PrimaryConstraint(ConstraintKind::CK_FEATURE), FV(std::move(FV)) {}
 
   [[nodiscard]] Feature *getFeature() const;
+
+  /// Creates copy of feature constraint with a shallow feature. If cloning
+  /// an enclosing data structure with additional feature information, the
+  /// feature pointer may has to be updated afterwards.
+  ///
+  /// \return copy of constraint
+  std::unique_ptr<Constraint> clone() override;
 
   [[nodiscard]] std::string toString() const override;
 

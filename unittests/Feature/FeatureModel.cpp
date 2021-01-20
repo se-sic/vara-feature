@@ -14,6 +14,79 @@ TEST(FeatureModel, build) {
   EXPECT_TRUE(B.buildFeatureModel());
 }
 
+TEST(FeatureModel, cloneUnique) {
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"a", "aa"}, {"root", "aba"}, {"root", "a"}});
+  assert(FM);
+
+  auto Clone = FM->clone();
+
+  assert(Clone);
+  for (const auto &Feature : FM->features()) {
+    EXPECT_NE(Clone->getFeature(Feature->getName()), Feature);
+  }
+}
+
+TEST(FeatureModel, cloneRoot) {
+  FeatureModelBuilder B;
+  BinaryFeature A("a");
+  B.addFeature(A);
+  B.setRoot("a");
+  auto FM = B.buildFeatureModel();
+  assert(FM);
+
+  auto Clone = FM->clone();
+  assert(Clone);
+  FM.reset();
+
+  // NOLINTNEXTLINE
+  ASSERT_EXIT(EXPECT_TRUE(FM->getFeature("a")->isRoot()),
+              testing::KilledBySignal(SIGSEGV), ".*");
+  EXPECT_TRUE(Clone->getFeature("a")->isRoot());
+}
+
+TEST(FeatureModel, cloneRelationship) {
+  FeatureModelBuilder B;
+  BinaryFeature AA("aa");
+  BinaryFeature AB("ab");
+  auto CS = Feature::NodeSetType();
+  CS.insert(&AA);
+  CS.insert(&AB);
+  B.addParent("aa", "root")->addFeature(AA);
+  B.addParent("ab", "root")->addFeature(AB);
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, {"aa", "ab"},
+                        "root");
+  auto FM = B.buildFeatureModel();
+  assert(FM);
+
+  auto Clone = FM->clone();
+  assert(Clone);
+  FM.reset();
+
+  EXPECT_FALSE(Clone->getRoot()->getChildren<Relationship>().empty());
+  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("aa")->getParent()));
+  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("ab")->getParent()));
+}
+
+TEST(FeatureModel, cloneConstraint) {
+  FeatureModelBuilder B;
+  BinaryFeature A("a");
+  B.addFeature(A);
+  B.addConstraint(std::make_unique<PrimaryFeatureConstraint>(&A));
+  auto FM = B.buildFeatureModel();
+  assert(FM);
+
+  auto Clone = FM->clone();
+  assert(Clone);
+  auto *Deleted = *FM->getFeature("a")->constraints().begin();
+  FM.reset();
+
+  // NOLINTNEXTLINE
+  ASSERT_EXIT(EXPECT_TRUE(Deleted->clone()), testing::KilledBySignal(SIGSEGV),
+              ".*");
+  EXPECT_TRUE((*Clone->getFeature("a")->constraints().begin())->clone());
+}
+
 TEST(FeatureModel, size) {
   FeatureModelBuilder B;
 
