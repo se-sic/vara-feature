@@ -109,6 +109,11 @@ public:
   /// \return new \a FeatureModel
   std::unique_ptr<FeatureModel> clone();
 
+  /// Create deep clone of whole data structure.
+  ///
+  /// \return new \a FeatureModel
+  std::unique_ptr<FeatureModel> clone();
+
   LLVM_DUMP_METHOD
   void dump() const;
 
