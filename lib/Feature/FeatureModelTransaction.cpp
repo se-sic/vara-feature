@@ -4,7 +4,7 @@
 
 namespace vara::feature {
 
-void addFeature(FeatureModel *FM, std::unique_ptr<Feature> NewFeature,
+void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   Trans.addFeature(std::move(NewFeature), Parent);

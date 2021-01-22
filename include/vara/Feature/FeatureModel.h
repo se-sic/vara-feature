@@ -465,7 +465,7 @@ struct CheckFeatureParentChildRelationShip {
   }
 };
 
-// TODO: do we need this? need to design the root change API
+// TODO: test missing
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
     return 1 ==

@@ -73,7 +73,7 @@ TEST(FeatureModelTransactionCopy, createAndDestroyWithoutChange) {
   auto FM = B.buildFeatureModel();
   size_t FMSizeBefore = FM->size();
 
-  auto FT = FeatureModelCopyTransaction::openTransaction(FM.get());
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
   // no change
   auto UpdatedFM = FT.commit();
 
@@ -91,7 +91,7 @@ TEST(FeatureModelTransactionMove, createAndDestroyWithoutChange) {
   auto FM = B.buildFeatureModel();
   size_t FMSizeBefore = FM->size();
 
-  auto FT = FeatureModelModifyTransaction::openTransaction(FM.get());
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
   // no change
   FT.commit();
   EXPECT_EQ(FMSizeBefore, FM->size());
@@ -108,7 +108,7 @@ TEST(FeatureModelTransactionMove, addFeatureToModel) {
   auto FM = B.buildFeatureModel();
   size_t FMSizeBefore = FM->size();
 
-  auto FT = FeatureModelModifyTransaction::openTransaction(FM.get());
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
   FT.addFeature(std::make_unique<BinaryFeature>(
                     "ab", false, std::vector<FeatureSourceRange>()),
                 FM->getFeature("a"));

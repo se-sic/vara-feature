@@ -39,8 +39,8 @@ public:
   /// \brief Opens a new Transaction for the given FeatureModel. The Transaction
   /// enables the user to modify the underlying FeatureModel via a specific
   /// API, preserving the correctness of the FeatureModel.
-  static FeatureModelTransaction openTransaction(FeatureModel *FM) {
-    assert(detail::ConsistencyCheck::isFeatureModelValid(*FM) &&
+  static FeatureModelTransaction openTransaction(FeatureModel &FM) {
+    assert(detail::ConsistencyCheck::isFeatureModelValid(FM) &&
            "Passed FeatureModel was in an invalid state.");
     return FeatureModelTransaction(FM);
   }
@@ -91,7 +91,7 @@ public:
   }
 
 private:
-  FeatureModelTransaction(FeatureModel *FM) : TransactionBaseTy(FM) {}
+  FeatureModelTransaction(FeatureModel &FM) : TransactionBaseTy(FM) {}
 };
 
 using FeatureModelCopyTransaction =
@@ -136,9 +136,13 @@ public:
 protected:
   /// \brief Set the parrent of a Feature.
   static void setParent(Feature &F, Feature *Parent) {
+    F.setParent(Parent);
+  }
+
+  static void addChild(Feature &F, Feature &Child) {
     // TODO: If the Feature is already in the model we need to update all other
     // parent/child relations
-    F.setParent(Parent);
+    //
   }
 
   /// \brief Adds a new Feature to the FeatureModel.
@@ -174,6 +178,7 @@ public:
   Feature *operator()(FeatureModel &FM) {
     std::string NewFeatureName = NewFeature->getName().str();
     setParent(*NewFeature, Parent);
+    // addChild();
     return addFeature(FM, std::move(NewFeature));
   }
 
@@ -187,7 +192,7 @@ private:
 
 class FeatureModelCopyTransactionBase {
 protected:
-  FeatureModelCopyTransactionBase(FeatureModel *FM) : FM(FM->clone()) {}
+  FeatureModelCopyTransactionBase(FeatureModel &FM) : FM(FM.clone()) {}
 
   [[nodiscard]] inline std::unique_ptr<FeatureModel> commitImpl() {
     ConsistencyCheck::isFeatureModelValid(*FM);
@@ -217,7 +222,7 @@ private:
 
 class FeatureModelModifyTransactionBase {
 protected:
-  FeatureModelModifyTransactionBase(FeatureModel *FM) : FM(FM) {}
+  FeatureModelModifyTransactionBase(FeatureModel &FM) : FM(&FM) {}
 
   void commitImpl() {
     assert(FM && "Cannot commit Modifications without a FeatureModel present.");
