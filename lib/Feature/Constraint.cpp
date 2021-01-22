@@ -23,7 +23,7 @@ Feature *PrimaryFeatureConstraint::getFeature() const {
 
 std::unique_ptr<Constraint> PrimaryFeatureConstraint::clone() {
   return std::make_unique<PrimaryFeatureConstraint>(
-      std::make_unique<Feature>(this->getFeature()->getName()));
+      std::make_unique<Feature>(this->getFeature()->getName().str()));
 }
 
 std::string PrimaryFeatureConstraint::toString() const {

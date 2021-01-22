@@ -22,7 +22,7 @@ TEST(FeatureModel, cloneUnique) {
 
   assert(Clone);
   for (const auto &Feature : FM->features()) {
-    EXPECT_NE((void *)Clone->getFeature(Feature->getName()), (void *)Feature);
+    EXPECT_NE(Clone->getFeature(Feature->getName()), Feature);
   }
 }
 
@@ -106,8 +106,7 @@ TEST(FeatureModel, addFeature) {
 
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
-  EXPECT_EQ(*FM->getFeature("aba")->getParent<Feature>(),
-            *FM->getFeature("ab"));
+  EXPECT_EQ(*FM->getFeature("aba")->getParentFeature(), *FM->getFeature("ab"));
 }
 
 TEST(FeatureModel, newRoot) {

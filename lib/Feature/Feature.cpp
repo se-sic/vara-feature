@@ -16,8 +16,8 @@ std::string Feature::toString() const {
                           })
          << ",\n  ";
   }
-  if (getParent<Feature>()) {
-    StrS << "parent: " << getParent<Feature>()->getName().str() << ",\n  ";
+  if (getParentFeature()) {
+    StrS << "parent: " << getParentFeature()->getName().str() << ",\n  ";
   }
   StrS << "children: [";
   for (const auto &Child : children()) {
@@ -54,10 +54,10 @@ bool Feature::operator<(const Feature &Other) const {
   std::stack<const Feature *> TraceA;
   std::stack<const Feature *> TraceB;
 
-  for (const auto *Head = this; Head; Head = Head->getParent<Feature>()) {
+  for (const auto *Head = this; Head; Head = Head->getParentFeature()) {
     TraceA.push(Head); // path from A to root
   }
-  for (const auto *Head = &Other; Head; Head = Head->getParent<Feature>()) {
+  for (const auto *Head = &Other; Head; Head = Head->getParentFeature()) {
     TraceB.push(Head); // path from B to root
   }
   assert(!TraceA.empty() && !TraceB.empty());
