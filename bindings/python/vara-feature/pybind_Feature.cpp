@@ -34,7 +34,7 @@ void init_feature_module_feature_tree_node(py::module &M) {
 
       //===----------------------------------------------------------------===//
       // Parent
-      .def("parent", &vf::FeatureTreeNode::getParent<vf::FeatureTreeNode>,
+      .def("parent", &vf::FeatureTreeNode::getParent,
            py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
       .def("is_parent", &vf::FeatureTreeNode::hasEdgeFrom,
            R"pbdoc(Checks if a node is a parent of this one.)pbdoc");
