@@ -363,10 +363,12 @@ int FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr Writer,
 
   switch (Location.getCategory()) {
   case FeatureSourceRange::Category::necessary:
-    RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::CATEGORY, XmlConstants::NECESSARY);
+    RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::CATEGORY,
+                                     XmlConstants::NECESSARY);
     break;
   case FeatureSourceRange::Category::inessential:
-    RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::CATEGORY, XmlConstants::INESSENTIAL);
+    RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::CATEGORY,
+                                     XmlConstants::INESSENTIAL);
     break;
   }
   CHECK_RC

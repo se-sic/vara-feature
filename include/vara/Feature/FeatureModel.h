@@ -96,6 +96,11 @@ public:
 
   Feature *getFeature(llvm::StringRef F) { return Features[F].get(); }
 
+  /// Create deep clone of whole data structure.
+  ///
+  /// \return new \a FeatureModel
+  std::unique_ptr<FeatureModel> clone();
+
   LLVM_DUMP_METHOD
   void dump() const;
 
@@ -192,8 +197,7 @@ public:
 
   /// Build \a FeatureModel.
   ///
-  /// @return instance of \a FeatureModel
-
+  /// \return instance of \a FeatureModel
   std::unique_ptr<FeatureModel> buildFeatureModel();
 
   /// Build simple \a FeatureModel from given edges.
@@ -372,12 +376,10 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
           llvm::formatv("<tr><td><b>{0}</b></td></tr>",
                         DOT::EscapeString(F->getName().str())),
           CS.str(),
-          (F->hasLocations()
-               ? llvm::formatv(
-                     "<hr/><tr><td>{0}</td></tr>",
-                     DOT::EscapeString(""))
-                     .str()
-               : ""));
+          (F->hasLocations() ? llvm::formatv("<hr/><tr><td>{0}</td></tr>",
+                                             DOT::EscapeString(""))
+                                   .str()
+                             : ""));
     } else {
       Shape = "ellipse";
       if (auto *R = llvm::dyn_cast<vara::feature::Relationship>(Node); R) {
