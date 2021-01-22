@@ -38,6 +38,7 @@ TEST(FeatureModel, cloneRoot) {
   assert(Clone);
   FM.reset();
 
+  // The inner EXPECT_TRUE just handles the nodiscard of isRoot
   // NOLINTNEXTLINE
   ASSERT_EXIT(EXPECT_TRUE(FM->getFeature("a")->isRoot()),
               testing::KilledBySignal(SIGSEGV), ".*");
@@ -80,6 +81,7 @@ TEST(FeatureModel, cloneConstraint) {
   auto *Deleted = *FM->getFeature("a")->constraints().begin();
   FM.reset();
 
+  // The inner EXPECT_TRUE just handles the nodiscard of clone
   // NOLINTNEXTLINE
   ASSERT_EXIT(EXPECT_TRUE(Deleted->clone()), testing::KilledBySignal(SIGSEGV),
               ".*");
