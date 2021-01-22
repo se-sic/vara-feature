@@ -34,7 +34,7 @@ void init_feature_module_feature_tree_node(py::module &M) {
 
       //===----------------------------------------------------------------===//
       // Parent
-      .def("parent", &vf::FeatureTreeNode::getParent,
+      .def("parent", &vf::FeatureTreeNode::getParent<vf::FeatureTreeNode>,
            py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
       .def("is_parent", &vf::FeatureTreeNode::hasEdgeFrom,
            R"pbdoc(Checks if a node is a parent of this one.)pbdoc");
@@ -78,10 +78,13 @@ void init_feature_module_feature(py::module &M) {
 void init_feature_module_binary_feature(py::module &M) {
   py::class_<vf::BinaryFeature, vf::Feature>(M, "BinaryFeature")
       .def(py::init<std::string, bool>())
-      .def(py::init<std::string, bool, std::vector<vara::feature::FeatureSourceRange>>())
-      .def(py::init<std::string, bool, std::vector<vara::feature::FeatureSourceRange>,
+      .def(py::init<std::string, bool,
+                    std::vector<vara::feature::FeatureSourceRange>>())
+      .def(py::init<std::string, bool,
+                    std::vector<vara::feature::FeatureSourceRange>,
                     vara::feature::Feature *>())
-      .def(py::init<std::string, bool, std::vector<vara::feature::FeatureSourceRange>,
+      .def(py::init<std::string, bool,
+                    std::vector<vara::feature::FeatureSourceRange>,
                     vara::feature::Feature *,
                     std::vector<vara::feature::FeatureTreeNode *>>())
       .def(
@@ -96,7 +99,7 @@ void init_feature_module_numeric_feature(py::module &M) {
                    std::variant<std::pair<int, int>, std::vector<int>>, bool>())
       .def(py::init<std::string,
                     std::variant<std::pair<int, int>, std::vector<int>>, bool,
-          std::vector<vara::feature::FeatureSourceRange>>())
+                    std::vector<vara::feature::FeatureSourceRange>>())
       .def(
           "to_string", &vf::NumericFeature::toString,
           R"pbdoc(Returns the string representation of a NumericFeature.)pbdoc");
