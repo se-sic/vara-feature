@@ -135,14 +135,13 @@ public:
 
 protected:
   /// \brief Set the parrent of a Feature.
-  static void setParent(Feature &F, Feature *Parent) {
-    F.setParent(Parent);
-  }
+  static void setParent(Feature &F, Feature *Parent) { F.setParent(Parent); }
 
-  static void addChild(Feature &F, Feature &Child) {
+  static void addChild(Feature &F, Feature *Child) {
     // TODO: If the Feature is already in the model we need to update all other
     // parent/child relations
     //
+    F.addEdge(Child);
   }
 
   /// \brief Adds a new Feature to the FeatureModel.
@@ -153,18 +152,16 @@ protected:
   /// \returns A pointer to the inserted Feature.
   static Feature *addFeature(FeatureModel &FM,
                              std::unique_ptr<Feature> NewFeature) {
-    llvm::StringRef NewFeatureName = NewFeature->getName();
-    FM.addFeature(std::move(NewFeature));
-    return FM.getFeature(NewFeatureName);
+    return FM.addFeature(std::move(NewFeature));
   }
 
   template <typename ModTy, typename... ArgTys>
-  static ModTy make_modification(ArgTys &&...Args) {
+  static ModTy make_modification(ArgTys &&... Args) {
     return ModTy(std::forward<ArgTys>(Args)...);
   }
 
   template <typename ModTy, typename... ArgTys>
-  static std::unique_ptr<ModTy> make_unique_modification(ArgTys &&...Args) {
+  static std::unique_ptr<ModTy> make_unique_modification(ArgTys &&... Args) {
     return std::unique_ptr<ModTy>(new ModTy(std::forward<ArgTys>(Args)...));
   }
 };
@@ -176,14 +173,24 @@ public:
   void exec(FeatureModel &FM) override { (*this)(FM); }
 
   Feature *operator()(FeatureModel &FM) {
-    std::string NewFeatureName = NewFeature->getName().str();
-    setParent(*NewFeature, Parent);
-    // addChild();
-    return addFeature(FM, std::move(NewFeature));
+    auto *InsertedFeature = addFeature(FM, std::move(NewFeature));
+    if (!InsertedFeature) {
+      return nullptr;
+    }
+    if (Parent) {
+      setParent(*InsertedFeature, Parent);
+      addChild(*Parent, InsertedFeature);
+    } else {
+      assert(FM.getRoot());
+      setParent(*InsertedFeature, FM.getRoot());
+      addChild(*FM.getRoot(), InsertedFeature);
+    }
+    return InsertedFeature;
   }
 
 private:
-  AddFeatureToModel(std::unique_ptr<Feature> NewFeature, Feature *Parent)
+  AddFeatureToModel(std::unique_ptr<Feature> NewFeature,
+                    Feature *Parent = nullptr)
       : NewFeature(std::move(NewFeature)), Parent(Parent) {}
 
   std::unique_ptr<Feature> NewFeature;

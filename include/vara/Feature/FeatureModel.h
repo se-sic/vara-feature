@@ -124,13 +124,12 @@ protected:
   FeatureModel() = default;
 
 private:
-  /// Insert a \a Feature into existing model while keeping consistency and
-  /// ordering.
+  /// Insert a \a Feature into existing model.
   ///
   /// \param[in] Feature feature to be inserted
   ///
-  /// \returns true, if feature was inserted successfully
-  bool addFeature(std::unique_ptr<Feature> Feature);
+  /// \returns ptr to inserted \a Feature
+  Feature *addFeature(std::unique_ptr<Feature> Feature);
 
   OrderedFeatureTy OrderedFeatures;
 };
@@ -154,28 +153,29 @@ public:
     Children.clear();
   }
 
-  /// Try to create and add a new \a Feature to the \a FeatureModel.
+  /// Try to create a new \a Feature.
   ///
   /// \param[in] FeatureName name of the \a Feature
   /// \param[in] FurtherArgs further arguments that should be passed to the
   ///                        \a Feature constructor
   ///
-  /// \returns true, if the feature could be inserted into the \a FeatureModel
+  /// \returns ptr to inserted \a Feature
   template <typename FeatureTy, typename... Args,
             typename = typename std::enable_if_t<
                 std::is_base_of_v<Feature, FeatureTy>, int>>
-  bool makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
-    // TODO: maybe this should return the created Feature
-    return Features
-        .try_emplace(FeatureName, std::make_unique<FeatureTy>(
-                                      FeatureName, std::move(FurtherArgs)...))
-        .second;
+  Feature *makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
+    if (!Features
+             .try_emplace(FeatureName,
+                          std::make_unique<FeatureTy>(
+                              FeatureName, std::move(FurtherArgs)...))
+             .second) {
+      return nullptr;
+    }
+    return Features[FeatureName].get();
   }
 
-  bool addFeature(Feature &F);
-
-  FeatureModelBuilder *addParent(const std::string &FeatureName,
-                                 const std::string &ParentName) {
+  FeatureModelBuilder *addEdge(const std::string &ParentName,
+                               const std::string &FeatureName) {
     Children[ParentName].insert(FeatureName);
     Parents[FeatureName] = ParentName;
     return this;
@@ -216,17 +216,6 @@ public:
   ///
   /// \return instance of \a FeatureModel
   std::unique_ptr<FeatureModel> buildFeatureModel();
-
-  /// Build simple \a FeatureModel from given edges.
-  ///
-  /// \param[in] B edges with \a BinaryFeature
-  /// \param[in] N edges with \a NumericFeature
-  /// \return instance of \a FeatureModel
-  std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
-      const std::initializer_list<std::pair<std::string, std::string>> &B,
-      const std::initializer_list<std::pair<
-          std::string,
-          std::pair<std::string, NumericFeature::ValuesVariantType>>> &N = {});
 
 private:
   class BuilderVisitor : public ConstraintVisitor {

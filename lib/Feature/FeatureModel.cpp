@@ -14,28 +14,15 @@ void FeatureModel::dump() const {
   llvm::outs() << '\n';
 }
 
-bool FeatureModel::addFeature(std::unique_ptr<Feature> NewFeature) {
-  // TODO(s9latimm): check consistency
+Feature *FeatureModel::addFeature(std::unique_ptr<Feature> NewFeature) {
   auto FeatureName = std::string(NewFeature->getName());
   if (!Features.try_emplace(FeatureName, std::move(NewFeature)).second) {
-    return false;
+    return nullptr;
   }
   auto *InsertedFeature = Features[FeatureName].get();
-  for (auto *Child : InsertedFeature->children()) {
-    Child->setParent(*InsertedFeature);
-  }
-  if (InsertedFeature->isRoot()) {
-    if (*Root->getParentFeature() == *InsertedFeature) {
-      Root = InsertedFeature;
-    } else {
-      InsertedFeature->setParent(Root);
-    }
-  } else {
-    // TODO: this assumes the Features parent is correctly set
-    InsertedFeature->getParent()->addEdge(InsertedFeature);
-  }
+  assert(InsertedFeature);
   OrderedFeatures.insert(InsertedFeature);
-  return true;
+  return InsertedFeature;
 }
 
 std::unique_ptr<FeatureModel> FeatureModel::clone() {
@@ -71,8 +58,8 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
     }
 
     if (auto *ParentFeature = KV.getValue()->getParentFeature()) {
-      FMB.addParent(KV.getValue()->getName().str(),
-                    ParentFeature->getName().str());
+      FMB.addEdge(ParentFeature->getName().str(),
+                  KV.getValue()->getName().str());
     }
   }
 
@@ -308,66 +295,4 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
                                         std::move(Relationships), Root);
 }
 
-std::unique_ptr<FeatureModel> FeatureModelBuilder::buildSimpleFeatureModel(
-    const std::initializer_list<std::pair<std::string, std::string>> &B,
-    const std::initializer_list<std::pair<
-        std::string, std::pair<std::string, NumericFeature::ValuesVariantType>>>
-        &N) {
-  init();
-  for (const auto &Binary : B) {
-    makeFeature<BinaryFeature>(Binary.first);
-    makeFeature<BinaryFeature>(Binary.second);
-    addParent(Binary.second, Binary.first);
-  }
-  for (const auto &Numeric : N) {
-    makeFeature<BinaryFeature>(Numeric.first);
-    makeFeature<NumericFeature>(Numeric.second.first, Numeric.second.second);
-    addParent(Numeric.second.first, Numeric.first);
-  }
-  return buildFeatureModel();
-}
-bool FeatureModelBuilder::addFeature(Feature &F) {
-  std::vector<FeatureSourceRange> Loc = F.Locations;
-  switch (F.getKind()) {
-  case Feature::FeatureKind::FK_BINARY: {
-    if (auto *BF = llvm::dyn_cast<BinaryFeature>(&F); BF) {
-      if (!makeFeature<BinaryFeature>(std::string(BF->getName()),
-                                      BF->isOptional(), Loc)) {
-        return false;
-      }
-    } else {
-      llvm::errs() << "error: Could not cast \'" << F.getName()
-                   << "\' to \'BinaryFeature\'.\n";
-      return false;
-    }
-    break;
-  }
-  case Feature::FeatureKind::FK_NUMERIC: {
-    if (auto *NF = llvm::dyn_cast<NumericFeature>(&F); NF) {
-      if (!makeFeature<NumericFeature>(std::string(NF->getName()),
-                                       NF->getValues(), NF->isOptional(),
-                                       Loc)) {
-        return false;
-      }
-    } else {
-      llvm::errs() << "error: Could not cast \'" << F.getName()
-                   << "\' to \'NumericFeature\'.\n";
-      return false;
-    }
-    break;
-  }
-  default:
-    return false;
-  }
-  if (!F.isRoot()) {
-    this->addParent(std::string(F.getName()),
-                    std::string(F.getParentFeature()->getName()));
-  }
-  for (const auto *Child : F.children()) {
-    if (const auto *C = llvm::dyn_cast<vara::feature::Feature>(Child); C) {
-      this->addParent(std::string(C->getName()), std::string(F.getName()));
-    }
-  }
-  return true;
-}
 } // namespace vara::feature
