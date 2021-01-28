@@ -51,16 +51,19 @@ TEST(NumericFeature, NumericFeatureRoot) {
 }
 
 TEST(NumericFeature, NumericFeatureChildren) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"F", "A"}}, {{"root", {"F", std::pair<int, int>(0, 1)}}});
+  FeatureModelBuilder B;
+  B.makeFeature<NumericFeature>("a", std::pair<int, int>(0, 1));
+  B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+  auto FM = B.buildFeatureModel();
+  assert(FM);
 
   EXPECT_EQ(
-      std::distance(FM->getFeature("F")->begin(), FM->getFeature("F")->end()),
+      std::distance(FM->getFeature("a")->begin(), FM->getFeature("a")->end()),
       1);
   if (auto *F =
-          llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("F")->begin());
+          llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("a")->begin());
       F) {
-    EXPECT_EQ("A", F->getName());
+    EXPECT_EQ("aa", F->getName());
   } else {
     FAIL();
   }

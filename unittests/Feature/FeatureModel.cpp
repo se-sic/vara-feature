@@ -9,14 +9,17 @@ namespace vara::feature {
 TEST(FeatureModel, build) {
   FeatureModelBuilder B;
 
-  B.addParent("a", "root")->makeFeature<BinaryFeature>("a", true);
+  B.makeFeature<BinaryFeature>("a", true);
 
   EXPECT_TRUE(B.buildFeatureModel());
 }
 
 TEST(FeatureModel, cloneUnique) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"a", "aa"}, {"root", "aba"}, {"root", "a"}});
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a");
+  B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+  B.makeFeature<BinaryFeature>("b");
+  auto FM = B.buildFeatureModel();
   assert(FM);
 
   auto Clone = FM->clone();
@@ -29,8 +32,7 @@ TEST(FeatureModel, cloneUnique) {
 
 TEST(FeatureModel, cloneRoot) {
   FeatureModelBuilder B;
-  BinaryFeature A("a");
-  B.addFeature(A);
+  B.makeFeature<BinaryFeature>("a");
   B.setRoot("a");
   auto FM = B.buildFeatureModel();
   assert(FM);
@@ -48,14 +50,9 @@ TEST(FeatureModel, cloneRoot) {
 
 TEST(FeatureModel, cloneRelationship) {
   FeatureModelBuilder B;
-  BinaryFeature AA("aa");
-  BinaryFeature AB("ab");
-  auto CS = Feature::NodeSetType();
-  CS.insert(&AA);
-  CS.insert(&AB);
-  B.addParent("aa", "root")->addFeature(AA);
-  B.addParent("ab", "root")->addFeature(AB);
-  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, {"aa", "ab"},
+  B.makeFeature<BinaryFeature>("a");
+  B.makeFeature<BinaryFeature>("b");
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, {"a", "b"},
                         "root");
   auto FM = B.buildFeatureModel();
   assert(FM);
@@ -65,15 +62,14 @@ TEST(FeatureModel, cloneRelationship) {
   FM.reset();
 
   EXPECT_FALSE(Clone->getRoot()->getChildren<Relationship>().empty());
-  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("aa")->getParent()));
-  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("ab")->getParent()));
+  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("a")->getParent()));
+  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("b")->getParent()));
 }
 
 TEST(FeatureModel, cloneConstraint) {
   FeatureModelBuilder B;
-  BinaryFeature A("a");
-  B.addFeature(A);
-  B.addConstraint(std::make_unique<PrimaryFeatureConstraint>(&A));
+  B.addConstraint(std::make_unique<PrimaryFeatureConstraint>(
+      B.makeFeature<BinaryFeature>("a")));
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -92,59 +88,34 @@ TEST(FeatureModel, cloneConstraint) {
 TEST(FeatureModel, size) {
   FeatureModelBuilder B;
 
-  B.addParent("a", "root")->makeFeature<BinaryFeature>("a", true);
+  B.makeFeature<BinaryFeature>("a", true);
 
   EXPECT_EQ(2, B.buildFeatureModel()->size());
 }
 
-// TODO: clean up -> FM can no longer be directly modified
-// TEST(FeatureModel, addFeature) {
-//   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-//       {{"a", "aa"}, {"root", "aba"}, {"root", "a"}});
-//   assert(FM);
-//   auto CS = Feature::NodeSetType();
-//   CS.insert(FM->getFeature("aba"));
-//
-//   FM->addFeature(std::make_unique<BinaryFeature>(
-//       "ab", false, std::vector<FeatureSourceRange>(), FM->getFeature("a"),
-//       CS));
-//
-//   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
-//   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
-//   EXPECT_EQ(*FM->getFeature("aba")->getParentFeature(),
-//   *FM->getFeature("ab"));
-// }
-//
-// TEST(FeatureModel, newRoot) {
-//   auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-//       {{"root", "b"}, {"root", "a"}});
-//   assert(FM);
-//   auto CS = Feature::NodeSetType();
-//   CS.insert(FM->getFeature("root"));
-//
-//   FM->addFeature(std::make_unique<BinaryFeature>(
-//       "new_root", false, std::vector<FeatureSourceRange>(), nullptr, CS));
-//
-//   EXPECT_TRUE(FM->getFeature("new_root")->isRoot());
-//   EXPECT_FALSE(FM->getFeature("root")->isRoot());
-//   EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("root"));
-//   EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("a"));
-//   EXPECT_LT(*FM->getFeature("new_root"), *FM->getFeature("b"));
-//   EXPECT_EQ(*FM->getFeature("new_root"), **FM->begin());
-// }
+class FeatureModelTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder B;
+    B.makeFeature<BinaryFeature>("a");
+    B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+    B.addEdge("a", "ab")->makeFeature<BinaryFeature>("ab");
+    B.makeFeature<BinaryFeature>("b");
+    B.addEdge("b", "ba")->makeFeature<BinaryFeature>("ba");
+    B.addEdge("b", "bb")->makeFeature<BinaryFeature>("bb");
+    B.makeFeature<BinaryFeature>("c");
+    FM = B.buildFeatureModel();
+    assert(FM);
+  }
 
-TEST(FeatureModel, iter) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"a", "aa"},
-                                                           {"a", "ab"},
-                                                           {"b", "bb"},
-                                                           {"root", "b"},
-                                                           {"root", "a"},
-                                                           {"b", "ba"}});
-  assert(FM);
+  std::unique_ptr<FeatureModel> FM;
+};
+
+TEST_F(FeatureModelTest, iter) {
   std::vector<Feature *> Expected = {
-      FM->getFeature("bb"),  FM->getFeature("ba"), FM->getFeature("b"),
-      FM->getFeature("ab"),  FM->getFeature("aa"), FM->getFeature("a"),
-      FM->getFeature("root")};
+      FM->getFeature("c"), FM->getFeature("bb"),  FM->getFeature("ba"),
+      FM->getFeature("b"), FM->getFeature("ab"),  FM->getFeature("aa"),
+      FM->getFeature("a"), FM->getFeature("root")};
 
   EXPECT_EQ(Expected.size(), FM->size());
   for (const auto *F : FM->features()) {
@@ -153,121 +124,84 @@ TEST(FeatureModel, iter) {
   }
 }
 
-TEST(FeatureModel, disjunct) {
-  auto FMA = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
-  auto FMB = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "b"}});
-  assert(FMA && FMB);
+TEST_F(FeatureModelTest, disjunct) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a");
+  B.makeFeature<BinaryFeature>("b");
+  auto FN = B.buildFeatureModel();
+  assert(FN);
 
-  EXPECT_NE(*FMA->getFeature("a"), *FMB->getFeature("b"));
-  EXPECT_LT(*FMA->getFeature("a"), *FMB->getFeature("b"));
-  EXPECT_GT(*FMB->getFeature("b"), *FMA->getFeature("a"));
+  EXPECT_NE(*FM->getFeature("a"), *FN->getFeature("b"));
+  EXPECT_LT(*FM->getFeature("a"), *FN->getFeature("b"));
+  EXPECT_GT(*FN->getFeature("b"), *FM->getFeature("a"));
 }
 
-TEST(FeatureModel, disjunctRaw) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
-  assert(FM);
-  BinaryFeature B("B");
+TEST_F(FeatureModelTest, disjunctRaw) {
+  BinaryFeature F("B");
 
-  EXPECT_NE(*FM->getFeature("a"), B);
-  EXPECT_LT(*FM->getFeature("a"), B);
-  EXPECT_GT(B, *FM->getFeature("a"));
+  EXPECT_NE(*FM->getFeature("a"), F);
+  EXPECT_LT(*FM->getFeature("a"), F);
+  EXPECT_GT(F, *FM->getFeature("a"));
 }
 
-TEST(FeatureModel, ltSameName) {
-  auto FMA = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
-  auto FMB = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
-  assert(FMA && FMB);
+TEST_F(FeatureModelTest, ltSameName) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a");
+  auto FN = B.buildFeatureModel();
+  assert(FN);
 
-  EXPECT_EQ(*FMA->getFeature("a"), *FMB->getFeature("a"));
-  EXPECT_FALSE(*FMA->getFeature("a") < *FMB->getFeature("a"));
-  EXPECT_FALSE(*FMB->getFeature("a") < *FMA->getFeature("a"));
+  EXPECT_EQ(*FM->getFeature("a"), *FN->getFeature("a"));
+  EXPECT_FALSE(*FM->getFeature("a") < *FN->getFeature("a"));
+  EXPECT_FALSE(*FN->getFeature("a") < *FM->getFeature("a"));
 }
 
-TEST(FeatureModel, ltEqual) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
-  assert(FM);
-
+TEST_F(FeatureModelTest, ltEqual) {
   EXPECT_FALSE(*FM->getFeature("a") < *FM->getFeature("a"));
 }
 
 /// root(a, b)
-TEST(FeatureModel, ltSimple) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"root", "b"}, {"root", "a"}});
-  assert(FM);
-
+TEST_F(FeatureModelTest, ltSimple) {
   EXPECT_LT(*FM->getFeature("root"), *FM->getFeature("a"));
   EXPECT_LT(*FM->getFeature("root"), *FM->getFeature("b"));
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("b"));
 }
 
 /// root(a, b, c)
-TEST(FeatureModel, ternary) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"root", "b"}, {"root", "a"}, {"root", "c"}});
-  assert(FM);
-
+TEST_F(FeatureModelTest, ternary) {
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("b"));
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("c"));
   EXPECT_LT(*FM->getFeature("b"), *FM->getFeature("c"));
 }
 
 /// root(a(aa), b)
-TEST(FeatureModel, ltSubtreeAA) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"a", "aa"}, {"root", "b"}, {"root", "a"}});
-  assert(FM);
-
+TEST_F(FeatureModelTest, ltSubtreeAA) {
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("aa"));
   EXPECT_LT(*FM->getFeature("aa"), *FM->getFeature("b"));
 }
 
 /// root(a(aa, ab), b)
-TEST(FeatureModel, ltSubtreeAB) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"a", "aa"}, {"root", "b"}, {"root", "a"}, {"a", "ab"}});
-  assert(FM);
-
+TEST_F(FeatureModelTest, ltSubtreeAB) {
   EXPECT_LT(*FM->getFeature("aa"), *FM->getFeature("ab"));
   EXPECT_LT(*FM->getFeature("ab"), *FM->getFeature("b"));
 }
 
 /// root(a(aa, ab), b(ba))
-TEST(FeatureModel, ltSubtreeBA) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"a", "aa"}, {"a", "ab"}, {"root", "b"}, {"root", "a"}, {"b", "ba"}});
-  assert(FM);
-
+TEST_F(FeatureModelTest, ltSubtreeBA) {
   EXPECT_LT(*FM->getFeature("b"), *FM->getFeature("ba"));
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ba"));
 }
 
 /// root(a(aa, ab), b(ba, bb))
-TEST(FeatureModel, ltSubtreeBB) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"a", "aa"},
-                                                           {"a", "ab"},
-                                                           {"b", "bb"},
-                                                           {"root", "b"},
-                                                           {"root", "a"},
-                                                           {"b", "ba"}});
-  assert(FM);
-
+TEST_F(FeatureModelTest, ltSubtreeBB) {
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("bb"));
   EXPECT_LT(*FM->getFeature("ba"), *FM->getFeature("bb"));
 }
 
-TEST(FeatureModel, gtEqual) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"root", "a"}});
-  assert(FM);
-
+TEST_F(FeatureModelTest, gtEqual) {
   EXPECT_FALSE(*FM->getFeature("a") > *FM->getFeature("a"));
 }
 
-TEST(FeatureModel, gtSimple) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"root", "b"}, {"root", "a"}});
-  assert(FM);
-
+TEST_F(FeatureModelTest, gtSimple) {
   EXPECT_GT(*FM->getFeature("a"), *FM->getFeature("root"));
   EXPECT_GT(*FM->getFeature("b"), *FM->getFeature("root"));
   EXPECT_GT(*FM->getFeature("b"), *FM->getFeature("a"));
@@ -277,25 +211,34 @@ TEST(FeatureModel, gtSimple) {
 //                    FeatureModelConsistencyChecker Tests
 //===----------------------------------------------------------------------===//
 
-TEST(FeatureModelConsistencyCheckerTest, NoChecksIsTrue) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"a", "aa"}, {"a", "ab"}, {"root", "b"}, {"root", "a"}, {"b", "ba"}});
+class FeatureModelConsistencyCheckerTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder B;
+    B.makeFeature<BinaryFeature>("a");
+    B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+    B.addEdge("a", "ab")->makeFeature<BinaryFeature>("ab");
+    B.makeFeature<BinaryFeature>("b");
+    B.addEdge("b", "ba")->makeFeature<BinaryFeature>("ba");
+    B.addEdge("b", "bb")->makeFeature<BinaryFeature>("bb");
+    B.makeFeature<BinaryFeature>("c");
+    FM = B.buildFeatureModel();
+    assert(FM);
+  }
 
+  std::unique_ptr<FeatureModel> FM;
+};
+
+TEST_F(FeatureModelConsistencyCheckerTest, NoChecksIsTrue) {
   EXPECT_TRUE(FeatureModelConsistencyChecker<>::isFeatureModelValid(*FM));
 }
 
-TEST(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentValid) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"a", "aa"}, {"a", "ab"}, {"root", "b"}, {"root", "a"}, {"b", "ba"}});
-
+TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentValid) {
   EXPECT_TRUE(FeatureModelConsistencyChecker<
               EveryFeatureRequiresParent>::isFeatureModelValid(*FM));
 }
 
-TEST(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentMissing) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"a", "aa"}, {"a", "ab"}, {"root", "b"}, {"missing", "a"}, {"b", "ba"}});
-
+TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentMissing) {
   // TODO: find save way to construct wrong FeatureModels
   // FM->deleteFeature("missing");
 
