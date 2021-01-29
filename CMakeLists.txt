@@ -83,7 +83,7 @@ if (NOT VARA_FEATURE_IN_TREE)
     message(STATUS "Using LLVM ${LLVM_REQUESTED_VERSION}")
     find_package(LLVM ${LLVM_REQUESTED_VERSION} REQUIRED CONFIG)
   else ()
-    message(STATUS "Using LLVM 11")
+    message(STATUS "Using LLVM 11 (default)")
     find_package(LLVM 11 REQUIRED CONFIG)
   endif ()
 
