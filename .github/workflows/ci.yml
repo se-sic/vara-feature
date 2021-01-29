@@ -14,8 +14,8 @@ jobs:
       matrix:
         os: [ ubuntu-20.04 ]
         build: [ Release ]
-        llvm: [ 11 ]
-        cxx: [ clang++-11 ]
+        llvm: [ 10 ]
+        cxx: [ clang++-10 ]
     runs-on: ${{ matrix.os }}
     continue-on-error: false
     steps:
@@ -38,7 +38,7 @@ jobs:
         env:
           CXX: ${{ matrix.cxx }}
           BUILD_TYPE: ${{ matrix.build }}
-          LLVM_VERSION: ${{ matrix.llvm }}.1
+          LLVM_VERSION: ${{ matrix.llvm }}
         shell: bash
         run: |
           mkdir build
