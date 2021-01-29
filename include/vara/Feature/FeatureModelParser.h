@@ -90,10 +90,6 @@ public:
 
 private:
 
-  std::string Sxfm;
-  FeatureModelBuilder FMB;
-  std::string Indentation = "\t";
-
   /// Returns a pointer to the dtd representation of the xml file, which
   /// is needed to verify the structure of the xml file.
   ///
@@ -149,6 +145,10 @@ private:
   /// \returns an optional that contains no integer in case of failure or
   /// UINT_MAX for wildcard, or the number itself.
   static std::optional<int> parseCardinality(const string &CardinalityString);
+
+  std::string Sxfm;
+  FeatureModelBuilder FMB;
+  std::string Indentation = "\t";
 };
 
 } // namespace vara::feature
