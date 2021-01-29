@@ -224,9 +224,9 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
     if (Ctxt->vctxt.valid) {
       return Doc;
     }
-    std::cerr << "Failed to validate DTD." << std::endl;
+    llvm::errs() << "Failed to validate DTD.\n";
   } else {
-    std::cerr << "Failed to parse / validate XML." << std::endl;
+    llvm::errs() << "Failed to parse / validate XML.\n";
   }
   return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
 }
@@ -285,10 +285,10 @@ FeatureModelSxfmParser::parseDoc() {
       // as well as constraints
       return Doc;
     } else {
-      std::cerr << "Failed to validate DTD." << std::endl;
+      llvm::errs() << "Failed to validate DTD.\n";
     }
   } else {
-    std::cerr << "Failed to parse / validate XML." << std::endl;
+    llvm::errs() << "Failed to parse / validate XML.\n";
   }
   return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
 }
@@ -354,7 +354,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
         OrGroupMapping;
 
     if (FeatureTree == nullptr) {
-      std::cerr << "Failed to read in feature tree. Is it empty?" << std::endl;
+      llvm::errs() << "Failed to read in feature tree. Is it empty?\n";
       return false;
     }
 
@@ -369,7 +369,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       // not more than 1 additional indentations are allowed to the original one
       // However, we may have arbitrarily less indentations
       if ((To.find(':', 0)) == std::string::npos) {
-        std::cerr << "Colon is missing in line" << To << std::endl;
+        llvm::errs() << "Colon is missing in line" << To << "\n";
         return false;
       }
 
@@ -385,8 +385,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       }
 
       if ((LastIndentationLevel != -1) && Diff > 1) {
-        std::cerr << "Indentation error in feature tree in line " << To
-                  << std::endl;
+        llvm::errs() << "Indentation error in feature tree in line " << To
+                  << "\n";
         return false;
       }
 
@@ -459,9 +459,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       // Add parent from the upper indentation level if there is one
       if (LastIndentationLevel != -1 &&
           CurrentIndentationLevel == RootIndentation) {
-        std::cerr << "Only one feature can be root and have the same "
-                     "indentation as root."
-                  << std::endl;
+        llvm::errs() << "Only one feature can be root and have the same "
+                     "indentation as root.\n";
         return false;
       }
 
@@ -529,7 +528,7 @@ FeatureModelSxfmParser::extractCardinality(const string &StringToExtractFrom) {
   // until the comma. Afterwards, read in the max cardinality until ']'
   std::string::size_type Pos = StringToExtractFrom.find_first_of('[');
   if (Pos == std::string::npos) {
-    std::cerr << "No cardinality given in or group!" << std::endl;
+    std::llvm::errs() << "No cardinality given in or group!\n";
     return std::optional<std::tuple<int, int>>();
   }
   auto CardinalityString = llvm::StringRef(StringToExtractFrom);
@@ -543,15 +542,14 @@ FeatureModelSxfmParser::extractCardinality(const string &StringToExtractFrom) {
           .str());
 
   if (!MinCardinality.has_value() || !MaxCardinality.has_value()) {
-    std::cerr << "No parsable cardinality!" << std::endl;
+    llvm::errs() << "No parsable cardinality!\n";
     return std::optional<std::tuple<int, int>>();
   }
 
   if (MinCardinality.value() != 1 ||
       (MaxCardinality.value() != 1 && MaxCardinality.value() != UINT_MAX)) {
-    std::cerr << "Cardinality unsupported. We support cardinalities [1,1] "
-                 "(alternative) or [1, *] (or group)."
-              << std::endl;
+    llvm::errs() << "Cardinality unsupported. We support cardinalities [1,1] "
+                 "(alternative) or [1, *] (or group).\n";
     return std::optional<std::tuple<int, int>>();
   }
 
@@ -574,8 +572,8 @@ FeatureModelSxfmParser::parseCardinality(const string &CardinalityString) {
     LongNumber = strtol(CardinalityString.c_str(), &End, 0);
     if (errno == ERANGE || LongNumber < INT_MIN || LongNumber > INT_MAX ||
         *CardinalityString.c_str() == '\0' || *End != '\0') {
-      std::cerr << "The following cardinality is not integer: "
-                << CardinalityString << std::endl;
+      llvm::errs() << "The following cardinality is not integer: "
+                << CardinalityString << "\n";
     } else {
       Result = LongNumber;
     }
