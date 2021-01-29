@@ -1,0 +1,48 @@
+name: VaRA feature library CI
+
+on:
+  push:
+    branches: [ vara, vara-dev ]
+  pull_request:
+    branches: [ vara, vara-dev ]
+
+jobs:
+  build:
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+      matrix:
+        os: [ ubuntu-20.04 ]
+        build: [ Release ]
+        llvm: [ 11 ]
+        cxx: [ clang++-11 ]
+    runs-on: ${{ matrix.os }}
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install general dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install libstdc++6 libxml2-dev graphviz
+
+      - name: Install strategy dependencies
+        run: |
+          sudo apt-key adv --fetch-keys https://apt.llvm.org/llvm-snapshot.gpg.key
+          sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
+          sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main'
+          sudo apt-get update
+          sudo apt-get -y install ${{ matrix.cxx }} llvm-${{ matrix.llvm }}-dev clang-tidy-11
+
+      - name: ${{ matrix.cxx }} ${{ matrix.build }} ${{ matrix.llvm }}
+        env:
+          CXX: ${{ matrix.cxx }}
+          BUILD_TYPE: ${{ matrix.build }}
+          LLVM_VERSION: ${{ matrix.llvm }}
+        shell: bash
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DLLVM_REQUESTED_VERSION=$LLVM_VERSION -DPYTHON_EXECUTABLE=$(which python3)
+          cmake --build . -- -j
+          cmake --build . --target check-vara-feature-unittests
