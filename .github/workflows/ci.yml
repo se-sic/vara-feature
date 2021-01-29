@@ -38,7 +38,7 @@ jobs:
         env:
           CXX: ${{ matrix.cxx }}
           BUILD_TYPE: ${{ matrix.build }}
-          LLVM_VERSION: ${{ matrix.llvm }}
+          LLVM_VERSION: ${{ matrix.llvm }}.1
         shell: bash
         run: |
           mkdir build
