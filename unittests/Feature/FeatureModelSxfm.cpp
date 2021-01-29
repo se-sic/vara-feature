@@ -9,6 +9,11 @@
 
 namespace vara::feature {
 
+/// This test checks whether the feature model is read in correctly.
+/// The synthetic feature model contains cases that lead to errors in another
+/// implementation (SPL Conqueror).
+/// Specifically, we test the size of the feature model, the name of the
+/// feature model and also the names and types of the features.
 TEST(SxfmParser, validation) {
   auto FS =
       llvm::MemoryBuffer::getFileAsStream(getTestResource("sxfm_example.sxfm"));
@@ -29,6 +34,9 @@ TEST(SxfmParser, validation) {
             Feature::FeatureKind::FK_BINARY);
 }
 
+/// Here, the check of the features is performed using a real feature model.
+/// Note that also the format of the sxfm file differs a bit from the previous
+/// test in that we use default indentation with tabulators.
 TEST(SxfmParser, parsing) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(getTestResource("test.sxfm"));
   EXPECT_TRUE(FS && "Input file could not be read.");
@@ -55,6 +63,7 @@ TEST(SxfmParser, parsing) {
             Feature::FeatureKind::FK_BINARY);
 }
 
+/// Check whether the wrong indentation leads to errors.
 TEST(SxfmParser, wrong_indentation) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
       getTestResource("test_wrong_indentation.sxfm"));
@@ -64,6 +73,7 @@ TEST(SxfmParser, wrong_indentation) {
   EXPECT_FALSE(FM);
 }
 
+/// Check whether a wrong xml format leads to errors.
 TEST(SxfmParser, wrong_xml_format) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
       getTestResource("test_wrong_xml_format.sxfm"));
