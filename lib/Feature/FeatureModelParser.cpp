@@ -528,7 +528,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
   // until the comma. Afterwards, read in the max cardinality until ']'
   std::string::size_type Pos = StringToExtractFrom.find_first_of('[');
   if (Pos == std::string::npos) {
-    std::llvm::errs() << "No cardinality given in or group!\n";
+    llvm::errs() << "No cardinality given in or group!\n";
     return std::optional<std::tuple<int, int>>();
   }
   auto CardinalityString = llvm::StringRef(StringToExtractFrom);
