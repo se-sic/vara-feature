@@ -1,5 +1,8 @@
 #include "vara/Feature/FeatureModelParser.h"
 
+#include "llvm/ADT/StringExtras.h"
+#include "llvm/Support/FormatVariadic.h"
+
 #include "SxfmConstants.h"
 #include "XmlConstants.h"
 
@@ -249,8 +252,7 @@ std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
                                                   : nullptr;
 }
 
-FeatureModelSxfmParser::UniqueXmlDtd
-FeatureModelSxfmParser::createDtd() {
+FeatureModelSxfmParser::UniqueXmlDtd FeatureModelSxfmParser::createDtd() {
   UniqueXmlDtd Dtd(
       xmlIOParseDTD(nullptr,
                     xmlParserInputBufferCreateMem(
@@ -263,16 +265,14 @@ FeatureModelSxfmParser::createDtd() {
   return Dtd;
 }
 
-FeatureModelSxfmParser::UniqueXmlDoc
-FeatureModelSxfmParser::parseDoc() {
+FeatureModelSxfmParser::UniqueXmlDoc FeatureModelSxfmParser::parseDoc() {
   // Initialize the XML parser
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
   // Parse the given model by libxml2
-  UniqueXmlDoc Doc(
-      xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(), Sxfm.length(), nullptr,
-                        nullptr, XML_PARSE_NOBLANKS),
-      xmlFreeDoc);
+  UniqueXmlDoc Doc(xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(), Sxfm.length(),
+                                     nullptr, nullptr, XML_PARSE_NOBLANKS),
+                   xmlFreeDoc);
   xmlCleanupParser();
 
   // In the following, the document is validated.
@@ -290,7 +290,7 @@ FeatureModelSxfmParser::parseDoc() {
   } else {
     llvm::errs() << "Failed to parse / validate XML.\n";
   }
-  return UniqueXmlDoc (nullptr, nullptr);
+  return UniqueXmlDoc(nullptr, nullptr);
 }
 
 bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
@@ -386,7 +386,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
 
       if ((LastIndentationLevel != -1) && Diff > 1) {
         llvm::errs() << "Indentation error in feature tree in line " << To
-                  << "\n";
+                     << "\n";
         return false;
       }
 
@@ -460,7 +460,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       if (LastIndentationLevel != -1 &&
           CurrentIndentationLevel == RootIndentation) {
         llvm::errs() << "Only one feature can be root and have the same "
-                     "indentation as root.\n";
+                        "indentation as root.\n";
         return false;
       }
 
@@ -519,8 +519,8 @@ bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
   return true;
 }
 
-std::optional<std::tuple<int, int>>
-FeatureModelSxfmParser::extractCardinality(llvm::StringRef StringToExtractFrom) {
+std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
+    llvm::StringRef StringToExtractFrom) {
   std::optional<int> MinCardinality;
   std::optional<int> MaxCardinality;
 
@@ -549,7 +549,7 @@ FeatureModelSxfmParser::extractCardinality(llvm::StringRef StringToExtractFrom) 
   if (MinCardinality.value() != 1 ||
       (MaxCardinality.value() != 1 && MaxCardinality.value() != UINT_MAX)) {
     llvm::errs() << "Cardinality unsupported. We support cardinalities [1,1] "
-                 "(alternative) or [1, *] (or group).\n";
+                    "(alternative) or [1, *] (or group).\n";
     return std::optional<std::tuple<int, int>>();
   }
 
@@ -566,14 +566,10 @@ FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {
     Result = UINT_MAX;
   } else {
     // Convert the string into an integer in a safe way
-    char *End;
     long LongNumber;
-    errno = 0;
-    LongNumber = strtol(CardinalityString.c_str(), &End, 0);
-    if (errno == ERANGE || LongNumber < INT_MIN || LongNumber > INT_MAX ||
-        *CardinalityString.c_str() == '\0' || *End != '\0') {
-      llvm::errs() << "The following cardinality is not integer: "
-                << CardinalityString << "\n";
+    if (!llvm::to_integer(CardinalityString, LongNumber, 10)) {
+      llvm::errs() << llvm::formatv(
+          "The cardinality: '{0}' was not an integer.\n", CardinalityString);
     } else {
       Result = LongNumber;
     }
