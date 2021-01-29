@@ -239,7 +239,7 @@ bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 //===----------------------------------------------------------------------===//
 
 std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc = parseDoc();
+  UniqueXmlDoc Doc = parseDoc();
   if (!Doc) {
     return nullptr;
   }
@@ -249,9 +249,9 @@ std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
                                                   : nullptr;
 }
 
-std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
+FeatureModelSxfmParser::UniqueXmlDtd
 FeatureModelSxfmParser::createDtd() {
-  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
+  UniqueXmlDtd Dtd(
       xmlIOParseDTD(nullptr,
                     xmlParserInputBufferCreateMem(
                         SxfmConstants::DtdRaw.c_str(),
@@ -263,13 +263,13 @@ FeatureModelSxfmParser::createDtd() {
   return Dtd;
 }
 
-std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>
+FeatureModelSxfmParser::UniqueXmlDoc
 FeatureModelSxfmParser::parseDoc() {
   // Initialize the XML parser
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
   // Parse the given model by libxml2
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc(
+  UniqueXmlDoc Doc(
       xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(), Sxfm.length(), nullptr,
                         nullptr, XML_PARSE_NOBLANKS),
       xmlFreeDoc);
@@ -290,7 +290,7 @@ FeatureModelSxfmParser::parseDoc() {
   } else {
     llvm::errs() << "Failed to parse / validate XML.\n";
   }
-  return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
+  return UniqueXmlDoc (nullptr, nullptr);
 }
 
 bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {

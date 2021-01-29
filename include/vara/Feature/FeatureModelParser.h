@@ -73,6 +73,9 @@ private:
 /// in an XML structure.
 class FeatureModelSxfmParser : public FeatureModelParser {
 public:
+  using UniqueXmlDoc = std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>;
+  using UniqueXmlDtd = std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>;
+
   explicit FeatureModelSxfmParser(std::string Sxfm) : Sxfm(std::move(Sxfm)) {}
 
   /// This method checks if the given feature model is valid
