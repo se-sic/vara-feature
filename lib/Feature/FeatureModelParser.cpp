@@ -520,7 +520,7 @@ bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
 }
 
 std::optional<std::tuple<int, int>>
-FeatureModelSxfmParser::extractCardinality(const string &StringToExtractFrom) {
+FeatureModelSxfmParser::extractCardinality(llvm::StringRef StringToExtractFrom) {
   std::optional<int> MinCardinality;
   std::optional<int> MaxCardinality;
 
@@ -558,7 +558,7 @@ FeatureModelSxfmParser::extractCardinality(const string &StringToExtractFrom) {
 }
 
 std::optional<int>
-FeatureModelSxfmParser::parseCardinality(const string &CardinalityString) {
+FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {
   std::optional<int> Result = std::optional<int>();
   if (CardinalityString == "*") {
     // We use UINT_MAX as our magic integer (which is -1 as int) to indicate

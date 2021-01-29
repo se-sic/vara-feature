@@ -133,7 +133,7 @@ private:
   /// \returns returns the cardinality of the given string and is empty if the
   /// format of the string is wrong
   static std::optional<std::tuple<int, int>>
-  extractCardinality(const string &StringToExtractFrom);
+  extractCardinality(llvm::StringRef StringToExtractFrom);
 
   /// This method parses the given cardinality and returns an optional.
   /// If the optional is empty, the process failed; otherwise the result
@@ -144,7 +144,7 @@ private:
   ///
   /// \returns an optional that contains no integer in case of failure or
   /// UINT_MAX for wildcard, or the number itself.
-  static std::optional<int> parseCardinality(const string &CardinalityString);
+  static std::optional<int> parseCardinality(llvm::StringRef CardinalityString);
 
   std::string Sxfm;
   FeatureModelBuilder FMB;
