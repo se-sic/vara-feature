@@ -33,7 +33,7 @@ public:
 
   Feature(std::string Name)
       : FeatureTreeNode(NodeKind::NK_FEATURE), Kind(FeatureKind::FK_UNKNOWN),
-        Name(std::move(Name)), Source(std::nullopt), Opt(false) {}
+        Name(std::move(Name)), Opt(false) {}
   Feature(const Feature &) = delete;
   Feature &operator=(const Feature &) = delete;
   Feature(Feature &&) = delete;
@@ -80,11 +80,37 @@ public:
     return Other.operator<(*this);
   }
 
-  [[nodiscard]] FeatureSourceRange *getFeatureSourceRange() {
-    return Source.has_value() ? &Source.value() : nullptr;
+  //===--------------------------------------------------------------------===//
+  // Locations
+  [[nodiscard]] bool hasLocations() const { return !Locations.empty(); }
+
+  void addLocation(FeatureSourceRange &Fsr) {
+    Locations.push_back(std::move(Fsr));
   }
-  void setFeatureSourceRange(FeatureSourceRange FeatureSR) {
-    Source = std::move(FeatureSR);
+  std::vector<FeatureSourceRange>::iterator
+  removeLocation(const FeatureSourceRange &Fsr) {
+    return Locations.erase(std::find(Locations.begin(), Locations.end(), Fsr));
+  }
+
+  bool updateLocation(const FeatureSourceRange &OldFsr,
+                      FeatureSourceRange NewFsr) {
+    auto Loc = std::find(Locations.begin(), Locations.end(), OldFsr);
+    if (Loc != Locations.end()) {
+      *Loc = std::move(NewFsr);
+      return true;
+    }
+    return false;
+  }
+
+  [[nodiscard]] std::vector<FeatureSourceRange>::iterator getLocationsBegin() {
+    return Locations.begin();
+  }
+  [[nodiscard]] std::vector<FeatureSourceRange>::iterator getLocationsEnd() {
+    return Locations.end();
+  }
+  using locations_iterator = typename std::vector<FeatureSourceRange>::iterator;
+  [[nodiscard]] llvm::iterator_range<locations_iterator> getLocations() {
+    return llvm::make_range(Locations.begin(), Locations.end());
   }
 
   //===--------------------------------------------------------------------===//
@@ -147,16 +173,16 @@ public:
 
 protected:
   Feature(FeatureKind Kind, string Name, bool Opt,
-          std::optional<FeatureSourceRange> Source, FeatureTreeNode *Parent,
+          std::vector<FeatureSourceRange> Locations, FeatureTreeNode *Parent,
           const NodeSetType &Children)
       : FeatureTreeNode(NodeKind::NK_FEATURE, Parent, Children), Kind(Kind),
-        Name(std::move(Name)), Source(std::move(Source)), Opt(Opt) {}
+        Name(std::move(Name)), Locations(std::move(Locations)), Opt(Opt) {}
 
   Feature(FeatureKind Kind, string Name, bool Opt,
-          std::optional<FeatureSourceRange> Source, FeatureTreeNode *Parent,
+          std::vector<FeatureSourceRange> Locations, FeatureTreeNode *Parent,
           const std::vector<FeatureTreeNode *> &Children)
       : FeatureTreeNode(NodeKind::NK_FEATURE, Parent, Children), Kind(Kind),
-        Name(std::move(Name)), Source(std::move(Source)), Opt(Opt) {}
+        Name(std::move(Name)), Locations(std::move(Locations)), Opt(Opt) {}
 
 private:
   void addConstraint(Constraint *C) {
@@ -185,7 +211,7 @@ private:
   friend class FeatureModelBuilder;
   const FeatureKind Kind;
   string Name;
-  std::optional<FeatureSourceRange> Source;
+  std::vector<FeatureSourceRange> Locations;
   std::vector<Constraint *> Constraints;
   std::vector<ExcludesConstraint *> Excludes;
   std::vector<ImpliesConstraint *> Implications;
@@ -196,14 +222,15 @@ private:
 class BinaryFeature : public Feature {
 
 public:
-  BinaryFeature(string Name, bool Opt = false,
-                std::optional<FeatureSourceRange> Loc = std::nullopt,
-                Feature *Parent = nullptr, const NodeSetType &Children = {})
+  BinaryFeature(
+      string Name, bool Opt = false,
+      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
+      Feature *Parent = nullptr, const NodeSetType &Children = {})
       : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc),
                 Parent, Children) {}
 
   BinaryFeature(const string &Name, bool Opt,
-                const std::optional<FeatureSourceRange> &Loc, Feature *Parent,
+                const std::vector<FeatureSourceRange> &Loc, Feature *Parent,
                 const std::vector<FeatureTreeNode *> &Children)
       : Feature(FeatureKind::FK_BINARY, Name, Opt, Loc, Parent, Children) {}
 
@@ -220,15 +247,16 @@ public:
   using ValuesVariantType =
       typename std::variant<std::pair<int, int>, std::vector<int>>;
 
-  NumericFeature(string Name, ValuesVariantType Values, bool Opt = false,
-                 std::optional<FeatureSourceRange> Loc = std::nullopt,
-                 Feature *Parent = nullptr, const NodeSetType &Children = {})
+  NumericFeature(
+      string Name, ValuesVariantType Values, bool Opt = false,
+      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
+      Feature *Parent = nullptr, const NodeSetType &Children = {})
       : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc),
                 Parent, Children),
         Values(std::move(Values)) {}
 
   NumericFeature(const string &Name, ValuesVariantType Values, bool Opt,
-                 const std::optional<FeatureSourceRange> &Loc, Feature *Parent,
+                 const std::vector<FeatureSourceRange> &Loc, Feature *Parent,
                  const std::vector<FeatureTreeNode *> &Children)
       : Feature(FeatureKind::FK_NUMERIC, Name, Opt, Loc, Parent, Children),
         Values(std::move(Values)) {}

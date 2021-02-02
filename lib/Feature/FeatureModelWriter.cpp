@@ -338,9 +338,15 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
     }
   }
 
-  // location?
-  if (FeatureSourceRange *Fsr = Feature1.getFeatureSourceRange()) {
-    RC = writeSourceRange(Writer, *Fsr);
+  // locations?
+  if (Feature1.hasLocations()) {
+    RC = xmlTextWriterStartElement(Writer, XmlConstants::LOCATIONS);
+    CHECK_RC
+    for (FeatureSourceRange &Fsr : Feature1.getLocations()) {
+      RC = writeSourceRange(Writer, Fsr);
+      CHECK_RC
+    }
+    RC = xmlTextWriterEndElement(Writer); // LOCATIONS
     CHECK_RC
   }
 
@@ -352,7 +358,19 @@ int FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr Writer,
                                             FeatureSourceRange &Location) {
   int RC;
 
-  RC = xmlTextWriterStartElement(Writer, XmlConstants::LOCATION);
+  RC = xmlTextWriterStartElement(Writer, XmlConstants::SOURCERANGE);
+  CHECK_RC
+
+  switch (Location.getCategory()) {
+  case FeatureSourceRange::Category::necessary:
+    RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::CATEGORY,
+                                     XmlConstants::NECESSARY);
+    break;
+  case FeatureSourceRange::Category::inessential:
+    RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::CATEGORY,
+                                     XmlConstants::INESSENTIAL);
+    break;
+  }
   CHECK_RC
 
   RC = xmlTextWriterWriteElement(
@@ -394,7 +412,7 @@ int FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr Writer,
   RC = xmlTextWriterEndElement(Writer); // END
   CHECK_RC
 
-  RC = xmlTextWriterEndElement(Writer); // LOCATION
+  RC = xmlTextWriterEndElement(Writer); // SOURCERANGE
   return RC;
 }
 

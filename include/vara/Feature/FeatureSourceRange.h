@@ -3,12 +3,12 @@
 
 #include "llvm/Support/FormatVariadic.h"
 
-#ifdef STD_EXPERIMENTAL_FILESYSTEM
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#else
+#if __has_include(<filesystem>)
 #include <filesystem>
 namespace fs = std::filesystem;
+#else
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
 #endif
 
 #include <optional>
@@ -25,10 +25,17 @@ namespace vara::feature {
 
 class FeatureSourceRange {
 public:
+  enum class Category { necessary, inessential };
+
   class FeatureSourceLocation {
 
   public:
     FeatureSourceLocation(int Line, int Column) : Line(Line), Column(Column) {}
+    FeatureSourceLocation(const FeatureSourceLocation &L) = default;
+    FeatureSourceLocation &operator=(const FeatureSourceLocation &) = default;
+    FeatureSourceLocation(FeatureSourceLocation &&) = default;
+    FeatureSourceLocation &operator=(FeatureSourceLocation &&) = default;
+    virtual ~FeatureSourceLocation() = default;
 
     void setLineNumber(int LineNumber) { this->Line = LineNumber; }
     [[nodiscard]] int getLineNumber() const { return this->Line; }
@@ -60,12 +67,20 @@ public:
     int Column;
   };
 
-  // TODO(s9latimm): remove NOLINT
-  FeatureSourceRange(
-      fs::path Path,
-      std::optional<FeatureSourceLocation> Start = std::nullopt, // NOLINT
-      std::optional<FeatureSourceLocation> End = std::nullopt)   // NOLINT
-      : Path(std::move(Path)), Start(Start), End(End) {}         // NOLINT
+  FeatureSourceRange(fs::path Path,
+                     std::optional<FeatureSourceLocation> Start = std::nullopt,
+                     std::optional<FeatureSourceLocation> End = std::nullopt,
+                     Category CategoryKind = Category::necessary)
+      : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
+        CategoryKind(CategoryKind) {}
+  FeatureSourceRange(const FeatureSourceRange &L) = default;
+  FeatureSourceRange &operator=(const FeatureSourceRange &) = default;
+  FeatureSourceRange(FeatureSourceRange &&) = default;
+  FeatureSourceRange &operator=(FeatureSourceRange &&) = default;
+  virtual ~FeatureSourceRange() = default;
+
+  [[nodiscard]] Category getCategory() const { return this->CategoryKind; }
+  void setCategory(Category Value) { this->CategoryKind = Value; }
 
   [[nodiscard]] fs::path getPath() const { return Path; }
   void setPath(const std::string &Value) {
@@ -96,7 +111,8 @@ public:
   }
 
   inline bool operator==(const FeatureSourceRange &Other) const {
-    return Path == Other.Path and Start == Other.Start and End == Other.End;
+    return CategoryKind == Other.CategoryKind and Path == Other.Path and
+           Start == Other.Start and End == Other.End;
   }
 
   inline bool operator!=(const FeatureSourceRange &Other) const {
@@ -107,6 +123,7 @@ private:
   fs::path Path;
   std::optional<FeatureSourceLocation> Start;
   std::optional<FeatureSourceLocation> End;
+  Category CategoryKind;
 };
 } // namespace vara::feature
 

@@ -13,6 +13,81 @@ TEST(FeatureModel, build) {
   EXPECT_TRUE(B.buildFeatureModel());
 }
 
+TEST(FeatureModel, cloneUnique) {
+  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
+      {{"a", "aa"}, {"root", "aba"}, {"root", "a"}});
+  assert(FM);
+
+  auto Clone = FM->clone();
+
+  assert(Clone);
+  for (const auto &Feature : FM->features()) {
+    EXPECT_NE(Clone->getFeature(Feature->getName()), Feature);
+  }
+}
+
+TEST(FeatureModel, cloneRoot) {
+  FeatureModelBuilder B;
+  BinaryFeature A("a");
+  B.addFeature(A);
+  B.setRoot("a");
+  auto FM = B.buildFeatureModel();
+  assert(FM);
+
+  auto Clone = FM->clone();
+  assert(Clone);
+  FM.reset();
+
+  // The inner EXPECT_TRUE just handles the nodiscard of isRoot
+  // NOLINTNEXTLINE
+  ASSERT_EXIT(EXPECT_TRUE(FM->getFeature("a")->isRoot()),
+              testing::KilledBySignal(SIGSEGV), ".*");
+  EXPECT_TRUE(Clone->getFeature("a")->isRoot());
+}
+
+TEST(FeatureModel, cloneRelationship) {
+  FeatureModelBuilder B;
+  BinaryFeature AA("aa");
+  BinaryFeature AB("ab");
+  auto CS = Feature::NodeSetType();
+  CS.insert(&AA);
+  CS.insert(&AB);
+  B.addParent("aa", "root")->addFeature(AA);
+  B.addParent("ab", "root")->addFeature(AB);
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, {"aa", "ab"},
+                        "root");
+  auto FM = B.buildFeatureModel();
+  assert(FM);
+
+  auto Clone = FM->clone();
+  assert(Clone);
+  FM.reset();
+
+  EXPECT_FALSE(Clone->getRoot()->getChildren<Relationship>().empty());
+  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("aa")->getParent()));
+  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("ab")->getParent()));
+}
+
+TEST(FeatureModel, cloneConstraint) {
+  FeatureModelBuilder B;
+  BinaryFeature A("a");
+  B.addFeature(A);
+  B.addConstraint(std::make_unique<PrimaryFeatureConstraint>(&A));
+  auto FM = B.buildFeatureModel();
+  assert(FM);
+
+  auto Clone = FM->clone();
+  assert(Clone);
+  auto *Deleted = *FM->getFeature("a")->constraints().begin();
+  FM.reset();
+
+  // The inner EXPECT_TRUE just handles the nodiscard of clone
+  // NOLINTNEXTLINE
+  ASSERT_EXIT(EXPECT_TRUE(Deleted->clone()), testing::KilledBySignal(SIGSEGV),
+              ".*");
+  EXPECT_TRUE((*Clone->getFeature("a")->constraints().begin())->clone());
+}
+
 TEST(FeatureModel, size) {
   FeatureModelBuilder B;
 
@@ -28,8 +103,8 @@ TEST(FeatureModel, addFeature) {
   auto CS = Feature::NodeSetType();
   CS.insert(FM->getFeature("aba"));
 
-  FM->addFeature(std::make_unique<BinaryFeature>("ab", false, std::nullopt,
-                                                 FM->getFeature("a"), CS));
+  FM->addFeature(std::make_unique<BinaryFeature>(
+      "ab", false, std::vector<FeatureSourceRange>(), FM->getFeature("a"), CS));
 
   EXPECT_LT(*FM->getFeature("a"), *FM->getFeature("ab"));
   EXPECT_GT(*FM->getFeature("aba"), *FM->getFeature("ab"));
@@ -43,8 +118,8 @@ TEST(FeatureModel, newRoot) {
   auto CS = Feature::NodeSetType();
   CS.insert(FM->getFeature("root"));
 
-  FM->addFeature(std::make_unique<BinaryFeature>("new_root", false,
-                                                 std::nullopt, nullptr, CS));
+  FM->addFeature(std::make_unique<BinaryFeature>(
+      "new_root", false, std::vector<FeatureSourceRange>(), nullptr, CS));
 
   EXPECT_TRUE(FM->getFeature("new_root")->isRoot());
   EXPECT_FALSE(FM->getFeature("root")->isRoot());

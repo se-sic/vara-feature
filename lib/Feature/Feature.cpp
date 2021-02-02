@@ -8,8 +8,13 @@ std::string Feature::toString() const {
   std::stringstream StrS;
   StrS << "  name: \"" << Name
        << "\",\n  optional: " << (Opt ? "true" : "false") << ",\n  ";
-  if (Source) {
-    StrS << "location: " << Source->toString() << ",\n  ";
+  if (hasLocations()) {
+    StrS << "locations: "
+         << std::for_each(Locations.begin(), Locations.end(),
+                          [](const FeatureSourceRange &Fsr) {
+                            return llvm::formatv("[{0}]", Fsr.toString());
+                          })
+         << ",\n  ";
   }
   if (getParentFeature()) {
     StrS << "parent: " << getParentFeature()->getName().str() << ",\n  ";

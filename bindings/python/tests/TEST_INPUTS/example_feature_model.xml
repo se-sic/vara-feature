@@ -20,17 +20,19 @@
         <options>AC</options>
       </children>
       <optional>False</optional>
-      <location>
-        <path>main.c</path>
-        <start>
-          <line>6</line>
-          <column>3</column>
-        </start>
-        <end>
-          <line>6</line>
-          <column>26</column>
-        </end>
-      </location>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>6</line>
+            <column>3</column>
+          </start>
+          <end>
+            <line>6</line>
+            <column>26</column>
+          </end>
+        </sourceRange>
+      </locations>
     </configurationOption>
     <configurationOption>
       <name>AA</name>
