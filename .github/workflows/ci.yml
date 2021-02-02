@@ -33,7 +33,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install general dependencies
+      - name: Install General Dependencies
         shell: bash
         run: |
           sudo apt-key adv --fetch-keys  https://apt.kitware.com/keys/kitware-archive-latest.asc
@@ -41,7 +41,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install cmake libstdc++6 libxml2-dev python3-dev graphviz gcc-9 g++-9
 
-      - name: Install strategy dependencies
+      - name: Install Strategy Dependencies
         shell: bash
         run: |
           sudo apt-key adv --fetch-keys https://apt.llvm.org/llvm-snapshot.gpg.key
@@ -62,7 +62,7 @@ jobs:
           cmake .. -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DLLVM_REQUESTED_VERSION=$LLVM_VERSION -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
-      - name: Run tests
+      - name: Run Tests
         env:
           CXX: ${{ matrix.compiler }}
         shell: bash
