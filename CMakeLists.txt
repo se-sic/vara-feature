@@ -81,7 +81,7 @@ if (NOT VARA_FEATURE_IN_TREE)
   # Only search for LLVM if we build out of tree
   if (${LLVM_REQUESTED_VERSION})
     message(STATUS "Using LLVM ${LLVM_REQUESTED_VERSION}")
-    find_package(LLVM ${LLVM_REQUESTED_VERSION} REQUIRED CONFIG)
+    find_package(LLVM ${LLVM_REQUESTED_VERSION}.0...${LLVM_REQUESTED_VERSION}.9 REQUIRED CONFIG)
   else ()
     message(STATUS "Using LLVM 11 (default)")
     find_package(LLVM 11 REQUIRED CONFIG)
