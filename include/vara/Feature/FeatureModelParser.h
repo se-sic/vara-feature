@@ -22,6 +22,7 @@ protected:
 public:
   using UniqueXmlDoc = std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>;
   using UniqueXmlDtd = std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>;
+  using UniqueXmlChar = std::unique_ptr<xmlChar, void (*)(void *)>;
 
   virtual ~FeatureModelParser() = default;
 
@@ -50,7 +51,6 @@ public:
   bool verifyFeatureModel() override;
 
 private:
-  using constXmlCharPtr = const xmlChar *;
 
   std::string Xml;
   FeatureModelBuilder FMB;

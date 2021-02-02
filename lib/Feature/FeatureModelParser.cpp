@@ -23,10 +23,8 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   std::optional<FeatureSourceRange> Loc;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
-      string Cnt = std::string(
-          reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
-                                       xmlNodeGetContent(Head), xmlFree)
-                                       .get()));
+      string Cnt = std::string(reinterpret_cast<char *>(
+          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
       if (!xmlStrcmp(Head->name, XmlConstants::NAME)) {
         Name = Cnt;
       } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
@@ -37,8 +35,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
-              std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
-                  xmlNodeGetContent(Child), xmlFree);
+              UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
               FMB.addConstraint(make_unique<ExcludesConstraint>(
                   make_unique<PrimaryFeatureConstraint>(
                       make_unique<Feature>(Name)),
@@ -51,8 +48,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
-              std::unique_ptr<xmlChar, void (*)(void *)> CCnt(
-                  xmlNodeGetContent(Child), xmlFree);
+              UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
               FMB.addConstraint(make_unique<ImpliesConstraint>(
                   make_unique<PrimaryFeatureConstraint>(
                       make_unique<Feature>(Name)),
@@ -69,9 +65,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
               Path = fs::path(reinterpret_cast<char *>(
-                  std::unique_ptr<xmlChar, void (*)(void *)>(
-                      xmlNodeGetContent(Child), xmlFree)
-                      .get()));
+                  UniqueXmlChar(xmlNodeGetContent(Child), xmlFree).get()));
 
             } else if (!xmlStrcmp(Child->name, XmlConstants::START)) {
               Start = createFeatureSourceLocation(Child);
@@ -124,10 +118,8 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
-        string Cnt = std::string(
-            reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
-                                         xmlNodeGetContent(H), xmlFree)
-                                         .get()));
+        string Cnt = std::string(reinterpret_cast<char *>(
+            UniqueXmlChar(xmlNodeGetContent(H), xmlFree).get()));
         // TODO(se-passau/VaRA#664): Implement advanced parsing into constraint
         //  tree
       }
@@ -138,13 +130,11 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
 
 bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
-        xmlGetProp(Node, XmlConstants::NAME), xmlFree);
+    UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::NAME), xmlFree);
     FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
   }
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
-        xmlGetProp(Node, XmlConstants::ROOT), xmlFree);
+    UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::ROOT), xmlFree);
     FMB.setPath(Cnt ? fs::path(reinterpret_cast<char *>(Cnt.get()))
                     : fs::current_path());
   }
@@ -175,15 +165,11 @@ FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(Head->name, XmlConstants::LINE)) {
-        Line = atoi(
-            reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
-                                         xmlNodeGetContent(Head), xmlFree)
-                                         .get()));
+        Line = atoi(reinterpret_cast<char *>(
+            UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
       } else if (!xmlStrcmp(Head->name, XmlConstants::COLUMN)) {
-        Column = atoi(
-            reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
-                                         xmlNodeGetContent(Head), xmlFree)
-                                         .get()));
+        Column = atoi(reinterpret_cast<char *>(
+            UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
       }
     }
   }
@@ -200,8 +186,7 @@ std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
                                                   : nullptr;
 }
 
-FeatureModelParser::UniqueXmlDtd
-FeatureModelXmlParser::createDtd() {
+FeatureModelParser::UniqueXmlDtd FeatureModelXmlParser::createDtd() {
   UniqueXmlDtd Dtd(
       xmlIOParseDTD(nullptr,
                     xmlParserInputBufferCreateMem(XmlConstants::DtdRaw.c_str(),
@@ -217,10 +202,9 @@ FeatureModelXmlParser::createDtd() {
 FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
-  UniqueXmlDoc Doc(
-      xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(), Xml.length(), nullptr, nullptr,
-                        XML_PARSE_NOBLANKS),
-      xmlFreeDoc);
+  UniqueXmlDoc Doc(xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(), Xml.length(),
+                                     nullptr, nullptr, XML_PARSE_NOBLANKS),
+                   xmlFreeDoc);
   xmlCleanupParser();
   if (Doc && Ctxt->valid) {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
@@ -231,7 +215,7 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   } else {
     llvm::errs() << "Failed to parse / validate XML.\n";
   }
-  return UniqueXmlDoc (nullptr, nullptr);
+  return UniqueXmlDoc(nullptr, nullptr);
 }
 
 // TODO(s9latimm): replace with builder err
@@ -284,20 +268,18 @@ FeatureModelSxfmParser::UniqueXmlDoc FeatureModelSxfmParser::parseDoc() {
       // and (3) check the tree-like structure of the embedded feature model
       // as well as constraints
       return Doc;
-    } else {
-      llvm::errs() << "Failed to validate DTD.\n";
     }
-  } else {
-    llvm::errs() << "Failed to parse / validate XML.\n";
+    llvm::errs() << "Failed to validate DTD.\n";
   }
+  llvm::errs() << "Failed to parse / validate XML.\n";
+
   return UniqueXmlDoc(nullptr, nullptr);
 }
 
 bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
   // Parse the name first.
   {
-    std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
-        xmlGetProp(Node, XmlConstants::NAME), xmlFree);
+    UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::NAME), xmlFree);
     FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
   }
   // After the feature model tag, some metadata is provided.
@@ -309,8 +291,7 @@ bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
         // Check whether a custom indentation is defined in the feature tree and
         // set it accordingly
         {
-          std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
-              xmlGetProp(H, SxfmConstants::INDENTATION), xmlFree);
+          UniqueXmlChar Cnt(xmlGetProp(H, SxfmConstants::INDENTATION), xmlFree);
           if (Cnt) {
             Indentation = reinterpret_cast<char *>(Cnt.get());
           }
@@ -373,7 +354,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
         return false;
       }
 
-      llvm::StringRef ToStringRef = llvm::StringRef(To);
+      llvm::StringRef ToStringRef(To);
       llvm::StringRef IndentationString =
           ToStringRef.substr(0, ToStringRef.find(':'));
       int CurrentIndentationLevel = IndentationString.count(Indentation);
@@ -398,6 +379,9 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       std::optional<std::tuple<int, int>> Cardinalities;
 
       switch (To.at(Pos - 1)) {
+      case 'r':
+      case 'm':
+        break;
       case 'o':
         // Code for optional
         Opt = true;
@@ -415,6 +399,11 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
         // Code for alternative child
         Pos--;
         break;
+      default:
+        llvm::errs()
+            << "Wrong indentation or unsupported type of configuration option:'"
+            << To << "'\n";
+        return false;
       }
       // Extract the name
       Name =
@@ -531,7 +520,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
     llvm::errs() << "No cardinality given in or group!\n";
     return std::optional<std::tuple<int, int>>();
   }
-  auto CardinalityString = llvm::StringRef(StringToExtractFrom);
+  llvm::StringRef CardinalityString(StringToExtractFrom);
   size_t CommaPos = CardinalityString.find(',', Pos + 1);
   MinCardinality = parseCardinality(
       CardinalityString.substr(Pos + 1, CommaPos - Pos - 1).str());
