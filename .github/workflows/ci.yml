@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     strategy:
-      max-parallel: 1
       fail-fast: true
       matrix:
         os: [ ubuntu-20.04 ]
@@ -34,6 +33,7 @@ jobs:
           submodules: recursive
 
       - name: Install general dependencies
+        shell: bash
         run: |
           sudo apt-key adv --fetch-keys  https://apt.kitware.com/keys/kitware-archive-latest.asc
           sudo apt-add-repository -y 'deb https://apt.kitware.com/ubuntu/ focal main'
@@ -41,6 +41,7 @@ jobs:
           sudo apt-get -y install cmake libstdc++6 libxml2-dev python3-dev graphviz gcc-9 g++-9
 
       - name: Install strategy dependencies
+        shell: bash
         run: |
           sudo apt-key adv --fetch-keys https://apt.llvm.org/llvm-snapshot.gpg.key
           sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
@@ -48,7 +49,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install clang-${{ matrix.llvm-major }} llvm-${{ matrix.llvm-major }}-dev clang-tidy-11
 
-      - name: ${{ matrix.cxx }} ${{ matrix.build }} ${{ matrix.llvm }}
+      - name: Build ${{ matrix.build }} with ${{ matrix.compiler }} and LLVM ${{ matrix.llvm-major }}
         env:
           BUILD_TYPE: ${{ matrix.build }}
           LLVM_VERSION: ${{ matrix.llvm-major }}.${{ matrix.llvm-minor }}
@@ -62,3 +63,4 @@ jobs:
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-feature-python
           cmake --build . --target check-vara-fm-viewer
+          cmake --build . --target tidy-vara-feature
