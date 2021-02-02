@@ -200,9 +200,9 @@ std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
                                                   : nullptr;
 }
 
-std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>
+FeatureModelParser::UniqueXmlDtd
 FeatureModelXmlParser::createDtd() {
-  std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> Dtd(
+  UniqueXmlDtd Dtd(
       xmlIOParseDTD(nullptr,
                     xmlParserInputBufferCreateMem(XmlConstants::DtdRaw.c_str(),
                                                   XmlConstants::DtdRaw.length(),
@@ -214,10 +214,10 @@ FeatureModelXmlParser::createDtd() {
   return Dtd;
 }
 
-std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
+FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> Doc(
+  UniqueXmlDoc Doc(
       xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(), Xml.length(), nullptr, nullptr,
                         XML_PARSE_NOBLANKS),
       xmlFreeDoc);
@@ -231,7 +231,7 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   } else {
     llvm::errs() << "Failed to parse / validate XML.\n";
   }
-  return std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>(nullptr, nullptr);
+  return UniqueXmlDoc (nullptr, nullptr);
 }
 
 // TODO(s9latimm): replace with builder err

@@ -20,6 +20,9 @@ protected:
   explicit FeatureModelParser() = default;
 
 public:
+  using UniqueXmlDoc = std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>;
+  using UniqueXmlDtd = std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>;
+
   virtual ~FeatureModelParser() = default;
 
   /// Build \a FeatureModel after parsing. May return null if parsing or
@@ -73,8 +76,6 @@ private:
 /// in an XML structure.
 class FeatureModelSxfmParser : public FeatureModelParser {
 public:
-  using UniqueXmlDoc = std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)>;
-  using UniqueXmlDtd = std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)>;
 
   explicit FeatureModelSxfmParser(std::string Sxfm) : Sxfm(std::move(Sxfm)) {}
 
