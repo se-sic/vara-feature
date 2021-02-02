@@ -28,7 +28,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     continue-on-error: false
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
           submodules: recursive
 
@@ -71,7 +72,7 @@ jobs:
           cmake --build . --target check-vara-feature-python
           cmake --build . --target check-vara-fm-viewer
 
-      - name: Run clang-tidy
+      - name: Run Clang-Tidy
         env:
           CXX: ${{ matrix.compiler }}
         shell: bash
