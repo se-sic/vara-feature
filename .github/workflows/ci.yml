@@ -14,7 +14,11 @@ jobs:
       matrix:
         os: [ ubuntu-20.04 ]
         build: [ Release ]
-        llvm: [ 11, 10 ]
+        include:
+          - llvm-major: 11
+            llvm-minor: 1
+          - llvm-major: 10
+            llvm-minor: 0
     runs-on: ${{ matrix.os }}
     continue-on-error: false
     steps:
@@ -22,24 +26,24 @@ jobs:
 
       - name: Install general dependencies
         run: |
+          sudo apt-key adv --fetch-keys  https://apt.kitware.com/keys/kitware-archive-latest.asc
+          sudo apt-add-repository -y 'deb https://apt.kitware.com/ubuntu/ focal main'
           sudo apt-get update
-          sudo apt-get -y install libstdc++6 libxml2-dev python3-dev graphviz gcc-9
+          sudo apt-get -y install cmake libstdc++6 libxml2-dev python3-dev graphviz gcc-9
 
       - name: Install strategy dependencies
-        env:
-          LLVM_VERSION: ${{ matrix.llvm }}
         run: |
           sudo apt-key adv --fetch-keys https://apt.llvm.org/llvm-snapshot.gpg.key
-          sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-$LLVM_VERSION main'
+          sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
           sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main'
           sudo apt-get update
-          sudo apt-get -y install llvm-$LLVM_VERSION-dev clang-tidy-11
+          sudo apt-get -y install clang-${{ matrix.llvm-major }} llvm-${{ matrix.llvm-major }}-dev clang-tidy-11
 
       - name: ${{ matrix.cxx }} ${{ matrix.build }} ${{ matrix.llvm }}
         env:
           BUILD_TYPE: ${{ matrix.build }}
-          LLVM_VERSION: ${{ matrix.llvm }}
-          CXX: clang++-${{ matrix.llvm }}
+          LLVM_VERSION: ${{ matrix.llvm-major }}.${{ matrix.llvm-minor }}
+          CXX: clang++-${{ matrix.llvm-major}}
         shell: bash
         run: |
           mkdir build
