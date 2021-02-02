@@ -23,6 +23,8 @@ jobs:
     continue-on-error: false
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Install general dependencies
         run: |
