@@ -60,7 +60,21 @@ jobs:
           cd build
           cmake .. -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DLLVM_REQUESTED_VERSION=$LLVM_VERSION -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
+
+      - name: Run tests
+        env:
+          CXX: ${{ matrix.compiler }}
+        shell: bash
+        run: |
+          cd build
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-feature-python
           cmake --build . --target check-vara-fm-viewer
+
+      - name: Run clang-tidy
+        env:
+          CXX: ${{ matrix.compiler }}
+        shell: bash
+        run: |
+          cd build
           cmake --build . --target tidy-vara-feature
