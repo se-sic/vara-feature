@@ -60,7 +60,7 @@ endif ()
 # Setup custom targets
 
 find_program(VARA_FEATURE_RUN_CLANG_TIDY
-  NAMES run-clang-tidy-11.py run-clang-tidy-11 run-clang-tidy.py run-clang-tidy clang-tidy-11
+  NAMES run-clang-tidy-11.py run-clang-tidy-11 run-clang-tidy.py run-clang-tidy clang-tidy-11 clang-tidy
   PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
   )
 
@@ -79,18 +79,17 @@ if (NOT VARA_FEATURE_IN_TREE)
   set(MIN_LLVM_REQUIRED 10)
 
   # Only search for LLVM if we build out of tree
-  if (${LLVM_REQUESTED_VERSION})
+  if (DEFINED LLVM_REQUESTED_VERSION)
     message(STATUS "Using LLVM ${LLVM_REQUESTED_VERSION}")
     find_package(LLVM ${LLVM_REQUESTED_VERSION} REQUIRED CONFIG)
   else ()
-    message(STATUS "Using LLVM 11")
-    find_package(LLVM 11 REQUIRED CONFIG)
+    message(STATUS "Using LLVM 11.1 (default)")
+    find_package(LLVM 11.1 REQUIRED CONFIG)
   endif ()
 
   if (NOT "${LLVM_VERSION_MAJOR}" GREATER_EQUAL "${MIN_LLVM_REQUIRED}")
     message(FATAL_ERROR "LLVM version error: minimal required LLVM-${MIN_LLVM_REQUIRED} but found LLVM-${LLVM_VERSION_MAJOR}. ")
   endif ()
-  find_library(LLVM_LIBRARY NAMES llvm REQUIRED)
   include_directories(${LLVM_INCLUDE_DIRS})
   link_directories(${LLVM_LIB_PATH} ${LLVM_LIBRARY_DIRS})
   add_definitions(${LLVM_DEFINITIONS})
