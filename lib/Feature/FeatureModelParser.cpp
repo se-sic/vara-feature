@@ -25,8 +25,8 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   std::vector<FeatureSourceRange> SourceRanges;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
-      string Cnt = std::string(reinterpret_cast<char *>(
-          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
+      std::string Cnt{reinterpret_cast<char *>(
+          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get())};
       if (!xmlStrcmp(Head->name, XmlConstants::NAME)) {
         Name = Cnt;
       } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
@@ -151,8 +151,8 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
-        string Cnt = std::string(reinterpret_cast<char *>(
-            UniqueXmlChar(xmlNodeGetContent(H), xmlFree).get()));
+        std::string Cnt{reinterpret_cast<char *>(
+            UniqueXmlChar(xmlNodeGetContent(H), xmlFree).get())};
         // TODO(se-passau/VaRA#664): Implement advanced parsing into constraint
         //  tree
       }
