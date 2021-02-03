@@ -137,11 +137,11 @@ protected:
   /// \brief Set the parrent of a Feature.
   static void setParent(Feature &F, Feature *Parent) { F.setParent(Parent); }
 
-  static void addChild(Feature &F, Feature *Child) {
+  static void addChild(Feature &F, Feature &Child) {
     // TODO: If the Feature is already in the model we need to update all other
     // parent/child relations
     //
-    F.addEdge(Child);
+    F.addEdge(&Child);
   }
 
   /// \brief Adds a new Feature to the FeatureModel.
@@ -156,12 +156,12 @@ protected:
   }
 
   template <typename ModTy, typename... ArgTys>
-  static ModTy make_modification(ArgTys &&... Args) {
+  static ModTy make_modification(ArgTys &&...Args) {
     return ModTy(std::forward<ArgTys>(Args)...);
   }
 
   template <typename ModTy, typename... ArgTys>
-  static std::unique_ptr<ModTy> make_unique_modification(ArgTys &&... Args) {
+  static std::unique_ptr<ModTy> make_unique_modification(ArgTys &&...Args) {
     return std::unique_ptr<ModTy>(new ModTy(std::forward<ArgTys>(Args)...));
   }
 };
@@ -179,11 +179,11 @@ public:
     }
     if (Parent) {
       setParent(*InsertedFeature, Parent);
-      addChild(*Parent, InsertedFeature);
+      addChild(*Parent, *InsertedFeature);
     } else {
       assert(FM.getRoot());
       setParent(*InsertedFeature, FM.getRoot());
-      addChild(*FM.getRoot(), InsertedFeature);
+      addChild(*FM.getRoot(), *InsertedFeature);
     }
     return InsertedFeature;
   }

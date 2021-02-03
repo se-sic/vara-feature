@@ -15,11 +15,12 @@ void FeatureModel::dump() const {
 }
 
 Feature *FeatureModel::addFeature(std::unique_ptr<Feature> NewFeature) {
-  auto FeatureName = std::string(NewFeature->getName());
-  if (!Features.try_emplace(FeatureName, std::move(NewFeature)).second) {
+  auto PosInsertedFeature = Features.try_emplace(
+      std::string(NewFeature->getName()), std::move(NewFeature));
+  if (!PosInsertedFeature.second) {
     return nullptr;
   }
-  auto *InsertedFeature = Features[FeatureName].get();
+  auto *InsertedFeature = PosInsertedFeature.first->getValue().get();
   assert(InsertedFeature);
   OrderedFeatures.insert(InsertedFeature);
   return InsertedFeature;
