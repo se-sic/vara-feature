@@ -13,7 +13,7 @@ namespace vara::feature {
 
 bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                      bool Num = false) {
-  string Name;
+  string Name = "root";
   bool Opt = false;
   int MinValue = 0;
   int MaxValue = 0;
@@ -30,7 +30,9 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
         Opt = Cnt == "True";
       } else if (!xmlStrcmp(Head->name, XmlConstants::PARENT)) {
-        FMB.addParent(Name, Cnt);
+        // TODO(s9latimm) fix me -- breaks if Name not set / parsed yet
+        assert(!Name.empty());
+        FMB.addEdge(Cnt, Name);
       } else if (!xmlStrcmp(Head->name, XmlConstants::EXCLUDEDOPTIONS)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {

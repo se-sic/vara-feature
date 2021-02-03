@@ -101,13 +101,9 @@ TEST(FeatureModelBuilder, addOrConstraint) {
 
 TEST(FeatureModelBuilder, addBinaryFeatureRef) {
   FeatureModelBuilder B;
-  BinaryFeature AA("aa");
-  auto CS = Feature::NodeSetType();
-  CS.insert(&AA);
-  BinaryFeature A("a", false, {}, nullptr, CS);
 
-  B.addFeature(AA);
-  B.addParent("aa", "a")->addFeature(A);
+  B.makeFeature<BinaryFeature>("aa");
+  B.addEdge("a", "aa")->makeFeature<BinaryFeature>("a");
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -117,14 +113,10 @@ TEST(FeatureModelBuilder, addBinaryFeatureRef) {
 
 TEST(FeatureModelBuilder, addNumericFeatureRef) {
   FeatureModelBuilder B;
-  BinaryFeature AA("aa");
-  auto CS = Feature::NodeSetType();
-  CS.insert(&AA);
-  NumericFeature A("a", std::vector<int>{1, 2, 3}, false, {}, nullptr,
-                   CS);
 
-  B.addFeature(AA);
-  B.addParent("aa", "a")->addFeature(A);
+  B.makeFeature<BinaryFeature>("aa");
+  B.addEdge("a", "aa")->makeFeature<NumericFeature>("a",
+                                                    std::vector<int>{1, 2, 3});
   auto FM = B.buildFeatureModel();
   assert(FM);
 
