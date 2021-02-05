@@ -137,12 +137,8 @@ protected:
   /// \brief Set the parrent of a Feature.
   static void setParent(Feature &F, Feature *Parent) { F.setParent(Parent); }
 
-  static void addChild(Feature &F, Feature &Child) {
-    // TODO: If the Feature is already in the model we need to update all other
-    // parent/child relations
-    //
-    F.addEdge(&Child);
-  }
+  /// \brief Set the parrent of a \a Feature Child to F.
+  static void addChild(Feature &F, Feature &Child) { F.addEdge(&Child); }
 
   /// \brief Adds a new Feature to the FeatureModel.
   ///
