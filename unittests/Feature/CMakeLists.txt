@@ -5,6 +5,7 @@ add_vara_unittest(VaRAFeatureTests
   FeatureSourceRange.cpp
   FeatureModel.cpp
   FeatureModelBuilder.cpp
+  FeatureModelParser.cpp
   FeatureModelWriter.cpp
   OrderedFeatureVector.cpp
   Relationship.cpp

@@ -25,12 +25,27 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                        xmlNodeGetContent(Head), xmlFree)
                                        .get()));
+      // The DTD enforces name to be the first element of an
+      // configurationOption. This method is never called without validating
+      // the input beforehand.
       if (!xmlStrcmp(Head->name, XmlConstants::NAME)) {
         Name = Cnt;
       } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
         Opt = Cnt == "True";
       } else if (!xmlStrcmp(Head->name, XmlConstants::PARENT)) {
         FMB.addParent(Name, Cnt);
+      } else if (!xmlStrcmp(Head->name, XmlConstants::CHILDREN)) {
+        for (xmlNode *Child = Head->children; Child; Child = Child->next) {
+          if (Child->type == XML_ELEMENT_NODE) {
+            if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
+              FMB.addParent(std::string(reinterpret_cast<char *>(
+                                std::unique_ptr<xmlChar, void (*)(void *)>(
+                                    xmlNodeGetContent(Child), xmlFree)
+                                    .get())),
+                            Name);
+            }
+          }
+        }
       } else if (!xmlStrcmp(Head->name, XmlConstants::EXCLUDEDOPTIONS)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
