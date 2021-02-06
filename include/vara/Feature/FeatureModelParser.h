@@ -64,8 +64,8 @@ private:
   createFeatureSourceLocation(xmlNode *Node);
   static FeatureSourceRange createFeatureSourceRange(xmlNode *Head);
 
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
-  static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
+  UniqueXmlDoc parseDoc();
+  UniqueXmlDtd createDtd();
 };
 
 //===----------------------------------------------------------------------===//
@@ -96,13 +96,13 @@ private:
   /// is needed to verify the structure of the xml file.
   ///
   /// \returns a pointer to the dtd representation
-  static std::unique_ptr<xmlDtd, void (*)(xmlDtdPtr)> createDtd();
+  static UniqueXmlDtd createDtd();
 
   /// Parses the given xml file by using libxml2 and returns a pointer to
   /// the xml document.
   ///
   /// \returns a pointer to the xml document
-  std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> parseDoc();
+  UniqueXmlDoc parseDoc();
 
   /// Processes the xml tags and its contents.
   ///
