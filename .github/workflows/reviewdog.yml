@@ -30,7 +30,7 @@ jobs:
       - name: Run Clang-Format
         shell: bash
         run: |
-          FILES=$(git diff --name-only --diff-filter=AM origin/${{ github.base_ref }} HEAD | egrep '\.(c|h|hpp|cpp)$')
+          FILES=$(git diff --name-only --diff-filter=AM origin/${{ github.base_ref }} HEAD | egrep '\.(c|h|hpp|cpp)$' || true)
           [ -z "$FILES" ] || (clang-format-11 -i $FILES && git diff --diff-filter=M $FILES)
 
       - name: Add Suggestions
