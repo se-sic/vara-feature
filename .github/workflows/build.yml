@@ -11,7 +11,6 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ ubuntu-20.04 ]
         build: [ Debug, Release ]
         llvm-major: [ 10, 11 ]
         compiler: [ clang++-10, clang++-11, g++-9 ]
@@ -25,7 +24,8 @@ jobs:
             compiler: clang++-11
           - llvm-major: 11
             compiler: clang++-10
-    runs-on: ${{ matrix.os }}
+
+    runs-on: ubuntu-20.04
     continue-on-error: false
     steps:
       - name: Checkout

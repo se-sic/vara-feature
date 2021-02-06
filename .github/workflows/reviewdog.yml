@@ -6,7 +6,22 @@ on:
 
 jobs:
   format:
-    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        tool: [ clang-format ]
+        include:
+          - tool: clang-format
+            os: ubuntu-20.04
+            install: |
+              sudo apt-key adv --fetch-keys https://apt.llvm.org/llvm-snapshot.gpg.key
+              sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main'
+              sudo apt-get update
+              sudo apt-get -y install --no-install-recommends clang-format-11
+            regex: \.(h|c|hpp|cpp)$
+            command: clang-format-11 -style=llvm -i
+
+    runs-on: ${{ matrix.os }}
     continue-on-error: false
     steps:
       - name: Checkout
@@ -16,26 +31,22 @@ jobs:
 
       - name: Install Dependencies
         shell: bash
-        run: |
-          sudo apt-key adv --fetch-keys https://apt.llvm.org/llvm-snapshot.gpg.key
-          sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main'
-          sudo apt-get update
-          sudo apt-get -y install --no-install-recommends clang-format-11
+        run: ${{ matrix.install }}
 
       - name: Fetch Base Branch
         shell: bash
         run: |
-          git fetch -n -p --depth=1 --no-recurse-submodules origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
+          git fetch --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
 
-      - name: Run Clang-Format
+      - name: Run Tool
         shell: bash
         run: |
-          FILES=$(git diff --name-only --diff-filter=AM origin/${{ github.base_ref }} HEAD | egrep '\.(c|h|hpp|cpp)$' || true)
-          [ -z "$FILES" ] || (clang-format-11 -i $FILES && git diff --diff-filter=M $FILES)
+          FILES=$(git diff --name-only --diff-filter=AM origin/${{ github.base_ref }} HEAD | egrep "${{ matrix.regex }}" || true)
+          [ -z "$FILES" ] || (${{ matrix.command }} $FILES && git diff --diff-filter=M $FILES)
 
       - name: Add Suggestions
         uses: reviewdog/action-suggester@v1
         with:
-          tool_name: clang-format
+          tool_name: ${{ matrix.tool }}
           filter_mode: diff_context
           level: warning
