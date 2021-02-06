@@ -65,7 +65,7 @@ private:
   static FeatureSourceRange createFeatureSourceRange(xmlNode *Head);
 
   UniqueXmlDoc parseDoc();
-  UniqueXmlDtd createDtd();
+  static UniqueXmlDtd createDtd();
 };
 
 //===----------------------------------------------------------------------===//
