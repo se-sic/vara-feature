@@ -131,7 +131,7 @@ TEST(FeatureModelBuilder, addNumericFeatureRef) {
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
 }
 
-TEST(Relationship, detectXMLAlternativesSimple) {
+TEST(FeatureModelBuilder, detectXMLAlternativesSimple) {
   FeatureModelBuilder B;
   BinaryFeature AA("aa", false);
   BinaryFeature AB("ab", false);
@@ -162,7 +162,7 @@ TEST(Relationship, detectXMLAlternativesSimple) {
   EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ab")));
 }
 
-TEST(Relationship, detectXMLAlternativesBroken) {
+TEST(FeatureModelBuilder, detectXMLAlternativesBroken) {
   FeatureModelBuilder B;
   BinaryFeature AA("aa", false);
   BinaryFeature AB("ab", false);
@@ -185,7 +185,7 @@ TEST(Relationship, detectXMLAlternativesBroken) {
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
 }
 
-TEST(Relationship, detectXMLAlternativesOutOfOrder) {
+TEST(FeatureModelBuilder, detectXMLAlternativesOutOfOrder) {
   FeatureModelBuilder B;
   BinaryFeature AA("aa", false);
   BinaryFeature AB("ab", false);
