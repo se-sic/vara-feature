@@ -31,8 +31,7 @@ jobs:
         shell: bash
         run: |
           FILES=$(git diff --name-only --diff-filter=AM origin/${{ github.base_ref }} HEAD | egrep '\.(c|h|hpp|cpp)$')
-          clang-format-11 -i $FILES
-          git diff --diff-filter=M $FILES
+          [ -z "$FILES" ] && clang-format-11 -i $FILES && git diff --diff-filter=M $FILES || true
 
       - name: Add Suggestions
         uses: reviewdog/action-suggester@v1
