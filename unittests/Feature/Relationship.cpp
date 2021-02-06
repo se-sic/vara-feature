@@ -21,14 +21,17 @@ TEST(Relationship, orTree) {
                         "a");
   auto FM = B.buildFeatureModel();
   assert(FM);
-  auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());
-  assert(R);
 
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
-  EXPECT_TRUE(R->getKind() == Relationship::RelationshipKind::RK_OR);
-  EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("aa")));
-  EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ab")));
+  if (auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());
+      R) {
+    EXPECT_TRUE(R->getKind() == Relationship::RelationshipKind::RK_OR);
+    EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("aa")));
+    EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ab")));
+  } else {
+    FAIL();
+  }
 }
 
 TEST(Relationship, alternativeTree) {
@@ -47,14 +50,17 @@ TEST(Relationship, alternativeTree) {
                         {"aa", "ab"}, "a");
   auto FM = B.buildFeatureModel();
   assert(FM);
-  auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());
-  assert(R);
 
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
-  EXPECT_TRUE(R->getKind() == Relationship::RelationshipKind::RK_ALTERNATIVE);
-  EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("aa")));
-  EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ab")));
+  if (auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());
+      R) {
+    EXPECT_TRUE(R->getKind() == Relationship::RelationshipKind::RK_ALTERNATIVE);
+    EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("aa")));
+    EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ab")));
+  } else {
+    FAIL();
+  }
 }
 
 TEST(Relationship, outOfOrder) {

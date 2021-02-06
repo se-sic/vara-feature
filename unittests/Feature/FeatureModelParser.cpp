@@ -12,10 +12,10 @@ TEST(FeatureModelParser, onlyChildren) {
       getTestResource("test_only_children.xml"));
   assert(FS);
 
-  auto FM = FeatureModelXmlParser(FS.get()->getBuffer().str());
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
 
-  EXPECT_TRUE(FM.verifyFeatureModel());
-  EXPECT_TRUE(FM.buildFeatureModel());
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
 }
 
 TEST(FeatureModelParser, onlyParents) {
@@ -23,10 +23,10 @@ TEST(FeatureModelParser, onlyParents) {
       getTestResource("test_only_parents.xml"));
   assert(FS);
 
-  auto FM = FeatureModelXmlParser(FS.get()->getBuffer().str());
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
 
-  EXPECT_TRUE(FM.verifyFeatureModel());
-  EXPECT_TRUE(FM.buildFeatureModel());
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
 }
 
 TEST(FeatureModelParser, outOfOrder) {
@@ -34,10 +34,10 @@ TEST(FeatureModelParser, outOfOrder) {
       getTestResource("test_out_of_order.xml"));
   assert(FS);
 
-  auto FM = FeatureModelXmlParser(FS.get()->getBuffer().str());
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
 
-  EXPECT_TRUE(FM.verifyFeatureModel());
-  EXPECT_TRUE(FM.buildFeatureModel());
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
 }
 
 } // namespace vara::feature
