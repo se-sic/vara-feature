@@ -1,5 +1,5 @@
 # VaRA feature library
-[![Build Status](https://github.com/se-sic/vara-feature/workflows/VaRA%20feature%20library%20CI/badge.svg?branch=vara-dev)](https://github.com/se-sic/vara-feature) [![Documentation Status](https://readthedocs.org/projects/vara/badge/?version=vara-dev)](https://vara.readthedocs.io/en/vara-dev/?badge=vara-dev)
+[![Build Status](https://github.com/se-sic/vara-feature/workflows/VaRA%20Feature%20Library%20Build/badge.svg?branch=vara-dev)](https://github.com/se-sic/vara-feature/actions?query=branch%3Avara-dev) [![Documentation Status](https://readthedocs.org/projects/vara/badge/?version=vara-dev)](https://vara.readthedocs.io/en/vara-dev/?badge=vara-dev)
 
 Installation
 ------------
