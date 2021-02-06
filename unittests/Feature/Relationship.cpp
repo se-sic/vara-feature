@@ -69,6 +69,7 @@ TEST(Relationship, outOfOrder) {
   CS.insert(&AB);
   CS.insert(&AC);
   CS.insert(&AD);
+  CS.insert(&AE);
   BinaryFeature A("a", false, {}, nullptr, CS);
   B.addFeature(A);
   B.addParent("aa", "a")->addFeature(AA);
@@ -81,17 +82,12 @@ TEST(Relationship, outOfOrder) {
                         "a");
   auto FM = B.buildFeatureModel();
   assert(FM);
-  auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());
-  assert(R);
 
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ac")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ad")));
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ae")));
-  EXPECT_TRUE(R->getKind() == Relationship::RelationshipKind::RK_OR);
-  EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ab")));
-  EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ad")));
 }
 
 TEST(Relationship, diffParents) {
