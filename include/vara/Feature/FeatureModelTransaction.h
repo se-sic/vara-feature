@@ -213,8 +213,16 @@ protected:
       return nullptr;
     }
 
+    if (Parent) {
+      // To correctly add a parent, we need to translate it to a Feature in
+      // our copied FeatureModel
+      Feature *TranslatedParent = FM->getFeature(Parent->getName());
+      return FeatureModelModification::make_modification<AddFeatureToModel>(
+          std::move(NewFeature), TranslatedParent)(*FM);
+    }
+
     return FeatureModelModification::make_modification<AddFeatureToModel>(
-        std::move(NewFeature), Parent)(*FM);
+        std::move(NewFeature))(*FM);
   }
 
 private:

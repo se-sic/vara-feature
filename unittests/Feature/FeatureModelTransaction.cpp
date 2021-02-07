@@ -76,13 +76,7 @@ TEST_F(FeatureModelModificationTest, addFeatureToModel_twoSuccessivley) {
 //                     FeatureModelCopyTransaction Tests
 //===----------------------------------------------------------------------===//
 
-//===----------------------------------------------------------------------===//
-//                    FeatureModelModifyTransaction Tests
-//===----------------------------------------------------------------------===//
-
-// TODO: rewrite tests to only check transaction framework
-
-class FeatureModelTransactionTest : public ::testing::Test {
+class FeatureModelTransactionCopyTest : public ::testing::Test {
 protected:
   void SetUp() override {
     FeatureModelBuilder B;
@@ -94,7 +88,62 @@ protected:
   std::unique_ptr<FeatureModel> FM;
 };
 
-TEST_F(FeatureModelTransactionTest, copy_createAndDestroyWithoutChange) {
+TEST_F(FeatureModelTransactionCopyTest, createAndDestroyWithoutChange) {
+  size_t FMSizeBefore = FM->size();
+
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  // no change
+  FT.commit();
+  EXPECT_EQ(FMSizeBefore, FM->size());
+  EXPECT_NE(nullptr, FM->getFeature("a"));
+  EXPECT_TRUE(FM->getFeature("a")->getParentFeature()->isRoot());
+}
+
+TEST_F(FeatureModelTransactionCopyTest, addFeatureToModel) {
+  size_t FMSizeBefore = FM->size();
+
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  FT.addFeature(std::make_unique<BinaryFeature>("ab"), FM->getFeature("a"));
+
+  EXPECT_EQ(FMSizeBefore, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(FM->getFeature("a")->getParentFeature()->isRoot());
+  EXPECT_FALSE(FM->getFeature("ab")); // Change should not be visible
+
+  auto NewFM = FT.commit(); // Commit changes
+
+  // Changes should not be visible on the old model
+  EXPECT_FALSE(FM->getFeature("ab"));
+  EXPECT_EQ(FMSizeBefore, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(FM->getFeature("a")->getParentFeature()->isRoot());
+
+  // Changes should be visible on the new model
+  EXPECT_EQ(NewFM->size(), FM->size() + 1);
+  EXPECT_TRUE(NewFM->getFeature("a"));
+  EXPECT_TRUE(NewFM->getFeature("a")->getParentFeature()->isRoot());
+  EXPECT_TRUE(NewFM->getFeature("ab")); // Change should be visible
+  EXPECT_EQ(NewFM->getFeature("a"),
+            NewFM->getFeature("ab")->getParentFeature());
+}
+
+//===----------------------------------------------------------------------===//
+//                    FeatureModelModifyTransaction Tests
+//===----------------------------------------------------------------------===//
+
+class FeatureModelTransactionModifyTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder B;
+    B.makeFeature<BinaryFeature>("a", true);
+    FM = B.buildFeatureModel();
+    assert(FM);
+  }
+
+  std::unique_ptr<FeatureModel> FM;
+};
+
+TEST_F(FeatureModelTransactionModifyTest, createAndDestroyWithoutChange) {
   size_t FMSizeBefore = FM->size();
 
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
@@ -108,20 +157,7 @@ TEST_F(FeatureModelTransactionTest, copy_createAndDestroyWithoutChange) {
   EXPECT_TRUE(UpdatedFM->getFeature("a")->getParentFeature()->isRoot());
 }
 
-TEST_F(FeatureModelTransactionTest, modify_createAndDestroyWithoutChange) {
-  size_t FMSizeBefore = FM->size();
-
-  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
-  // no change
-  FT.commit();
-  EXPECT_EQ(FMSizeBefore, FM->size());
-  EXPECT_NE(nullptr, FM->getFeature("a"));
-  EXPECT_TRUE(FM->getFeature("a")->getParentFeature()->isRoot());
-}
-
-// TODO: Copy missing
-
-TEST_F(FeatureModelTransactionTest, modify_addFeatureToModel) {
+TEST_F(FeatureModelTransactionModifyTest, addFeatureToModel) {
   size_t FMSizeBefore = FM->size();
 
   auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
