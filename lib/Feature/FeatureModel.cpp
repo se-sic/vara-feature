@@ -180,8 +180,7 @@ void FeatureModelBuilder::detectXMLAlternatives() {
         llvm::SmallSet<Feature *, 3> Xor;
         Xor.insert(F);
         for (const auto &Name : Frontier) {
-          if (auto *E =
-                  llvm::dyn_cast<Feature>(Features[Frontier.back()].get());
+          if (auto *E = llvm::dyn_cast<Feature>(Features[Name].get());
               E && !E->isOptional()) {
             if (std::all_of(Xor.begin(), Xor.end(), [E](const auto *F) {
                   return isSimpleMutex(F, E);
