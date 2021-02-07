@@ -1,4 +1,5 @@
 #include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/Feature.h"
 
 #include "llvm/ADT/SetVector.h"
 
@@ -238,14 +239,59 @@ TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentValid) {
               EveryFeatureRequiresParent>::isFeatureModelValid(*FM));
 }
 
-TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentMissing) {
-  // TODO: find save way to construct wrong FeatureModels
-  // FM->deleteFeature("missing");
+// TODO : @lauritz: can we integrate remove edge somewhere? In general, we need
+// some way to build "wrong" FeatureModels for testing
 
-  FM->dump();
+TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentMissing) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a");
+  // remove parent root from a
+  auto FM = B.buildFeatureModel();
 
   // EXPECT_FALSE(FeatureModelConsistencyChecker<
   //             EveryFeatureRequiresParent>::isFeatureModelValid(*FM));
+}
+
+TEST_F(FeatureModelConsistencyCheckerTest, EveryParentNeedsFeatureAsAChild) {
+  EXPECT_TRUE(FeatureModelConsistencyChecker<
+              CheckFeatureParentChildRelationShip>::isFeatureModelValid(*FM));
+}
+
+TEST_F(FeatureModelConsistencyCheckerTest,
+       EveryParentNeedsFeatureAsAChildMissing) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a");
+  // remove parent a from root nodes children
+  auto FM = B.buildFeatureModel();
+
+  // EXPECT_FALSE(FeatureModelConsistencyChecker<
+  //              CheckFeatureParentChildRelationShip>::isFeatureModelValid(*FM));
+}
+
+TEST_F(FeatureModelConsistencyCheckerTest,
+       EveryFMNeedsOneRootOnlyOneRootPresent) {
+  EXPECT_TRUE(
+      FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
+          *FM));
+}
+
+TEST_F(FeatureModelConsistencyCheckerTest, EveryFMNeedsOneRootButNonPresent) {
+  FeatureModelBuilder B;
+  // remove root feature
+  auto FM = B.buildFeatureModel();
+
+  // EXPECT_FALSE(FeatureModelConsistencyChecker<
+  //              ExactlyOneRootNode>::isFeatureModelValid(*FM));
+}
+
+TEST_F(FeatureModelConsistencyCheckerTest,
+       EveryFMNeedsOneRootButMultiplePresent) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("root"); // cannot add second root
+  auto FM = B.buildFeatureModel();
+
+  // EXPECT_FALSE(FeatureModelConsistencyChecker<
+  //              ExactlyOneRootNode>::isFeatureModelValid(*FM));
 }
 
 } // namespace vara::feature

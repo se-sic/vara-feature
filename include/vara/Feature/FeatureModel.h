@@ -442,7 +442,6 @@ struct EveryFeatureRequiresParent {
   }
 };
 
-// TODO: test missing
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
     return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
@@ -454,7 +453,6 @@ struct CheckFeatureParentChildRelationShip {
   }
 };
 
-// TODO: test missing
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
     return 1 ==
