@@ -10,6 +10,9 @@ set(FEATURE_LIB_TEST_FILES
   test.xml
   test_children.xml
   test_excludes.xml
+  test_only_children.xml
+  test_only_parents.xml
+  test_out_of_order.xml
   )
 
 foreach(file_name ${FEATURE_LIB_TEST_FILES})
