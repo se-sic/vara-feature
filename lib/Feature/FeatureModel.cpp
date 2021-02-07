@@ -266,7 +266,6 @@ FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &RootName) {
   assert(this->Root == nullptr && "Root already set.");
 
   if (Features.find(RootName) == Features.end()) {
-    // TODO: should root be a BinaryFeature?
     makeFeature<BinaryFeature>(RootName, false);
   }
   this->Root = Features[RootName].get();
