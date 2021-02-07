@@ -196,7 +196,9 @@ protected:
   FeatureModelCopyTransactionBase(FeatureModel &FM) : FM(FM.clone()) {}
 
   [[nodiscard]] inline std::unique_ptr<FeatureModel> commitImpl() {
-    ConsistencyCheck::isFeatureModelValid(*FM);
+    if (FM) {
+      ConsistencyCheck::isFeatureModelValid(*FM);
+    }
     return std::move(FM);
   };
 

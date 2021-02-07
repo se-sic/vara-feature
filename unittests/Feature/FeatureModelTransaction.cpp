@@ -127,6 +127,30 @@ TEST_F(FeatureModelTransactionCopyTest, addFeatureToModel) {
             NewFM->getFeature("ab")->getParentFeature());
 }
 
+TEST_F(FeatureModelTransactionCopyTest, addFeatureToModelThenAboard) {
+  size_t FMSizeBefore = FM->size();
+
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  FT.addFeature(std::make_unique<BinaryFeature>("ab"), FM->getFeature("a"));
+
+  EXPECT_EQ(FMSizeBefore, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(FM->getFeature("a")->getParentFeature()->isRoot());
+  EXPECT_FALSE(FM->getFeature("ab")); // Change should not be visible
+
+  FT.abort();
+
+  auto NewFM = FT.commit(); // Commit changes, should not change anything and
+                            // return no new FeatureModel
+
+  EXPECT_EQ(NewFM.get(), nullptr);
+
+  EXPECT_EQ(FMSizeBefore, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(FM->getFeature("a")->getParentFeature()->isRoot());
+  EXPECT_FALSE(FM->getFeature("ab")); // Change should not be visible
+}
+
 //===----------------------------------------------------------------------===//
 //                    FeatureModelModifyTransaction Tests
 //===----------------------------------------------------------------------===//
@@ -175,6 +199,27 @@ TEST_F(FeatureModelTransactionModifyTest, addFeatureToModel) {
   EXPECT_TRUE(FM->getFeature("a")->getParentFeature()->isRoot());
   EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
+}
+
+TEST_F(FeatureModelTransactionModifyTest, addFeatureToModelThenAboard) {
+  size_t FMSizeBefore = FM->size();
+
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
+  FT.addFeature(std::make_unique<BinaryFeature>("ab"), FM->getFeature("a"));
+
+  EXPECT_EQ(FMSizeBefore, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(FM->getFeature("a")->getParentFeature()->isRoot());
+  EXPECT_FALSE(FM->getFeature("ab")); // Change should not be visible
+
+  FT.abort();
+
+  FT.commit(); // Commit changes, should not change anything
+
+  EXPECT_EQ(FMSizeBefore, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(FM->getFeature("a")->getParentFeature()->isRoot());
+  EXPECT_FALSE(FM->getFeature("ab")); // Change should not be visible
 }
 
 } // namespace vara::feature
