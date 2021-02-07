@@ -13,7 +13,7 @@ namespace vara::feature {
 
 bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                      bool Num = false) {
-  string Name = "root";
+  string Name{"root"};
   bool Opt = false;
   int MinValue = 0;
   int MaxValue = 0;
