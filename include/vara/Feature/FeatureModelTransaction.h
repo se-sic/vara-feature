@@ -70,9 +70,7 @@ public:
   /// FeatureModel.
   ///
   /// \returns a FeatureModel or nothing
-  std::conditional_t<IsCopyMode, std::unique_ptr<FeatureModel>, void> commit() {
-    return this->commitImpl();
-  }
+  decltype(auto) commit() { return this->commitImpl(); }
 
   /// Abort the current Transaction, throwing away all changes.
   void abort() { this->abortImpl(); }
@@ -81,8 +79,8 @@ public:
   ///
   /// \returns a pointer to the inserted Feature in CopyMode, otherwise,
   ///          nothing.
-  std::conditional_t<IsCopyMode, Feature *, void>
-  addFeature(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
+  decltype(auto) addFeature(std::unique_ptr<Feature> NewFeature,
+                            Feature *Parent) {
     if constexpr (IsCopyMode) {
       return this->addFeatureImpl(std::move(NewFeature), Parent);
     } else {
