@@ -28,6 +28,7 @@ class FeatureModelModification;
 class FeatureModel {
   // Only Modifications are allowed to edit a FeatureModel after creation.
   friend class detail::FeatureModelModification;
+  friend class TestFeatureModelModifier;
 
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;

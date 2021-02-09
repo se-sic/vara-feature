@@ -7,6 +7,18 @@
 
 namespace vara::feature {
 
+class TestFeatureModelModifier {
+public:
+  static Feature *addFeatureRaw(FeatureModel &FM,
+                                std::unique_ptr<Feature> Feature) {
+    return FM.addFeature(std::move(Feature));
+  }
+
+  static void removeChild(FeatureModel &FM,Feature *Parent, Feature *Child) {
+    // TODO (@s9latimm): remove child
+  }
+};
+
 TEST(FeatureModel, build) {
   FeatureModelBuilder B;
 
@@ -261,11 +273,13 @@ TEST_F(FeatureModelConsistencyCheckerTest,
        EveryParentNeedsFeatureAsAChildMissing) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
-  // remove parent a from root nodes children
   auto FM = B.buildFeatureModel();
 
-  // EXPECT_FALSE(FeatureModelConsistencyChecker<
-  //              CheckFeatureParentChildRelationShip>::isFeatureModelValid(*FM));
+  // remove parent a from root nodes children
+  TestFeatureModelModifier::removeChild(*FM, FM->getRoot(), FM->getFeature("a"));
+
+  EXPECT_FALSE(FeatureModelConsistencyChecker<
+               CheckFeatureParentChildRelationShip>::isFeatureModelValid(*FM));
 }
 
 TEST_F(FeatureModelConsistencyCheckerTest,
