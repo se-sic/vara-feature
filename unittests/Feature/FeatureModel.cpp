@@ -45,8 +45,7 @@ TEST(FeatureModel, cloneRoot) {
 
   // The inner EXPECT_TRUE just handles the nodiscard of getParent
   // NOLINTNEXTLINE
-  ASSERT_EXIT(EXPECT_TRUE(FM->getFeature("a")->getParent()),
-              testing::KilledBySignal(SIGSEGV), ".*");
+  EXPECT_DEATH(EXPECT_TRUE(FM->getFeature("a")->getParent()), ".*");
   EXPECT_FALSE(Clone->getFeature("a")->getParent());
 }
 
@@ -82,8 +81,7 @@ TEST(FeatureModel, cloneConstraint) {
 
   // The inner EXPECT_TRUE just handles the nodiscard of clone
   // NOLINTNEXTLINE
-  ASSERT_EXIT(EXPECT_TRUE(Deleted->clone()), testing::KilledBySignal(SIGSEGV),
-              ".*");
+  EXPECT_DEATH(EXPECT_TRUE(Deleted->clone()), ".*");
   EXPECT_TRUE((*Clone->getFeature("a")->constraints().begin())->clone());
 }
 
