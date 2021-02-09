@@ -65,6 +65,6 @@ class TestFeatureModel(unittest.TestCase):
                          set(test_feature_root.children()))
         self.assertEqual({test_feature_a, test_feature_b, test_feature_c},
                          set(test_feature_root.children()))
-        self.assertTrue(test_feature_root.has_child(test_feature_a))
-        self.assertTrue(test_feature_root.has_child(test_feature_b))
-        self.assertTrue(test_feature_root.has_child(test_feature_c))
+        self.assertTrue(test_feature_root.is_child(test_feature_a))
+        self.assertTrue(test_feature_root.is_child(test_feature_b))
+        self.assertTrue(test_feature_root.is_child(test_feature_c))

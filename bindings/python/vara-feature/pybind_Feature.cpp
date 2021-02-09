@@ -26,13 +26,14 @@ void init_feature_module_feature_tree_node(py::module &M) {
             return py::make_iterator(F.begin(), F.end());
           },
           py::keep_alive<0, 1>())
-      .def("has_child", &vf::FeatureTreeNode::hasEdgeTo,
+      .def("is_child", &vf::FeatureTreeNode::hasEdgeTo,
            R"pbdoc(Checks if a node is a child of this one.)pbdoc")
 
       //===----------------------------------------------------------------===//
       // Parent
       .def(
-          "has_parent", [](vf::FeatureTreeNode &F) { return F.getParent(); },
+          "has_parent",
+          [](vf::FeatureTreeNode &F) { return F.getParent() != nullptr; },
           R"pbdoc(`True` if this is not the root of a `FeatureModel`.)pbdoc")
       .def("parent", &vf::FeatureTreeNode::getParent,
            py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
