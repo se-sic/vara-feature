@@ -14,7 +14,7 @@ public:
     return FM.addFeature(std::move(Feature));
   }
 
-  static void removeChild(FeatureModel &FM,Feature *Parent, Feature *Child) {
+  static void removeChild(FeatureModel &FM, Feature *Parent, Feature *Child) {
     // TODO (@s9latimm): remove child
   }
 };
@@ -276,7 +276,8 @@ TEST_F(FeatureModelConsistencyCheckerTest,
   auto FM = B.buildFeatureModel();
 
   // remove parent a from root nodes children
-  TestFeatureModelModifier::removeChild(*FM, FM->getRoot(), FM->getFeature("a"));
+  TestFeatureModelModifier::removeChild(*FM, FM->getRoot(),
+                                        FM->getFeature("a"));
 
   EXPECT_FALSE(FeatureModelConsistencyChecker<
                CheckFeatureParentChildRelationShip>::isFeatureModelValid(*FM));
