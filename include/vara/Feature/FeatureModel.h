@@ -439,20 +439,23 @@ public:
 
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
-    return std::all_of(FM.begin(), FM.end(), [R = FM.getRoot()](Feature *F) {
-      return *R == *F || (F->getParent() != nullptr);
-    });
+    auto *Root = FM.getRoot();
+    return Root && std::all_of(FM.begin(), FM.end(), [Root](Feature *F) {
+             return (*Root == *F) || F->getParent();
+           });
   }
 };
 
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
-    return std::all_of(FM.begin(), FM.end(), [R = FM.getRoot()](Feature *F) {
-      return *R == *F ||
-             // Every parent of a Feature needs to have the Feature as a child.
-             std::any_of(F->getParent()->begin(), F->getParent()->end(),
-                         [F](FeatureTreeNode *Child) { return F == Child; });
-    });
+    auto *Root = FM.getRoot();
+    return Root && std::all_of(FM.begin(), FM.end(), [Root](Feature *F) {
+             return (*Root == *F) ||
+                    // Every parent of a Feature needs to have that as a child.
+                    std::any_of(
+                        F->getParent()->begin(), F->getParent()->end(),
+                        [F](FeatureTreeNode *Child) { return F == Child; });
+           });
   }
 };
 
