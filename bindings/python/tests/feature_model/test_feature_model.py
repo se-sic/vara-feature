@@ -54,6 +54,21 @@ class TestFeatureModel(unittest.TestCase):
         self.assertEqual(next(fm_iter).name.str(), "N")
         self.assertEqual(next(fm_iter).name.str(), "C")
 
+    def test_parent(self):
+        """ Checks if we can access a features parent. """
+        test_feature_root = self.fm.get_feature("root")
+        test_feature_a = self.fm.get_feature("A")
+        test_feature_b = self.fm.get_feature("B")
+
+        self.assertTrue(test_feature_a.has_parent())
+        self.assertTrue(test_feature_b.has_parent())
+        self.assertEqual(test_feature_root,
+                         test_feature_a.parent())
+        self.assertEqual(test_feature_a.parent(),
+                         test_feature_b.parent())
+        self.assertTrue(test_feature_a.is_parent(test_feature_root))
+        self.assertTrue(test_feature_b.is_parent(test_feature_root))
+
     def test_iter_children(self):
         """ Checks if we can iterate over a features children. """
         test_feature_root = self.fm.get_feature("root")
