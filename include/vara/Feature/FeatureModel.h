@@ -28,7 +28,6 @@ class FeatureModelModification;
 class FeatureModel {
   // Only Modifications are allowed to edit a FeatureModel after creation.
   friend class detail::FeatureModelModification;
-  friend class TestFeatureModelModifier;
 
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
@@ -131,6 +130,9 @@ private:
   ///
   /// \returns ptr to inserted \a Feature
   Feature *addFeature(std::unique_ptr<Feature> Feature);
+
+  /// Delete a \a Feature.
+  void removeFeature(Feature &Feature);
 
   OrderedFeatureTy OrderedFeatures;
 };
@@ -437,16 +439,16 @@ public:
 
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
-    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-      return F->isRoot() || (F->getParent() != nullptr);
+    return std::all_of(FM.begin(), FM.end(), [R = FM.getRoot()](Feature *F) {
+      return *R == *F || (F->getParent() != nullptr);
     });
   }
 };
 
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
-    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-      return F->isRoot() ||
+    return std::all_of(FM.begin(), FM.end(), [R = FM.getRoot()](Feature *F) {
+      return *R == *F ||
              // Every parent of a Feature needs to have the Feature as a child.
              std::any_of(F->getParent()->begin(), F->getParent()->end(),
                          [F](FeatureTreeNode *Child) { return F == Child; });
@@ -456,10 +458,10 @@ struct CheckFeatureParentChildRelationShip {
 
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
-    return 1 ==
-           std::accumulate(FM.begin(), FM.end(), 0, [](int Sum, Feature *F) {
-             return Sum + F->isRoot();
-           });
+    return FM.getRoot() && 1 == std::accumulate(FM.begin(), FM.end(), 0,
+                                                [](int Sum, Feature *F) {
+                                                  return Sum + !F->getParent();
+                                                });
   }
 };
 

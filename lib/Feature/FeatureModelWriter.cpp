@@ -209,7 +209,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   CHECK_RC
 
   // parent
-  if (!Feature1.isRoot()) {
+  if (Feature1.getParentFeature()) {
     RC = xmlTextWriterWriteElement(
         Writer, XmlConstants::PARENT,
         charToUChar(Feature1.getParentFeature()->getName().data()));
@@ -270,7 +270,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   // excludes
   OrderedFeatureVector Excludes;
 
-  if (!Feature1.isRoot() && llvm::isa<Relationship>(Feature1.getParent())) {
+  if (llvm::isa_and_nonnull<Relationship>(Feature1.getParent())) {
     auto ES = Feature1.getParent()->getChildren<Feature>();
     ES.erase(&Feature1);
     Excludes.insert(ES.begin(), ES.end());

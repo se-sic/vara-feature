@@ -27,34 +27,7 @@ class TestFeature(unittest.TestCase):
     def test_is_root(self):
         """ Checks if a feature is root if it has no parents. """
         test_feature = feature.BinaryFeature("root", False)
-        self.assertTrue(test_feature.is_root())
-
-    def test_iter_children(self):
-        """ Checks if we can iterate over a features children. """
-        test_feature_1 = feature.BinaryFeature("a", False)
-        test_feature_2 = feature.BinaryFeature("b", True)
-
-        root_feature = feature.BinaryFeature("root", False,
-                                             [feature.Location("")], None,
-                                             [test_feature_1,
-                                              test_feature_2])
-
-        self.assertEqual(set(iter(root_feature)),
-                         set(root_feature.children()))
-        self.assertEqual({test_feature_1, test_feature_2},
-                         set(root_feature.children()))
-        self.assertTrue(root_feature.is_child(test_feature_1))
-
-    def test_parent(self):
-        """ Checks if we can iterate over a features children. """
-        test_feature_1 = feature.BinaryFeature("a", False)
-        test_feature_2 = feature.BinaryFeature("aa", True, [feature.Location("")],
-                                               test_feature_1)
-
-        self.assertFalse(test_feature_2.is_root())
-        self.assertEqual(test_feature_1,
-                         test_feature_2.parent())
-        self.assertTrue(test_feature_2.is_parent(test_feature_1))
+        self.assertFalse(test_feature.has_parent())
 
     def test_feature_equal(self):
         """ Checks if Feature equality comparison operator is correctly

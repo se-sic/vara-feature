@@ -12,9 +12,6 @@ namespace py = pybind11;
 
 void init_feature_module_feature_tree_node(py::module &M) {
   py::class_<vf::FeatureTreeNode>(M, "FeatureTreeNode")
-      .def("is_root", &vf::FeatureTreeNode::isRoot,
-           R"pbdoc(`True` if this is the root of a `FeatureModel`.)pbdoc")
-
       //===----------------------------------------------------------------===//
       // Children
       .def(
@@ -29,11 +26,14 @@ void init_feature_module_feature_tree_node(py::module &M) {
             return py::make_iterator(F.begin(), F.end());
           },
           py::keep_alive<0, 1>())
-      .def("is_child", &vf::FeatureTreeNode::hasEdgeTo,
+      .def("has_child", &vf::FeatureTreeNode::hasEdgeTo,
            R"pbdoc(Checks if a node is a child of this one.)pbdoc")
 
       //===----------------------------------------------------------------===//
       // Parent
+      .def(
+          "has_parent", [](vf::FeatureTreeNode &F) { return F.getParent(); },
+          R"pbdoc(`True` if this is not the root of a `FeatureModel`.)pbdoc")
       .def("parent", &vf::FeatureTreeNode::getParent,
            py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
       .def("is_parent", &vf::FeatureTreeNode::hasEdgeFrom,
@@ -80,13 +80,6 @@ void init_feature_module_binary_feature(py::module &M) {
       .def(py::init<std::string, bool>())
       .def(py::init<std::string, bool,
                     std::vector<vara::feature::FeatureSourceRange>>())
-      .def(py::init<std::string, bool,
-                    std::vector<vara::feature::FeatureSourceRange>,
-                    vara::feature::Feature *>())
-      .def(py::init<std::string, bool,
-                    std::vector<vara::feature::FeatureSourceRange>,
-                    vara::feature::Feature *,
-                    std::vector<vara::feature::FeatureTreeNode *>>())
       .def(
           "to_string", &vf::BinaryFeature::toString,
           R"pbdoc(Returns the string representation of a BinaryFeature.)pbdoc");

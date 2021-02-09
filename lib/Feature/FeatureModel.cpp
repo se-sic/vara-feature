@@ -26,6 +26,11 @@ Feature *FeatureModel::addFeature(std::unique_ptr<Feature> NewFeature) {
   return InsertedFeature;
 }
 
+void FeatureModel::removeFeature(Feature &F) {
+  OrderedFeatures.remove(&F);
+  Features.erase(F.getName());
+}
+
 std::unique_ptr<FeatureModel> FeatureModel::clone() {
   FeatureModelBuilder FMB;
   FMB.setVmName(this->getName().str());

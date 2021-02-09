@@ -12,7 +12,7 @@ TEST(NumericFeature, NumericFeatureBasics) {
 
   EXPECT_EQ("A", A.getName());
   EXPECT_TRUE(A.isOptional());
-  EXPECT_TRUE(A.isRoot());
+  EXPECT_FALSE(A.getParent());
 }
 
 TEST(NumericFeature, isa) {
@@ -46,7 +46,7 @@ TEST(NumericFeature, NumericFeatureRoot) {
 
   auto FM = B.buildFeatureModel();
 
-  EXPECT_TRUE(FM->getFeature("F")->isRoot());
+  EXPECT_FALSE(FM->getFeature("F")->getParent());
   EXPECT_EQ(FM->getFeature("F"), FM->getRoot());
 }
 

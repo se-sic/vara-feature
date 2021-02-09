@@ -11,7 +11,7 @@ TEST(BinaryFeature, basicAccessors) {
 
   EXPECT_EQ("A", A.getName());
   EXPECT_TRUE(A.isOptional());
-  EXPECT_TRUE(A.isRoot());
+  EXPECT_FALSE(A.getParent());
 }
 
 TEST(BinaryFeature, isa) {
@@ -29,7 +29,7 @@ TEST(BinaryFeature, BinaryFeatureRoot) {
 
   auto FM = B.buildFeatureModel();
 
-  EXPECT_TRUE(FM->getFeature("F")->isRoot());
+  EXPECT_FALSE(FM->getFeature("F")->getParent());
   EXPECT_EQ(FM->getFeature("F"), FM->getRoot());
 }
 
