@@ -58,10 +58,7 @@ public:
 
   [[nodiscard]] llvm::StringRef getCommit() const { return Commit; }
 
-  [[nodiscard]] Feature *getRoot() const {
-    assert(Root);
-    return Root;
-  }
+  [[nodiscard]] Feature *getRoot() const { return Root; }
 
   //===--------------------------------------------------------------------===//
   // Ordered feature iterator
@@ -164,13 +161,12 @@ public:
   ///
   /// \returns ptr to inserted \a Feature
   template <typename FeatureTy, typename... Args,
-            typename = typename std::enable_if_t<
-                std::is_base_of_v<Feature, FeatureTy>, int>>
-  FeatureTy *makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
+            std::enable_if_t<std::is_base_of_v<Feature, FeatureTy>, int> = 0>
+  FeatureTy *makeFeature(std::string FeatureName, Args &&...FurtherArgs) {
     if (!Features
              .try_emplace(FeatureName,
                           std::make_unique<FeatureTy>(
-                              FeatureName, std::move(FurtherArgs)...))
+                              FeatureName, std::forward<Args>(FurtherArgs)...))
              .second) {
       return nullptr;
     }

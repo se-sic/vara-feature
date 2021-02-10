@@ -27,6 +27,9 @@ Feature *FeatureModel::addFeature(std::unique_ptr<Feature> NewFeature) {
 }
 
 void FeatureModel::removeFeature(Feature &F) {
+  if (&F == Root) {
+    Root = nullptr;
+  }
   OrderedFeatures.remove(&F);
   Features.erase(F.getName());
 }
