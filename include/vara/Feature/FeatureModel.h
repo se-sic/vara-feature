@@ -456,7 +456,7 @@ struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
     return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
       return llvm::isa<RootFeature>(F) ||
-             // Every parent of a Feature needs to have that as a child.
+             // Every parent of a Feature needs to have it as a child.
              std::any_of(F->getParent()->begin(), F->getParent()->end(),
                          [F](FeatureTreeNode *Child) { return F == Child; });
     });

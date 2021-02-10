@@ -44,11 +44,9 @@ TEST(RootFeature, RootFeatureChildren) {
   EXPECT_EQ(
       std::distance(FM->getFeature("a")->begin(), FM->getFeature("a")->end()),
       1);
-  if (auto *F = llvm::dyn_cast<Feature>(*FM->getFeature("a")->begin()); F) {
-    EXPECT_EQ("aa", F->getName());
-  } else {
-    FAIL();
-  }
+  Feature *FirstChild = llvm::dyn_cast<Feature>(*FM->getFeature("a")->begin());
+  EXPECT_NE(FirstChild, nullptr);
+  EXPECT_EQ("aa", F->getName());
 }
 
 } // namespace vara::feature

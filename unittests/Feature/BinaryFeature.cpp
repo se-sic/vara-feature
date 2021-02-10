@@ -42,7 +42,7 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
   EXPECT_EQ(
       std::distance(FM->getFeature("a")->begin(), FM->getFeature("a")->end()),
       1);
-  if (auto *F = llvm::dyn_cast<Feature>(*FM->getFeature("a")->begin()); F) {
+  if (auto *F = llvm::dyn_cast<Feature>(*FM->getFeature("a")->begin())) {
     EXPECT_EQ("aa", F->getName());
   } else {
     FAIL();

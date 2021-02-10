@@ -44,7 +44,7 @@ void init_feature_module_feature(py::module &M) {
                              R"pbdoc(The name of the feature.)pbdoc")
       .def(
           "is_root",
-          [](vf::Feature &F) { return llvm::isa<vf::RootFeature>(F); },
+          [](const vf::Feature &F) { return llvm::isa<vf::RootFeature>(F); },
           R"pbdoc(`True` if this is the root of a `FeatureModel`.)pbdoc")
       .def("is_optional", &vf::Feature::isOptional,
            R"pbdoc(`True` if the feature is optional.)pbdoc")
