@@ -20,8 +20,8 @@ protected:
     FM = B.buildFeatureModel();
   }
 
-  // Dummy method to fullfill the FeatureModelModification interface
-  void exec(FeatureModel &FM) override{};
+  // Dummy method to fulfill the FeatureModelModification interface
+  void exec(FeatureModel &_) override{};
 
   std::unique_ptr<FeatureModel> FM;
 };

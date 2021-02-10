@@ -211,7 +211,9 @@ TEST_F(FeatureModelTest, gtSimple) {
 //                    FeatureModelConsistencyChecker Tests
 //===----------------------------------------------------------------------===//
 
-class FeatureModelConsistencyCheckerTest : public ::testing::Test {
+class FeatureModelConsistencyCheckerTest
+    : public ::testing::Test,
+      protected detail::FeatureModelModification {
 protected:
   void SetUp() override {
     FeatureModelBuilder B;
@@ -226,26 +228,10 @@ protected:
     assert(FM);
   }
 
+  // Dummy method to fulfill the FeatureModelModification interface
+  void exec(FeatureModel &_) override{};
+
   std::unique_ptr<FeatureModel> FM;
-};
-
-class TestFeatureModelModifier : private detail::FeatureModelModification {
-public:
-  static void removeParent(Feature *F) {
-    FeatureModelModification::removeParent(*F);
-  }
-
-  static void removeChild(Feature *F, Feature *Child) {
-    FeatureModelModification::removeChild(*F, *Child);
-  }
-
-  static void addFeature(FeatureModel &FM, std::unique_ptr<Feature> F) {
-    FeatureModelModification::addFeature(FM, std::move(F));
-  }
-
-  static void removeFeature(FeatureModel &FM, Feature *F) {
-    FeatureModelModification::removeFeature(FM, *F);
-  }
 };
 
 TEST_F(FeatureModelConsistencyCheckerTest, NoChecksIsTrue) {
@@ -262,7 +248,7 @@ TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentMissing) {
   B.makeFeature<BinaryFeature>("a");
 
   auto FM = B.buildFeatureModel();
-  TestFeatureModelModifier::removeParent(FM->getFeature("a"));
+  FeatureModelModification::removeParent(*FM->getFeature("a"));
 
   EXPECT_FALSE(FeatureModelConsistencyChecker<
                EveryFeatureRequiresParent>::isFeatureModelValid(*FM));
@@ -279,7 +265,7 @@ TEST_F(FeatureModelConsistencyCheckerTest,
   B.makeFeature<BinaryFeature>("a");
   auto FM = B.buildFeatureModel();
 
-  TestFeatureModelModifier::removeChild(FM->getRoot(), FM->getFeature("a"));
+  FeatureModelModification::removeChild(*FM->getRoot(), *FM->getFeature("a"));
 
   EXPECT_FALSE(FeatureModelConsistencyChecker<
                CheckFeatureParentChildRelationShip>::isFeatureModelValid(*FM));
@@ -296,7 +282,7 @@ TEST_F(FeatureModelConsistencyCheckerTest, EveryFMNeedsOneRootButNonPresent) {
   FeatureModelBuilder B;
   auto FM = B.buildFeatureModel();
 
-  TestFeatureModelModifier::removeFeature(*FM, FM->getRoot());
+  FeatureModelModification::removeFeature(*FM, *FM->getRoot());
 
   EXPECT_FALSE(
       FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
@@ -309,9 +295,9 @@ TEST_F(FeatureModelConsistencyCheckerTest,
   B.makeFeature<BinaryFeature>("root");
   auto FM = B.buildFeatureModel();
 
-  TestFeatureModelModifier::addFeature(*FM,
+  FeatureModelModification::addFeature(*FM,
                                        std::make_unique<BinaryFeature>("b"));
-  TestFeatureModelModifier::removeParent(FM->getFeature("b"));
+  FeatureModelModification::removeParent(*FM->getFeature("b"));
 
   EXPECT_FALSE(
       FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
