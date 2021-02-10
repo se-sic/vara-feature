@@ -31,10 +31,6 @@ void init_feature_module_feature_tree_node(py::module &M) {
 
       //===----------------------------------------------------------------===//
       // Parent
-      .def(
-          "has_parent",
-          [](vf::FeatureTreeNode &F) { return F.getParent() != nullptr; },
-          R"pbdoc(`True` if this is not the root of a `FeatureModel`.)pbdoc")
       .def("parent", &vf::FeatureTreeNode::getParent,
            py::return_value_policy::reference, R"pbdoc(Parent feature)pbdoc")
       .def("is_parent", &vf::FeatureTreeNode::hasEdgeFrom,
@@ -46,6 +42,10 @@ void init_feature_module_feature(py::module &M) {
       .def("__hash__", &vf::Feature::hash)
       .def_property_readonly("name", &vf::Feature::getName,
                              R"pbdoc(The name of the feature.)pbdoc")
+      .def(
+          "is_root",
+          [](vf::Feature &F) { return llvm::isa<vf::RootFeature>(F); },
+          R"pbdoc(`True` if this is the root of a `FeatureModel`.)pbdoc")
       .def("is_optional", &vf::Feature::isOptional,
            R"pbdoc(`True` if the feature is optional.)pbdoc")
       .def_property_readonly(

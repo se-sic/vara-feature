@@ -60,8 +60,8 @@ class TestFeatureModel(unittest.TestCase):
         test_feature_a = self.fm.get_feature("A")
         test_feature_b = self.fm.get_feature("B")
 
-        self.assertTrue(test_feature_a.has_parent())
-        self.assertTrue(test_feature_b.has_parent())
+        self.assertFalse(test_feature_a.is_root())
+        self.assertFalse(test_feature_b.is_root())
         self.assertEqual(test_feature_root,
                          test_feature_a.parent())
         self.assertEqual(test_feature_a.parent(),

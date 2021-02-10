@@ -24,10 +24,15 @@ class TestFeature(unittest.TestCase):
         test_feature = feature.BinaryFeature("Foo", False)
         self.assertFalse(test_feature.is_optional())
 
-    def test_is_root(self):
+    def test_root(self):
+        """ Checks if a feature is root. """
+        test_feature = feature.RootFeature("a")
+        self.assertTrue(test_feature.is_root())
+
+    def test_false_root(self):
         """ Checks if a feature is root if it has no parents. """
-        test_feature = feature.BinaryFeature("root", False)
-        self.assertFalse(test_feature.has_parent())
+        test_feature = feature.BinaryFeature("a", False)
+        self.assertFalse(test_feature.is_root())
 
     def test_feature_equal(self):
         """ Checks if Feature equality comparison operator is correctly
