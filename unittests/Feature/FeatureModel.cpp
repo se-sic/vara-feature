@@ -45,8 +45,8 @@ TEST(FeatureModel, cloneRoot) {
 
   // The inner EXPECT_TRUE just handles the nodiscard of getParent
   // NOLINTNEXTLINE
-  EXPECT_DEATH(EXPECT_TRUE(FM->getFeature("a")->getParent()), ".*");
-  EXPECT_FALSE(Clone->getFeature("a")->getParent());
+  EXPECT_DEATH(EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a"))), ".*");
+  EXPECT_TRUE(llvm::isa<RootFeature>(Clone->getFeature("a")));
 }
 
 TEST(FeatureModel, cloneRelationship) {
