@@ -445,32 +445,31 @@ public:
 
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
-    auto *Root = FM.getRoot();
-    return Root && std::all_of(FM.begin(), FM.end(), [Root](Feature *F) {
-             return (*Root == *F) || F->getParent();
-           });
+    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+      return llvm::isa<RootFeature>(F) ||
+             (F->getParent() && F->getParentFeature());
+    });
   }
 };
 
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
-    auto *Root = FM.getRoot();
-    return Root && std::all_of(FM.begin(), FM.end(), [Root](Feature *F) {
-             return (*Root == *F) ||
-                    // Every parent of a Feature needs to have that as a child.
-                    std::any_of(
-                        F->getParent()->begin(), F->getParent()->end(),
-                        [F](FeatureTreeNode *Child) { return F == Child; });
-           });
+    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+      return llvm::isa<RootFeature>(F) ||
+             // Every parent of a Feature needs to have that as a child.
+             std::any_of(F->getParent()->begin(), F->getParent()->end(),
+                         [F](FeatureTreeNode *Child) { return F == Child; });
+    });
   }
 };
 
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
-    return FM.getRoot() && 1 == std::accumulate(FM.begin(), FM.end(), 0,
-                                                [](int Sum, Feature *F) {
-                                                  return Sum + !F->getParent();
-                                                });
+    return llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
+           1 == std::accumulate(FM.begin(), FM.end(), 0,
+                                [](int Sum, Feature *F) {
+                                  return Sum + llvm::isa<RootFeature>(F);
+                                });
   }
 };
 

@@ -278,31 +278,26 @@ TEST_F(FeatureModelConsistencyCheckerTest,
           *FM));
 }
 
-// TEST_F(FeatureModelConsistencyCheckerTest, EveryFMNeedsOneRootButNonPresent)
-// {
-//  FeatureModelBuilder B;
-//  auto FM = B.buildFeatureModel();
-//
-//  FeatureModelModification::removeFeature(*FM, *FM->getRoot());
-//
-//  EXPECT_FALSE(
-//      FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
-//          *FM));
-//}
+TEST_F(FeatureModelConsistencyCheckerTest, EveryFMNeedsOneRootButNonPresent) {
+  FeatureModelBuilder B;
+  auto FM = B.buildFeatureModel();
 
-// TEST_F(FeatureModelConsistencyCheckerTest,
-//       EveryFMNeedsOneRootButMultiplePresent) {
-//  FeatureModelBuilder B;
-//  B.makeFeature<BinaryFeature>("root");
-//  auto FM = B.buildFeatureModel();
-//
-//  FeatureModelModification::addFeature(*FM,
-//                                       std::make_unique<BinaryFeature>("b"));
-//  FeatureModelModification::removeParent(*FM->getFeature("b"));
-//
-//  EXPECT_FALSE(
-//      FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
-//          *FM));
-//}
+  FeatureModelModification::removeFeature(*FM, *FM->getRoot());
+
+  EXPECT_FALSE(
+      FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
+          *FM));
+}
+
+TEST_F(FeatureModelConsistencyCheckerTest,
+       EveryFMNeedsOneRootButMultiplePresent) {
+  auto FM = FeatureModelBuilder().buildFeatureModel();
+
+  FeatureModelModification::addFeature(*FM, std::make_unique<RootFeature>("b"));
+
+  EXPECT_FALSE(
+      FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
+          *FM));
+}
 
 } // namespace vara::feature
