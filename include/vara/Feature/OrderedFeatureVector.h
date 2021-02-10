@@ -21,7 +21,7 @@ public:
   OrderedFeatureVector() = default;
   OrderedFeatureVector(std::initializer_list<Feature *> Init) { insert(Init); }
   template <class FeatureIterTy>
-  OrderedFeatureVector(FeatureIterTy Begin, FeatureIterTy End) {
+  OrderedFeatureVector(FeatureIterTy &&Begin, FeatureIterTy &&End) {
     insert(std::forward<FeatureIterTy>(Begin),
            std::forward<FeatureIterTy>(End));
   }
@@ -48,7 +48,7 @@ public:
   }
 
   template <class FeatureIterTy>
-  void insert(FeatureIterTy Begin, FeatureIterTy End) {
+  void insert(FeatureIterTy &&Begin, FeatureIterTy &&End) {
     insert(llvm::make_range(std::forward<FeatureIterTy>(Begin),
                             std::forward<FeatureIterTy>(End)));
   }
