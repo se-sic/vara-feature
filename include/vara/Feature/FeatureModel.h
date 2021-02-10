@@ -166,7 +166,7 @@ public:
   template <typename FeatureTy, typename... Args,
             typename = typename std::enable_if_t<
                 std::is_base_of_v<Feature, FeatureTy>, int>>
-  Feature *makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
+  FeatureTy *makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
     if (!Features
              .try_emplace(FeatureName,
                           std::make_unique<FeatureTy>(
@@ -174,7 +174,7 @@ public:
              .second) {
       return nullptr;
     }
-    return Features[FeatureName].get();
+    return llvm::dyn_cast<FeatureTy>(Features[FeatureName].get());
   }
 
   FeatureModelBuilder *addEdge(const std::string &ParentName,
@@ -213,7 +213,10 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *setRoot(const std::string &RootName = "root");
+  FeatureModelBuilder *setRootName(std::string Name) {
+    this->RootName = std::move(Name);
+    return this;
+  }
 
   /// Build \a FeatureModel.
   ///
@@ -245,6 +248,9 @@ private:
   llvm::StringMap<std::string> Parents;
   EdgeMapType Children;
   RelationshipEdgeType RelationshipEdges;
+  std::string RootName{"root"};
+
+  bool buildRoot();
 
   bool buildConstraints();
 

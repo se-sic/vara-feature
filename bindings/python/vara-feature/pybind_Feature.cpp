@@ -99,9 +99,17 @@ void init_feature_module_numeric_feature(py::module &M) {
           R"pbdoc(Returns the string representation of a NumericFeature.)pbdoc");
 }
 
+void init_feature_module_root_feature(py::module &M) {
+  py::class_<vf::RootFeature, vf::Feature>(M, "RootFeature")
+      .def(py::init<std::string>())
+      .def("to_string", &vf::RootFeature::toString,
+           R"pbdoc(Returns the string representation of a RootFeature.)pbdoc");
+}
+
 void init_feature_module(py::module &M) {
   init_feature_module_feature_tree_node(M);
   init_feature_module_feature(M);
   init_feature_module_binary_feature(M);
   init_feature_module_numeric_feature(M);
+  init_feature_module_root_feature(M);
 }

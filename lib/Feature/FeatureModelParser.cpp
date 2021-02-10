@@ -97,6 +97,9 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       }
     }
   }
+  if (Name == "root") {
+    return FMB.makeFeature<RootFeature>(Name);
+  }
   if (Num) {
     if (Values.empty()) {
       return FMB.makeFeature<NumericFeature>(Name,

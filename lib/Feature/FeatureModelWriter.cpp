@@ -120,7 +120,7 @@ int FeatureModelXmlWriter::writeBinaryFeatures(xmlTextWriterPtr Writer) {
   CHECK_RC
 
   for (Feature *F : Fm.features()) {
-    if (llvm::isa<BinaryFeature>(F)) {
+    if (llvm::isa<RootFeature>(F) || llvm::isa<BinaryFeature>(F)) {
       RC = writeFeature(Writer, *F);
       CHECK_RC
     }

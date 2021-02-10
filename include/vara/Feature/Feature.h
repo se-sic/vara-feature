@@ -37,7 +37,7 @@ class Feature : public FeatureTreeNode {
   friend class detail::FeatureModelModification;
 
 public:
-  enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
+  enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_ROOT, FK_UNKNOWN };
 
   Feature(std::string Name)
       : FeatureTreeNode(NodeKind::NK_FEATURE), Kind(FeatureKind::FK_UNKNOWN),
@@ -257,6 +257,21 @@ public:
 private:
   ValuesVariantType Values;
 };
+
+//===----------------------------------------------------------------------===//
+//                          RootFeature Class
+//===----------------------------------------------------------------------===//
+
+class RootFeature : public Feature {
+public:
+  RootFeature(string Name = "root")
+      : Feature(FeatureKind::FK_ROOT, std::move(Name), false, {}) {}
+
+  static bool classof(const Feature *F) {
+    return F->getKind() == FeatureKind::FK_ROOT;
+  }
+};
+
 } // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATURE_H
