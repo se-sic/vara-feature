@@ -272,10 +272,10 @@ std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> FeatureModelXmlParser::parseDoc() {
   if (Doc && Ctxt->valid) {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
     if (Ctxt->vctxt.valid) {
-      if (xmlValidateDtdFinal(&Ctxt->vctxt, Doc.get()) == 1) {
+//      if (xmlValidateDtdFinal(&Ctxt->vctxt, Doc.get()) == 1) {
         return Doc;
-      }
-      llvm::errs() << "Failed to validate DTD in final step\n";
+//      }
+//      llvm::errs() << "Failed to validate DTD in final step\n";
     }
     llvm::errs() << "Failed to validate DTD.\n";
   } else {
