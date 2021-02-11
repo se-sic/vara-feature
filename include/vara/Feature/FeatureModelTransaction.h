@@ -118,8 +118,8 @@ void addFeature(FeatureModel *FM, std::unique_ptr<Feature> NewFeature,
 
 namespace detail {
 
-struct CopyTransactionMode {};
-struct ModifyTransactionMode {};
+class CopyTransactionMode {};
+class ModifyTransactionMode {};
 
 class FeatureModelModification {
   friend class FeatureModelCopyTransactionBase;
