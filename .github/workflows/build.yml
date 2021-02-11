@@ -64,7 +64,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_CXX_FLAGS=$CXX_FLAGS -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DLLVM_REQUESTED_VERSION=$LLVM_VERSION -DPYTHON_EXECUTABLE=$(which python3)
+          cmake .. -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DLLVM_REQUESTED_VERSION=$LLVM_VERSION -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
       - name: Run Tests
