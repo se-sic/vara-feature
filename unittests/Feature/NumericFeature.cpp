@@ -12,7 +12,7 @@ TEST(NumericFeature, NumericFeatureBasics) {
 
   EXPECT_EQ("A", A.getName());
   EXPECT_TRUE(A.isOptional());
-  EXPECT_TRUE(A.isRoot());
+  EXPECT_FALSE(A.getParent());
 }
 
 TEST(NumericFeature, isa) {
@@ -20,6 +20,7 @@ TEST(NumericFeature, isa) {
 
   EXPECT_TRUE(llvm::isa<NumericFeature>(A));
   EXPECT_FALSE(llvm::isa<BinaryFeature>(A));
+  EXPECT_FALSE(llvm::isa<RootFeature>(A));
 }
 
 TEST(NumericFeature, NumericFeaturePair) {
@@ -42,12 +43,9 @@ TEST(NumericFeature, NumericFeatureRoot) {
   auto B = FeatureModelBuilder();
 
   B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
-  B.setRoot("F");
+  B.setRootName("F");
 
-  auto FM = B.buildFeatureModel();
-
-  EXPECT_TRUE(FM->getFeature("F")->isRoot());
-  EXPECT_EQ(FM->getFeature("F"), FM->getRoot());
+  EXPECT_FALSE(B.buildFeatureModel());
 }
 
 TEST(NumericFeature, NumericFeatureChildren) {
@@ -60,9 +58,7 @@ TEST(NumericFeature, NumericFeatureChildren) {
   EXPECT_EQ(
       std::distance(FM->getFeature("a")->begin(), FM->getFeature("a")->end()),
       1);
-  if (auto *F =
-          llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("a")->begin());
-      F) {
+  if (auto *F = llvm::dyn_cast<Feature>(*FM->getFeature("a")->begin())) {
     EXPECT_EQ("aa", F->getName());
   } else {
     FAIL();

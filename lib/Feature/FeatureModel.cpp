@@ -26,12 +26,20 @@ Feature *FeatureModel::addFeature(std::unique_ptr<Feature> NewFeature) {
   return InsertedFeature;
 }
 
+void FeatureModel::removeFeature(Feature &F) {
+  if (&F == Root) {
+    Root = nullptr;
+  }
+  OrderedFeatures.remove(&F);
+  Features.erase(F.getName());
+}
+
 std::unique_ptr<FeatureModel> FeatureModel::clone() {
   FeatureModelBuilder FMB;
   FMB.setVmName(this->getName().str());
   FMB.setCommit(this->getCommit().str());
   FMB.setPath(this->getPath().string());
-  FMB.setRoot(this->getRoot()->getName().str());
+  FMB.setRootName(this->getRoot()->getName().str());
 
   for (const auto &KV : this->Features) {
     // TODO(s9latimm): Add unittests for cloned FeatureSourceRanges
@@ -42,6 +50,9 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
     switch (KV.getValue()->getKind()) {
     case Feature::FeatureKind::FK_UNKNOWN:
       FMB.makeFeature<Feature>(KV.getValue()->getName().str());
+      break;
+    case Feature::FeatureKind::FK_ROOT:
+      FMB.makeFeature<RootFeature>(KV.getValue()->getName().str());
       break;
     case Feature::FeatureKind::FK_BINARY:
       if (auto *F = llvm::dyn_cast<BinaryFeature>(KV.getValue().get()); F) {
@@ -261,32 +272,28 @@ bool FeatureModelBuilder::buildTree(const string &FeatureName,
   return true;
 }
 
-FeatureModelBuilder *FeatureModelBuilder::setRoot(const std::string &RootName) {
-  assert(this->Root == nullptr && "Root already set.");
-
-  if (Features.find(RootName) == Features.end()) {
-    makeFeature<BinaryFeature>(RootName, false);
+bool FeatureModelBuilder::buildRoot() {
+  Root = Features.find(RootName) != Features.end()
+             ? Features[RootName].get()
+             : makeFeature<RootFeature>(RootName);
+  if (!llvm::isa_and_nonnull<RootFeature>(Root)) {
+    llvm::errs() << "error: Missing root node.\n";
+    return false;
   }
-  this->Root = Features[RootName].get();
 
   for (const auto &FeatureName : Features.keys()) {
-    if (FeatureName != RootName && Parents.find(FeatureName) == Parents.end()) {
+    if (FeatureName != Root->getName() &&
+        Parents.find(FeatureName) == Parents.end()) {
       Children[RootName].insert(std::string(FeatureName));
       Parents[FeatureName] = RootName;
     }
   }
-  return this;
+  return true;
 }
 
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
-  if (!Root) {
-    setRoot();
-  }
-  assert(Root && "Root not set.");
   std::set<std::string> Visited;
-
-  if (!buildConstraints() ||
-      !buildTree(std::string(Root->getName()), Visited)) {
+  if (!buildRoot() || !buildConstraints() || !buildTree(RootName, Visited)) {
     return nullptr;
   }
   return std::make_unique<FeatureModel>(Name, Path, Commit, std::move(Features),

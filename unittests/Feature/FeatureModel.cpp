@@ -1,23 +1,12 @@
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/Feature.h"
+#include "vara/Feature/FeatureModelTransaction.h"
 
 #include "llvm/ADT/SetVector.h"
 
 #include "gtest/gtest.h"
 
 namespace vara::feature {
-
-class TestFeatureModelModifier {
-public:
-  static Feature *addFeatureRaw(FeatureModel &FM,
-                                std::unique_ptr<Feature> Feature) {
-    return FM.addFeature(std::move(Feature));
-  }
-
-  static void removeChild(FeatureModel &FM, Feature *Parent, Feature *Child) {
-    // TODO (@s9latimm): remove child
-  }
-};
 
 TEST(FeatureModel, build) {
   FeatureModelBuilder B;
@@ -45,8 +34,8 @@ TEST(FeatureModel, cloneUnique) {
 
 TEST(FeatureModel, cloneRoot) {
   FeatureModelBuilder B;
-  B.makeFeature<BinaryFeature>("a");
-  B.setRoot("a");
+  B.makeFeature<RootFeature>("a");
+  B.setRootName("a");
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -54,11 +43,10 @@ TEST(FeatureModel, cloneRoot) {
   assert(Clone);
   FM.reset();
 
-  // The inner EXPECT_TRUE just handles the nodiscard of isRoot
+  // The inner EXPECT_TRUE just handles the nodiscard of getParent
   // NOLINTNEXTLINE
-  ASSERT_EXIT(EXPECT_TRUE(FM->getFeature("a")->isRoot()),
-              testing::KilledBySignal(SIGSEGV), ".*");
-  EXPECT_TRUE(Clone->getFeature("a")->isRoot());
+  EXPECT_DEATH(EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a"))), ".*");
+  EXPECT_TRUE(llvm::isa<RootFeature>(Clone->getFeature("a")));
 }
 
 TEST(FeatureModel, cloneRelationship) {
@@ -93,8 +81,7 @@ TEST(FeatureModel, cloneConstraint) {
 
   // The inner EXPECT_TRUE just handles the nodiscard of clone
   // NOLINTNEXTLINE
-  ASSERT_EXIT(EXPECT_TRUE(Deleted->clone()), testing::KilledBySignal(SIGSEGV),
-              ".*");
+  EXPECT_DEATH(EXPECT_TRUE(Deleted->clone()), ".*");
   EXPECT_TRUE((*Clone->getFeature("a")->constraints().begin())->clone());
 }
 
@@ -224,7 +211,9 @@ TEST_F(FeatureModelTest, gtSimple) {
 //                    FeatureModelConsistencyChecker Tests
 //===----------------------------------------------------------------------===//
 
-class FeatureModelConsistencyCheckerTest : public ::testing::Test {
+class FeatureModelConsistencyCheckerTest
+    : public ::testing::Test,
+      protected detail::FeatureModelModification {
 protected:
   void SetUp() override {
     FeatureModelBuilder B;
@@ -239,6 +228,9 @@ protected:
     assert(FM);
   }
 
+  // Dummy method to fulfill the FeatureModelModification interface
+  void exec(FeatureModel &_) override{};
+
   std::unique_ptr<FeatureModel> FM;
 };
 
@@ -251,17 +243,15 @@ TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentValid) {
               EveryFeatureRequiresParent>::isFeatureModelValid(*FM));
 }
 
-// TODO : @lauritz: can we integrate remove edge somewhere? In general, we need
-// some way to build "wrong" FeatureModels for testing
-
 TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentMissing) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
-  // remove parent root from a
-  auto FM = B.buildFeatureModel();
 
-  // EXPECT_FALSE(FeatureModelConsistencyChecker<
-  //             EveryFeatureRequiresParent>::isFeatureModelValid(*FM));
+  auto FM = B.buildFeatureModel();
+  FeatureModelModification::removeParent(*FM->getFeature("a"));
+
+  EXPECT_FALSE(FeatureModelConsistencyChecker<
+               EveryFeatureRequiresParent>::isFeatureModelValid(*FM));
 }
 
 TEST_F(FeatureModelConsistencyCheckerTest, EveryParentNeedsFeatureAsAChild) {
@@ -275,9 +265,7 @@ TEST_F(FeatureModelConsistencyCheckerTest,
   B.makeFeature<BinaryFeature>("a");
   auto FM = B.buildFeatureModel();
 
-  // remove parent a from root nodes children
-  TestFeatureModelModifier::removeChild(*FM, FM->getRoot(),
-                                        FM->getFeature("a"));
+  FeatureModelModification::removeChild(*FM->getRoot(), *FM->getFeature("a"));
 
   EXPECT_FALSE(FeatureModelConsistencyChecker<
                CheckFeatureParentChildRelationShip>::isFeatureModelValid(*FM));
@@ -292,21 +280,24 @@ TEST_F(FeatureModelConsistencyCheckerTest,
 
 TEST_F(FeatureModelConsistencyCheckerTest, EveryFMNeedsOneRootButNonPresent) {
   FeatureModelBuilder B;
-  // remove root feature
   auto FM = B.buildFeatureModel();
 
-  // EXPECT_FALSE(FeatureModelConsistencyChecker<
-  //              ExactlyOneRootNode>::isFeatureModelValid(*FM));
+  FeatureModelModification::removeFeature(*FM, *FM->getRoot());
+
+  EXPECT_FALSE(
+      FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
+          *FM));
 }
 
 TEST_F(FeatureModelConsistencyCheckerTest,
        EveryFMNeedsOneRootButMultiplePresent) {
-  FeatureModelBuilder B;
-  B.makeFeature<BinaryFeature>("root"); // cannot add second root
-  auto FM = B.buildFeatureModel();
+  auto FM = FeatureModelBuilder().buildFeatureModel();
 
-  // EXPECT_FALSE(FeatureModelConsistencyChecker<
-  //              ExactlyOneRootNode>::isFeatureModelValid(*FM));
+  FeatureModelModification::addFeature(*FM, std::make_unique<RootFeature>("b"));
+
+  EXPECT_FALSE(
+      FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
+          *FM));
 }
 
 } // namespace vara::feature

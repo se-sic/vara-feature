@@ -10,4 +10,5 @@ add_vara_unittest(VaRAFeatureTests
   NumericFeature.cpp
   OrderedFeatureVector.cpp
   Relationship.cpp
+  RootFeature.cpp
   )

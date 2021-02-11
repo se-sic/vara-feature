@@ -28,7 +28,6 @@ class FeatureModelModification;
 class FeatureModel {
   // Only Modifications are allowed to edit a FeatureModel after creation.
   friend class detail::FeatureModelModification;
-  friend class TestFeatureModelModifier;
 
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
@@ -59,10 +58,7 @@ public:
 
   [[nodiscard]] llvm::StringRef getCommit() const { return Commit; }
 
-  [[nodiscard]] Feature *getRoot() const {
-    assert(Root);
-    return Root;
-  }
+  [[nodiscard]] Feature *getRoot() const { return Root; }
 
   //===--------------------------------------------------------------------===//
   // Ordered feature iterator
@@ -132,6 +128,9 @@ private:
   /// \returns ptr to inserted \a Feature
   Feature *addFeature(std::unique_ptr<Feature> Feature);
 
+  /// Delete a \a Feature.
+  void removeFeature(Feature &Feature);
+
   OrderedFeatureTy OrderedFeatures;
 };
 
@@ -162,17 +161,16 @@ public:
   ///
   /// \returns ptr to inserted \a Feature
   template <typename FeatureTy, typename... Args,
-            typename = typename std::enable_if_t<
-                std::is_base_of_v<Feature, FeatureTy>, int>>
-  Feature *makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
+            std::enable_if_t<std::is_base_of_v<Feature, FeatureTy>, int> = 0>
+  FeatureTy *makeFeature(std::string FeatureName, Args &&...FurtherArgs) {
     if (!Features
              .try_emplace(FeatureName,
                           std::make_unique<FeatureTy>(
-                              FeatureName, std::move(FurtherArgs)...))
+                              FeatureName, std::forward<Args>(FurtherArgs)...))
              .second) {
       return nullptr;
     }
-    return Features[FeatureName].get();
+    return llvm::dyn_cast<FeatureTy>(Features[FeatureName].get());
   }
 
   FeatureModelBuilder *addEdge(const std::string &ParentName,
@@ -211,7 +209,10 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *setRoot(const std::string &RootName = "root");
+  FeatureModelBuilder *setRootName(std::string Name) {
+    this->RootName = std::move(Name);
+    return this;
+  }
 
   /// Build \a FeatureModel.
   ///
@@ -243,6 +244,9 @@ private:
   llvm::StringMap<std::string> Parents;
   EdgeMapType Children;
   RelationshipEdgeType RelationshipEdges;
+  std::string RootName{"root"};
+
+  bool buildRoot();
 
   bool buildConstraints();
 
@@ -438,7 +442,7 @@ public:
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
     return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-      return F->isRoot() || (F->getParent() != nullptr);
+      return llvm::isa<RootFeature>(F) || F->getParentFeature();
     });
   }
 };
@@ -446,8 +450,8 @@ struct EveryFeatureRequiresParent {
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
     return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-      return F->isRoot() ||
-             // Every parent of a Feature needs to have the Feature as a child.
+      return llvm::isa<RootFeature>(F) ||
+             // Every parent of a Feature needs to have it as a child.
              std::any_of(F->getParent()->begin(), F->getParent()->end(),
                          [F](FeatureTreeNode *Child) { return F == Child; });
     });
@@ -456,10 +460,11 @@ struct CheckFeatureParentChildRelationShip {
 
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
-    return 1 ==
-           std::accumulate(FM.begin(), FM.end(), 0, [](int Sum, Feature *F) {
-             return Sum + F->isRoot();
-           });
+    return llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
+           1 == std::accumulate(FM.begin(), FM.end(), 0,
+                                [](int Sum, Feature *F) {
+                                  return Sum + llvm::isa<RootFeature>(F);
+                                });
   }
 };
 

@@ -132,13 +132,19 @@ public:
   virtual void exec(FeatureModel &FM) = 0;
 
 protected:
-  /// \brief Set the parrent of a Feature.
+  /// \brief Set the parent of a \a Feature.
   static void setParent(Feature &F, Feature *Parent) { F.setParent(Parent); }
 
-  /// \brief Set the parrent of a \a Feature Child to F.
+  /// \brief Remove the parent of a \a Feature.
+  static void removeParent(Feature &F) { F.setParent(nullptr); }
+
+  /// \brief Add a \a Feature Child to F.
   static void addChild(Feature &F, Feature &Child) { F.addEdge(&Child); }
 
-  /// \brief Adds a new Feature to the FeatureModel.
+  /// \brief Remove \a Feature Child from F.
+  static void removeChild(Feature &F, Feature &Child) { F.removeEdge(&Child); }
+
+  /// \brief Adds a new \a Feature to the FeatureModel.
   ///
   /// \param FM model to add to
   /// \param NewFeature the Feature to add
@@ -147,6 +153,14 @@ protected:
   static Feature *addFeature(FeatureModel &FM,
                              std::unique_ptr<Feature> NewFeature) {
     return FM.addFeature(std::move(NewFeature));
+  }
+
+  /// \brief Remove \a Feature from a \a FeatureModel.
+  ///
+  /// \param FM model to remove from
+  /// \param F the Feature to delete
+  static void removeFeature(FeatureModel &FM, Feature &F) {
+    FM.removeFeature(F);
   }
 
   template <typename ModTy, typename... ArgTys>

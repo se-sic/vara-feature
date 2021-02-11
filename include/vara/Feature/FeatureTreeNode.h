@@ -52,8 +52,6 @@ public:
 
   [[nodiscard]] FeatureTreeNode *getParent() const { return Parent; }
 
-  [[nodiscard]] bool isRoot() const { return Parent == nullptr; }
-
   [[nodiscard]] bool hasEdgeFrom(FeatureTreeNode &N) const {
     return Parent == &N;
   }
@@ -99,10 +97,13 @@ protected:
   }
 
 private:
-  void setParent(FeatureTreeNode &Feature) { Parent = &Feature; }
   void setParent(FeatureTreeNode *Feature) { Parent = Feature; }
 
   bool addEdge(FeatureTreeNode *Feature) { return DGNode::addEdge(*Feature); }
+
+  void removeEdge(FeatureTreeNode *Feature) {
+    return DGNode::removeEdge(*Feature);
+  }
 
   template <typename T>
   static void getChildrenImpl(FeatureTreeNode *N,
