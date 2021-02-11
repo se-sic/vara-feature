@@ -442,8 +442,7 @@ public:
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
     return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-      return llvm::isa<RootFeature>(F) ||
-             (F->getParent() && F->getParentFeature());
+      return llvm::isa<RootFeature>(F) || F->getParentFeature();
     });
   }
 };
