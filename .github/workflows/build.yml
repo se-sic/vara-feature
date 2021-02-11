@@ -20,6 +20,10 @@ jobs:
             llvm-minor: 0
           - llvm-major: 11
             llvm-minor: 1
+          - build: Debug
+            flags: -Wall -Wextra -Wno-unused-parameter -fsanitize=address -fsanitize=undefined
+          - build: Release
+            flags: -O3
         exclude:
           - llvm-major: 10
             compiler: clang++-11
@@ -55,16 +59,15 @@ jobs:
           BUILD_TYPE: ${{ matrix.build }}
           LLVM_VERSION: ${{ matrix.llvm-major }}.${{ matrix.llvm-minor }}
           CXX: ${{ matrix.compiler }}
+          CXX_FLAGS: ${{ matrix.flags }}
         shell: bash
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DLLVM_REQUESTED_VERSION=$LLVM_VERSION -DPYTHON_EXECUTABLE=$(which python3)
+          cmake .. -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_CXX_FLAGS=$CXX_FLAGS -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DLLVM_REQUESTED_VERSION=$LLVM_VERSION -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
       - name: Run Tests
-        env:
-          CXX: ${{ matrix.compiler }}
         shell: bash
         run: |
           cd build
@@ -73,8 +76,6 @@ jobs:
           cmake --build . --target check-vara-fm-viewer
 
       - name: Run Clang-Tidy
-        env:
-          CXX: ${{ matrix.compiler }}
         shell: bash
         run: |
           cd build
