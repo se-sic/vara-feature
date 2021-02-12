@@ -97,7 +97,10 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       }
     }
   }
-  if (Name == "root") {
+
+  // XML has those names specified as root nodes
+  if (Name == "root" || Name == "base") {
+    FMB.setRootName(Name);
     return FMB.makeFeature<RootFeature>(Name);
   }
   if (Num) {
