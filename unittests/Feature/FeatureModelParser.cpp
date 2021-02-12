@@ -40,4 +40,122 @@ TEST(FeatureModelParser, outOfOrder) {
   EXPECT_TRUE(P.buildFeatureModel());
 }
 
+TEST(FeatureModelParser, missingRoot) {
+  // this test is expected to fail
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_missing_root.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, tagNotClosed) {
+  // this test is expected to fail
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_tags_not_closed.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, nameTagNotProvided) {
+  // this test is expected to fail
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_name_tag_not_provided.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, circularParentship) {
+  // this test is expected to fail
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_circular_parentship.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, excludeMissingFeature) {
+  // this test is expected to fail
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_exclude_missing_feature.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, wrongOptionalFlag) {
+  // this test is expected to fail
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_wrong_optional_flag.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, emptyExclusions) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_empty_exclusions.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, specialCharInName) {
+  // this test is expected to fail
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_special_char_in_name.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, randomTextInTag) {
+  // this test is expected to fail
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_random_text_in_tag.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, docTagNotProvided) {
+  // is this test expected to fail or pass?
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_tag_not_provided.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
 } // namespace vara::feature

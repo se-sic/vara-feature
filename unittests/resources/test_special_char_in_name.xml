@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="Children" root="test">
+  <binaryOptions>
+    <configurationOption>
+      <name>C\tB</name>
+      <parent>C\f</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>A</name>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>CA</name>
+      <parent>C\f</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>root</name>
+      <children>
+        <options>A</options>
+        <options>B</options>
+        <options>C\f</options>
+      </children>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>CC</name>
+      <parent>C\f</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>B</name>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>C\f</name>
+      <parent>root</parent>
+      <children>
+        <options>CA</options>
+        <options>C\tB</options>
+        <options>CC</options>
+      </children>
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions/>
+  <booleanConstraints/>
+</vm>
