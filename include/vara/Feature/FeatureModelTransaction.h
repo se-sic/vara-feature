@@ -98,7 +98,7 @@ using FeatureModelModifyTransaction =
     FeatureModelTransaction<detail::ModifyTransactionMode>;
 
 //===----------------------------------------------------------------------===//
-//                            Modifiction Helpers
+//                            Modification Helpers
 //===----------------------------------------------------------------------===//
 
 /// Adds a Feature to the FeatureModel
