@@ -2,6 +2,7 @@
 #define VARA_FEATURE_FEATUREMODEL_H
 
 #include "vara/Feature/Constraint.h"
+#include "vara/Feature/FeatureTreeNode.h"
 #include "vara/Feature/OrderedFeatureVector.h"
 #include "vara/Feature/Relationship.h"
 
@@ -9,10 +10,15 @@
 #include "llvm/Support/GraphWriter.h"
 
 #include <algorithm>
+#include <numeric>
 #include <queue>
 #include <utility>
 
 namespace vara::feature {
+
+namespace detail {
+class FeatureModelModification;
+} // namespace detail
 
 //===----------------------------------------------------------------------===//
 //                               FeatureModel
@@ -20,6 +26,9 @@ namespace vara::feature {
 
 /// \brief Tree like representation of features and dependencies.
 class FeatureModel {
+  // Only Modifications are allowed to edit a FeatureModel after creation.
+  friend class detail::FeatureModelModification;
+
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
   using OrderedFeatureTy = OrderedFeatureVector;
@@ -49,17 +58,7 @@ public:
 
   [[nodiscard]] llvm::StringRef getCommit() const { return Commit; }
 
-  [[nodiscard]] Feature *getRoot() const {
-    assert(Root);
-    return Root;
-  }
-
-  /// Insert a \a Feature into existing model while keeping consistency and
-  /// ordering.
-  ///
-  /// \param[in] Feature feature to be inserted
-  /// \return if feature was inserted successfully
-  bool addFeature(std::unique_ptr<Feature> Feature);
+  [[nodiscard]] Feature *getRoot() const { return Root; }
 
   //===--------------------------------------------------------------------===//
   // Ordered feature iterator
@@ -94,7 +93,13 @@ public:
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
 
-  Feature *getFeature(llvm::StringRef F) { return Features[F].get(); }
+  [[nodiscard]] Feature *getFeature(llvm::StringRef F) const {
+    auto SearchFeature = Features.find(F);
+    if (SearchFeature != Features.end()) {
+      return SearchFeature->getValue().get();
+    }
+    return nullptr;
+  }
 
   /// Create deep clone of whole data structure.
   ///
@@ -116,6 +121,16 @@ protected:
   FeatureModel() = default;
 
 private:
+  /// Insert a \a Feature into existing model.
+  ///
+  /// \param[in] Feature feature to be inserted
+  ///
+  /// \returns ptr to inserted \a Feature
+  Feature *addFeature(std::unique_ptr<Feature> Feature);
+
+  /// Delete a \a Feature.
+  void removeFeature(Feature &Feature);
+
   OrderedFeatureTy OrderedFeatures;
 };
 
@@ -138,27 +153,28 @@ public:
     Children.clear();
   }
 
-  /// Try to create and add a new \a Feature to the \a FeatureModel.
+  /// Try to create a new \a Feature.
   ///
   /// \param[in] FeatureName name of the \a Feature
   /// \param[in] FurtherArgs further arguments that should be passed to the
   ///                        \a Feature constructor
   ///
-  /// \returns true, if the feature could be inserted into the \a FeatureModel
+  /// \returns ptr to inserted \a Feature
   template <typename FeatureTy, typename... Args,
-            typename = typename std::enable_if_t<
-                std::is_base_of_v<Feature, FeatureTy>, int>>
-  bool makeFeature(const std::string &FeatureName, Args... FurtherArgs) {
-    return Features
-        .try_emplace(FeatureName, std::make_unique<FeatureTy>(
-                                      FeatureName, std::move(FurtherArgs)...))
-        .second;
+            std::enable_if_t<std::is_base_of_v<Feature, FeatureTy>, int> = 0>
+  FeatureTy *makeFeature(std::string FeatureName, Args &&...FurtherArgs) {
+    if (!Features
+             .try_emplace(FeatureName,
+                          std::make_unique<FeatureTy>(
+                              FeatureName, std::forward<Args>(FurtherArgs)...))
+             .second) {
+      return nullptr;
+    }
+    return llvm::dyn_cast<FeatureTy>(Features[FeatureName].get());
   }
 
-  bool addFeature(Feature &F);
-
-  FeatureModelBuilder *addParent(const std::string &FeatureName,
-                                 const std::string &ParentName) {
+  FeatureModelBuilder *addEdge(const std::string &ParentName,
+                               const std::string &FeatureName) {
     Children[ParentName].insert(FeatureName);
     Parents[FeatureName] = ParentName;
     return this;
@@ -193,23 +209,15 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *setRoot(const std::string &RootName = "root");
+  FeatureModelBuilder *setRootName(std::string Name) {
+    this->RootName = std::move(Name);
+    return this;
+  }
 
   /// Build \a FeatureModel.
   ///
   /// \return instance of \a FeatureModel
   std::unique_ptr<FeatureModel> buildFeatureModel();
-
-  /// Build simple \a FeatureModel from given edges.
-  ///
-  /// \param[in] B edges with \a BinaryFeature
-  /// \param[in] N edges with \a NumericFeature
-  /// \return instance of \a FeatureModel
-  std::unique_ptr<FeatureModel> buildSimpleFeatureModel(
-      const std::initializer_list<std::pair<std::string, std::string>> &B,
-      const std::initializer_list<std::pair<
-          std::string,
-          std::pair<std::string, NumericFeature::ValuesVariantType>>> &N = {});
 
 private:
   class BuilderVisitor : public ConstraintVisitor {
@@ -236,6 +244,9 @@ private:
   llvm::StringMap<std::string> Parents;
   EdgeMapType Children;
   RelationshipEdgeType RelationshipEdges;
+  std::string RootName{"root"};
+
+  bool buildRoot();
 
   bool buildConstraints();
 
@@ -414,5 +425,49 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 };
 
 } // namespace llvm
+
+namespace vara::feature {
+
+//===----------------------------------------------------------------------===//
+//                        FeatureModelConsistencyRules
+//===----------------------------------------------------------------------===//
+
+template <typename... Rules> class FeatureModelConsistencyChecker {
+public:
+  static bool isFeatureModelValid(FeatureModel &FM) {
+    return (Rules::check(FM) && ... && true);
+  }
+};
+
+struct EveryFeatureRequiresParent {
+  static bool check(FeatureModel &FM) {
+    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+      return llvm::isa<RootFeature>(F) || F->getParentFeature();
+    });
+  }
+};
+
+struct CheckFeatureParentChildRelationShip {
+  static bool check(FeatureModel &FM) {
+    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+      return llvm::isa<RootFeature>(F) ||
+             // Every parent of a Feature needs to have it as a child.
+             std::any_of(F->getParent()->begin(), F->getParent()->end(),
+                         [F](FeatureTreeNode *Child) { return F == Child; });
+    });
+  }
+};
+
+struct ExactlyOneRootNode {
+  static bool check(FeatureModel &FM) {
+    return llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
+           1 == std::accumulate(FM.begin(), FM.end(), 0,
+                                [](int Sum, Feature *F) {
+                                  return Sum + llvm::isa<RootFeature>(F);
+                                });
+  }
+};
+
+} // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATUREMODEL_H

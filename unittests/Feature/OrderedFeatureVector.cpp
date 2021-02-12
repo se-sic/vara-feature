@@ -4,14 +4,24 @@
 
 namespace vara::feature {
 
-TEST(OrderedFeatureVector, insert) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"a", "aa"},
-                                                           {"a", "ab"},
-                                                           {"b", "bb"},
-                                                           {"root", "b"},
-                                                           {"root", "a"},
-                                                           {"b", "ba"}});
-  assert(FM);
+class OrderedFeatureVectorTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder B;
+    B.makeFeature<BinaryFeature>("a");
+    B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+    B.addEdge("a", "ab")->makeFeature<BinaryFeature>("ab");
+    B.makeFeature<BinaryFeature>("b");
+    B.addEdge("b", "ba")->makeFeature<BinaryFeature>("ba");
+    B.addEdge("b", "bb")->makeFeature<BinaryFeature>("bb");
+    FM = B.buildFeatureModel();
+    assert(FM);
+  }
+
+  std::unique_ptr<FeatureModel> FM;
+};
+
+TEST_F(OrderedFeatureVectorTest, insert) {
   OrderedFeatureVector OFV;
   std::vector<Feature *> Expected = {
       FM->getFeature("bb"),  FM->getFeature("ba"), FM->getFeature("b"),
@@ -34,14 +44,7 @@ TEST(OrderedFeatureVector, insert) {
   }
 }
 
-TEST(OrderedFeatureVector, insertFM) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"a", "aa"},
-                                                           {"a", "ab"},
-                                                           {"b", "bb"},
-                                                           {"root", "b"},
-                                                           {"root", "a"},
-                                                           {"b", "ba"}});
-  assert(FM);
+TEST_F(OrderedFeatureVectorTest, insertFM) {
   OrderedFeatureVector OFV;
   std::vector<Feature *> Expected = {
       FM->getFeature("bb"),  FM->getFeature("ba"), FM->getFeature("b"),
@@ -58,14 +61,7 @@ TEST(OrderedFeatureVector, insertFM) {
   }
 }
 
-TEST(OrderedFeatureVector, insertVariadic) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel({{"a", "aa"},
-                                                           {"a", "ab"},
-                                                           {"b", "bb"},
-                                                           {"root", "b"},
-                                                           {"root", "a"},
-                                                           {"b", "ba"}});
-  assert(FM);
+TEST_F(OrderedFeatureVectorTest, insertVariadic) {
   OrderedFeatureVector OFV;
   std::vector<Feature *> Expected = {
       FM->getFeature("bb"),  FM->getFeature("ba"), FM->getFeature("b"),

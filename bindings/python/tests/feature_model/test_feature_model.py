@@ -16,6 +16,7 @@ class TestFeatureModel(unittest.TestCase):
     """
     Check of our generated FeatureModel binding correctly work.
     """
+
     @classmethod
     def setUpClass(cls):
         """Parse and load a FeatureModel for testing."""
@@ -52,3 +53,33 @@ class TestFeatureModel(unittest.TestCase):
         self.assertEqual(next(fm_iter).name.str(), "B")
         self.assertEqual(next(fm_iter).name.str(), "N")
         self.assertEqual(next(fm_iter).name.str(), "C")
+
+    def test_parent(self):
+        """ Checks if we can access a features parent. """
+        test_feature_root = self.fm.get_feature("root")
+        test_feature_a = self.fm.get_feature("A")
+        test_feature_b = self.fm.get_feature("B")
+
+        self.assertFalse(test_feature_a.is_root())
+        self.assertFalse(test_feature_b.is_root())
+        self.assertEqual(test_feature_root,
+                         test_feature_a.parent())
+        self.assertEqual(test_feature_a.parent(),
+                         test_feature_b.parent())
+        self.assertTrue(test_feature_a.is_parent(test_feature_root))
+        self.assertTrue(test_feature_b.is_parent(test_feature_root))
+
+    def test_iter_children(self):
+        """ Checks if we can iterate over a features children. """
+        test_feature_root = self.fm.get_feature("root")
+        test_feature_a = self.fm.get_feature("A")
+        test_feature_b = self.fm.get_feature("B")
+        test_feature_c = self.fm.get_feature("C")
+
+        self.assertEqual(set(iter(test_feature_root)),
+                         set(test_feature_root.children()))
+        self.assertEqual({test_feature_a, test_feature_b, test_feature_c},
+                         set(test_feature_root.children()))
+        self.assertTrue(test_feature_root.is_child(test_feature_a))
+        self.assertTrue(test_feature_root.is_child(test_feature_b))
+        self.assertTrue(test_feature_root.is_child(test_feature_c))

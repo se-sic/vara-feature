@@ -6,34 +6,36 @@
 #include "gtest/gtest.h"
 
 namespace vara::feature {
-TEST(BinaryFeature, basicAccessors) {
-  BinaryFeature A("A", true);
+TEST(RootFeature, basicAccessors) {
+  RootFeature A("A");
 
   EXPECT_EQ("A", A.getName());
-  EXPECT_TRUE(A.isOptional());
+  EXPECT_FALSE(A.isOptional());
   EXPECT_FALSE(A.getParent());
 }
 
-TEST(BinaryFeature, isa) {
-  BinaryFeature A("A", true);
+TEST(RootFeature, isa) {
+  RootFeature A("A");
 
-  EXPECT_TRUE(llvm::isa<BinaryFeature>(A));
+  EXPECT_TRUE(llvm::isa<RootFeature>(A));
+  EXPECT_FALSE(llvm::isa<BinaryFeature>(A));
   EXPECT_FALSE(llvm::isa<NumericFeature>(A));
-  EXPECT_FALSE(llvm::isa<RootFeature>(A));
 }
 
-TEST(BinaryFeature, BinaryFeatureRoot) {
+TEST(RootFeature, RootFeatureRoot) {
   auto B = FeatureModelBuilder();
 
-  B.makeFeature<BinaryFeature>("F");
+  B.makeFeature<RootFeature>("F");
   B.setRootName("F");
+  auto FM = B.buildFeatureModel();
 
-  EXPECT_FALSE(B.buildFeatureModel());
+  EXPECT_TRUE(FM);
+  EXPECT_EQ("F", FM->getRoot()->getName());
 }
 
-TEST(BinaryFeature, BinaryFeatureChildren) {
+TEST(RootFeature, RootFeatureChildren) {
   FeatureModelBuilder B;
-  B.makeFeature<BinaryFeature>("a");
+  B.setRootName("a")->makeFeature<RootFeature>("a");
   B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
 
   auto FM = B.buildFeatureModel();

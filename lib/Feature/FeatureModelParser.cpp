@@ -13,7 +13,7 @@ namespace vara::feature {
 
 bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                      bool Num = false) {
-  string Name;
+  string Name{"root"};
   bool Opt = false;
   int MinValue = 0;
   int MaxValue = 0;
@@ -33,16 +33,15 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
         Opt = Cnt == "True";
       } else if (!xmlStrcmp(Head->name, XmlConstants::PARENT)) {
-        FMB.addParent(Name, Cnt);
+        FMB.addEdge(Cnt, Name);
       } else if (!xmlStrcmp(Head->name, XmlConstants::CHILDREN)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
-              FMB.addParent(std::string(reinterpret_cast<char *>(
-                                std::unique_ptr<xmlChar, void (*)(void *)>(
-                                    xmlNodeGetContent(Child), xmlFree)
-                                    .get())),
-                            Name);
+              FMB.addEdge(Name, std::string(reinterpret_cast<char *>(
+                                    std::unique_ptr<xmlChar, void (*)(void *)>(
+                                        xmlNodeGetContent(Child), xmlFree)
+                                        .get())));
             }
           }
         }
@@ -97,6 +96,12 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
         }
       }
     }
+  }
+
+  // XML has those names specified as root nodes
+  if (Name == "root" || Name == "base") {
+    FMB.setRootName(Name);
+    return FMB.makeFeature<RootFeature>(Name);
   }
   if (Num) {
     if (Values.empty()) {
