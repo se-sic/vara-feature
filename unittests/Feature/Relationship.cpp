@@ -5,18 +5,18 @@
 
 namespace vara::feature {
 
-TEST(Relationship, orTree) {
-  FeatureModelBuilder B;
-  BinaryFeature AA("aa");
-  BinaryFeature AB("ab");
-  auto CS = Feature::NodeSetType();
-  CS.insert(&AA);
-  CS.insert(&AB);
-  BinaryFeature A("a", false, {}, nullptr, CS);
-  B.addFeature(A);
-  B.addParent("aa", "a")->addFeature(AA);
-  B.addParent("ab", "a")->addFeature(AB);
+class RelationshipTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3});
+    B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+    B.addEdge("a", "ab")->makeFeature<BinaryFeature>("ab");
+  }
 
+  FeatureModelBuilder B;
+};
+
+TEST_F(RelationshipTest, orTree) {
   B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, {"aa", "ab"},
                         "a");
   auto FM = B.buildFeatureModel();
@@ -34,18 +34,7 @@ TEST(Relationship, orTree) {
   }
 }
 
-TEST(Relationship, alternativeTree) {
-  FeatureModelBuilder B;
-  BinaryFeature AA("aa");
-  BinaryFeature AB("ab");
-  auto CS = Feature::NodeSetType();
-  CS.insert(&AA);
-  CS.insert(&AB);
-  BinaryFeature A("a", false, {}, nullptr, CS);
-  B.addFeature(A);
-  B.addParent("aa", "a")->addFeature(AA);
-  B.addParent("ab", "a")->addFeature(AB);
-
+TEST_F(RelationshipTest, alternativeTree) {
   B.emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
                         {"aa", "ab"}, "a");
   auto FM = B.buildFeatureModel();
@@ -65,24 +54,17 @@ TEST(Relationship, alternativeTree) {
 
 TEST(Relationship, outOfOrder) {
   FeatureModelBuilder B;
-  BinaryFeature AA("aa");
-  BinaryFeature AB("ab");
-  BinaryFeature AC("ac");
-  BinaryFeature AD("ad");
-  BinaryFeature AE("ae");
-  auto CS = Feature::NodeSetType();
-  CS.insert(&AA);
-  CS.insert(&AB);
-  CS.insert(&AC);
-  CS.insert(&AD);
-  CS.insert(&AE);
-  BinaryFeature A("a", false, {}, nullptr, CS);
-  B.addFeature(A);
-  B.addParent("aa", "a")->addFeature(AA);
-  B.addParent("ab", "a")->addFeature(AB);
-  B.addParent("ac", "a")->addFeature(AC);
-  B.addParent("ad", "a")->addFeature(AD);
-  B.addParent("ae", "a")->addFeature(AE);
+  B.makeFeature<BinaryFeature>("a");
+  B.addEdge("a", "aa");
+  B.addEdge("a", "ab");
+  B.addEdge("a", "ac");
+  B.addEdge("a", "ad");
+  B.addEdge("a", "ae");
+  B.makeFeature<BinaryFeature>("aa", false);
+  B.makeFeature<BinaryFeature>("ab", false);
+  B.makeFeature<BinaryFeature>("ac", false);
+  B.makeFeature<BinaryFeature>("ad", false);
+  B.makeFeature<BinaryFeature>("ae", false);
 
   B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, {"ad", "ab"},
                         "a");
@@ -98,18 +80,12 @@ TEST(Relationship, outOfOrder) {
 
 TEST(Relationship, diffParents) {
   FeatureModelBuilder B;
-  BinaryFeature AA("aa");
-  BinaryFeature BA("ba");
-  auto CS = Feature::NodeSetType();
-  CS.insert(&AA);
-  auto BS = Feature::NodeSetType();
-  BS.insert(&BA);
-  BinaryFeature A("a", false, {}, nullptr, CS);
-  BinaryFeature C("b", false, {}, nullptr, BS);
-  B.addFeature(A);
-  B.addFeature(C);
-  B.addParent("aa", "a")->addFeature(AA);
-  B.addParent("ba", "b")->addFeature(BA);
+  B.makeFeature<BinaryFeature>("a");
+  B.makeFeature<BinaryFeature>("b");
+  B.addEdge("a", "aa");
+  B.addEdge("b", "ba");
+  B.makeFeature<BinaryFeature>("aa", false);
+  B.makeFeature<BinaryFeature>("ba", false);
 
   B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, {"ba", "aa"},
                         "a");
