@@ -381,7 +381,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
     std::stringstream Ss(reinterpret_cast<const char *>(FeatureTree));
     std::string To;
     string Name;
-    bool Opt;
+    bool Opt, IsRoot;
     int LastIndentationLevel = -1;
     int RootIndentation = -1;
     int OrGroupCounter = 0;
@@ -402,6 +402,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
 
     while (std::getline(Ss, To)) {
       Opt = false;
+      IsRoot = false;
 
       if (To.empty() || std::all_of(To.begin(), To.end(), isspace)) {
         continue;
@@ -441,6 +442,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
 
       switch (To.at(Pos - 1)) {
       case 'r':
+        IsRoot = true;
+        break;
       case 'm':
         break;
       case 'o':
@@ -503,7 +506,11 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       }
 
       // Create the feature
-      FMB.makeFeature<BinaryFeature>(Name, Opt);
+      if (IsRoot) {
+        FMB.makeFeature<RootFeature>(Name);
+      } else {
+        FMB.makeFeature<BinaryFeature>(Name, Opt);
+      }
       IndentationToParentMapping[CurrentIndentationLevel] = Name;
 
       // Add parent from the upper indentation level if there is one
@@ -518,7 +525,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
         auto Parent =
             IndentationToParentMapping.find(CurrentIndentationLevel - 1);
         assert(Parent != IndentationToParentMapping.end());
-        FMB.addParent(Name, Parent->second);
+        FMB.addEdge(Parent->second, Name);
       }
 
       // Add the or group to the feature model if it is completely parsed
