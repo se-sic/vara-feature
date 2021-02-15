@@ -381,7 +381,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
     std::stringstream Ss(reinterpret_cast<const char *>(FeatureTree));
     std::string To;
     string Name;
-    bool Opt, IsRoot;
+    bool Opt;
+    bool IsRoot;
     int LastIndentationLevel = -1;
     int RootIndentation = -1;
     int OrGroupCounter = 0;
