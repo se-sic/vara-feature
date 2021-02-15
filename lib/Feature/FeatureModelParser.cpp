@@ -5,7 +5,6 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include "SxfmConstants.h"
-
 #include "XmlConstants.h"
 
 #include <iostream>
