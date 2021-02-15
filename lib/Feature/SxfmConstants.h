@@ -13,7 +13,6 @@ public:
   SxfmConstants(SxfmConstants &&) noexcept = delete;
   SxfmConstants &operator=(SxfmConstants &&) noexcept = delete;
   ~SxfmConstants() = delete;
-  
   static constexpr xmlChar NAME[] = "name";
   static constexpr xmlChar FEATURE_TREE[] = "feature_tree";
   static constexpr xmlChar CONSTRAINTS[] = "constraints";
