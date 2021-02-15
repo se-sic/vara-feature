@@ -21,8 +21,9 @@ public:
   OrderedFeatureVector() = default;
   OrderedFeatureVector(std::initializer_list<Feature *> Init) { insert(Init); }
   template <class FeatureIterTy>
-  OrderedFeatureVector(FeatureIterTy Begin, FeatureIterTy End) {
-    insert(std::forward<FeatureIterTy>(Begin), std::forward<FeatureIterTy>(End));
+  OrderedFeatureVector(FeatureIterTy &&Begin, FeatureIterTy &&End) {
+    insert(std::forward<FeatureIterTy>(Begin),
+           std::forward<FeatureIterTy>(End));
   }
   OrderedFeatureVector(const OrderedFeatureVector &OFV) = delete;
   OrderedFeatureVector &operator=(const OrderedFeatureVector &) = delete;
@@ -33,6 +34,12 @@ public:
   /// Insert feature while preserving ordering.
   void insert(Feature *F);
 
+  /// Remove feature.
+  void remove(Feature *F) {
+    Features.erase(std::remove(Features.begin(), Features.end(), F),
+                   Features.end());
+  }
+
   template <class FeatureIterTy>
   void insert(llvm::iterator_range<FeatureIterTy> Iter) {
     for (const auto &F : Iter) {
@@ -41,8 +48,9 @@ public:
   }
 
   template <class FeatureIterTy>
-  void insert(FeatureIterTy Begin, FeatureIterTy End) {
-    insert(llvm::make_range(std::forward<FeatureIterTy>(Begin), std::forward<FeatureIterTy>(End)));
+  void insert(FeatureIterTy &&Begin, FeatureIterTy &&End) {
+    insert(llvm::make_range(std::forward<FeatureIterTy>(Begin),
+                            std::forward<FeatureIterTy>(End)));
   }
 
   void insert(std::initializer_list<Feature *> Init) {

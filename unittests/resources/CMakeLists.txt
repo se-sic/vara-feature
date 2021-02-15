@@ -10,6 +10,9 @@ set(FEATURE_LIB_TEST_FILES
   test.xml
   test_children.xml
   test_excludes.xml
+  test_only_children.xml
+  test_only_parents.xml
+  test_out_of_order.xml
   sxfm/sxfm_example.sxfm
   sxfm/test.sxfm
   sxfm/test_wrong_indentation.sxfm

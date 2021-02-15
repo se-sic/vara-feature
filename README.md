@@ -1,5 +1,5 @@
 # VaRA feature library
-[![Build Status](https://github.com/se-sic/vara-feature/workflows/VaRA%20feature%20library%20CI/badge.svg?branch=vara-dev)](https://github.com/se-sic/vara-feature) [![Documentation Status](https://readthedocs.org/projects/vara/badge/?version=vara-dev)](https://vara.readthedocs.io/en/vara-dev/?badge=vara-dev)
+[![Build Status](https://github.com/se-sic/vara-feature/workflows/VaRA%20Feature%20Library%20Build/badge.svg?branch=vara-dev)](https://github.com/se-sic/vara-feature/actions?query=branch%3Avara-dev) [![Documentation Status](https://readthedocs.org/projects/vara/badge/?version=vara-dev)](https://vara.readthedocs.io/en/vara-dev/?badge=vara-dev)
 
 Installation
 ------------
@@ -16,15 +16,21 @@ Second, setup the repository and build the `vara-feature` lib.
 ```bash
 git clone https://github.com/se-passau/vara-feature
 cd vara-feature
-git submodule update --init
+git submodule init && git submodule update --recursive
 mkdir build && cd build
 CC=clang CXX=clang++ cmake ..
 cmake --build .
 ```
+
 If you happen to have an older version of LLVM and `cmake` aborts, you can still use the `LLVM_REQUESTED_VERSION` accordingly.
-To set the version to version 9, for instance, you can use the following command:
+It may be required to specify the minor version of your LLVM.
+Adhere to the output of
 ```bash
-CC=clang CXX=clang++ cmake -DLLVM_REQUESTED_VERSION=9 ..
+  llvm-config --version
+```
+To set the version to version 10.0, for instance, you can use the following command:
+```bash
+CC=clang CXX=clang++ cmake -DLLVM_REQUESTED_VERSION=10.0 ..
 ```
 
 Python bindings
@@ -38,7 +44,6 @@ Currently, these bindings need to be installed locally like this.
   git submodule init && git submodule update --recursive
   pip3 install --user .
 ```
-
 
 Development
 -----------
