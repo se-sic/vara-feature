@@ -51,7 +51,6 @@ public:
   bool verifyFeatureModel() override;
 
 private:
-
   std::string Xml;
   FeatureModelBuilder FMB;
 
@@ -77,7 +76,6 @@ private:
 /// in an XML structure.
 class FeatureModelSxfmParser : public FeatureModelParser {
 public:
-
   explicit FeatureModelSxfmParser(std::string Sxfm) : Sxfm(std::move(Sxfm)) {}
 
   /// This method checks if the given feature model is valid
@@ -91,7 +89,6 @@ public:
   std::unique_ptr<FeatureModel> buildFeatureModel() override;
 
 private:
-
   /// Returns a pointer to the dtd representation of the xml file, which
   /// is needed to verify the structure of the xml file.
   ///
