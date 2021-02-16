@@ -541,7 +541,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
       if (Cardinalities.has_value()) {
         Relationship::RelationshipKind GroupKind =
             Relationship::RelationshipKind::RK_ALTERNATIVE;
-        if (std::get<1>(Cardinalities.value()) == UINT_MAX) {
+        if (std::get<1>(Cardinalities.value()) == SxfmConstants::WILDCARD) {
           GroupKind = Relationship::RelationshipKind::RK_OR;
         }
         OrGroupMapping[CurrentIndentationLevel] =
@@ -604,7 +604,8 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
   }
 
   if (MinCardinality.value() != 1 ||
-      (MaxCardinality.value() != 1 && MaxCardinality.value() != UINT_MAX)) {
+      (MaxCardinality.value() != 1 &&
+       MaxCardinality.value() != SxfmConstants::WILDCARD)) {
     llvm::errs() << "Cardinality unsupported. We support cardinalities [1,1] "
                     "(alternative) or [1, *] (or group).\n";
     return std::optional<std::tuple<int, int>>();
@@ -618,9 +619,9 @@ std::optional<int>
 FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {
   std::optional<int> Result = std::optional<int>();
   if (CardinalityString == "*") {
-    // We use UINT_MAX as our magic integer (which is -1 as int) to indicate
-    // that the cardinality is a wildcard.
-    Result = UINT_MAX;
+    // We use -1 as our magic integer to indicate that the cardinality is a
+    // wildcard.
+    Result = SxfmConstants::WILDCARD;
   } else {
     // Convert the string into an integer in a safe way
     long LongNumber;
