@@ -129,7 +129,7 @@ private:
   ///
   /// \param StringToExtractFrom the string to extract the cardinality from
   ///
-  /// \returns returns the cardinality of the given string and is empty if the
+  /// \returns the cardinality of the given string and is empty if the
   /// format of the string is wrong
   static std::optional<std::tuple<int, int>>
   extractCardinality(llvm::StringRef StringToExtractFrom);
