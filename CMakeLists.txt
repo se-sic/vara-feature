@@ -33,10 +33,24 @@ if (${VARA_FEATURE_COLORED_OUTPUT})
   endif ()
 endif ()
 
+option(VARA_FEATURE_SANITIZE "Build vara-features with asan and ubsan" FALSE)
+if(${VARA_FEATURE_SANITIZE})
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined")
+endif()
+
 option(VARA_FEATURE_BUILD_PYTHON_BINDINGS "Build vara-features python bindings" TRUE)
 if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
+  if(${VARA_FEATURE_SANITIZE})
+    message(FATAL_ERROR "Cannot build python bindings together with sanitizers.")
+  endif()
+
   add_compile_options(-fPIC)
 endif ()
+
+# Extra debug warning flags
+if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+  add_compile_options(-Wall -Wextra)
+endif()
 
 # Setup git submodules (external projects)
 find_package(Git QUIET)
