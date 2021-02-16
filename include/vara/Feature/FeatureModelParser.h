@@ -110,19 +110,19 @@ private:
 
   /// Processes the feature tree embedded in the xml file.
   ///
-  /// \param FeatureTree the pointer to the feature tree string.
+  /// \param FeatureTree the pointer to the node containing the feature tree string.
   ///
   /// \returns true iff parsing and processing the whole feature tree was
   /// successful
-  bool parseFeatureTree(xmlChar *FeatureTree);
+  bool parseFeatureTree(xmlNode *FeatureTree);
 
   /// Processes the constraints (i.e., cross-tree constraints) embedded in the
   /// xml file.
   ///
-  /// \param Constraints the pointer to the constraint string
+  /// \param Constraints the node containing the constraint string
   ///
   /// \returns true iff parsing and processing the constraints was successful
-  static bool parseConstraints(xmlChar *Constraints);
+  static bool parseConstraints(xmlNode *Constraints);
 
   /// This method extracts the cardinality from the given line.
   /// The cardinality is wrapped in square brackets (e.g., [1,1])

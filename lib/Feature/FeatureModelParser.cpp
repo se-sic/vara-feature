@@ -359,13 +359,13 @@ bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
 
         // Parse the feature tree with all its features and relations among
         // them.
-        if (!parseFeatureTree(xmlNodeGetContent(H))) {
+        if (!parseFeatureTree(H)) {
           return false;
         }
 
         // Finally, parse the cross-tree-constraints in the constraints tag.
       } else if (!xmlStrcmp(H->name, SxfmConstants::CONSTRAINTS)) {
-        if (!parseConstraints(xmlNodeGetContent(H))) {
+        if (!parseConstraints(H)) {
           return false;
         }
       }
@@ -374,10 +374,10 @@ bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
   return true;
 }
 
-bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
+bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
   // Split the lines of the feature tree by new lines
   {
-    std::stringstream Ss(reinterpret_cast<const char *>(FeatureTree));
+    std::stringstream Ss(reinterpret_cast<const char *>(UniqueXmlChar(xmlNodeGetContent(FeatureTree), xmlFree).get()));
     std::string To;
     std::string Name;
     bool Opt;
@@ -570,7 +570,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
   return true;
 }
 
-bool FeatureModelSxfmParser::parseConstraints(xmlChar *Constraints) {
+bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
   // TODO (se-passau/VaRA#702): This has to wait until the constraint part is
   // implemented
   return true;
