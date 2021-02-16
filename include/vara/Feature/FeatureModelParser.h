@@ -110,7 +110,8 @@ private:
 
   /// Processes the feature tree embedded in the xml file.
   ///
-  /// \param FeatureTree the pointer to the node containing the feature tree string.
+  /// \param FeatureTree the pointer to the node containing the feature tree
+  /// string.
   ///
   /// \returns true iff parsing and processing the whole feature tree was
   /// successful
