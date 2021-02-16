@@ -16,7 +16,7 @@ namespace vara::feature {
 
 bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                      bool Num = false) {
-  string Name{"root"};
+  std::string Name{"root"};
   bool Opt = false;
   int MinValue = 0;
   int MaxValue = 0;
@@ -88,7 +88,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
         } else if (!xmlStrcmp(Head->name, XmlConstants::VALUES)) {
           const std::regex Regex(R"(\d+)");
           std::smatch Matches;
-          for (string Suffix = Cnt; regex_search(Suffix, Matches, Regex);
+          for (std::string Suffix = Cnt; regex_search(Suffix, Matches, Regex);
                Suffix = Matches.suffix()) {
             Values.emplace_back(std::stoi(Matches.str()));
           }
@@ -379,20 +379,20 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
   {
     std::stringstream Ss(reinterpret_cast<const char *>(FeatureTree));
     std::string To;
-    string Name;
+    std::string Name;
     bool Opt;
     bool IsRoot;
     int LastIndentationLevel = -1;
     int RootIndentation = -1;
     int OrGroupCounter = 0;
-    std::map<int, string> IndentationToParentMapping;
+    std::map<int, std::string> IndentationToParentMapping;
 
     // This map is used for the or group mapping
     // Each entry represents an or group as a tuple where the first value is
     // the name of the parent, the second is the relationship kind, and the
     // third a vector consisting of the name of the children
-    std::map<int, std::tuple<string, Relationship::RelationshipKind,
-                             std::vector<string>>>
+    std::map<int, std::tuple<std::string, Relationship::RelationshipKind,
+                             std::vector<std::string>>>
         OrGroupMapping;
 
     if (FeatureTree == nullptr) {
@@ -545,9 +545,9 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlChar *FeatureTree) {
           GroupKind = Relationship::RelationshipKind::RK_OR;
         }
         OrGroupMapping[CurrentIndentationLevel] =
-            std::tuple<string, Relationship::RelationshipKind,
-                       std::vector<string>>(Name, GroupKind,
-                                            std::vector<string>());
+            std::tuple<std::string, Relationship::RelationshipKind,
+                       std::vector<std::string>>(Name, GroupKind,
+                                                 std::vector<std::string>());
       }
 
       // Add a child
