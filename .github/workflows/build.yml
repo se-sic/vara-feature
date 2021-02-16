@@ -21,6 +21,8 @@ jobs:
           - llvm-major: 11
             llvm-minor: 1
           - build: Debug
+            flags: -Wall -Wextra -Wno-unused-parameter
+          - build: Debug
             flags: -Wall -Wextra -Wno-unused-parameter -fsanitize=address -fsanitize=undefined
           - build: Release
             flags: -O3
