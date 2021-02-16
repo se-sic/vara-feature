@@ -378,7 +378,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
   // Split the lines of the feature tree by new lines
   {
     std::stringstream Ss(reinterpret_cast<const char *>(
-            UniqueXmlChar(xmlNodeGetContent(FeatureTree), xmlFree).get()));
+        UniqueXmlChar(xmlNodeGetContent(FeatureTree), xmlFree).get()));
     std::string To;
     std::string Name;
     bool Opt;
