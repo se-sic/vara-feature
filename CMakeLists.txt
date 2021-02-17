@@ -35,9 +35,7 @@ endif ()
 
 option(VARA_FEATURE_SANITIZE "Build vara-features with ASan and UBSan" FALSE)
 if (${VARA_FEATURE_SANITIZE})
-  add_compile_options(-fsanitize=address,undefined)
-else ()
-  add_compile_options(-fno-sanitize=address,undefined)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined")
 endif ()
 
 option(VARA_FEATURE_BUILD_PYTHON_BINDINGS "Build vara-features python bindings" TRUE)
