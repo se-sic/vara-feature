@@ -13,6 +13,10 @@ set(FEATURE_LIB_TEST_FILES
   test_only_children.xml
   test_only_parents.xml
   test_out_of_order.xml
+  sxfm/sxfm_example.sxfm
+  sxfm/test.sxfm
+  sxfm/test_wrong_indentation.sxfm
+  sxfm/test_wrong_xml_format.sxfm
   )
 
 foreach(file_name ${FEATURE_LIB_TEST_FILES})
