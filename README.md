@@ -14,7 +14,7 @@ Please also assure that you have `cmake` and `make` installed on your system. Ot
 
 Second, setup the repository and build the `vara-feature` lib.
 ```bash
-git clone https://github.com/se-passau/vara-feature
+git clone https://github.com/se-sic/vara-feature
 cd vara-feature
 git submodule init && git submodule update --recursive
 mkdir build && cd build
@@ -39,7 +39,7 @@ The feature library offers python bindings for easier scripting.
 Currently, these bindings need to be installed locally like this.
 
 ```bash
-  git clone https://github.com/se-passau/vara-feature.git
+  git clone https://github.com/se-sic/vara-feature.git
   cd vara-feature
   git submodule init && git submodule update --recursive
   pip3 install --user .
