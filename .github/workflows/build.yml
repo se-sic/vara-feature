@@ -98,7 +98,7 @@ jobs:
             -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
-      - name: Run Tests
+      - name: Run Python Binding Tests
         shell: bash
         run: |
           cd build
