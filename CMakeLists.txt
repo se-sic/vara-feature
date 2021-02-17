@@ -48,9 +48,7 @@ endif ()
 
 # Extra debug warning flags
 if (CMAKE_BUILD_TYPE EQUAL "Debug")
-  add_compile_options(-Wall -Wextra -Wno-unused-parameter -O0)
-elseif (CMAKE_BUILD_TYPE EQUAL "Release")
-  add_compile_options(-O3)
+  add_compile_options(-Wall -Wextra -Wno-unused-parameter)
 endif ()
 
 # Setup git submodules (external projects)
