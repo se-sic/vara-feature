@@ -97,7 +97,6 @@ jobs:
             -DVARA_FEATURE_BUILD_PYTHON_BINDINGS=True \
             -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
-          cmake --build . --target check-vara-feature-python
 
       - name: Run Tests
         shell: bash
