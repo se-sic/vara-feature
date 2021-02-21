@@ -1,12 +1,14 @@
 add_vara_unittest(VaRAFeatureTests
-  Feature.cpp
   BinaryFeature.cpp
-  NumericFeature.cpp
-  FeatureSourceRange.cpp
+  Feature.cpp
   FeatureModel.cpp
   FeatureModelBuilder.cpp
+  FeatureModelTransaction.cpp
   FeatureModelParser.cpp
   FeatureModelWriter.cpp
+  FeatureSourceRange.cpp
+  NumericFeature.cpp
   OrderedFeatureVector.cpp
   Relationship.cpp
+  RootFeature.cpp
   )

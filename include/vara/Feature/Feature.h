@@ -22,14 +22,22 @@ using std::string;
 
 namespace vara::feature {
 
+namespace detail {
+class FeatureModelModification;
+} // namespace detail
+
 //===----------------------------------------------------------------------===//
 //                               Feature Class
 //===----------------------------------------------------------------------===//
 
 /// \brief Base class for components of \a FeatureModel.
 class Feature : public FeatureTreeNode {
+  friend class FeatureModel;
+  friend class FeatureModelBuilder;
+  friend class detail::FeatureModelModification;
+
 public:
-  enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_UNKNOWN };
+  enum class FeatureKind { FK_BINARY, FK_NUMERIC, FK_ROOT, FK_UNKNOWN };
 
   Feature(std::string Name)
       : FeatureTreeNode(NodeKind::NK_FEATURE), Kind(FeatureKind::FK_UNKNOWN),
@@ -173,14 +181,8 @@ public:
 
 protected:
   Feature(FeatureKind Kind, string Name, bool Opt,
-          std::vector<FeatureSourceRange> Locations, FeatureTreeNode *Parent,
-          const NodeSetType &Children)
-      : FeatureTreeNode(NodeKind::NK_FEATURE, Parent, Children), Kind(Kind),
-        Name(std::move(Name)), Locations(std::move(Locations)), Opt(Opt) {}
-
-  Feature(FeatureKind Kind, string Name, bool Opt,
-          std::vector<FeatureSourceRange> Locations, FeatureTreeNode *Parent,
-          const std::vector<FeatureTreeNode *> &Children)
+          std::vector<FeatureSourceRange> Locations,
+          FeatureTreeNode *Parent = nullptr, const NodeSetType &Children = {})
       : FeatureTreeNode(NodeKind::NK_FEATURE, Parent, Children), Kind(Kind),
         Name(std::move(Name)), Locations(std::move(Locations)), Opt(Opt) {}
 
@@ -207,8 +209,6 @@ private:
     }
   }
 
-  friend class FeatureModel;
-  friend class FeatureModelBuilder;
   const FeatureKind Kind;
   string Name;
   std::vector<FeatureSourceRange> Locations;
@@ -224,15 +224,8 @@ class BinaryFeature : public Feature {
 public:
   BinaryFeature(
       string Name, bool Opt = false,
-      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
-      Feature *Parent = nullptr, const NodeSetType &Children = {})
-      : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc),
-                Parent, Children) {}
-
-  BinaryFeature(const string &Name, bool Opt,
-                const std::vector<FeatureSourceRange> &Loc, Feature *Parent,
-                const std::vector<FeatureTreeNode *> &Children)
-      : Feature(FeatureKind::FK_BINARY, Name, Opt, Loc, Parent, Children) {}
+      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>())
+      : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc)) {}
 
   [[nodiscard]] string toString() const override;
 
@@ -249,16 +242,8 @@ public:
 
   NumericFeature(
       string Name, ValuesVariantType Values, bool Opt = false,
-      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
-      Feature *Parent = nullptr, const NodeSetType &Children = {})
-      : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc),
-                Parent, Children),
-        Values(std::move(Values)) {}
-
-  NumericFeature(const string &Name, ValuesVariantType Values, bool Opt,
-                 const std::vector<FeatureSourceRange> &Loc, Feature *Parent,
-                 const std::vector<FeatureTreeNode *> &Children)
-      : Feature(FeatureKind::FK_NUMERIC, Name, Opt, Loc, Parent, Children),
+      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>())
+      : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc)),
         Values(std::move(Values)) {}
 
   [[nodiscard]] ValuesVariantType getValues() const { return Values; }
@@ -272,6 +257,21 @@ public:
 private:
   ValuesVariantType Values;
 };
+
+//===----------------------------------------------------------------------===//
+//                          RootFeature Class
+//===----------------------------------------------------------------------===//
+
+class RootFeature : public Feature {
+public:
+  explicit RootFeature(string Name = "root")
+      : Feature(FeatureKind::FK_ROOT, std::move(Name), false, {}) {}
+
+  static bool classof(const Feature *F) {
+    return F->getKind() == FeatureKind::FK_ROOT;
+  }
+};
+
 } // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATURE_H

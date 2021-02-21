@@ -1,5 +1,5 @@
 #include "vara/Feature/Feature.h"
-#include <vara/Feature/FeatureModel.h>
+#include "vara/Feature/FeatureModel.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -12,7 +12,7 @@ TEST(NumericFeature, NumericFeatureBasics) {
 
   EXPECT_EQ("A", A.getName());
   EXPECT_TRUE(A.isOptional());
-  EXPECT_TRUE(A.isRoot());
+  EXPECT_FALSE(A.getParent());
 }
 
 TEST(NumericFeature, isa) {
@@ -20,6 +20,7 @@ TEST(NumericFeature, isa) {
 
   EXPECT_TRUE(llvm::isa<NumericFeature>(A));
   EXPECT_FALSE(llvm::isa<BinaryFeature>(A));
+  EXPECT_FALSE(llvm::isa<RootFeature>(A));
 }
 
 TEST(NumericFeature, NumericFeaturePair) {
@@ -42,25 +43,23 @@ TEST(NumericFeature, NumericFeatureRoot) {
   auto B = FeatureModelBuilder();
 
   B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
-  B.setRoot("F");
+  B.setRootName("F");
 
-  auto FM = B.buildFeatureModel();
-
-  EXPECT_TRUE(FM->getFeature("F")->isRoot());
-  EXPECT_EQ(FM->getFeature("F"), FM->getRoot());
+  EXPECT_FALSE(B.buildFeatureModel());
 }
 
 TEST(NumericFeature, NumericFeatureChildren) {
-  auto FM = FeatureModelBuilder().buildSimpleFeatureModel(
-      {{"F", "A"}}, {{"root", {"F", std::pair<int, int>(0, 1)}}});
+  FeatureModelBuilder B;
+  B.makeFeature<NumericFeature>("a", std::pair<int, int>(0, 1));
+  B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+  auto FM = B.buildFeatureModel();
+  assert(FM);
 
   EXPECT_EQ(
-      std::distance(FM->getFeature("F")->begin(), FM->getFeature("F")->end()),
+      std::distance(FM->getFeature("a")->begin(), FM->getFeature("a")->end()),
       1);
-  if (auto *F =
-          llvm::dyn_cast<vara::feature::Feature>(*FM->getFeature("F")->begin());
-      F) {
-    EXPECT_EQ("A", F->getName());
+  if (auto *F = llvm::dyn_cast<Feature>(*FM->getFeature("a")->begin())) {
+    EXPECT_EQ("aa", F->getName());
   } else {
     FAIL();
   }

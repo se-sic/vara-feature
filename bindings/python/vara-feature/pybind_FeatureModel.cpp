@@ -26,6 +26,12 @@ void init_feature_model_module(py::module &M) {
       .def("get_root", &vf::FeatureModel::getRoot,
            py::return_value_policy::reference,
            R"pbdoc(Returns the root Feature.)pbdoc")
+      .def(
+          "get_feature",
+          [](vf::FeatureModel &FM, const std::string &Name) {
+            return FM.getFeature(Name);
+          },
+          py::return_value_policy::reference, R"pbdoc(Returns Feature.)pbdoc")
       .def("size", &vf::FeatureModel::size,
            R"pbdoc(Returns the amount of Features in the Model.)pbdoc")
       .def(
