@@ -46,14 +46,16 @@ class TestLocation(unittest.TestCase):
 
         loc_0 = Location(path_0)
         loc_1 = Location(path_1, start_lc_offset)
-        loc_2 = Location(path_2, start_lc_offset, end_lc_offset, Location.Category.necessary)
+        loc_2 = Location(path_2, start_lc_offset, end_lc_offset, Location.Category.inessential)
 
         self.assertEqual(loc_0.path, path_0)
+        self.assertEqual(loc_0.category, Location.Category.necessary)
 
         self.assertEqual(loc_1.path, path_1)
         self.assertEqual(loc_1.start, start_lc_offset)
 
         self.assertEqual(loc_2.path, path_2)
+        self.assertEqual(loc_2.category, Location.Category.inessential)
         self.assertEqual(loc_2.start, start_lc_offset)
         self.assertEqual(loc_2.end, end_lc_offset)
 
@@ -63,6 +65,15 @@ class TestLocation(unittest.TestCase):
         loc = Location(path)
 
         self.assertEqual(loc.path, path)
+
+    def test_category(self):
+        """ Checks if the category is correctly mapped. """
+        path = "foo/bar/buzz"
+        loc = Location(path, None, None, Location.Category.inessential)
+
+        self.assertEqual(loc.category, Location.Category.inessential)
+        loc.category = Location.Category.necessary
+        self.assertEqual(loc.category, Location.Category.necessary)
 
     def test_get_start(self):
         """ Checks if the start accessor is correctly mapped. """
