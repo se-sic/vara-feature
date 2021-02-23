@@ -33,6 +33,13 @@ class TestFeatureModel(unittest.TestCase):
         """ Check if path accessor is correctly mapped. """
         self.assertEqual(self.fm.path, "test/path/to/root/")
 
+    def test_commit(self):
+        """ Check if commit accessor is correctly mapped. """
+        self.assertEqual(self.fm.commit, "DABAD00")
+        commitHash = "DABADAA"
+        self.fm.commit = commitHash
+        self.assertEqual(self.fm.commit, commitHash)
+
     def test_fm_root(self):
         """ Check if the root of the feature model was correctly set. """
         self.assertIsNotNone(self.fm.get_root())
