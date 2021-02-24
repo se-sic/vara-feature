@@ -58,7 +58,7 @@ public:
 
   [[nodiscard]] llvm::StringRef getCommit() const { return Commit; }
 
-  void setCommit(llvm::StringRef Str) { Commit = Str; }
+  void setCommit(std::string Str) { Commit = std::move(Str); }
 
   [[nodiscard]] Feature *getRoot() const { return Root; }
 

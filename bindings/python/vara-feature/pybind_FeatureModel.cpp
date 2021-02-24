@@ -22,9 +22,7 @@ void init_feature_model_module(py::module &M) {
       .def_property(
           "commit",
           [](const vf::FeatureModel &FM) { return FM.getCommit().str(); },
-          [](vf::FeatureModel &FM, std::string &Commit) {
-            FM.setCommit(Commit);
-          },
+          &vf::FeatureModel::setCommit,
           R"pbdoc(Returns the commit associated to the FeatureModel.)pbdoc")
       .def("get_root", &vf::FeatureModel::getRoot,
            py::return_value_policy::reference,
