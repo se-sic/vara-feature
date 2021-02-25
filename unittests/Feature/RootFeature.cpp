@@ -1,5 +1,4 @@
-#include "vara/Feature/Feature.h"
-#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -26,7 +25,7 @@ TEST(RootFeature, RootFeatureRoot) {
   auto B = FeatureModelBuilder();
 
   B.makeFeature<RootFeature>("F");
-  B.setRootName("F");
+  B.setRoot("F");
   auto FM = B.buildFeatureModel();
 
   EXPECT_TRUE(FM);
@@ -35,7 +34,7 @@ TEST(RootFeature, RootFeatureRoot) {
 
 TEST(RootFeature, RootFeatureChildren) {
   FeatureModelBuilder B;
-  B.setRootName("a")->makeFeature<RootFeature>("a");
+  B.setRoot("a")->makeFeature<RootFeature>("a");
   B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
 
   auto FM = B.buildFeatureModel();

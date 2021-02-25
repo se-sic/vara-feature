@@ -1,5 +1,4 @@
-#include "vara/Feature/Feature.h"
-#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -26,7 +25,7 @@ TEST(BinaryFeature, BinaryFeatureRoot) {
   auto B = FeatureModelBuilder();
 
   B.makeFeature<BinaryFeature>("F");
-  B.setRootName("F");
+  B.setRoot("F");
 
   EXPECT_FALSE(B.buildFeatureModel());
 }

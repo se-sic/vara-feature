@@ -80,11 +80,19 @@ public:
   /// \returns a pointer to the inserted Feature in CopyMode, otherwise,
   ///          nothing.
   decltype(auto) addFeature(std::unique_ptr<Feature> NewFeature,
-                            Feature *Parent) {
+                            Feature *Parent = nullptr) {
     if constexpr (IsCopyMode) {
       return this->addFeatureImpl(std::move(NewFeature), Parent);
     } else {
       this->addFeatureImpl(std::move(NewFeature), Parent);
+    }
+  }
+
+  decltype(auto) setRoot(std::unique_ptr<RootFeature> Root) {
+    if constexpr (IsCopyMode) {
+      return this->setRootImpl(std::move(Root));
+    } else {
+      this->setRootImpl(std::move(Root));
     }
   }
 
@@ -155,6 +163,11 @@ protected:
     return FM.addFeature(std::move(NewFeature));
   }
 
+  static RootFeature *setRoot(FeatureModel &FM,
+                              std::unique_ptr<RootFeature> Root) {
+    return FM.setRoot(std::move(Root));
+  }
+
   /// \brief Remove \a Feature from a \a FeatureModel.
   ///
   /// \param FM model to remove from
@@ -205,6 +218,22 @@ private:
   Feature *Parent;
 };
 
+class SetRoot : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  RootFeature *operator()(FeatureModel &FM) {
+    return setRoot(FM, std::move(Root));
+  }
+
+private:
+  SetRoot(std::unique_ptr<RootFeature> Root) : Root(std::move(Root)) {}
+
+  std::unique_ptr<RootFeature> Root;
+};
+
 class FeatureModelCopyTransactionBase {
 protected:
   FeatureModelCopyTransactionBase(FeatureModel &FM) : FM(FM.clone()) {}
@@ -239,6 +268,15 @@ protected:
 
     return FeatureModelModification::make_modification<AddFeatureToModel>(
         std::move(NewFeature))(*FM);
+  }
+
+  RootFeature *setRootImpl(std::unique_ptr<RootFeature> Root) {
+    if (!FM) {
+      return nullptr;
+    }
+
+    return FeatureModelModification::make_modification<SetRoot>(
+        std::move(Root))(*FM);
   }
 
 private:
@@ -276,6 +314,14 @@ protected:
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<AddFeatureToModel>(
             std::move(NewFeature), Parent));
+  }
+
+  void setRootImpl(std::unique_ptr<RootFeature> Root) {
+    assert(FM && "");
+
+    Modifications.push_back(
+        FeatureModelModification::make_unique_modification<SetRoot>(
+            std::move(Root)));
   }
 
 private:

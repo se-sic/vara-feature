@@ -1,5 +1,5 @@
 #include "vara/Feature/Relationship.h"
-#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "gtest/gtest.h"
 

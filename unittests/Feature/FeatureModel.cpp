@@ -1,5 +1,4 @@
-#include "vara/Feature/FeatureModel.h"
-#include "vara/Feature/Feature.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 #include "vara/Feature/FeatureModelTransaction.h"
 
 #include "llvm/ADT/SetVector.h"
@@ -35,7 +34,7 @@ TEST(FeatureModel, cloneUnique) {
 TEST(FeatureModel, cloneRoot) {
   FeatureModelBuilder B;
   B.makeFeature<RootFeature>("a");
-  B.setRootName("a");
+  B.setRoot("a");
   auto FM = B.buildFeatureModel();
   assert(FM);
 

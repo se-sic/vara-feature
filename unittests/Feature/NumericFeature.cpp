@@ -1,5 +1,4 @@
-#include "vara/Feature/Feature.h"
-#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -43,7 +42,7 @@ TEST(NumericFeature, NumericFeatureRoot) {
   auto B = FeatureModelBuilder();
 
   B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
-  B.setRootName("F");
+  B.setRoot("F");
 
   EXPECT_FALSE(B.buildFeatureModel());
 }

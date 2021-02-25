@@ -1,7 +1,7 @@
 #ifndef VARA_FEATURE_FEATUREMODELPARSER_H
 #define VARA_FEATURE_FEATUREMODELPARSER_H
 
-#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "libxml/parser.h"
 #include "libxml/tree.h"

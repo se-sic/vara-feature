@@ -274,4 +274,16 @@ public:
 
 } // namespace vara::feature
 
+inline std::ostream &operator<<(std::ostream &Out,
+                                const vara::feature::Feature *Feature) {
+  Out << Feature->toString();
+  return Out;
+}
+
+inline llvm::raw_ostream &operator<<(llvm::raw_ostream &Out,
+                                     const vara::feature::Feature *Feature) {
+  Out << Feature->toString();
+  return Out;
+}
+
 #endif // VARA_FEATURE_FEATURE_H
