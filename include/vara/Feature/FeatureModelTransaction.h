@@ -9,6 +9,7 @@
 #include <memory>
 #include <tuple>
 #include <type_traits>
+#include <utility>
 
 namespace vara::feature {
 
@@ -96,6 +97,26 @@ public:
     }
   }
 
+  decltype(auto)
+  addChild(const std::variant<std::string, FeatureTreeNode *> &Parent,
+           const std::variant<std::string, FeatureTreeNode *> &Child) {
+    if constexpr (IsCopyMode) {
+      return this->addChildImpl(Parent, Child);
+    } else {
+      this->addChildImpl(Parent, Child);
+    }
+  }
+
+  decltype(auto)
+  setParent(const std::variant<std::string, FeatureTreeNode *> &Child,
+            const std::variant<std::string, FeatureTreeNode *> &Parent) {
+    if constexpr (IsCopyMode) {
+      return this->setParentImpl(Child, Parent);
+    } else {
+      this->setParentImpl(Child, Parent);
+    }
+  }
+
 private:
   FeatureModelTransaction(FeatureModel &FM) : TransactionBaseTy(FM) {}
 };
@@ -141,16 +162,22 @@ public:
 
 protected:
   /// \brief Set the parent of a \a Feature.
-  static void setParent(Feature &F, Feature *Parent) { F.setParent(Parent); }
+  static void setParent(FeatureTreeNode &F, FeatureTreeNode *Parent) {
+    F.setParent(Parent);
+  }
 
   /// \brief Remove the parent of a \a Feature.
-  static void removeParent(Feature &F) { F.setParent(nullptr); }
+  static void removeParent(FeatureTreeNode &F) { F.setParent(nullptr); }
 
   /// \brief Add a \a Feature Child to F.
-  static void addChild(Feature &F, Feature &Child) { F.addEdge(&Child); }
+  static void addChild(FeatureTreeNode &F, FeatureTreeNode &Child) {
+    F.addEdge(&Child);
+  }
 
   /// \brief Remove \a Feature Child from F.
-  static void removeChild(Feature &F, Feature &Child) { F.removeEdge(&Child); }
+  static void removeChild(FeatureTreeNode &F, FeatureTreeNode &Child) {
+    F.removeEdge(&Child);
+  }
 
   /// \brief Adds a new \a Feature to the FeatureModel.
   ///
@@ -234,15 +261,63 @@ private:
   std::unique_ptr<RootFeature> Root;
 };
 
+class AddChild : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  void operator()(FeatureModel &FM) {
+    addChild(std::holds_alternative<std::string>(Parent)
+                 ? *FM.getFeature(std::get<std::string>(Parent))
+                 : *std::get<FeatureTreeNode *>(Parent),
+             std::holds_alternative<std::string>(Child)
+                 ? *FM.getFeature(std::get<std::string>(Child))
+                 : *std::get<FeatureTreeNode *>(Child));
+  }
+
+private:
+  AddChild(std::variant<std::string, FeatureTreeNode *> Parent,
+           std::variant<std::string, FeatureTreeNode *> Child)
+      : Child(std::move(Child)), Parent(std::move(Parent)) {}
+
+  std::variant<std::string, FeatureTreeNode *> Child;
+  std::variant<std::string, FeatureTreeNode *> Parent;
+};
+
+class SetParent : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  void operator()(FeatureModel &FM) {
+    setParent(std::holds_alternative<std::string>(Child)
+                  ? *FM.getFeature(std::get<std::string>(Child))
+                  : *std::get<FeatureTreeNode *>(Child),
+              std::holds_alternative<std::string>(Parent)
+                  ? FM.getFeature(std::get<std::string>(Parent))
+                  : std::get<FeatureTreeNode *>(Parent));
+  }
+
+private:
+  SetParent(std::variant<std::string, FeatureTreeNode *> Child,
+            std::variant<std::string, FeatureTreeNode *> Parent)
+      : Child(std::move(Child)), Parent(std::move(Parent)) {}
+
+  std::variant<std::string, FeatureTreeNode *> Child;
+  std::variant<std::string, FeatureTreeNode *> Parent;
+};
+
 class FeatureModelCopyTransactionBase {
 protected:
   FeatureModelCopyTransactionBase(FeatureModel &FM) : FM(FM.clone()) {}
 
   [[nodiscard]] inline std::unique_ptr<FeatureModel> commitImpl() {
-    if (FM) {
-      ConsistencyCheck::isFeatureModelValid(*FM);
+    if (FM && ConsistencyCheck::isFeatureModelValid(*FM)) {
+      return std::move(FM);
     }
-    return std::move(FM);
+    return nullptr;
   };
 
   void abortImpl() { FM.reset(); }
@@ -279,6 +354,18 @@ protected:
         std::move(Root))(*FM);
   }
 
+  static void
+  addChildImpl(const std::variant<std::string, FeatureTreeNode *> &Parent,
+               const std::variant<std::string, FeatureTreeNode *> &Child) {
+    FeatureModelModification::make_modification<AddChild>(Parent, Child);
+  }
+
+  static void
+  setParentImpl(const std::variant<std::string, FeatureTreeNode *> &Child,
+                const std::variant<std::string, FeatureTreeNode *> &Parent) {
+    FeatureModelModification::make_modification<SetParent>(Child, Parent);
+  }
+
 private:
   std::unique_ptr<FeatureModel> FM;
 };
@@ -287,7 +374,7 @@ class FeatureModelModifyTransactionBase {
 protected:
   FeatureModelModifyTransactionBase(FeatureModel &FM) : FM(&FM) {}
 
-  void commitImpl() {
+  bool commitImpl() {
     assert(FM && "Cannot commit Modifications without a FeatureModel present.");
     if (FM) {
       std::for_each(
@@ -295,10 +382,13 @@ protected:
           [this](const std::unique_ptr<FeatureModelModification> &FMM) {
             FMM->exec(*FM);
           });
-      ConsistencyCheck::isFeatureModelValid(*FM);
+      if (ConsistencyCheck::isFeatureModelValid(*FM)) {
+        Modifications.clear();
+        return true;
+      }
       // TODO (se-passau/VaRA#723): implement rollback
-      FM = nullptr;
     }
+    return false;
   };
 
   void abortImpl() { Modifications.clear(); };
@@ -322,6 +412,25 @@ protected:
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<SetRoot>(
             std::move(Root)));
+  }
+
+  void addChildImpl(const std::variant<std::string, FeatureTreeNode *> &Parent,
+                    const std::variant<std::string, FeatureTreeNode *> &Child) {
+    assert(FM && "");
+
+    Modifications.push_back(
+        FeatureModelModification::make_unique_modification<AddChild>(Parent,
+                                                                     Child));
+  }
+
+  void
+  setParentImpl(const std::variant<std::string, FeatureTreeNode *> &Child,
+                const std::variant<std::string, FeatureTreeNode *> &Parent) {
+    assert(FM && "");
+
+    Modifications.push_back(
+        FeatureModelModification::make_unique_modification<SetParent>(Child,
+                                                                      Parent));
   }
 
 private:
