@@ -112,6 +112,17 @@ using FeatureModelModifyTransaction =
 void addFeature(FeatureModel *FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent = nullptr);
 
+/// Merges a FeatureModel into another
+///
+/// Merging fails if both FeatureModels contain a Feature with equal name,
+/// but different properties.
+///
+/// \param FM1
+/// \param FM2
+/// \return New merged FeatureModel or nullptr if merging failed
+[[nodiscard]] std::unique_ptr<FeatureModel>
+mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2);
+
 //===----------------------------------------------------------------------===//
 //                    Transaction Implementation Details
 //===----------------------------------------------------------------------===//

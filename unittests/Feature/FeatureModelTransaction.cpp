@@ -224,4 +224,156 @@ TEST_F(FeatureModelTransactionModifyTest, addFeatureToModelThenAboard) {
   EXPECT_FALSE(FM->getFeature("ab")); // Change should not be visible
 }
 
+//===----------------------------------------------------------------------===//
+//                    FeatureModelMergeTransaction Tests
+//===----------------------------------------------------------------------===//
+
+class FeatureModelMergeTransactionTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder B;
+    B.makeFeature<BinaryFeature>("a", true);
+    FM = B.buildFeatureModel();
+    assert(FM);
+  }
+
+  std::unique_ptr<FeatureModel> FM;
+};
+
+TEST_F(FeatureModelMergeTransactionTest, Simple) {
+  size_t FMSizeBefore = FM->size();
+
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("b", true);
+  auto FM2 = B.buildFeatureModel();
+  assert(FM);
+
+  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  assert(FMMerged);
+
+  Feature *F1 = FMMerged->getFeature("a");
+  EXPECT_TRUE(F1);
+  Feature *F2 = FMMerged->getFeature("b");
+  EXPECT_TRUE(F2);
+  EXPECT_EQ(Feature::FeatureKind::FK_ROOT, F1->getParentFeature()->getKind());
+  EXPECT_EQ(Feature::FeatureKind::FK_ROOT, F2->getParentFeature()->getKind());
+}
+
+TEST_F(FeatureModelMergeTransactionTest, Idempotence) {
+  size_t FMSizeBefore = FM->size();
+
+  auto FMMerged = mergeFeatureModels(*FM, *FM);
+  assert(FMMerged);
+
+  EXPECT_EQ(FMSizeBefore, FMMerged->size());
+}
+
+TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
+  size_t FMSizeBefore = FM->size();
+
+  FeatureSourceRange::FeatureSourceLocation FSL1(2, 4);
+  FeatureSourceRange::FeatureSourceLocation FSL2(2, 30);
+  FeatureSourceRange FSR1("path", FSL1, FSL2);
+  // TODO there must be a way to pass a copy directly
+  FeatureSourceRange FSRC1(FSR1);
+  FM->getFeature("a")->addLocation(FSRC1);
+
+  FeatureSourceRange::FeatureSourceLocation FSL3(10, 4);
+  FeatureSourceRange::FeatureSourceLocation FSL4(10, 30);
+  FeatureSourceRange FSR2("path", FSL3, FSL4);
+  FeatureSourceRange FSRC2(FSR2);
+  FM->getFeature("a")->addLocation(FSRC2);
+
+  FeatureModelBuilder B;
+  FeatureSourceRange::FeatureSourceLocation FSL5(10, 4);
+  FeatureSourceRange::FeatureSourceLocation FSL6(10, 30);
+  FeatureSourceRange FSR3("path", FSL5, FSL6);
+  B.makeFeature<BinaryFeature>("a", true,
+                               std::vector<FeatureSourceRange>{FSR1, FSR3});
+  auto FM2 = B.buildFeatureModel();
+  assert(FM2);
+
+  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  assert(FMMerged);
+
+  Feature *F = FM->getFeature("a");
+  EXPECT_EQ(3, std::distance(F->getLocationsBegin(), F->getLocationsEnd()));
+  EXPECT_NE(F->getLocationsEnd(),
+            std::find(F->getLocationsBegin(), F->getLocationsEnd(), FSR1));
+  EXPECT_NE(F->getLocationsEnd(),
+            std::find(F->getLocationsBegin(), F->getLocationsEnd(), FSR2));
+  EXPECT_NE(F->getLocationsEnd(),
+            std::find(F->getLocationsBegin(), F->getLocationsEnd(), FSR3));
+}
+
+TEST_F(FeatureModelMergeTransactionTest, MultipleLevels) {
+  size_t FMSizeBefore = FM->size();
+
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("b", true);
+  B.addEdge("b", "ba");
+  B.addEdge("b", "bb");
+  B.makeFeature<BinaryFeature>("ba", false);
+  B.makeFeature<BinaryFeature>("bb", false);
+  auto FM2 = B.buildFeatureModel();
+  assert(FM);
+
+  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  assert(FMMerged);
+
+  EXPECT_EQ(FMSizeBefore + 3, FMMerged->size());
+  Feature *FA = FMMerged->getFeature("a");
+  EXPECT_TRUE(FA);
+  Feature *FB = FMMerged->getFeature("b");
+  EXPECT_TRUE(FB);
+  Feature *FBA = FMMerged->getFeature("ba");
+  EXPECT_TRUE(FBA);
+  Feature *FBB = FMMerged->getFeature("bb");
+  EXPECT_TRUE(FBB);
+
+  EXPECT_EQ("b", FBA->getParentFeature()->getName());
+  EXPECT_EQ("b", FBB->getParentFeature()->getName());
+}
+
+TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceOptional) {
+  size_t FMSizeBefore = FM->size();
+
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", false);
+  auto FM2 = B.buildFeatureModel();
+  assert(FM);
+
+  // Expect fail, property optional is different
+  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  EXPECT_FALSE(FMMerged);
+}
+
+TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceParent) {
+  size_t FMSizeBefore = FM->size();
+
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("b", true);
+  B.addEdge("b", "a");
+  B.makeFeature<BinaryFeature>("a", true);
+  auto FM2 = B.buildFeatureModel();
+  assert(FM);
+
+  // Expect fail, feature a has different parents; root vs. b
+  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  EXPECT_FALSE(FMMerged);
+}
+
+TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceKind) {
+  size_t FMSizeBefore = FM->size();
+
+  FeatureModelBuilder B;
+  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3}, true);
+  auto FM2 = B.buildFeatureModel();
+  assert(FM);
+
+  // Expect fail, feature a has different kinds; binary vs. numeric
+  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  EXPECT_FALSE(FMMerged);
+}
+
 } // namespace vara::feature
