@@ -4,17 +4,17 @@
 
 namespace vara::feature {
 
+bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel &FM,
+                  Feature &F);
+std::unique_ptr<Feature> FeatureSoftCopy(Feature *F);
+bool FeatureSoftCompare(const Feature &F1, const Feature &F2);
+
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   Trans.addFeature(std::move(NewFeature), Parent);
   Trans.commit();
 }
-
-bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel &FM,
-                  Feature &F);
-std::unique_ptr<Feature> FeatureSoftCopy(Feature *pFeature);
-bool FeatureSoftCompare(const Feature &F1, const Feature &F2);
 
 [[nodiscard]] std::unique_ptr<FeatureModel>
 mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
@@ -103,8 +103,8 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
   if (F1.getKind() == Feature::FeatureKind::FK_BINARY) {
     return true;
   }
-  if (auto *NF1 = llvm::dyn_cast<NumericFeature>(&F1)) {
-    if (auto *NF2 = llvm::dyn_cast<NumericFeature>(&F2)) {
+  if (const auto *NF1 = llvm::dyn_cast<NumericFeature>(&F1)) {
+    if (const auto *NF2 = llvm::dyn_cast<NumericFeature>(&F2)) {
       return NF1->getValues() == NF2->getValues();
     }
   }

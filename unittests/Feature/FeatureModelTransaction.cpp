@@ -241,8 +241,6 @@ protected:
 };
 
 TEST_F(FeatureModelMergeTransactionTest, Simple) {
-  size_t FMSizeBefore = FM->size();
-
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("b", true);
   auto FM2 = B.buildFeatureModel();
@@ -269,8 +267,6 @@ TEST_F(FeatureModelMergeTransactionTest, Idempotence) {
 }
 
 TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
-  size_t FMSizeBefore = FM->size();
-
   FeatureSourceRange::FeatureSourceLocation FSL1(2, 4);
   FeatureSourceRange::FeatureSourceLocation FSL2(2, 30);
   FeatureSourceRange FSR1("path", FSL1, FSL2);
@@ -336,8 +332,6 @@ TEST_F(FeatureModelMergeTransactionTest, MultipleLevels) {
 }
 
 TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceOptional) {
-  size_t FMSizeBefore = FM->size();
-
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a", false);
   auto FM2 = B.buildFeatureModel();
@@ -349,8 +343,6 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceOptional) {
 }
 
 TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceParent) {
-  size_t FMSizeBefore = FM->size();
-
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("b", true);
   B.addEdge("b", "a");
@@ -364,8 +356,6 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceParent) {
 }
 
 TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceKind) {
-  size_t FMSizeBefore = FM->size();
-
   FeatureModelBuilder B;
   B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3}, true);
   auto FM2 = B.buildFeatureModel();
