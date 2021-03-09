@@ -67,18 +67,18 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
   switch (F->getKind()) {
   case Feature::FeatureKind::FK_BINARY:
     return std::make_unique<BinaryFeature>(
-        F->getName(), F->isOptional(),
+        F->getName().str(), F->isOptional(),
         std::vector<FeatureSourceRange>(F->getLocationsBegin(),
                                         F->getLocationsEnd()));
   case Feature::FeatureKind::FK_NUMERIC:
     Values = dynamic_cast<NumericFeature *>(F)->getValues();
     return std::make_unique<NumericFeature>(
-        F->getName(), Values, F->isOptional(),
+        F->getName().str(), Values, F->isOptional(),
         std::vector<FeatureSourceRange>(F->getLocationsBegin(),
                                         F->getLocationsEnd()));
   case Feature::FeatureKind::FK_ROOT:
     return std::make_unique<RootFeature>();
-  case Feature::FeatureKind::FK_UNKNOWN:
+  default:
     return nullptr;
   }
 }
