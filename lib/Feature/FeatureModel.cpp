@@ -39,14 +39,8 @@ void FeatureModel::removeFeature(Feature &F) {
   Features.erase(F.getName());
 }
 
-RootFeature *FeatureModel::setRoot(std::unique_ptr<RootFeature> NewRoot) {
-  auto PosRootFeature =
-      Features.try_emplace(std::string(NewRoot->getName()), std::move(NewRoot));
-  if (!PosRootFeature.second) {
-    return nullptr;
-  }
-  return Root = llvm::dyn_cast<RootFeature>(
-             PosRootFeature.first->getValue().get());
+RootFeature *FeatureModel::setRoot(RootFeature &NewRoot) {
+  return Root = &NewRoot;
 }
 
 std::unique_ptr<FeatureModel> FeatureModel::clone() {

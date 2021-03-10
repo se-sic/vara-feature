@@ -124,42 +124,40 @@ bool FeatureModelBuilder::buildConstraints() {
   return true;
 }
 
-bool FeatureModelBuilder::buildTree(const string &FeatureName,
+bool FeatureModelBuilder::buildTree(Feature &F,
                                     std::set<std::string> &Visited) {
-  if (find(Visited.begin(), Visited.end(), FeatureName) != Visited.end()) {
-    llvm::errs() << "error: Cycle or duplicate edge in \'" << FeatureName
+  if (find(Visited.begin(), Visited.end(), F.getName()) != Visited.end()) {
+    llvm::errs() << "error: Cycle or duplicate edge in \'" << F.getName()
                  << "\'.\n";
     return false;
   }
-  Visited.insert(FeatureName);
+  Visited.insert(F.getName().str());
 
-  if (find(Features.keys().begin(), Features.keys().end(), FeatureName) ==
-      Features.keys().end()) {
-    llvm::errs() << "error: Missing feature \'\'" << FeatureName << "\'.\n";
-    return false;
-  }
-
-  for (const auto &Child : Children[FeatureName]) {
-    if (Parents[Child] != FeatureName) {
+  for (const auto &Child : Children[F.getName()]) {
+    if (Parents[Child] != F.getName()) {
       llvm::errs() << "error: Parent of \'" << Child << "\' does not match \'"
-                   << FeatureName << "\'.\n";
+                   << F.getName() << "\'.\n";
       return false;
     }
-    if (!buildTree(Child, Visited)) {
-      return false;
+    if (auto *C = getFeature(Child); C) {
+      if (!buildTree(*C, Visited)) {
+        return false;
+      }
+    } else {
+      llvm::errs() << "error: Missing feature \'\'" << F.getName() << "\'.\n";
     }
   }
 
   llvm::SmallSet<std::string, 3> Skip;
-  if (RelationshipEdges.find(FeatureName) != RelationshipEdges.end()) {
-    for (const auto &Pair : RelationshipEdges[FeatureName]) {
+  if (RelationshipEdges.find(F.getName()) != RelationshipEdges.end()) {
+    for (const auto &Pair : RelationshipEdges[F.getName()]) {
       auto R = std::make_unique<Relationship>(Pair.first);
-      Features[FeatureName]->addEdge(R.get());
-      R->setParent(Features[FeatureName].get());
+      Features[F.getName()]->addEdge(R.get());
+      R->setParent(Features[F.getName()].get());
       for (const auto &Child : Pair.second) {
-        if (Children[FeatureName].count(Child) == 0) {
+        if (Children[F.getName()].count(Child) == 0) {
           llvm::errs() << "error: Related node \'" << Child
-                       << "\' is not child of \'" << FeatureName << "\'.\n";
+                       << "\' is not child of \'" << F.getName() << "\'.\n";
           return false;
         }
         Skip.insert(Child);
@@ -170,23 +168,23 @@ bool FeatureModelBuilder::buildTree(const string &FeatureName,
     }
   }
 
-  for (const auto &Child : Children[FeatureName]) {
+  for (const auto &Child : Children[F.getName()]) {
     if (Skip.count(Child) > 0) {
       continue;
     }
-    Features[FeatureName]->addEdge(Features[Child].get());
-    Features[Child]->setParent(Features[FeatureName].get());
+    Features[F.getName()]->addEdge(Features[Child].get());
+    Features[Child]->setParent(Features[F.getName()].get());
   }
+
   return true;
 }
 
 bool FeatureModelBuilder::buildRoot() {
-  assert(Root);
-  for (const auto &FeatureName : Features.keys()) {
-    if (FeatureName != Root->getName() &&
-        Parents.find(FeatureName) == Parents.end()) {
-      Children[RootName].insert(std::string(FeatureName));
-      Parents[FeatureName] = RootName;
+  for (auto *Child : Root->children()) {
+    if (auto *C = llvm::dyn_cast<Feature>(Child);
+        C && Parents[C->getName()].empty()) {
+      Children[Root->getName()].insert(C->getName().str());
+      Parents[C->getName()] = Root->getName();
     }
   }
   return true;
@@ -194,7 +192,7 @@ bool FeatureModelBuilder::buildRoot() {
 
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
   std::set<std::string> Visited;
-  if (!buildRoot() || !buildConstraints() || !buildTree(RootName, Visited)) {
+  if (!buildRoot() || !buildConstraints() || !buildTree(*Root, Visited)) {
     return nullptr;
   }
   return std::make_unique<FeatureModel>(Name, Path, Commit, std::move(Features),

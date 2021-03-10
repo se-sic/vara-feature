@@ -190,9 +190,8 @@ protected:
     return FM.addFeature(std::move(NewFeature));
   }
 
-  static RootFeature *setRoot(FeatureModel &FM,
-                              std::unique_ptr<RootFeature> Root) {
-    return FM.setRoot(std::move(Root));
+  static RootFeature *setRoot(FeatureModel &FM, RootFeature &NewRoot) {
+    return FM.setRoot(NewRoot);
   }
 
   /// \brief Remove \a Feature from a \a FeatureModel.
@@ -252,7 +251,19 @@ public:
   void exec(FeatureModel &FM) override { (*this)(FM); }
 
   RootFeature *operator()(FeatureModel &FM) {
-    return setRoot(FM, std::move(Root));
+    if (auto *NewRoot = llvm::dyn_cast_or_null<RootFeature>(
+            addFeature(FM, std::move(Root)));
+        NewRoot) {
+      if (FM.getRoot()) {
+        for (auto *C : FM.getRoot()->children()) {
+          setParent(*C, NewRoot);
+          addChild(*NewRoot, *C);
+        }
+        removeFeature(FM, *FM.getRoot());
+      }
+      setRoot(FM, *NewRoot);
+    }
+    return FM.getRoot();
   }
 
 private:
@@ -383,7 +394,7 @@ protected:
             FMM->exec(*FM);
           });
       if (ConsistencyCheck::isFeatureModelValid(*FM)) {
-        Modifications.clear();
+        FM = nullptr;
         return true;
       }
       // TODO (se-passau/VaRA#723): implement rollback

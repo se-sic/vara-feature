@@ -58,7 +58,7 @@ public:
 
   [[nodiscard]] llvm::StringRef getCommit() const { return Commit; }
 
-  [[nodiscard]] Feature *getRoot() const { return Root; }
+  [[nodiscard]] RootFeature *getRoot() const { return Root; }
 
   //===--------------------------------------------------------------------===//
   // Ordered feature iterator
@@ -131,7 +131,7 @@ private:
   /// Delete a \a Feature.
   void removeFeature(Feature &Feature);
 
-  RootFeature *setRoot(std::unique_ptr<RootFeature> NewRoot);
+  RootFeature *setRoot(RootFeature &NewRoot);
 
   OrderedFeatureTy OrderedFeatures;
 };

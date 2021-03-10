@@ -13,18 +13,9 @@ namespace vara::feature {
 /// \brief Builder for \a FeatureModel which can be used while parsing.
 class FeatureModelBuilder : private FeatureModel {
 public:
-  FeatureModelBuilder() { init(); }
-
-  void init() {
-    Name = "";
-    Path = "";
-    Commit = "";
-    Features.clear();
-    Constraints.clear();
-    Parents.clear();
-    Children.clear();
+  FeatureModelBuilder() {
     auto FMT = FeatureModelModifyTransaction::openTransaction(*this);
-    FMT.setRoot(std::make_unique<RootFeature>(RootName));
+    FMT.setRoot(std::make_unique<RootFeature>("root"));
     FMT.commit();
   }
 
@@ -42,8 +33,8 @@ public:
     auto FMT = FeatureModelModifyTransaction::openTransaction(*this);
     FMT.addFeature(std::make_unique<FeatureTy>(
         FeatureName, std::forward<Args>(FurtherArgs)...));
-    FMT.commit();
-    return llvm::dyn_cast<FeatureTy>(getFeature(FeatureName));
+    return FMT.commit() ? llvm::dyn_cast<FeatureTy>(getFeature(FeatureName))
+                        : nullptr;
   }
 
   FeatureModelBuilder *addEdge(const std::string &ParentName,
@@ -82,11 +73,9 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *setRoot(std::string Name) {
-    this->RootName = std::move(Name);
+  FeatureModelBuilder *setRoot(const std::string &Name) {
     auto FMT = FeatureModelModifyTransaction::openTransaction(*this);
-    FMT.setRoot(std::make_unique<RootFeature>(RootName));
-    // TODO(s9latimm) remove old root
+    FMT.setRoot(std::make_unique<RootFeature>(Name));
     FMT.commit();
     return this;
   }
@@ -121,7 +110,6 @@ private:
   llvm::StringMap<std::string> Parents;
   EdgeMapType Children;
   RelationshipEdgeType RelationshipEdges;
-  std::string RootName{"root"};
 
   bool buildConstraints();
 
@@ -132,8 +120,7 @@ private:
 
   bool buildRoot();
 
-  bool buildTree(const std::string &FeatureName,
-                 std::set<std::string> &Visited);
+  bool buildTree(Feature &F, std::set<std::string> &Visited);
 };
 
 } // namespace vara::feature

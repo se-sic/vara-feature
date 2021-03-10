@@ -238,7 +238,6 @@ std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
   if (!Doc) {
     return nullptr;
   }
-  FMB.init();
   return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
                                                   : nullptr;
 }
@@ -290,8 +289,6 @@ std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
   if (!Doc) {
     return nullptr;
   }
-
-  FMB.init();
   return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
                                                   : nullptr;
 }

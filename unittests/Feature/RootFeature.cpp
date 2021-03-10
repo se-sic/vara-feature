@@ -24,11 +24,11 @@ TEST(RootFeature, isa) {
 TEST(RootFeature, RootFeatureRoot) {
   auto B = FeatureModelBuilder();
 
-  B.makeFeature<RootFeature>("F");
   B.setRoot("F");
   auto FM = B.buildFeatureModel();
 
   EXPECT_TRUE(FM);
+  EXPECT_TRUE(FM->getRoot());
   EXPECT_EQ("F", FM->getRoot()->getName());
 }
 
@@ -48,6 +48,19 @@ TEST(RootFeature, RootFeatureChildren) {
   } else {
     FAIL();
   }
+}
+
+TEST(RootFeature, RootFeatureChange) {
+  auto B = FeatureModelBuilder();
+
+  B.makeFeature<BinaryFeature>("A");
+  B.setRoot("F");
+  auto FM = B.buildFeatureModel();
+
+  EXPECT_TRUE(FM);
+  EXPECT_TRUE(FM->getRoot());
+  EXPECT_EQ("F", FM->getRoot()->getName());
+  EXPECT_EQ("F", FM->getFeature("A")->getParentFeature()->getName());
 }
 
 } // namespace vara::feature
