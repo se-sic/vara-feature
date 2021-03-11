@@ -88,6 +88,15 @@ public:
     }
   }
 
+  decltype(auto) addRelationship(Relationship::RelationshipKind Kind,
+                                 Feature *GroupRoot) {
+    if constexpr (IsCopyMode) {
+      return this->addRelationshipImpl(Kind, GroupRoot);
+    } else {
+      this->addRelationshipImpl(Kind, GroupRoot);
+    }
+  }
+
 private:
   FeatureModelTransaction(FeatureModel &FM) : TransactionBaseTy(FM) {}
 };
@@ -144,16 +153,23 @@ public:
 
 protected:
   /// \brief Set the parent of a \a Feature.
-  static void setParent(Feature &F, Feature *Parent) { F.setParent(Parent); }
+  static void setParent(FeatureTreeNode &F, FeatureTreeNode *Parent) {
+    // TODO Discuss: should this be set to the child relationship if it exists?
+    F.setParent(Parent);
+  }
 
   /// \brief Remove the parent of a \a Feature.
-  static void removeParent(Feature &F) { F.setParent(nullptr); }
+  static void removeParent(FeatureTreeNode &F) { F.setParent(nullptr); }
 
   /// \brief Add a \a Feature Child to F.
-  static void addChild(Feature &F, Feature &Child) { F.addEdge(&Child); }
+  static void addChild(FeatureTreeNode &F, FeatureTreeNode &Child) {
+    F.addEdge(&Child);
+  }
 
   /// \brief Remove \a Feature Child from F.
-  static void removeChild(Feature &F, Feature &Child) { F.removeEdge(&Child); }
+  static void removeChild(FeatureTreeNode &F, FeatureTreeNode &Child) {
+    F.removeEdge(&Child);
+  }
 
   /// \brief Adds a new \a Feature to the FeatureModel.
   ///
@@ -164,6 +180,12 @@ protected:
   static Feature *addFeature(FeatureModel &FM,
                              std::unique_ptr<Feature> NewFeature) {
     return FM.addFeature(std::move(NewFeature));
+  }
+
+  static Relationship *
+  addRelationship(FeatureModel &FM,
+                  std::unique_ptr<Relationship> NewRelationship) {
+    return FM.addRelationship(std::move(NewRelationship));
   }
 
   /// \brief Remove \a Feature from a \a FeatureModel.
@@ -216,6 +238,42 @@ private:
   Feature *Parent;
 };
 
+class AddRelationshipToFeature : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  Feature *operator()(FeatureModel &FM) {
+    auto *RS = addRelationship(FM, std::make_unique<Relationship>(Kind));
+
+    /*auto ChildRelations = GroupRoot->getChildren<Relationship>();
+    assert(ChildRelations.size() <= 1);
+    Relationship *OldRelation;
+    if (ChildRelations.size() == 1) {
+      Relationship *OldRelation = *ChildRelations.begin();
+      // TODO abort or (re)move the relationship
+    }*/
+
+    setParent(*RS, GroupRoot);
+    addChild(*GroupRoot, *RS);
+    for (auto *Child : GroupRoot->getChildren<Feature>()) {
+      removeChild(*GroupRoot, *Child);
+      addChild(*RS, *Child);
+      setParent(*Child, RS);
+    }
+    return GroupRoot;
+  }
+
+private:
+  AddRelationshipToFeature(Relationship::RelationshipKind Kind,
+                           Feature *GroupRoot)
+      : Kind(Kind), GroupRoot(GroupRoot) {}
+
+  Relationship::RelationshipKind Kind;
+  Feature *GroupRoot;
+};
+
 class FeatureModelCopyTransactionBase {
 protected:
   FeatureModelCopyTransactionBase(FeatureModel &FM) : FM(FM.clone()) {}
@@ -243,7 +301,7 @@ protected:
     if (Parent) {
       // To correctly add a parent, we need to translate it to a Feature in
       // our copied FeatureModel
-      Feature *TranslatedParent = FM->getFeature(Parent->getName());
+      Feature *TranslatedParent = TranslateFeature(Parent);
       return FeatureModelModification::make_modification<AddFeatureToModel>(
           std::move(NewFeature), TranslatedParent)(*FM);
     }
@@ -252,8 +310,22 @@ protected:
         std::move(NewFeature))(*FM);
   }
 
+  Feature *addRelationshipImpl(Relationship::RelationshipKind Kind,
+                               Feature *GroupRoot) {
+    if (!FM || !GroupRoot) {
+      return nullptr;
+    }
+
+    return FeatureModelModification::make_modification<
+        AddRelationshipToFeature>(Kind, TranslateFeature(GroupRoot))(*FM);
+  }
+
 private:
   std::unique_ptr<FeatureModel> FM;
+
+  Feature *TranslateFeature(const Feature *F) const {
+    return FM->getFeature(F->getName());
+  }
 };
 
 class FeatureModelModifyTransactionBase {
@@ -287,6 +359,12 @@ protected:
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<AddFeatureToModel>(
             std::move(NewFeature), Parent));
+  }
+
+  void addRelationshipImpl(Relationship::RelationshipKind Kind,
+                           Feature *GroupRoot) {
+    Modifications.push_back(FeatureModelModification::make_unique_modification<
+                            AddRelationshipToFeature>(Kind, GroupRoot));
   }
 
 private:

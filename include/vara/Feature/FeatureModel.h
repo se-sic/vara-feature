@@ -128,6 +128,11 @@ private:
   /// \returns ptr to inserted \a Feature
   Feature *addFeature(std::unique_ptr<Feature> Feature);
 
+  /// Add a \a Relationship into existing model.
+  ///
+  /// \param Relationship Relationship to be inserted
+  RelationshipTy *addRelationship(std::unique_ptr<RelationshipTy> Relationship);
+
   /// Delete a \a Feature.
   void removeFeature(Feature &Feature);
 

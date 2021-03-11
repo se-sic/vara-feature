@@ -366,4 +366,96 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceKind) {
   EXPECT_FALSE(FMMerged);
 }
 
+//===----------------------------------------------------------------------===//
+//                    FeatureModelRelationshipTransaction Tests
+//===----------------------------------------------------------------------===//
+
+class FeatureModelRelationshipTransactionTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder B;
+    B.makeFeature<BinaryFeature>("a", true);
+    B.addEdge("a", "aa");
+    B.addEdge("a", "ab");
+    B.makeFeature<BinaryFeature>("aa", false);
+    B.makeFeature<BinaryFeature>("ab", false);
+    FM = B.buildFeatureModel();
+    assert(FM);
+  }
+
+  std::unique_ptr<FeatureModel> FM;
+};
+
+TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddXorGroup) {
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
+  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
+                     FM->getFeature("a"));
+  // no visible changes
+  {
+    auto *F = FM->getFeature("a");
+    ASSERT_EQ(0, F->getChildren<Relationship>().size());
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    for (auto *FChild : F->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+
+  FT.commit();
+  {
+    auto *F = FM->getFeature("a");
+    ASSERT_EQ(1, F->getChildren<Relationship>().size());
+    auto *R = *F->getChildren<Relationship>().begin();
+    ASSERT_EQ(Relationship::RelationshipKind::RK_ALTERNATIVE, R->getKind());
+    auto *RParent = llvm::dyn_cast<Feature>(R->getParent());
+    ASSERT_EQ(*F, *RParent);
+
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    ASSERT_EQ(2, R->getChildren<Feature>().size());
+    for (auto *FChild : R->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+}
+
+TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddXorGroup) {
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
+                     FM->getFeature("a"));
+  // FM unchanged
+  {
+    auto *F = FM->getFeature("a");
+    ASSERT_EQ(0, F->getChildren<Relationship>().size());
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    for (auto *FChild : F->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+
+  auto NewFM = FT.commit();
+  {
+    auto *F = NewFM->getFeature("a");
+    ASSERT_EQ(1, F->getChildren<Relationship>().size());
+    auto *R = *F->getChildren<Relationship>().begin();
+    ASSERT_EQ(Relationship::RelationshipKind::RK_ALTERNATIVE, R->getKind());
+    auto *RParent = llvm::dyn_cast<Feature>(R->getParent());
+    ASSERT_TRUE(RParent);
+    ASSERT_EQ(*F, *RParent);
+
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    ASSERT_EQ(2, R->getChildren<Feature>().size());
+    for (auto *FChild : R->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+  // old FM still unchanged
+  {
+    auto *F = FM->getFeature("a");
+    ASSERT_EQ(0, F->getChildren<Relationship>().size());
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    for (auto *FChild : F->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+}
+
 } // namespace vara::feature
