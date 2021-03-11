@@ -37,6 +37,7 @@ public:
   using RelationshipTy = Relationship;
   using RelationshipContainerTy = std::vector<std::unique_ptr<RelationshipTy>>;
 
+  FeatureModel() = default;
   FeatureModel(std::string Name, fs::path RootPath, std::string Commit,
                FeatureMapTy Features, ConstraintContainerTy Constraints,
                RelationshipContainerTy Relationships, RootFeature *Root)
@@ -118,8 +119,6 @@ protected:
   RelationshipContainerTy Relationships;
   RootFeature *Root{nullptr};
 
-  FeatureModel() = default;
-
 private:
   /// Insert a \a Feature into existing model.
   ///
@@ -132,6 +131,12 @@ private:
   void removeFeature(Feature &Feature);
 
   RootFeature *setRoot(RootFeature &NewRoot);
+
+  void setName(std::string NewName) { Name = std::move(NewName); }
+
+  void setPath(fs::path NewPath) { Path = std::move(NewPath); }
+
+  void sort() { OrderedFeatures.sort(); }
 
   OrderedFeatureTy OrderedFeatures;
 };
@@ -307,30 +312,44 @@ public:
 
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
-    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-      return llvm::isa<RootFeature>(F) || F->getParentFeature();
-    });
+    if (std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+          return llvm::isa<RootFeature>(F) || F->getParentFeature();
+        })) {
+      return true;
+    }
+    llvm::errs() << "Failed to validate 'EveryFeatureRequiresParent'." << '\n';
+    return false;
   }
 };
 
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
-    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-      return llvm::isa<RootFeature>(F) ||
-             // Every parent of a Feature needs to have it as a child.
-             std::any_of(F->getParent()->begin(), F->getParent()->end(),
-                         [F](FeatureTreeNode *Child) { return F == Child; });
-    });
+    if (std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+          return llvm::isa<RootFeature>(F) ||
+                 // Every parent of a Feature needs to have it as a child.
+                 std::any_of(
+                     F->getParent()->begin(), F->getParent()->end(),
+                     [F](FeatureTreeNode *Child) { return F == Child; });
+        })) {
+      return true;
+    }
+    llvm::errs() << "Failed to validate 'CheckFeatureParentChildRelationShip'."
+                 << '\n';
+    return false;
   }
 };
 
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
-    return llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
-           1 == std::accumulate(FM.begin(), FM.end(), 0,
-                                [](int Sum, Feature *F) {
-                                  return Sum + llvm::isa<RootFeature>(F);
-                                });
+    if (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
+        1 == std::accumulate(FM.begin(), FM.end(), 0, [](int Sum, Feature *F) {
+          return Sum + llvm::isa<RootFeature>(F);
+        })) {
+      return true;
+    }
+    llvm::errs() << "Failed to validate 'CheckFeatureParentChildRelationShip'."
+                 << '\n';
+    return false;
   }
 };
 
