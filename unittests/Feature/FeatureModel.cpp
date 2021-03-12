@@ -265,7 +265,7 @@ TEST_F(FeatureModelConsistencyCheckerTest,
   B.makeFeature<BinaryFeature>("a");
   auto FM = B.buildFeatureModel();
 
-  FeatureModelModification::removeChild(*FM->getRoot(), *FM->getFeature("a"));
+  FeatureModelModification::removeEdge(*FM->getRoot(), *FM->getFeature("a"));
 
   EXPECT_FALSE(FeatureModelConsistencyChecker<
                CheckFeatureParentChildRelationShip>::isFeatureModelValid(*FM));

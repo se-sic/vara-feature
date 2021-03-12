@@ -18,7 +18,8 @@ public:
   FeatureModelBuilder()
       : FM(std::make_unique<FeatureModel>()),
         Features(FeatureModelModifyTransaction::openTransaction(*FM)),
-        Transactions(FeatureModelModifyTransaction::openTransaction(*FM)) {}
+        Transactions(FeatureModelModifyTransaction::openTransaction(*FM)),
+        PostTransactions(FeatureModelModifyTransaction::openTransaction(*FM)) {}
 
   /// Try to create a new \a Feature.
   ///
@@ -47,7 +48,9 @@ public:
   emplaceRelationship(Relationship::RelationshipKind RK,
                       const std::vector<std::string> &FeatureNames,
                       const std::string &ParentName) {
-    RelationshipEdges[ParentName].emplace_back(RK, FeatureNames);
+    PostTransactions.addRelationship(
+        RK, ParentName,
+        std::set<std::string>(FeatureNames.begin(), FeatureNames.end()));
     return this;
   }
 
@@ -101,6 +104,7 @@ private:
   std::unique_ptr<FeatureModel> FM;
   FeatureModelTransaction<detail::ModifyTransactionMode> Features;
   FeatureModelTransaction<detail::ModifyTransactionMode> Transactions;
+  FeatureModelTransaction<detail::ModifyTransactionMode> PostTransactions;
 
   using RelationshipEdgeType = typename llvm::StringMap<std::vector<
       std::pair<Relationship::RelationshipKind, std::vector<std::string>>>>;

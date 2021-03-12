@@ -34,8 +34,7 @@ public:
   using OrderedFeatureTy = OrderedFeatureVector;
   using ConstraintTy = Constraint;
   using ConstraintContainerTy = std::vector<std::unique_ptr<ConstraintTy>>;
-  using RelationshipTy = Relationship;
-  using RelationshipContainerTy = std::vector<std::unique_ptr<RelationshipTy>>;
+  using RelationshipContainerTy = std::vector<std::unique_ptr<Relationship>>;
 
   FeatureModel() = default;
   FeatureModel(std::string Name, fs::path RootPath, std::string Commit,
@@ -126,6 +125,11 @@ private:
   ///
   /// \returns ptr to inserted \a Feature
   Feature *addFeature(std::unique_ptr<Feature> Feature);
+
+  Relationship *addRelationship(std::unique_ptr<Relationship> Relationship) {
+    Relationships.push_back(std::move(Relationship));
+    return Relationships.back().get();
+  }
 
   /// Delete a \a Feature.
   void removeFeature(Feature &Feature);

@@ -24,6 +24,9 @@ using ConsistencyCheck =
                                    CheckFeatureParentChildRelationShip>;
 } // namespace detail
 
+using FeatureVariant = std::variant<std::string, Feature *>;
+using FeatureTreeNodeVariant = std::variant<std::string, FeatureTreeNode *>;
+
 template <typename CopyMode>
 class FeatureModelTransaction
     : private std::conditional_t<
@@ -91,6 +94,16 @@ public:
     }
   }
 
+  decltype(auto) addRelationship(
+      Relationship::RelationshipKind Kind, const FeatureVariant &Parent,
+      std::variant<std::set<std::string>, std::set<Feature *>> Children) {
+    if constexpr (IsCopyMode) {
+      return this->addRelationshipImpl(Kind, Parent, Children);
+    } else {
+      this->addRelationshipImpl(Kind, Parent, Children);
+    }
+  }
+
   void setName(std::string Name) { return this->setNameImpl(std::move(Name)); }
 
   void setPath(fs::path Path) { return this->setPathImpl(std::move(Path)); }
@@ -103,9 +116,8 @@ public:
     }
   }
 
-  decltype(auto)
-  addChild(const std::variant<std::string, FeatureTreeNode *> &Parent,
-           const std::variant<std::string, FeatureTreeNode *> &Child) {
+  decltype(auto) addChild(const FeatureTreeNodeVariant &Parent,
+                          const FeatureTreeNodeVariant &Child) {
     if constexpr (IsCopyMode) {
       return this->addChildImpl(Parent, Child);
     } else {
@@ -151,12 +163,12 @@ protected:
   static void removeParent(FeatureTreeNode &F) { F.setParent(nullptr); }
 
   /// \brief Add a \a Feature Child to F.
-  static void addChild(FeatureTreeNode &F, FeatureTreeNode &Child) {
+  static void addEdge(FeatureTreeNode &F, FeatureTreeNode &Child) {
     F.addEdge(&Child);
   }
 
   /// \brief Remove \a Feature Child from F.
-  static void removeChild(FeatureTreeNode &F, FeatureTreeNode &Child) {
+  static void removeEdge(FeatureTreeNode &F, FeatureTreeNode &Child) {
     F.removeEdge(&Child);
   }
 
@@ -169,6 +181,12 @@ protected:
   static Feature *addFeature(FeatureModel &FM,
                              std::unique_ptr<Feature> NewFeature) {
     return FM.addFeature(std::move(NewFeature));
+  }
+
+  static Relationship *
+  addRelationship(FeatureModel &FM,
+                  std::unique_ptr<Relationship> NewRelationship) {
+    return FM.addRelationship(std::move(NewRelationship));
   }
 
   static void setName(FeatureModel &FM, std::string NewName) {
@@ -191,6 +209,14 @@ protected:
   /// \param F the Feature to delete
   static void removeFeature(FeatureModel &FM, Feature &F) {
     FM.removeFeature(F);
+  }
+
+  template <class Ty>
+  static Ty *resolveVariant(FeatureModel &FM,
+                            std::variant<std::string, Ty *> V) {
+    return std::holds_alternative<std::string>(V)
+               ? FM.getFeature(std::get<std::string>(V))
+               : std::get<Ty *>(V);
   }
 
   template <typename ModTy, typename... ArgTys>
@@ -221,11 +247,11 @@ public:
     }
     if (Parent) {
       setParent(*InsertedFeature, *Parent);
-      addChild(*Parent, *InsertedFeature);
+      addEdge(*Parent, *InsertedFeature);
     } else {
       assert(FM.getRoot());
       setParent(*InsertedFeature, *FM.getRoot());
-      addChild(*FM.getRoot(), *InsertedFeature);
+      addEdge(*FM.getRoot(), *InsertedFeature);
     }
     return InsertedFeature;
   }
@@ -237,6 +263,53 @@ private:
 
   std::unique_ptr<Feature> NewFeature;
   Feature *Parent;
+};
+
+//===----------------------------------------------------------------------===//
+//                              AddRelationship
+//===----------------------------------------------------------------------===//
+
+class AddRelationshipToModel : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  Relationship *operator()(FeatureModel &FM) {
+    auto *InsertedRelationship =
+        addRelationship(FM, std::make_unique<Relationship>(Kind));
+    if (!InsertedRelationship) {
+      return nullptr;
+    }
+    auto *P = resolveVariant(FM, Parent);
+    setParent(*InsertedRelationship, *P);
+    addEdge(*P, *InsertedRelationship);
+    if (std::holds_alternative<std::set<std::string>>(Children)) {
+      for (auto Child : std::get<std::set<std::string>>(Children)) {
+        auto *C = resolveVariant<Feature>(FM, Child);
+        removeEdge(*P, *C);
+        addEdge(*InsertedRelationship, *C);
+        setParent(*C, *InsertedRelationship);
+      }
+    } else {
+      for (auto *C : std::get<std::set<Feature *>>(Children)) {
+        removeEdge(*P, *C);
+        addEdge(*InsertedRelationship, *C);
+        setParent(*C, *InsertedRelationship);
+      }
+    }
+    return InsertedRelationship;
+  }
+
+private:
+  AddRelationshipToModel(
+      Relationship::RelationshipKind Kind, FeatureVariant Parent,
+      std::variant<std::set<std::string>, std::set<Feature *>> Children)
+      : Kind(Kind), Parent(std::move(Parent)), Children(std::move(Children)) {}
+
+  Relationship::RelationshipKind Kind;
+  FeatureVariant Parent;
+  std::variant<std::set<std::string>, std::set<Feature *>> Children;
 };
 
 //===----------------------------------------------------------------------===//
@@ -292,8 +365,8 @@ public:
       if (FM.getRoot()) {
         for (auto *C : FM.getRoot()->children()) {
           setParent(*C, *NewRoot);
-          removeChild(*FM.getRoot(), *C);
-          addChild(*NewRoot, *C);
+          removeEdge(*FM.getRoot(), *C);
+          addEdge(*NewRoot, *C);
         }
         removeFeature(FM, *FM.getRoot());
       }
@@ -320,25 +393,20 @@ public:
   void exec(FeatureModel &FM) override { (*this)(FM); }
 
   void operator()(FeatureModel &FM) {
-    auto *C = std::holds_alternative<std::string>(Child)
-                  ? FM.getFeature(std::get<std::string>(Child))
-                  : std::get<FeatureTreeNode *>(Child);
-    auto *P = std::holds_alternative<std::string>(Parent)
-                  ? FM.getFeature(std::get<std::string>(Parent))
-                  : std::get<FeatureTreeNode *>(Parent);
-    removeChild(*C->getParent(), *C);
-    addChild(*P, *C);
+    auto *C = resolveVariant(FM, Child);
+    auto *P = resolveVariant(FM, Parent);
+    removeEdge(*C->getParent(), *C);
+    addEdge(*P, *C);
     setParent(*C, *P);
     sort(FM);
   }
 
 private:
-  AddChild(std::variant<std::string, FeatureTreeNode *> Parent,
-           std::variant<std::string, FeatureTreeNode *> Child)
+  AddChild(FeatureTreeNodeVariant Parent, FeatureTreeNodeVariant Child)
       : Child(std::move(Child)), Parent(std::move(Parent)) {}
 
-  std::variant<std::string, FeatureTreeNode *> Child;
-  std::variant<std::string, FeatureTreeNode *> Parent;
+  FeatureTreeNodeVariant Child;
+  FeatureTreeNodeVariant Parent;
 };
 
 class FeatureModelCopyTransactionBase {
@@ -368,13 +436,40 @@ protected:
     if (Parent) {
       // To correctly add a parent, we need to translate it to a Feature in
       // our copied FeatureModel
-      Feature *TranslatedParent = FM->getFeature(Parent->getName());
       return FeatureModelModification::make_modification<AddFeatureToModel>(
-          std::move(NewFeature), TranslatedParent)(*FM);
+          std::move(NewFeature), TranslateFeature(*Parent))(*FM);
     }
 
     return FeatureModelModification::make_modification<AddFeatureToModel>(
         std::move(NewFeature))(*FM);
+  }
+
+  Relationship *addRelationshipImpl(
+      Relationship::RelationshipKind Kind, FeatureVariant Parent,
+      const std::variant<std::set<std::string>, std::set<Feature *>>
+          &Children) {
+    if (!FM) {
+      return nullptr;
+    }
+
+    std::set<Feature *> TranslatedChildren;
+    if (std::holds_alternative<std::set<std::string>>(Children)) {
+      for (auto C : std::get<std::set<std::string>>(Children)) {
+        TranslatedChildren.insert(TranslateFeature(
+            *AddRelationshipToModel::resolveVariant<Feature>(*FM, C)));
+      }
+    } else {
+      for (auto *C : std::get<std::set<Feature *>>(Children)) {
+        TranslatedChildren.insert(TranslateFeature(
+            *AddRelationshipToModel::resolveVariant<Feature>(*FM, C)));
+      }
+    }
+
+    return FeatureModelModification::make_modification<AddRelationshipToModel>(
+        Kind,
+        TranslateFeature(
+            *AddRelationshipToModel::resolveVariant(*FM, std::move(Parent))),
+        TranslatedChildren)(*FM);
   }
 
   void setNameImpl(std::string Name) {
@@ -398,14 +493,17 @@ protected:
         std::move(Root))(*FM);
   }
 
-  static void
-  addChildImpl(const std::variant<std::string, FeatureTreeNode *> &Parent,
-               const std::variant<std::string, FeatureTreeNode *> &Child) {
+  static void addChildImpl(const FeatureTreeNodeVariant &Parent,
+                           const FeatureTreeNodeVariant &Child) {
     FeatureModelModification::make_modification<AddChild>(Parent, Child);
   }
 
 private:
   std::unique_ptr<FeatureModel> FM;
+
+  [[nodiscard]] Feature *TranslateFeature(Feature &F) {
+    return FM->getFeature(F.getName());
+  }
 };
 
 class FeatureModelModifyTransactionBase {
@@ -444,6 +542,14 @@ protected:
             std::move(NewFeature), Parent));
   }
 
+  void addRelationshipImpl(Relationship::RelationshipKind Kind,
+                           const FeatureVariant &Parent,
+                           const std::variant<std::set<std::string>,
+                                              std::set<Feature *>> &Children) {
+    Modifications.push_back(FeatureModelModification::make_unique_modification<
+                            AddRelationshipToModel>(Kind, Parent, Children));
+  }
+
   void setNameImpl(std::string Name) {
     assert(FM && "");
 
@@ -468,8 +574,8 @@ protected:
             std::move(Root)));
   }
 
-  void addChildImpl(const std::variant<std::string, FeatureTreeNode *> &Parent,
-                    const std::variant<std::string, FeatureTreeNode *> &Child) {
+  void addChildImpl(const FeatureTreeNodeVariant &Parent,
+                    const FeatureTreeNodeVariant &Child) {
     assert(FM && "");
 
     Modifications.push_back(

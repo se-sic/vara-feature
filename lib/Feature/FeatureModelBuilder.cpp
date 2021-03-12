@@ -196,7 +196,7 @@ bool FeatureModelBuilder::buildRoot() {
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
   std::set<std::string> Visited;
   if (!buildRoot() || !Features.commit() || !Transactions.commit() ||
-      !buildConstraints()) {
+      !PostTransactions.commit() || !buildConstraints()) {
     return nullptr;
   }
   //  if (!FM->getRoot()) {
