@@ -244,10 +244,10 @@ TEST_F(FeatureModelMergeTransactionTest, Simple) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("b", true);
   auto FM2 = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM2);
 
   auto FMMerged = mergeFeatureModels(*FM, *FM2);
-  assert(FMMerged);
+  ASSERT_TRUE(FMMerged);
 
   Feature *F1 = FMMerged->getFeature("a");
   EXPECT_TRUE(F1);
@@ -261,9 +261,12 @@ TEST_F(FeatureModelMergeTransactionTest, Idempotence) {
   size_t FMSizeBefore = FM->size();
 
   auto FMMerged = mergeFeatureModels(*FM, *FM);
-  assert(FMMerged);
+  ASSERT_TRUE(FMMerged);
 
   EXPECT_EQ(FMSizeBefore, FMMerged->size());
+  auto *F = FMMerged->getFeature("a");
+  EXPECT_TRUE(F);
+  EXPECT_EQ(Feature::FeatureKind::FK_BINARY, F->getKind());
 }
 
 TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
@@ -280,17 +283,17 @@ TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
   FeatureSourceRange FSRC2(FSR2);
   FM->getFeature("a")->addLocation(FSRC2);
 
-  FeatureModelBuilder B;
-  FeatureSourceRange::FeatureSourceLocation FSL5(10, 4);
-  FeatureSourceRange::FeatureSourceLocation FSL6(10, 30);
+  FeatureSourceRange::FeatureSourceLocation FSL5(12, 4);
+  FeatureSourceRange::FeatureSourceLocation FSL6(12, 30);
   FeatureSourceRange FSR3("path", FSL5, FSL6);
+  FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a", true,
                                std::vector<FeatureSourceRange>{FSR1, FSR3});
   auto FM2 = B.buildFeatureModel();
-  assert(FM2);
+  ASSERT_TRUE(FM2);
 
   auto FMMerged = mergeFeatureModels(*FM, *FM2);
-  assert(FMMerged);
+  ASSERT_TRUE(FMMerged);
 
   Feature *F = FM->getFeature("a");
   EXPECT_EQ(3, std::distance(F->getLocationsBegin(), F->getLocationsEnd()));
@@ -312,22 +315,19 @@ TEST_F(FeatureModelMergeTransactionTest, MultipleLevels) {
   B.makeFeature<BinaryFeature>("ba", false);
   B.makeFeature<BinaryFeature>("bb", false);
   auto FM2 = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM2);
 
   auto FMMerged = mergeFeatureModels(*FM, *FM2);
-  assert(FMMerged);
+  ASSERT_TRUE(FMMerged);
 
   EXPECT_EQ(FMSizeBefore + 3, FMMerged->size());
-  Feature *FA = FMMerged->getFeature("a");
-  EXPECT_TRUE(FA);
-  Feature *FB = FMMerged->getFeature("b");
-  EXPECT_TRUE(FB);
+  EXPECT_TRUE(FMMerged->getFeature("a"));
+  EXPECT_TRUE(FMMerged->getFeature("b"));
   Feature *FBA = FMMerged->getFeature("ba");
   EXPECT_TRUE(FBA);
+  EXPECT_EQ("b", FBA->getParentFeature()->getName());
   Feature *FBB = FMMerged->getFeature("bb");
   EXPECT_TRUE(FBB);
-
-  EXPECT_EQ("b", FBA->getParentFeature()->getName());
   EXPECT_EQ("b", FBB->getParentFeature()->getName());
 }
 
@@ -335,7 +335,7 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceOptional) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a", false);
   auto FM2 = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM2);
 
   // Expect fail, property optional is different
   auto FMMerged = mergeFeatureModels(*FM, *FM2);
@@ -348,7 +348,7 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceParent) {
   B.addEdge("b", "a");
   B.makeFeature<BinaryFeature>("a", true);
   auto FM2 = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM2);
 
   // Expect fail, feature a has different parents; root vs. b
   auto FMMerged = mergeFeatureModels(*FM, *FM2);
@@ -359,7 +359,7 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceKind) {
   FeatureModelBuilder B;
   B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3}, true);
   auto FM2 = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM2);
 
   // Expect fail, feature a has different kinds; binary vs. numeric
   auto FMMerged = mergeFeatureModels(*FM, *FM2);
@@ -453,6 +453,79 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddXorGroup) {
     ASSERT_EQ(0, F->getChildren<Relationship>().size());
     ASSERT_EQ(2, F->getChildren<Feature>().size());
     for (auto *FChild : F->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+}
+
+TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddOrGroup) {
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  FT.addRelationship(Relationship::RelationshipKind::RK_OR,
+                     FM->getFeature("a"));
+  // FM unchanged
+  {
+    auto *F = FM->getFeature("a");
+    ASSERT_EQ(0, F->getChildren<Relationship>().size());
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    for (auto *FChild : F->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+
+  auto NewFM = FT.commit();
+  {
+    auto *F = NewFM->getFeature("a");
+    ASSERT_EQ(1, F->getChildren<Relationship>().size());
+    auto *R = *F->getChildren<Relationship>().begin();
+    ASSERT_EQ(Relationship::RelationshipKind::RK_OR, R->getKind());
+    auto *RParent = llvm::dyn_cast<Feature>(R->getParent());
+    ASSERT_TRUE(RParent);
+    ASSERT_EQ(*F, *RParent);
+
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    ASSERT_EQ(2, R->getChildren<Feature>().size());
+    for (auto *FChild : R->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+  // old FM still unchanged
+  {
+    auto *F = FM->getFeature("a");
+    ASSERT_EQ(0, F->getChildren<Relationship>().size());
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    for (auto *FChild : F->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+}
+
+TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddOrGroup) {
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
+  FT.addRelationship(Relationship::RelationshipKind::RK_OR,
+                     FM->getFeature("a"));
+  // FM unchanged
+  {
+    auto *F = FM->getFeature("a");
+    ASSERT_EQ(0, F->getChildren<Relationship>().size());
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    for (auto *FChild : F->getChildren<Feature>()) {
+      ASSERT_EQ(F, FChild->getParentFeature());
+    }
+  }
+
+  FT.commit();
+  {
+    auto *F = FM->getFeature("a");
+    ASSERT_EQ(1, F->getChildren<Relationship>().size());
+    auto *R = *F->getChildren<Relationship>().begin();
+    ASSERT_EQ(Relationship::RelationshipKind::RK_OR, R->getKind());
+    auto *RParent = llvm::dyn_cast<Feature>(R->getParent());
+    ASSERT_TRUE(RParent);
+    ASSERT_EQ(*F, *RParent);
+
+    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    ASSERT_EQ(2, R->getChildren<Feature>().size());
+    for (auto *FChild : R->getChildren<Feature>()) {
       ASSERT_EQ(F, FChild->getParentFeature());
     }
   }

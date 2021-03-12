@@ -128,6 +128,7 @@ void addFeature(FeatureModel *FM, std::unique_ptr<Feature> NewFeature,
 ///
 /// \param FM1
 /// \param FM2
+///
 /// \return New merged FeatureModel or nullptr if merging failed
 [[nodiscard]] std::unique_ptr<FeatureModel>
 mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2);
@@ -154,7 +155,6 @@ public:
 protected:
   /// \brief Set the parent of a \a Feature.
   static void setParent(FeatureTreeNode &F, FeatureTreeNode *Parent) {
-    // TODO Discuss: should this be set to the child relationship if it exists?
     F.setParent(Parent);
   }
 
@@ -244,7 +244,7 @@ class AddRelationshipToFeature : public FeatureModelModification {
 public:
   void exec(FeatureModel &FM) override { (*this)(FM); }
 
-  Feature *operator()(FeatureModel &FM) {
+  Relationship *operator()(FeatureModel &FM) {
     auto *RS = addRelationship(FM, std::make_unique<Relationship>(Kind));
 
     /*auto ChildRelations = GroupRoot->getChildren<Relationship>();
@@ -262,7 +262,7 @@ public:
       addChild(*RS, *Child);
       setParent(*Child, RS);
     }
-    return GroupRoot;
+    return RS;
   }
 
 private:
@@ -301,7 +301,7 @@ protected:
     if (Parent) {
       // To correctly add a parent, we need to translate it to a Feature in
       // our copied FeatureModel
-      Feature *TranslatedParent = TranslateFeature(Parent);
+      Feature *TranslatedParent = MapToCopiedFM(Parent);
       return FeatureModelModification::make_modification<AddFeatureToModel>(
           std::move(NewFeature), TranslatedParent)(*FM);
     }
@@ -310,20 +310,20 @@ protected:
         std::move(NewFeature))(*FM);
   }
 
-  Feature *addRelationshipImpl(Relationship::RelationshipKind Kind,
-                               Feature *GroupRoot) {
+  Relationship *addRelationshipImpl(Relationship::RelationshipKind Kind,
+                                    Feature *GroupRoot) {
     if (!FM || !GroupRoot) {
       return nullptr;
     }
 
     return FeatureModelModification::make_modification<
-        AddRelationshipToFeature>(Kind, TranslateFeature(GroupRoot))(*FM);
+        AddRelationshipToFeature>(Kind, MapToCopiedFM(GroupRoot))(*FM);
   }
 
 private:
   std::unique_ptr<FeatureModel> FM;
 
-  Feature *TranslateFeature(const Feature *F) const {
+  Feature *MapToCopiedFM(const Feature *F) const {
     return FM->getFeature(F->getName());
   }
 };

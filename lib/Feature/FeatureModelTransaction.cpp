@@ -4,10 +4,10 @@
 
 namespace vara::feature {
 
-bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel &FM,
+bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel const &FM,
                   Feature &F);
-std::unique_ptr<Feature> FeatureSoftCopy(Feature *F);
-bool FeatureSoftCompare(const Feature &F1, const Feature &F2);
+std::unique_ptr<Feature> FeatureCopy(Feature *F);
+bool CompareProperties(const Feature &F1, const Feature &F2);
 
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent) {
@@ -20,6 +20,7 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
 mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
   auto Trans = FeatureModelCopyTransaction::openTransaction(FM1);
   if (!mergeSubtree(Trans, FM1, *FM2.getRoot())) {
+    Trans.abort();
     return nullptr;
   } else {
     return Trans.commit();
@@ -27,25 +28,24 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
 }
 
 [[nodiscard]] bool mergeSubtree(FeatureModelCopyTransaction &Trans,
-                                FeatureModel &FM, Feature &F) {
+                                FeatureModel const &FM, Feature &F) {
   // Is there a similar Feature in the other FM
   if (Feature *CMP = FM.getFeature(F.getName())) {
-    if (FeatureSoftCompare(*CMP, F)) {
+    if (CompareProperties(*CMP, F)) {
       // similar feature, maybe merge locations
-      for (FeatureSourceRange &FSR : F.getLocations()) {
+      for (FeatureSourceRange const &FSR : F.getLocations()) {
         if (std::find(CMP->getLocationsBegin(), CMP->getLocationsEnd(), FSR) ==
             CMP->getLocationsEnd()) {
-          CMP->addLocation(FSR);
+          // CMP->addLocation(FSR);
+          // TODO: implement transaction to add locations
         }
       }
     } else {
-      Trans.abort();
       return false;
     }
   } else {
-    std::unique_ptr<Feature> SoftCopy = FeatureSoftCopy(&F);
+    std::unique_ptr<Feature> SoftCopy = FeatureCopy(&F);
     if (!SoftCopy) {
-      Trans.abort();
       return false;
     }
     Trans.addFeature(std::move(SoftCopy), F.getParentFeature());
@@ -54,14 +54,13 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
   // copy children  if missing
   for (Feature *Child : F.getChildren<Feature>()) {
     if (!mergeSubtree(Trans, FM, *Child)) {
-      // aborted in callee
       return false;
     }
   }
   return true;
 }
 
-[[nodiscard]] std::unique_ptr<Feature> FeatureSoftCopy(Feature *F) {
+[[nodiscard]] std::unique_ptr<Feature> FeatureCopy(Feature *F) {
   std::unique_ptr<Feature> FeatureSoftCopy;
   NumericFeature::ValuesVariantType Values;
   switch (F->getKind()) {
@@ -71,7 +70,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
         std::vector<FeatureSourceRange>(F->getLocationsBegin(),
                                         F->getLocationsEnd()));
   case Feature::FeatureKind::FK_NUMERIC:
-    Values = dynamic_cast<NumericFeature *>(F)->getValues();
+    Values = llvm::dyn_cast<NumericFeature>(F)->getValues();
     return std::make_unique<NumericFeature>(
         F->getName().str(), Values, F->isOptional(),
         std::vector<FeatureSourceRange>(F->getLocationsBegin(),
@@ -83,8 +82,10 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
   }
 }
 
-[[nodiscard]] bool FeatureSoftCompare(const Feature &F1, const Feature &F2) {
-  assert(F1.getName() == F2.getName());
+[[nodiscard]] bool CompareProperties(const Feature &F1, const Feature &F2) {
+  if (F1.getName() != F2.getName()) {
+    return false;
+  }
   if (F1.getKind() != F2.getKind()) {
     return false;
   }
