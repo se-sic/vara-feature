@@ -265,10 +265,7 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   if (Doc && Ctxt->valid) {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
     if (Ctxt->vctxt.valid) {
-      if (xmlValidateDtdFinal(&Ctxt->vctxt, Doc.get()) == 1) {
-        return Doc;
-      }
-      llvm::errs() << "Failed to validate DTD in final step\n";
+      return Doc;
     }
     llvm::errs() << "Failed to validate DTD.\n";
   } else {

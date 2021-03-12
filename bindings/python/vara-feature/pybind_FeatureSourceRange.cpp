@@ -21,8 +21,8 @@ namespace py = pybind11;
 void init_feature_location_module(py::module &M) {
   py::class_<vf::FeatureSourceRange> Loc(M, "Location");
   Loc.def(py::init([](std::string Path) {
-        return vf::FeatureSourceRange(fs::path(std::move(Path)));
-      }))
+       return vf::FeatureSourceRange(fs::path(std::move(Path)));
+     }))
       .def(py::init(
           [](std::string Path,
              std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
@@ -32,9 +32,18 @@ void init_feature_location_module(py::module &M) {
       .def(py::init(
           [](std::string Path,
              std::optional<vf::FeatureSourceRange::FeatureSourceLocation> Start,
+             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End) {
+            return vf::FeatureSourceRange(
+                fs::path(std::move(Path)), Start, End,
+                vf::FeatureSourceRange::Category::necessary);
+          }))
+      .def(py::init(
+          [](std::string Path,
+             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> Start,
              std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End,
              vf::FeatureSourceRange::Category Category) {
-            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start, End, Category);
+            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start, End,
+                                          Category);
           }))
       .def_property(
           "path",
@@ -47,9 +56,9 @@ void init_feature_location_module(py::module &M) {
       .def_property_readonly(
           "end", &vf::FeatureSourceRange::getEnd,
           R"pbdoc(Get the end `LineColumnOffset` of this `Location`.)pbdoc")
-      .def_property(
-          "category", &vf::FeatureSourceRange::getCategory, &vf::FeatureSourceRange::setCategory,
-          R"pbdoc(Category of Location)pbdoc")
+      .def_property("category", &vf::FeatureSourceRange::getCategory,
+                    &vf::FeatureSourceRange::setCategory,
+                    R"pbdoc(Category of Location)pbdoc")
       .def("__str__", &vf::FeatureSourceRange::toString)
       .def(
           "__eq__",

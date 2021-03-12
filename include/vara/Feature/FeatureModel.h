@@ -60,6 +60,9 @@ public:
 
   [[nodiscard]] RootFeature *getRoot() const { return Root; }
 
+  // TODO make this private and use a transaction
+  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
+
   //===--------------------------------------------------------------------===//
   // Ordered feature iterator
   OrderedFeatureVector::ordered_feature_iterator begin() {
@@ -142,8 +145,6 @@ private:
   RootFeature *setRoot(RootFeature &NewRoot);
 
   void setName(std::string NewName) { Name = std::move(NewName); }
-
-  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
 
   void setPath(fs::path NewPath) { Path = std::move(NewPath); }
 

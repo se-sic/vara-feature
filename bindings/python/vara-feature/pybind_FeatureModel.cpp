@@ -19,6 +19,11 @@ void init_feature_model_module(py::module &M) {
       .def_property_readonly(
           "path",
           [](const vf::FeatureModel &FM) { return FM.getPath().string(); })
+      .def_property(
+          "commit",
+          [](const vf::FeatureModel &FM) { return FM.getCommit().str(); },
+          &vf::FeatureModel::setCommit,
+          R"pbdoc(Returns the commit associated to the FeatureModel.)pbdoc")
       .def("get_root", &vf::FeatureModel::getRoot,
            py::return_value_policy::reference,
            R"pbdoc(Returns the root Feature.)pbdoc")
