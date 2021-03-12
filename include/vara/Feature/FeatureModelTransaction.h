@@ -20,7 +20,8 @@ class FeatureModelCopyTransactionBase;
 class FeatureModelModifyTransactionBase;
 
 using ConsistencyCheck =
-    FeatureModelConsistencyChecker<EveryFeatureRequiresParent,
+    FeatureModelConsistencyChecker<ExactlyOneRootNode,
+                                   EveryFeatureRequiresParent,
                                    CheckFeatureParentChildRelationShip>;
 } // namespace detail
 
@@ -104,7 +105,19 @@ public:
     }
   }
 
+  decltype(auto) addConstraint(std::unique_ptr<Constraint> Constraint) {
+    if constexpr (IsCopyMode) {
+      return this->addConstraintImpl(std::move(Constraint));
+    } else {
+      this->addConstraintImpl(std::move(Constraint));
+    }
+  }
+
   void setName(std::string Name) { return this->setNameImpl(std::move(Name)); }
+
+  void setCommit(std::string Commit) {
+    return this->setCommitImpl(std::move(Commit));
+  }
 
   void setPath(fs::path Path) { return this->setPathImpl(std::move(Path)); }
 
@@ -172,6 +185,14 @@ protected:
     F.removeEdge(&Child);
   }
 
+  static void addConstraint(Feature &F, PrimaryFeatureConstraint &Constraint) {
+    F.addConstraint(&Constraint);
+  }
+
+  static void setFeature(PrimaryFeatureConstraint &Constraint, Feature &F) {
+    Constraint.setFeature(&F);
+  }
+
   /// \brief Adds a new \a Feature to the FeatureModel.
   ///
   /// \param FM model to add to
@@ -189,8 +210,17 @@ protected:
     return FM.addRelationship(std::move(NewRelationship));
   }
 
+  static Constraint *addConstraint(FeatureModel &FM,
+                                   std::unique_ptr<Constraint> Constraint) {
+    return FM.addConstraint(std::move(Constraint));
+  }
+
   static void setName(FeatureModel &FM, std::string NewName) {
     FM.setName(std::move(NewName));
+  }
+
+  static void setCommit(FeatureModel &FM, std::string NewCommit) {
+    FM.setCommit(std::move(NewCommit));
   }
 
   static void setPath(FeatureModel &FM, fs::path NewPath) {
@@ -248,8 +278,7 @@ public:
     if (Parent) {
       setParent(*InsertedFeature, *Parent);
       addEdge(*Parent, *InsertedFeature);
-    } else {
-      assert(FM.getRoot());
+    } else if (FM.getRoot()) {
       setParent(*InsertedFeature, *FM.getRoot());
       addEdge(*FM.getRoot(), *InsertedFeature);
     }
@@ -266,7 +295,7 @@ private:
 };
 
 //===----------------------------------------------------------------------===//
-//                              AddRelationship
+//                              AddRelationshipToModel
 //===----------------------------------------------------------------------===//
 
 class AddRelationshipToModel : public FeatureModelModification {
@@ -287,13 +316,13 @@ public:
     if (std::holds_alternative<std::set<std::string>>(Children)) {
       for (auto Child : std::get<std::set<std::string>>(Children)) {
         auto *C = resolveVariant<Feature>(FM, Child);
-        removeEdge(*P, *C);
+        removeEdge(*C->getParent(), *C);
         addEdge(*InsertedRelationship, *C);
         setParent(*C, *InsertedRelationship);
       }
     } else {
       for (auto *C : std::get<std::set<Feature *>>(Children)) {
-        removeEdge(*P, *C);
+        removeEdge(*C->getParent(), *C);
         addEdge(*InsertedRelationship, *C);
         setParent(*C, *InsertedRelationship);
       }
@@ -313,6 +342,48 @@ private:
 };
 
 //===----------------------------------------------------------------------===//
+//                       AddConstraintToModel
+//===----------------------------------------------------------------------===//
+
+class AddConstraintToModel : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  Constraint *operator()(FeatureModel &FM) {
+    auto *InsertedConstraint = addConstraint(FM, std::move(NewConstraint));
+    if (!InsertedConstraint) {
+      return nullptr;
+    }
+    auto V = AddConstraintToModelVisitor(&FM);
+    InsertedConstraint->accept(V);
+    return InsertedConstraint;
+  }
+
+private:
+  class AddConstraintToModelVisitor : public ConstraintVisitor {
+
+  public:
+    AddConstraintToModelVisitor(FeatureModel *FM) : FM(FM) {}
+
+    void visit(PrimaryFeatureConstraint *C) override {
+      auto *F = FM->getFeature(C->getFeature()->getName());
+      AddConstraintToModel::setFeature(*C, *F);
+      AddConstraintToModel::addConstraint(*F, *C);
+    };
+
+  private:
+    FeatureModel *FM;
+  };
+
+  AddConstraintToModel(std::unique_ptr<Constraint> NewConstraint)
+      : NewConstraint(std::move(NewConstraint)) {}
+
+  std::unique_ptr<Constraint> NewConstraint;
+};
+
+//===----------------------------------------------------------------------===//
 //                              SetName
 //===----------------------------------------------------------------------===//
 
@@ -328,6 +399,24 @@ private:
   SetName(std::string Name) : Name(std::move(Name)) {}
 
   std::string Name;
+};
+
+//===----------------------------------------------------------------------===//
+//                              SetCommit
+//===----------------------------------------------------------------------===//
+
+class SetCommit : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  void operator()(FeatureModel &FM) { setCommit(FM, Commit); }
+
+private:
+  SetCommit(std::string Commit) : Commit(std::move(Commit)) {}
+
+  std::string Commit;
 };
 
 //===----------------------------------------------------------------------===//
@@ -472,10 +561,26 @@ protected:
         TranslatedChildren)(*FM);
   }
 
+  Constraint *addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
+    if (!FM) {
+      return nullptr;
+    }
+
+    return FeatureModelModification::make_modification<AddConstraintToModel>(
+        std::move(NewConstraint))(*FM);
+  }
+
   void setNameImpl(std::string Name) {
     assert(FM && "");
 
     FeatureModelModification::make_modification<SetName>(std::move(Name))(*FM);
+  }
+
+  void setCommitImpl(std::string Commit) {
+    assert(FM && "");
+
+    FeatureModelModification::make_modification<SetCommit>(std::move(Commit))(
+        *FM);
   }
 
   void setPathImpl(fs::path Path) {
@@ -550,12 +655,25 @@ protected:
                             AddRelationshipToModel>(Kind, Parent, Children));
   }
 
+  void addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
+    Modifications.push_back(FeatureModelModification::make_unique_modification<
+                            AddConstraintToModel>(std::move(NewConstraint)));
+  }
+
   void setNameImpl(std::string Name) {
     assert(FM && "");
 
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<SetName>(
             std::move(Name)));
+  }
+
+  void setCommitImpl(std::string Commit) {
+    assert(FM && "");
+
+    Modifications.push_back(
+        FeatureModelModification::make_unique_modification<SetCommit>(
+            std::move(Commit)));
   }
 
   void setPathImpl(fs::path Path) {

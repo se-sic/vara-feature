@@ -33,8 +33,7 @@ TEST(FeatureModel, cloneUnique) {
 
 TEST(FeatureModel, cloneRoot) {
   FeatureModelBuilder B;
-  B.makeFeature<RootFeature>("a");
-  B.setRoot("a");
+  B.makeRoot("a");
   auto FM = B.buildFeatureModel();
   assert(FM);
 

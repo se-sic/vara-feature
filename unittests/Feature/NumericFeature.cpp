@@ -42,7 +42,7 @@ TEST(NumericFeature, NumericFeatureRoot) {
   auto B = FeatureModelBuilder();
 
   B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
-  B.setRoot("F");
+  B.makeRoot("F");
 
   EXPECT_FALSE(B.buildFeatureModel());
 }

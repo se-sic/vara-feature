@@ -131,12 +131,19 @@ private:
     return Relationships.back().get();
   }
 
+  Constraint *addConstraint(std::unique_ptr<Constraint> Constraint) {
+    Constraints.push_back(std::move(Constraint));
+    return Constraints.back().get();
+  }
+
   /// Delete a \a Feature.
   void removeFeature(Feature &Feature);
 
   RootFeature *setRoot(RootFeature &NewRoot);
 
   void setName(std::string NewName) { Name = std::move(NewName); }
+
+  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
 
   void setPath(fs::path NewPath) { Path = std::move(NewPath); }
 
@@ -345,10 +352,11 @@ struct CheckFeatureParentChildRelationShip {
 
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
-    if (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
-        1 == std::accumulate(FM.begin(), FM.end(), 0, [](int Sum, Feature *F) {
-          return Sum + llvm::isa<RootFeature>(F);
-        })) {
+    if ((!FM.getRoot() && FM.size() == 0) ||
+        (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
+         1 == std::accumulate(FM.begin(), FM.end(), 0, [](int Sum, Feature *F) {
+           return Sum + llvm::isa<RootFeature>(F);
+         }))) {
       return true;
     }
     llvm::errs() << "Failed to validate 'CheckFeatureParentChildRelationShip'."

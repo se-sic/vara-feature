@@ -75,141 +75,60 @@ cleanUpMutualExclusiveConstraints(const Feature *A,
   return Remove;
 }
 
-void FeatureModelBuilder::detectXMLAlternatives() {
-  //  for (const auto &FeatureName : Features.keys()) {
-  //    std::vector<std::string> Frontier(Children[FeatureName].begin(),
-  //                                      Children[FeatureName].end());
-  //    while (!Frontier.empty()) {
-  //      const std::string FName{Frontier.back()};
-  //      Frontier.pop_back();
-  //      if (auto *F = llvm::dyn_cast<Feature>(Features[FName].get());
-  //          F && !F->isOptional()) {
-  //        llvm::SmallSet<Feature *, 3> Xor;
-  //        Xor.insert(F);
-  //        for (const auto &Name : Frontier) {
-  //          if (auto *E = llvm::dyn_cast<Feature>(Features[Name].get());
-  //              E && !E->isOptional()) {
-  //            if (std::all_of(Xor.begin(), Xor.end(), [E](const auto *F) {
-  //                  return isSimpleMutex(F, E);
-  //                })) {
-  //              Xor.insert(E);
-  //            }
-  //          }
-  //        }
-  //        if (Xor.size() > 1) {
-  //          std::vector<std::string> V;
-  //          for (auto *E : Xor) {
-  //            Frontier.erase(std::remove(Frontier.begin(), Frontier.end(),
-  //                                       E->getName().str()),
-  //                           Frontier.end());
-  //            V.push_back(E->getName().str());
-  //            for (auto *R : cleanUpMutualExclusiveConstraints(E, Xor)) {
-  //              E->removeConstraintNonPreserve(R);
-  //            }
-  //          }
-  //          emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
-  //          V,
-  //                              FeatureName.str());
-  //        }
-  //      }
-  //    }
-  //  }
-}
-
-bool FeatureModelBuilder::buildConstraints() {
-  auto B = BuilderVisitor(*this);
-  for (const auto &C : Constraints) {
-    C->accept(B);
-  }
-  detectXMLAlternatives();
-  return true;
-}
-
-bool FeatureModelBuilder::buildTree(Feature &F,
-                                    std::set<std::string> &Visited) {
-  //  if (find(Visited.begin(), Visited.end(), F.getName()) != Visited.end()) {
-  //    llvm::errs() << "error: Cycle or duplicate edge in \'" << F.getName()
-  //                 << "\'.\n";
-  //    return false;
-  //  }
-  //  Visited.insert(F.getName().str());
-  //
-  //  for (const auto &Child : Children[F.getName()]) {
-  //    if (Parents[Child] != F.getName()) {
-  //      llvm::errs() << "error: Parent of \'" << Child << "\' does not match
-  //      \'"
-  //                   << F.getName() << "\'.\n";
-  //      return false;
-  //    }
-  //    if (auto *C = getFeature(Child); C) {
-  //      if (!buildTree(*C, Visited)) {
-  //        return false;
-  //      }
-  //    } else {
-  //      llvm::errs() << "error: Missing feature \'\'" << F.getName() <<
-  //      "\'.\n";
-  //    }
-  //  }
-  //
-  //  llvm::SmallSet<std::string, 3> Skip;
-  //  if (RelationshipEdges.find(F.getName()) != RelationshipEdges.end()) {
-  //    for (const auto &Pair : RelationshipEdges[F.getName()]) {
-  //      auto R = std::make_unique<Relationship>(Pair.first);
-  //      Features[F.getName()]->addEdge(R.get());
-  //      R->setParent(Features[F.getName()].get());
-  //      for (const auto &Child : Pair.second) {
-  //        if (Children[F.getName()].count(Child) == 0) {
-  //          llvm::errs() << "error: Related node \'" << Child
-  //                       << "\' is not child of \'" << F.getName() << "\'.\n";
-  //          return false;
-  //        }
-  //        Skip.insert(Child);
-  //        R->addEdge(Features[Child].get());
-  //        Features[Child]->setParent(R.get());
-  //      }
-  //      Relationships.push_back(std::move(R));
-  //    }
-  //  }
-  //
-  //  for (const auto &Child : Children[F.getName()]) {
-  //    if (Skip.count(Child) > 0) {
-  //      continue;
-  //    }
-  //    Features[F.getName()]->addEdge(Features[Child].get());
-  //    Features[Child]->setParent(Features[F.getName()].get());
-  //  }
-
-  return true;
-}
-
-bool FeatureModelBuilder::buildRoot() {
-  if (!FM->getRoot()) {
-    auto T = FeatureModelModifyTransaction::openTransaction(*FM);
-    T.setRoot(std::make_unique<RootFeature>("root"));
-    if (!T.commit()) {
-      return false;
+bool FeatureModelBuilder::detectXMLAlternatives() {
+  for (auto *Node : FM->features()) {
+    std::vector<FeatureTreeNode *> Frontier;
+    std::copy_if(Node->begin(), Node->end(), std::back_inserter(Frontier),
+                 [](auto *N) { return llvm::isa<Feature>(N); });
+    while (!Frontier.empty()) {
+      auto *B = Frontier.back();
+      Frontier.pop_back();
+      if (auto *F = llvm::dyn_cast<Feature>(B); F && !F->isOptional()) {
+        llvm::SmallSet<Feature *, 3> Xor;
+        Xor.insert(F);
+        for (auto *FF : Frontier) {
+          if (auto *E = llvm::dyn_cast<Feature>(FF); E && !E->isOptional()) {
+            if (std::all_of(Xor.begin(), Xor.end(), [E](const auto *F) {
+                  return isSimpleMutex(F, E);
+                })) {
+              Xor.insert(E);
+            }
+          }
+        }
+        if (Xor.size() > 1) {
+          for (auto *E : Xor) {
+            Frontier.erase(std::remove(Frontier.begin(), Frontier.end(), E),
+                           Frontier.end());
+            // TODO
+            //            for (auto *R : cleanUpMutualExclusiveConstraints(E,
+            //            Xor)) {
+            //              E->removeConstraintNonPreserve(R);
+            //            }
+          }
+          // TODO
+          //          Special.addRelationship(
+          //              Relationship::RelationshipKind::RK_ALTERNATIVE, F,
+          //              std::set(Xor.begin(), Xor.end()));
+        }
+      }
     }
   }
   return true;
 }
 
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
-  std::set<std::string> Visited;
-  if (!buildRoot() || !Features.commit() || !Transactions.commit() ||
-      !PostTransactions.commit() || !buildConstraints()) {
-    return nullptr;
+  if (!FM->getRoot()) {
+    auto T = FeatureModelModifyTransaction::openTransaction(*FM);
+    T.setRoot(std::make_unique<RootFeature>("root"));
+    if (!T.commit()) {
+      return nullptr;
+    }
   }
-  //  if (!FM->getRoot()) {
-  //    auto T = FeatureModelModifyTransaction::openTransaction(*FM);
-  //    T.setRoot(std::make_unique<RootFeature>("root"));
-  //    T.commit();
-  //  }
-  //  if (!buildRoot() ||  || !buildTree(*Root, Visited))
-  //    {
-  //    return nullptr;
-  //  }
-  //  buildRoot();
-  return std::move(FM);
+  return Features.commit() && Transactions.commit() &&
+                 PostTransactions.commit() && detectXMLAlternatives() &&
+                 Special.commit()
+             ? std::move(FM)
+             : nullptr;
 }
 
 } // namespace vara::feature

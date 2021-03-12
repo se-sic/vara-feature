@@ -19,7 +19,8 @@ public:
       : FM(std::make_unique<FeatureModel>()),
         Features(FeatureModelModifyTransaction::openTransaction(*FM)),
         Transactions(FeatureModelModifyTransaction::openTransaction(*FM)),
-        PostTransactions(FeatureModelModifyTransaction::openTransaction(*FM)) {}
+        PostTransactions(FeatureModelModifyTransaction::openTransaction(*FM)),
+        Special(FeatureModelModifyTransaction::openTransaction(*FM)) {}
 
   /// Try to create a new \a Feature.
   ///
@@ -56,7 +57,7 @@ public:
 
   FeatureModelBuilder *
   addConstraint(std::unique_ptr<FeatureModel::ConstraintTy> C) {
-    Constraints.push_back(std::move(C));
+    PostTransactions.addConstraint(std::move(C));
     return this;
   }
 
@@ -71,11 +72,11 @@ public:
   }
 
   FeatureModelBuilder *setCommit(std::string Commit) {
-    //    this->Commit = std::move(Commit);
+    Transactions.setCommit(Commit);
     return this;
   }
 
-  FeatureModelBuilder *setRoot(const std::string &Name) {
+  FeatureModelBuilder *makeRoot(const std::string &Name) {
     Transactions.setRoot(std::make_unique<RootFeature>(Name));
     return this;
   }
@@ -86,43 +87,16 @@ public:
   std::unique_ptr<FeatureModel> buildFeatureModel();
 
 private:
-  class BuilderVisitor : public ConstraintVisitor {
-
-  public:
-    BuilderVisitor(FeatureModelBuilder &Builder) : Builder(Builder) {}
-
-    void visit(PrimaryFeatureConstraint *C) override {
-      auto *F = Builder.FM->getFeature(C->getFeature()->getName());
-      C->setFeature(F);
-      F->addConstraint(C);
-    };
-
-  private:
-    FeatureModelBuilder &Builder;
-  };
-
   std::unique_ptr<FeatureModel> FM;
   FeatureModelTransaction<detail::ModifyTransactionMode> Features;
   FeatureModelTransaction<detail::ModifyTransactionMode> Transactions;
   FeatureModelTransaction<detail::ModifyTransactionMode> PostTransactions;
-
-  using RelationshipEdgeType = typename llvm::StringMap<std::vector<
-      std::pair<Relationship::RelationshipKind, std::vector<std::string>>>>;
-
-  FeatureModel::ConstraintContainerTy Constraints;
-  FeatureModel::RelationshipContainerTy Relationships;
-  RelationshipEdgeType RelationshipEdges;
-
-  bool buildConstraints();
+  FeatureModelTransaction<detail::ModifyTransactionMode> Special;
 
   /// This method is solely relevant for parsing XML, as alternatives are
   /// represented als mutual excluded but non-optional features (which requires
   /// additional processing).
-  void detectXMLAlternatives();
-
-  bool buildRoot();
-
-  bool buildTree(Feature &F, std::set<std::string> &Visited);
+  bool detectXMLAlternatives();
 };
 
 } // namespace vara::feature

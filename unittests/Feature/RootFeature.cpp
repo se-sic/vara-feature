@@ -24,7 +24,7 @@ TEST(RootFeature, isa) {
 TEST(RootFeature, RootFeatureRoot) {
   auto B = FeatureModelBuilder();
 
-  B.setRoot("F");
+  B.makeRoot("F");
   auto FM = B.buildFeatureModel();
 
   EXPECT_TRUE(FM);
@@ -34,7 +34,7 @@ TEST(RootFeature, RootFeatureRoot) {
 
 TEST(RootFeature, RootFeatureChildren) {
   FeatureModelBuilder B;
-  B.setRoot("a")->makeFeature<RootFeature>("a");
+  B.makeRoot("a");
   B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
 
   auto FM = B.buildFeatureModel();
@@ -54,7 +54,7 @@ TEST(RootFeature, RootFeatureChange) {
   auto B = FeatureModelBuilder();
 
   B.makeFeature<BinaryFeature>("A");
-  B.setRoot("F");
+  B.makeRoot("F");
   auto FM = B.buildFeatureModel();
 
   EXPECT_TRUE(FM);

@@ -48,7 +48,6 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
   FMB.setVmName(this->getName().str());
   FMB.setCommit(this->getCommit().str());
   FMB.setPath(this->getPath().string());
-  FMB.setRoot(this->getRoot()->getName().str());
 
   for (const auto &KV : this->Features) {
     // TODO(s9latimm): Add unittests for cloned FeatureSourceRanges
@@ -61,7 +60,7 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
       FMB.makeFeature<Feature>(KV.getValue()->getName().str());
       break;
     case Feature::FeatureKind::FK_ROOT:
-      FMB.makeFeature<RootFeature>(KV.getValue()->getName().str());
+      FMB.makeRoot(KV.getValue()->getName().str());
       break;
     case Feature::FeatureKind::FK_BINARY:
       if (auto *F = llvm::dyn_cast<BinaryFeature>(KV.getValue().get()); F) {

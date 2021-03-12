@@ -572,6 +572,10 @@ private:
 
 class Feature;
 
+namespace detail {
+class FeatureModelModification;
+} // namespace detail
+
 class PrimaryFeatureConstraint : public PrimaryConstraint {
 public:
   PrimaryFeatureConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
@@ -595,7 +599,7 @@ public:
   void accept(ConstraintVisitor &V) override;
 
 private:
-  friend FeatureModelBuilder;
+  friend detail::FeatureModelModification;
 
   std::variant<Feature *, std::unique_ptr<Feature>> FV;
 
