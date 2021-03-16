@@ -708,6 +708,33 @@ private:
 
 } // namespace detail
 
+//===----------------------------------------------------------------------===//
+//                            Modification Helpers
+//===----------------------------------------------------------------------===//
+
+/// Adds a Feature to the FeatureModel
+///
+/// If a Parent is passed it needs to be already in the FeatureModel,
+/// otherwise, root is assumed as the parent Feature.
+///
+/// \param FM
+/// \param NewFeature
+/// \param Parent of the new feature
+void addFeature(FeatureModel *FM, std::unique_ptr<Feature> NewFeature,
+                Feature *Parent = nullptr);
+
+/// Merges a FeatureModel into another
+///
+/// Merging fails if both FeatureModels contain a Feature with equal name,
+/// but different properties.
+///
+/// \param FM1
+/// \param FM2
+///
+/// \return New merged FeatureModel or nullptr if merging failed
+[[nodiscard]] std::unique_ptr<FeatureModel>
+mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2);
+
 } // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATUREMODELTRANSACTION_H

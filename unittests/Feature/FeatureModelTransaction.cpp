@@ -386,8 +386,10 @@ protected:
 
 TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddXorGroup) {
   auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
-  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
-                     FM->getFeature("a"));
+  Feature *A = FM->getFeature("a");
+  auto Children = A->getChildren<Feature>();
+  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, A,
+                     std::set<Feature *>(Children.begin(), Children.end()));
   // no visible changes
   {
     auto *F = FM->getFeature("a");
@@ -417,8 +419,10 @@ TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddXorGroup) {
 
 TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddXorGroup) {
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
-  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE,
-                     FM->getFeature("a"));
+  Feature *A = FM->getFeature("a");
+  auto Children = A->getChildren<Feature>();
+  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, A,
+                     std::set<Feature *>(Children.begin(), Children.end()));
   // FM unchanged
   {
     auto *F = FM->getFeature("a");
@@ -458,8 +462,10 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddXorGroup) {
 
 TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddOrGroup) {
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
-  FT.addRelationship(Relationship::RelationshipKind::RK_OR,
-                     FM->getFeature("a"));
+  Feature *A = FM->getFeature("a");
+  auto Children = A->getChildren<Feature>();
+  FT.addRelationship(Relationship::RelationshipKind::RK_OR, A,
+                     std::set<Feature *>(Children.begin(), Children.end()));
   // FM unchanged
   {
     auto *F = FM->getFeature("a");
@@ -499,8 +505,10 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddOrGroup) {
 
 TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddOrGroup) {
   auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
-  FT.addRelationship(Relationship::RelationshipKind::RK_OR,
-                     FM->getFeature("a"));
+  Feature *A = FM->getFeature("a");
+  auto Children = A->getChildren<Feature>();
+  FT.addRelationship(Relationship::RelationshipKind::RK_OR, A,
+                     std::set<Feature *>(Children.begin(), Children.end()));
   // FM unchanged
   {
     auto *F = FM->getFeature("a");

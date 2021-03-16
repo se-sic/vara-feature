@@ -31,12 +31,6 @@ Feature *FeatureModel::addFeature(std::unique_ptr<Feature> NewFeature) {
   return InsertedFeature;
 }
 
-Relationship *
-FeatureModel::addRelationship(std::unique_ptr<RelationshipTy> Relationship) {
-  Relationships.push_back(std::move(Relationship));
-  return Relationships.back().get();
-}
-
 void FeatureModel::removeFeature(Feature &F) {
   if (&F == Root) {
     Root = nullptr;
