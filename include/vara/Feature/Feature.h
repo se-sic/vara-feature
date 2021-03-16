@@ -92,9 +92,7 @@ public:
   // Locations
   [[nodiscard]] bool hasLocations() const { return !Locations.empty(); }
 
-  void addLocation(FeatureSourceRange &Fsr) {
-    Locations.push_back(std::move(Fsr));
-  }
+  void addLocation(FeatureSourceRange Fsr) { Locations.push_back(Fsr); }
   std::vector<FeatureSourceRange>::iterator
   removeLocation(const FeatureSourceRange &Fsr) {
     return Locations.erase(std::find(Locations.begin(), Locations.end(), Fsr));

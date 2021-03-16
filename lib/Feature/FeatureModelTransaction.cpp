@@ -29,7 +29,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
 
 [[nodiscard]] bool mergeSubtree(FeatureModelCopyTransaction &Trans,
                                 FeatureModel const &FM, Feature &F) {
-  // Is there a similar Feature in the other FM
+  // Is there a similar Feature in the original FM
   if (Feature *CMP = FM.getFeature(F.getName())) {
     if (CompareProperties(*CMP, F)) {
       // similar feature, maybe merge locations
@@ -44,14 +44,14 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
       return false;
     }
   } else {
-    std::unique_ptr<Feature> SoftCopy = FeatureCopy(&F);
-    if (!SoftCopy) {
+    std::unique_ptr<Feature> Copy = FeatureCopy(&F);
+    if (!Copy) {
       return false;
     }
-    Trans.addFeature(std::move(SoftCopy), F.getParentFeature());
+    Trans.addFeature(std::move(Copy), F.getParentFeature());
   }
 
-  // copy children  if missing
+  // copy children if missing
   for (Feature *Child : F.getChildren<Feature>()) {
     if (!mergeSubtree(Trans, FM, *Child)) {
       return false;

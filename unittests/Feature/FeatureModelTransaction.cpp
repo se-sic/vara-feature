@@ -273,15 +273,12 @@ TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
   FeatureSourceRange::FeatureSourceLocation FSL1(2, 4);
   FeatureSourceRange::FeatureSourceLocation FSL2(2, 30);
   FeatureSourceRange FSR1("path", FSL1, FSL2);
-  // TODO there must be a way to pass a copy directly
-  FeatureSourceRange FSRC1(FSR1);
-  FM->getFeature("a")->addLocation(FSRC1);
+  FM->getFeature("a")->addLocation(FSR1);
 
   FeatureSourceRange::FeatureSourceLocation FSL3(10, 4);
   FeatureSourceRange::FeatureSourceLocation FSL4(10, 30);
   FeatureSourceRange FSR2("path", FSL3, FSL4);
-  FeatureSourceRange FSRC2(FSR2);
-  FM->getFeature("a")->addLocation(FSRC2);
+  FM->getFeature("a")->addLocation(FSR2);
 
   FeatureSourceRange::FeatureSourceLocation FSL5(12, 4);
   FeatureSourceRange::FeatureSourceLocation FSL6(12, 30);
