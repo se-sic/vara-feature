@@ -22,9 +22,8 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
   if (!mergeSubtree(Trans, FM1, *FM2.getRoot())) {
     Trans.abort();
     return nullptr;
-  } else {
-    return Trans.commit();
   }
+  return Trans.commit();
 }
 
 [[nodiscard]] bool mergeSubtree(FeatureModelCopyTransaction &Trans,
