@@ -1,4 +1,5 @@
 #include "vara/Feature/FeatureModelTransaction.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "gtest/gtest.h"
 

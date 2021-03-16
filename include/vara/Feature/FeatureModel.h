@@ -34,12 +34,12 @@ public:
   using OrderedFeatureTy = OrderedFeatureVector;
   using ConstraintTy = Constraint;
   using ConstraintContainerTy = std::vector<std::unique_ptr<ConstraintTy>>;
-  using RelationshipTy = Relationship;
-  using RelationshipContainerTy = std::vector<std::unique_ptr<RelationshipTy>>;
+  using RelationshipContainerTy = std::vector<std::unique_ptr<Relationship>>;
 
+  FeatureModel() = default;
   FeatureModel(std::string Name, fs::path RootPath, std::string Commit,
                FeatureMapTy Features, ConstraintContainerTy Constraints,
-               RelationshipContainerTy Relationships, Feature *Root)
+               RelationshipContainerTy Relationships, RootFeature *Root)
       : Name(std::move(Name)), Path(std::move(RootPath)),
         Commit(std::move(Commit)), Features(std::move(Features)),
         Constraints(std::move(Constraints)),
@@ -58,7 +58,10 @@ public:
 
   [[nodiscard]] llvm::StringRef getCommit() const { return Commit; }
 
-  [[nodiscard]] Feature *getRoot() const { return Root; }
+  [[nodiscard]] RootFeature *getRoot() const { return Root; }
+
+  // TODO make this private and use a transaction
+  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
 
   //===--------------------------------------------------------------------===//
   // Ordered feature iterator
@@ -116,9 +119,7 @@ protected:
   FeatureMapTy Features;
   ConstraintContainerTy Constraints;
   RelationshipContainerTy Relationships;
-  Feature *Root{nullptr};
-
-  FeatureModel() = default;
+  RootFeature *Root{nullptr};
 
 private:
   /// Insert a \a Feature into existing model.
@@ -128,154 +129,31 @@ private:
   /// \returns ptr to inserted \a Feature
   Feature *addFeature(std::unique_ptr<Feature> Feature);
 
-  /// Add a \a Relationship into existing model.
-  ///
-  /// \param Relationship Relationship to be inserted
-  RelationshipTy *addRelationship(std::unique_ptr<RelationshipTy> Relationship);
+  Relationship *addRelationship(std::unique_ptr<Relationship> Relationship) {
+    Relationships.push_back(std::move(Relationship));
+    return Relationships.back().get();
+  }
+
+  Constraint *addConstraint(std::unique_ptr<Constraint> Constraint) {
+    Constraints.push_back(std::move(Constraint));
+    return Constraints.back().get();
+  }
 
   /// Delete a \a Feature.
   void removeFeature(Feature &Feature);
 
+  RootFeature *setRoot(RootFeature &NewRoot);
+
+  void setName(std::string NewName) { Name = std::move(NewName); }
+
+  void setPath(fs::path NewPath) { Path = std::move(NewPath); }
+
+  void sort() { OrderedFeatures.sort(); }
+
   OrderedFeatureTy OrderedFeatures;
 };
 
-//===----------------------------------------------------------------------===//
-//                     Builder for FeatureModel
-//===----------------------------------------------------------------------===//
-
-/// \brief Builder for \a FeatureModel which can be used while parsing.
-class FeatureModelBuilder : private FeatureModel {
-public:
-  FeatureModelBuilder() = default;
-  void init() {
-    Name = "";
-    Path = "";
-    Commit = "";
-    Root = nullptr;
-    Features.clear();
-    Constraints.clear();
-    Parents.clear();
-    Children.clear();
-  }
-
-  /// Try to create a new \a Feature.
-  ///
-  /// \param[in] FeatureName name of the \a Feature
-  /// \param[in] FurtherArgs further arguments that should be passed to the
-  ///                        \a Feature constructor
-  ///
-  /// \returns ptr to inserted \a Feature
-  template <typename FeatureTy, typename... Args,
-            std::enable_if_t<std::is_base_of_v<Feature, FeatureTy>, int> = 0>
-  FeatureTy *makeFeature(std::string FeatureName, Args &&...FurtherArgs) {
-    if (!Features
-             .try_emplace(FeatureName,
-                          std::make_unique<FeatureTy>(
-                              FeatureName, std::forward<Args>(FurtherArgs)...))
-             .second) {
-      return nullptr;
-    }
-    return llvm::dyn_cast<FeatureTy>(Features[FeatureName].get());
-  }
-
-  FeatureModelBuilder *addEdge(const std::string &ParentName,
-                               const std::string &FeatureName) {
-    Children[ParentName].insert(FeatureName);
-    Parents[FeatureName] = ParentName;
-    return this;
-  }
-
-  FeatureModelBuilder *
-  emplaceRelationship(Relationship::RelationshipKind RK,
-                      const std::vector<std::string> &FeatureNames,
-                      const std::string &ParentName) {
-    RelationshipEdges[ParentName].emplace_back(RK, FeatureNames);
-    return this;
-  }
-
-  FeatureModelBuilder *
-  addConstraint(std::unique_ptr<FeatureModel::ConstraintTy> C) {
-    Constraints.push_back(std::move(C));
-    return this;
-  }
-
-  FeatureModelBuilder *setVmName(std::string Name) {
-    this->Name = std::move(Name);
-    return this;
-  }
-
-  FeatureModelBuilder *setPath(fs::path Path) {
-    this->Path = std::move(Path);
-    return this;
-  }
-
-  FeatureModelBuilder *setCommit(std::string Commit) {
-    this->Commit = std::move(Commit);
-    return this;
-  }
-
-  FeatureModelBuilder *setRootName(std::string Name) {
-    this->RootName = std::move(Name);
-    return this;
-  }
-
-  /// Build \a FeatureModel.
-  ///
-  /// \return instance of \a FeatureModel
-  std::unique_ptr<FeatureModel> buildFeatureModel();
-
-private:
-  class BuilderVisitor : public ConstraintVisitor {
-
-  public:
-    BuilderVisitor(FeatureModelBuilder *Builder) : Builder(Builder) {}
-
-    void visit(PrimaryFeatureConstraint *C) override {
-      auto *F = Builder->getFeature(C->getFeature()->getName());
-      C->setFeature(F);
-      F->addConstraint(C);
-    };
-
-  private:
-    FeatureModelBuilder *Builder;
-  };
-
-  using EdgeMapType = typename llvm::StringMap<llvm::SmallSet<std::string, 3>>;
-  using RelationshipEdgeType = typename llvm::StringMap<std::vector<
-      std::pair<Relationship::RelationshipKind, std::vector<std::string>>>>;
-
-  FeatureModel::ConstraintContainerTy Constraints;
-  FeatureModel::RelationshipContainerTy Relationships;
-  llvm::StringMap<std::string> Parents;
-  EdgeMapType Children;
-  RelationshipEdgeType RelationshipEdges;
-  std::string RootName{"root"};
-
-  bool buildRoot();
-
-  bool buildConstraints();
-
-  /// This method is solely relevant for parsing XML, as alternatives are
-  /// represented als mutual excluded but non-optional features (which requires
-  /// additional processing).
-  void detectXMLAlternatives();
-
-  bool buildTree(const std::string &FeatureName,
-                 std::set<std::string> &Visited);
-};
 } // namespace vara::feature
-
-inline std::ostream &operator<<(std::ostream &Out,
-                                const vara::feature::Feature *Feature) {
-  Out << Feature->toString();
-  return Out;
-}
-
-inline llvm::raw_ostream &operator<<(llvm::raw_ostream &Out,
-                                     const vara::feature::Feature *Feature) {
-  Out << Feature->toString();
-  return Out;
-}
 
 namespace llvm {
 
@@ -446,30 +324,45 @@ public:
 
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
-    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-      return llvm::isa<RootFeature>(F) || F->getParentFeature();
-    });
+    if (std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+          return llvm::isa<RootFeature>(F) || F->getParentFeature();
+        })) {
+      return true;
+    }
+    llvm::errs() << "Failed to validate 'EveryFeatureRequiresParent'." << '\n';
+    return false;
   }
 };
 
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
-    return std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-      return llvm::isa<RootFeature>(F) ||
-             // Every parent of a Feature needs to have it as a child.
-             std::any_of(F->getParent()->begin(), F->getParent()->end(),
-                         [F](FeatureTreeNode *Child) { return F == Child; });
-    });
+    if (std::all_of(FM.begin(), FM.end(), [](Feature *F) {
+          return llvm::isa<RootFeature>(F) ||
+                 // Every parent of a Feature needs to have it as a child.
+                 std::any_of(
+                     F->getParent()->begin(), F->getParent()->end(),
+                     [F](FeatureTreeNode *Child) { return F == Child; });
+        })) {
+      return true;
+    }
+    llvm::errs() << "Failed to validate 'CheckFeatureParentChildRelationShip'."
+                 << '\n';
+    return false;
   }
 };
 
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
-    return llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
-           1 == std::accumulate(FM.begin(), FM.end(), 0,
-                                [](int Sum, Feature *F) {
-                                  return Sum + llvm::isa<RootFeature>(F);
-                                });
+    if ((!FM.getRoot() && FM.size() == 0) ||
+        (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
+         1 == std::accumulate(FM.begin(), FM.end(), 0, [](int Sum, Feature *F) {
+           return Sum + llvm::isa<RootFeature>(F);
+         }))) {
+      return true;
+    }
+    llvm::errs() << "Failed to validate 'CheckFeatureParentChildRelationShip'."
+                 << '\n';
+    return false;
   }
 };
 

@@ -59,23 +59,47 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DLLVM_REQUESTED_VERSION=$LLVM_VERSION -DPYTHON_EXECUTABLE=$(which python3)
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DLLVM_REQUESTED_VERSION=$LLVM_VERSION \
+            -DCMAKE_CXX_COMPILER=$CXX \
+            -DVARA_FEATURE_SANITIZE=True \
+            -DVARA_FEATURE_BUILD_PYTHON_BINDINGS=False \
+            -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
       - name: Run Tests
-        env:
-          CXX: ${{ matrix.compiler }}
         shell: bash
         run: |
           cd build
           cmake --build . --target check-vara-feature-unittests
-          cmake --build . --target check-vara-feature-python
           cmake --build . --target check-vara-fm-viewer
 
       - name: Run Clang-Tidy
-        env:
-          CXX: ${{ matrix.compiler }}
         shell: bash
         run: |
           cd build
           cmake --build . --target tidy-vara-feature
+
+      - name: Build Python Bindings
+        env:
+          BUILD_TYPE: ${{ matrix.build }}
+          LLVM_VERSION: ${{ matrix.llvm-major }}.${{ matrix.llvm-minor }}
+          CXX: ${{ matrix.compiler }}
+        shell: bash
+        run: |
+          cd build
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DLLVM_REQUESTED_VERSION=$LLVM_VERSION \
+            -DCMAKE_CXX_COMPILER=$CXX \
+            -DVARA_FEATURE_SANITIZE=False \
+            -DVARA_FEATURE_BUILD_PYTHON_BINDINGS=True \
+            -DPYTHON_EXECUTABLE=$(which python3)
+          cmake --build . -- -j
+
+      - name: Run Python Binding Tests
+        shell: bash
+        run: |
+          cd build
+          cmake --build . --target check-vara-feature-python

@@ -1,5 +1,4 @@
-#include "vara/Feature/FeatureModel.h"
-#include "vara/Feature/Feature.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 #include "vara/Feature/FeatureModelTransaction.h"
 
 #include "llvm/ADT/SetVector.h"
@@ -34,8 +33,7 @@ TEST(FeatureModel, cloneUnique) {
 
 TEST(FeatureModel, cloneRoot) {
   FeatureModelBuilder B;
-  B.makeFeature<RootFeature>("a");
-  B.setRootName("a");
+  B.makeRoot("a");
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -69,8 +67,9 @@ TEST(FeatureModel, cloneRelationship) {
 
 TEST(FeatureModel, cloneConstraint) {
   FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a");
   B.addConstraint(std::make_unique<PrimaryFeatureConstraint>(
-      B.makeFeature<BinaryFeature>("a")));
+      std::make_unique<BinaryFeature>("a")));
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -265,7 +264,7 @@ TEST_F(FeatureModelConsistencyCheckerTest,
   B.makeFeature<BinaryFeature>("a");
   auto FM = B.buildFeatureModel();
 
-  FeatureModelModification::removeChild(*FM->getRoot(), *FM->getFeature("a"));
+  FeatureModelModification::removeEdge(*FM->getRoot(), *FM->getFeature("a"));
 
   EXPECT_FALSE(FeatureModelConsistencyChecker<
                CheckFeatureParentChildRelationShip>::isFeatureModelValid(*FM));

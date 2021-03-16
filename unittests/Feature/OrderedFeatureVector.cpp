@@ -1,4 +1,4 @@
-#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "gtest/gtest.h"
 
@@ -39,7 +39,8 @@ TEST_F(OrderedFeatureVectorTest, insert) {
   EXPECT_EQ(OFV.size(), FM->size());
   EXPECT_EQ(Expected.size(), FM->size());
   for (const auto *F : FM->features()) {
-    EXPECT_EQ(*Expected.back(), *F);
+    EXPECT_STREQ(Expected.back()->getName().data(), F->getName().data());
+    ASSERT_EQ(*Expected.back(), *F);
     Expected.pop_back();
   }
 }
@@ -56,7 +57,8 @@ TEST_F(OrderedFeatureVectorTest, insertFM) {
   EXPECT_EQ(OFV.size(), FM->size());
   EXPECT_EQ(Expected.size(), FM->size());
   for (const auto *F : FM->features()) {
-    EXPECT_EQ(*Expected.back(), *F);
+    EXPECT_STREQ(Expected.back()->getName().data(), F->getName().data());
+    ASSERT_EQ(*Expected.back(), *F);
     Expected.pop_back();
   }
 }
@@ -76,7 +78,8 @@ TEST_F(OrderedFeatureVectorTest, insertVariadic) {
   EXPECT_EQ(OFV.size(), FM->size());
   EXPECT_EQ(Expected.size(), FM->size());
   for (const auto *F : FM->features()) {
-    EXPECT_EQ(*Expected.back(), *F);
+    EXPECT_STREQ(Expected.back()->getName().data(), F->getName().data());
+    ASSERT_EQ(*Expected.back(), *F);
     Expected.pop_back();
   }
 }

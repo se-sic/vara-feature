@@ -3,6 +3,8 @@
 
 #include "vara/Feature/Feature.h"
 
+#include <algorithm>
+
 namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
@@ -55,6 +57,13 @@ public:
 
   void insert(std::initializer_list<Feature *> Init) {
     insert(Init.begin(), Init.end());
+  }
+
+  void sort() {
+    std::sort(Features.begin(), Features.end(),
+              [](vara::feature::Feature *A, vara::feature::Feature *B) {
+                return *A < *B;
+              });
   }
 
   [[nodiscard]] unsigned int size() { return Features.size(); }

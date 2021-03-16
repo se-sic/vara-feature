@@ -1,5 +1,4 @@
-#include "vara/Feature/Feature.h"
-#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -25,17 +24,17 @@ TEST(RootFeature, isa) {
 TEST(RootFeature, RootFeatureRoot) {
   auto B = FeatureModelBuilder();
 
-  B.makeFeature<RootFeature>("F");
-  B.setRootName("F");
+  B.makeRoot("F");
   auto FM = B.buildFeatureModel();
 
   EXPECT_TRUE(FM);
+  EXPECT_TRUE(FM->getRoot());
   EXPECT_EQ("F", FM->getRoot()->getName());
 }
 
 TEST(RootFeature, RootFeatureChildren) {
   FeatureModelBuilder B;
-  B.setRootName("a")->makeFeature<RootFeature>("a");
+  B.makeRoot("a");
   B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
 
   auto FM = B.buildFeatureModel();
@@ -49,6 +48,19 @@ TEST(RootFeature, RootFeatureChildren) {
   } else {
     FAIL();
   }
+}
+
+TEST(RootFeature, RootFeatureChange) {
+  auto B = FeatureModelBuilder();
+
+  B.makeFeature<BinaryFeature>("A");
+  B.makeRoot("F");
+  auto FM = B.buildFeatureModel();
+
+  EXPECT_TRUE(FM);
+  EXPECT_TRUE(FM->getRoot());
+  EXPECT_EQ("F", FM->getRoot()->getName());
+  EXPECT_EQ("F", FM->getFeature("A")->getParentFeature()->getName());
 }
 
 } // namespace vara::feature

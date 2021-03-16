@@ -1,5 +1,4 @@
-#include "vara/Feature/Feature.h"
-#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -22,15 +21,6 @@ TEST(BinaryFeature, isa) {
   EXPECT_FALSE(llvm::isa<RootFeature>(A));
 }
 
-TEST(BinaryFeature, BinaryFeatureRoot) {
-  auto B = FeatureModelBuilder();
-
-  B.makeFeature<BinaryFeature>("F");
-  B.setRootName("F");
-
-  EXPECT_FALSE(B.buildFeatureModel());
-}
-
 TEST(BinaryFeature, BinaryFeatureChildren) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
@@ -39,7 +29,7 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
   auto FM = B.buildFeatureModel();
   assert(FM);
 
-  EXPECT_EQ(
+  ASSERT_EQ(
       std::distance(FM->getFeature("a")->begin(), FM->getFeature("a")->end()),
       1);
   if (auto *F = llvm::dyn_cast<Feature>(*FM->getFeature("a")->begin())) {
