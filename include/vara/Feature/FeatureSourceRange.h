@@ -73,6 +73,13 @@ public:
                      Category CategoryKind = Category::necessary)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
         CategoryKind(CategoryKind) {}
+
+  FeatureSourceRange(fs::path Path, FeatureSourceLocation Start,
+                     FeatureSourceLocation End,
+                     Category CategoryKind = Category::necessary)
+      : FeatureSourceRange(std::move(Path), std::optional(std::move(Start)),
+                           std::optional(std::move(End)), CategoryKind) {}
+
   FeatureSourceRange(const FeatureSourceRange &L) = default;
   FeatureSourceRange &operator=(const FeatureSourceRange &) = default;
   FeatureSourceRange(FeatureSourceRange &&) = default;
