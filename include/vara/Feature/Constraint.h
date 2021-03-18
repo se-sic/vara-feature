@@ -577,6 +577,8 @@ class FeatureModelModification;
 } // namespace detail
 
 class PrimaryFeatureConstraint : public PrimaryConstraint {
+  friend detail::FeatureModelModification;
+
 public:
   PrimaryFeatureConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
       : PrimaryConstraint(ConstraintKind::CK_FEATURE), FV(std::move(FV)) {}
@@ -599,8 +601,6 @@ public:
   void accept(ConstraintVisitor &V) override;
 
 private:
-  friend detail::FeatureModelModification;
-
   std::variant<Feature *, std::unique_ptr<Feature>> FV;
 
   void setFeature(Feature *F) { this->FV = F; }
