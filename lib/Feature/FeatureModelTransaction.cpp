@@ -6,7 +6,7 @@ namespace vara::feature {
 
 bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel const &FM,
                   Feature &F);
-std::unique_ptr<Feature> FeatureCopy(Feature *F);
+std::unique_ptr<Feature> FeatureCopy(Feature &F);
 bool CompareProperties(const Feature &F1, const Feature &F2);
 
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
@@ -42,7 +42,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
       return false;
     }
   } else {
-    std::unique_ptr<Feature> Copy = FeatureCopy(&F);
+    std::unique_ptr<Feature> Copy = FeatureCopy(F);
     if (!Copy) {
       return false;
     }
@@ -58,26 +58,26 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
   return true;
 }
 
-[[nodiscard]] std::unique_ptr<Feature> FeatureCopy(Feature *F) {
-  std::unique_ptr<Feature> FeatureSoftCopy;
-  NumericFeature::ValuesVariantType Values;
-  switch (F->getKind()) {
+[[nodiscard]] std::unique_ptr<Feature> FeatureCopy(Feature &F) {
+  switch (F.getKind()) {
   case Feature::FeatureKind::FK_BINARY:
     return std::make_unique<BinaryFeature>(
-        F->getName().str(), F->isOptional(),
-        std::vector<FeatureSourceRange>(F->getLocationsBegin(),
-                                        F->getLocationsEnd()));
+        F.getName().str(), F.isOptional(),
+        std::vector<FeatureSourceRange>(F.getLocationsBegin(),
+                                        F.getLocationsEnd()));
   case Feature::FeatureKind::FK_NUMERIC:
-    Values = llvm::dyn_cast<NumericFeature>(F)->getValues();
-    return std::make_unique<NumericFeature>(
-        F->getName().str(), Values, F->isOptional(),
-        std::vector<FeatureSourceRange>(F->getLocationsBegin(),
-                                        F->getLocationsEnd()));
+    if (auto *NF = llvm::dyn_cast<NumericFeature>(&F)) {
+      return std::make_unique<NumericFeature>(
+          F.getName().str(), NF->getValues(), F.isOptional(),
+          std::vector<FeatureSourceRange>(F.getLocationsBegin(),
+                                          F.getLocationsEnd()));
+    }
   case Feature::FeatureKind::FK_ROOT:
     return std::make_unique<RootFeature>();
   default:
-    return nullptr;
+    break;
   }
+  return nullptr;
 }
 
 [[nodiscard]] bool CompareProperties(const Feature &F1, const Feature &F2) {

@@ -200,7 +200,7 @@ protected:
   }
 
   static void addLocation(Feature &F, FeatureSourceRange FSR) {
-    F.addLocation(FSR);
+    F.addLocation(std::move(FSR));
   }
 
   static void setFeature(PrimaryFeatureConstraint &Constraint, Feature &F) {

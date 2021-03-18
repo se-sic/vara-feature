@@ -68,7 +68,7 @@ public:
   }
 
   FeatureModelBuilder *setCommit(std::string Commit) {
-    Transactions.setCommit(Commit);
+    Transactions.setCommit(std::move(Commit));
     return this;
   }
 

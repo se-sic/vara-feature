@@ -84,9 +84,9 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
   }
 
   for (const auto &Rel : this->Relationships) {
-    FMB.emplaceRelationship(
-        Rel->getKind(),
-        llvm::dyn_cast<Feature>(Rel->getParent())->getName().str());
+    if (auto *P = llvm::dyn_cast_or_null<Feature>(Rel->getParent())) {
+      FMB.emplaceRelationship(Rel->getKind(), P->getName().str());
+    }
   }
 
   // We can use recursive cloning on constraints, as we can rely on the

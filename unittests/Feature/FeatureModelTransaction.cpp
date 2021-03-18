@@ -386,26 +386,30 @@ TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddXorGroup) {
   // no visible changes
   {
     auto *F = FM->getFeature("a");
-    ASSERT_EQ(0, F->getChildren<Relationship>().size());
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(0, F->getChildren<Relationship>().size());
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
     for (auto *FChild : F->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
 
   FT.commit();
   {
     auto *F = FM->getFeature("a");
-    ASSERT_EQ(1, F->getChildren<Relationship>().size());
+    EXPECT_EQ(1, F->getChildren<Relationship>().size());
     auto *R = *F->getChildren<Relationship>().begin();
-    ASSERT_EQ(Relationship::RelationshipKind::RK_ALTERNATIVE, R->getKind());
-    auto *RParent = llvm::dyn_cast<Feature>(R->getParent());
-    ASSERT_EQ(*F, *RParent);
+    EXPECT_EQ(Relationship::RelationshipKind::RK_ALTERNATIVE, R->getKind());
 
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
-    ASSERT_EQ(2, R->getChildren<Feature>().size());
+    if (auto *RParent = llvm::dyn_cast_or_null<Feature>(R->getParent())) {
+      ASSERT_EQ(*F, *RParent);
+    } else {
+      FAIL();
+    }
+
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(2, R->getChildren<Feature>().size());
     for (auto *FChild : R->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
 }
@@ -418,36 +422,39 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddXorGroup) {
   // FM unchanged
   {
     auto *F = FM->getFeature("a");
-    ASSERT_EQ(0, F->getChildren<Relationship>().size());
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(0, F->getChildren<Relationship>().size());
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
     for (auto *FChild : F->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
 
   auto NewFM = FT.commit();
   {
     auto *F = NewFM->getFeature("a");
-    ASSERT_EQ(1, F->getChildren<Relationship>().size());
+    EXPECT_EQ(1, F->getChildren<Relationship>().size());
     auto *R = *F->getChildren<Relationship>().begin();
-    ASSERT_EQ(Relationship::RelationshipKind::RK_ALTERNATIVE, R->getKind());
-    auto *RParent = llvm::dyn_cast<Feature>(R->getParent());
-    ASSERT_TRUE(RParent);
-    ASSERT_EQ(*F, *RParent);
+    EXPECT_EQ(Relationship::RelationshipKind::RK_ALTERNATIVE, R->getKind());
 
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
-    ASSERT_EQ(2, R->getChildren<Feature>().size());
+    if (auto *RParent = llvm::dyn_cast_or_null<Feature>(R->getParent())) {
+      ASSERT_EQ(*F, *RParent);
+    } else {
+      FAIL();
+    }
+
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(2, R->getChildren<Feature>().size());
     for (auto *FChild : R->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
   // old FM still unchanged
   {
     auto *F = FM->getFeature("a");
-    ASSERT_EQ(0, F->getChildren<Relationship>().size());
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(0, F->getChildren<Relationship>().size());
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
     for (auto *FChild : F->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
 }
@@ -460,36 +467,39 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddOrGroup) {
   // FM unchanged
   {
     auto *F = FM->getFeature("a");
-    ASSERT_EQ(0, F->getChildren<Relationship>().size());
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(0, F->getChildren<Relationship>().size());
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
     for (auto *FChild : F->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
 
   auto NewFM = FT.commit();
   {
     auto *F = NewFM->getFeature("a");
-    ASSERT_EQ(1, F->getChildren<Relationship>().size());
+    EXPECT_EQ(1, F->getChildren<Relationship>().size());
     auto *R = *F->getChildren<Relationship>().begin();
-    ASSERT_EQ(Relationship::RelationshipKind::RK_OR, R->getKind());
-    auto *RParent = llvm::dyn_cast<Feature>(R->getParent());
-    ASSERT_TRUE(RParent);
-    ASSERT_EQ(*F, *RParent);
+    EXPECT_EQ(Relationship::RelationshipKind::RK_OR, R->getKind());
 
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
-    ASSERT_EQ(2, R->getChildren<Feature>().size());
+    if (auto *RParent = llvm::dyn_cast_or_null<Feature>(R->getParent())) {
+      ASSERT_EQ(*F, *RParent);
+    } else {
+      FAIL();
+    }
+
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(2, R->getChildren<Feature>().size());
     for (auto *FChild : R->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
   // old FM still unchanged
   {
     auto *F = FM->getFeature("a");
-    ASSERT_EQ(0, F->getChildren<Relationship>().size());
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(0, F->getChildren<Relationship>().size());
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
     for (auto *FChild : F->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
 }
@@ -502,27 +512,30 @@ TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddOrGroup) {
   // FM unchanged
   {
     auto *F = FM->getFeature("a");
-    ASSERT_EQ(0, F->getChildren<Relationship>().size());
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(0, F->getChildren<Relationship>().size());
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
     for (auto *FChild : F->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
 
   FT.commit();
   {
     auto *F = FM->getFeature("a");
-    ASSERT_EQ(1, F->getChildren<Relationship>().size());
+    EXPECT_EQ(1, F->getChildren<Relationship>().size());
     auto *R = *F->getChildren<Relationship>().begin();
-    ASSERT_EQ(Relationship::RelationshipKind::RK_OR, R->getKind());
-    auto *RParent = llvm::dyn_cast<Feature>(R->getParent());
-    ASSERT_TRUE(RParent);
-    ASSERT_EQ(*F, *RParent);
+    EXPECT_EQ(Relationship::RelationshipKind::RK_OR, R->getKind());
 
-    ASSERT_EQ(2, F->getChildren<Feature>().size());
-    ASSERT_EQ(2, R->getChildren<Feature>().size());
+    if (auto *RParent = llvm::dyn_cast_or_null<Feature>(R->getParent())) {
+      ASSERT_EQ(*F, *RParent);
+    } else {
+      FAIL();
+    }
+
+    EXPECT_EQ(2, F->getChildren<Feature>().size());
+    EXPECT_EQ(2, R->getChildren<Feature>().size());
     for (auto *FChild : R->getChildren<Feature>()) {
-      ASSERT_EQ(F, FChild->getParentFeature());
+      EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
 }
