@@ -45,13 +45,9 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *
-  emplaceRelationship(Relationship::RelationshipKind RK,
-                      const std::vector<std::string> &FeatureNames,
-                      const std::string &ParentName) {
-    PostTransactions.addRelationship(
-        RK, ParentName,
-        std::set<std::string>(FeatureNames.begin(), FeatureNames.end()));
+  FeatureModelBuilder *emplaceRelationship(Relationship::RelationshipKind RK,
+                                           const std::string &ParentName) {
+    PostTransactions.addRelationship(RK, ParentName);
     return this;
   }
 

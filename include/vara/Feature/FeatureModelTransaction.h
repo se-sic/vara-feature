@@ -95,14 +95,12 @@ public:
     }
   }
 
-  decltype(auto) addRelationship(
-      Relationship::RelationshipKind Kind, const FeatureVariant &Parent,
-      std::optional<std::variant<std::set<std::string>, std::set<Feature *>>>
-          Children) {
+  decltype(auto) addRelationship(Relationship::RelationshipKind Kind,
+                                 const FeatureVariant &Parent) {
     if constexpr (IsCopyMode) {
-      return this->addRelationshipImpl(Kind, Parent, std::move(Children));
+      return this->addRelationshipImpl(Kind, Parent);
     } else {
-      this->addRelationshipImpl(Kind, Parent, std::move(Children));
+      this->addRelationshipImpl(Kind, Parent);
     }
   }
 
@@ -242,12 +240,12 @@ protected:
     FM.removeFeature(F);
   }
 
-  template <class Ty>
-  static Ty *resolveVariant(FeatureModel &FM,
-                            std::variant<std::string, Ty *> V) {
+  template <class PtrTy>
+  static PtrTy *resolveVariant(FeatureModel &FM,
+                               std::variant<std::string, PtrTy *> V) {
     return std::holds_alternative<std::string>(V)
                ? FM.getFeature(std::get<std::string>(V))
-               : std::get<Ty *>(V);
+               : std::get<PtrTy *>(V);
   }
 
   template <typename ModTy, typename... ArgTys>
@@ -311,41 +309,29 @@ public:
     if (!InsertedRelationship) {
       return nullptr;
     }
+
     auto *P = resolveVariant(FM, Parent);
-    if (!Children) {
-      auto TmpChildren = P->getChildren<Feature>();
-      Children = std::set<Feature *>(TmpChildren.begin(), TmpChildren.end());
-    }
+
     setParent(*InsertedRelationship, *P);
     addEdge(*P, *InsertedRelationship);
-    if (std::holds_alternative<std::set<std::string>>(*Children)) {
-      for (auto const &Child : std::get<std::set<std::string>>(*Children)) {
-        auto *C = resolveVariant<Feature>(FM, Child);
-        removeEdge(*C->getParent(), *C);
-        addEdge(*InsertedRelationship, *C);
-        setParent(*C, *InsertedRelationship);
-      }
-    } else {
-      for (auto *C : std::get<std::set<Feature *>>(*Children)) {
-        removeEdge(*C->getParent(), *C);
-        addEdge(*InsertedRelationship, *C);
-        setParent(*C, *InsertedRelationship);
-      }
+
+    for (auto *C : P->getChildren<Feature>()) {
+      assert(P->hasEdgeTo(*C) && C->hasEdgeFrom(*P));
+      removeEdge(*P, *C);
+      addEdge(*InsertedRelationship, *C);
+      setParent(*C, *InsertedRelationship);
     }
+
     return InsertedRelationship;
   }
 
 private:
-  AddRelationshipToModel(
-      Relationship::RelationshipKind Kind, FeatureVariant Parent,
-      std::optional<std::variant<std::set<std::string>, std::set<Feature *>>>
-          Children = std::nullopt)
-      : Kind(Kind), Parent(std::move(Parent)), Children(std::move(Children)) {}
+  AddRelationshipToModel(Relationship::RelationshipKind Kind,
+                         FeatureVariant Parent)
+      : Kind(Kind), Parent(std::move(Parent)) {}
 
   Relationship::RelationshipKind Kind;
   FeatureVariant Parent;
-  std::optional<std::variant<std::set<std::string>, std::set<Feature *>>>
-      Children;
 };
 
 //===----------------------------------------------------------------------===//
@@ -540,39 +526,15 @@ protected:
         std::move(NewFeature))(*FM);
   }
 
-  Relationship *addRelationshipImpl(
-      Relationship::RelationshipKind Kind, FeatureVariant Parent,
-      const std::optional<
-          std::variant<std::set<std::string>, std::set<Feature *>>> &Children =
-          std::nullopt) {
+  Relationship *addRelationshipImpl(Relationship::RelationshipKind Kind,
+                                    FeatureVariant Parent) {
     if (!FM) {
       return nullptr;
     }
-    if (!Children) {
-      return FeatureModelModification::make_modification<
-          AddRelationshipToModel>(
-          Kind, TranslateFeature(*AddRelationshipToModel::resolveVariant(
-                    *FM, std::move(Parent))))(*FM);
-    }
-
-    std::set<Feature *> TranslatedChildren;
-    if (std::holds_alternative<std::set<std::string>>(*Children)) {
-      for (auto C : std::get<std::set<std::string>>(*Children)) {
-        TranslatedChildren.insert(TranslateFeature(
-            *AddRelationshipToModel::resolveVariant<Feature>(*FM, C)));
-      }
-    } else {
-      for (auto *C : std::get<std::set<Feature *>>(*Children)) {
-        TranslatedChildren.insert(TranslateFeature(
-            *AddRelationshipToModel::resolveVariant<Feature>(*FM, C)));
-      }
-    }
 
     return FeatureModelModification::make_modification<AddRelationshipToModel>(
-        Kind,
-        TranslateFeature(
-            *AddRelationshipToModel::resolveVariant(*FM, std::move(Parent))),
-        TranslatedChildren)(*FM);
+        Kind, TranslateFeature(*AddRelationshipToModel::resolveVariant(
+                  *FM, std::move(Parent))))(*FM);
   }
 
   Constraint *addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
@@ -661,13 +623,10 @@ protected:
             std::move(NewFeature), Parent));
   }
 
-  void addRelationshipImpl(
-      Relationship::RelationshipKind Kind, const FeatureVariant &Parent,
-      const std::optional<
-          std::variant<std::set<std::string>, std::set<Feature *>>> &Children =
-          std::nullopt) {
+  void addRelationshipImpl(Relationship::RelationshipKind Kind,
+                           const FeatureVariant &Parent) {
     Modifications.push_back(FeatureModelModification::make_unique_modification<
-                            AddRelationshipToModel>(Kind, Parent, Children));
+                            AddRelationshipToModel>(Kind, Parent));
   }
 
   void addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {

@@ -382,8 +382,7 @@ TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddXorGroup) {
   auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
   Feature *A = FM->getFeature("a");
   auto Children = A->getChildren<Feature>();
-  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, A,
-                     std::set<Feature *>(Children.begin(), Children.end()));
+  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, A);
   // no visible changes
   {
     auto *F = FM->getFeature("a");
@@ -415,8 +414,7 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddXorGroup) {
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
   Feature *A = FM->getFeature("a");
   auto Children = A->getChildren<Feature>();
-  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, A,
-                     std::set<Feature *>(Children.begin(), Children.end()));
+  FT.addRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, A);
   // FM unchanged
   {
     auto *F = FM->getFeature("a");
@@ -458,8 +456,7 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddOrGroup) {
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
   Feature *A = FM->getFeature("a");
   auto Children = A->getChildren<Feature>();
-  FT.addRelationship(Relationship::RelationshipKind::RK_OR, A,
-                     std::set<Feature *>(Children.begin(), Children.end()));
+  FT.addRelationship(Relationship::RelationshipKind::RK_OR, A);
   // FM unchanged
   {
     auto *F = FM->getFeature("a");
@@ -501,8 +498,7 @@ TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddOrGroup) {
   auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
   Feature *A = FM->getFeature("a");
   auto Children = A->getChildren<Feature>();
-  FT.addRelationship(Relationship::RelationshipKind::RK_OR, A,
-                     std::set<Feature *>(Children.begin(), Children.end()));
+  FT.addRelationship(Relationship::RelationshipKind::RK_OR, A);
   // FM unchanged
   {
     auto *F = FM->getFeature("a");

@@ -18,7 +18,7 @@ TEST(FeatureModel, build) {
 TEST(FeatureModel, cloneUnique) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
-  B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+  B.makeFeature<BinaryFeature>("aa")->addEdge("a", "aa");
   B.makeFeature<BinaryFeature>("b");
   auto FM = B.buildFeatureModel();
   assert(FM);
@@ -50,9 +50,9 @@ TEST(FeatureModel, cloneRoot) {
 TEST(FeatureModel, cloneRelationship) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
-  B.makeFeature<BinaryFeature>("b");
-  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, {"a", "b"},
-                        "root");
+  B.makeFeature<BinaryFeature>("aa")->addEdge("a", "aa");
+  B.makeFeature<BinaryFeature>("ab")->addEdge("a", "ab");
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "a");
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -60,9 +60,9 @@ TEST(FeatureModel, cloneRelationship) {
   assert(Clone);
   FM.reset();
 
-  EXPECT_FALSE(Clone->getRoot()->getChildren<Relationship>().empty());
-  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("a")->getParent()));
-  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("b")->getParent()));
+  EXPECT_FALSE(Clone->getFeature("a")->getChildren<Relationship>().empty());
+  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("aa")->getParent()));
+  EXPECT_TRUE(llvm::isa<Relationship>(Clone->getFeature("ab")->getParent()));
 }
 
 TEST(FeatureModel, cloneConstraint) {

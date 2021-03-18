@@ -3,6 +3,7 @@ build/
 .*.*.swp
 .clangd/
 __pycache__/
+*.pyc
 compile_commands.json
 vara_feature.egg-info
 dist/

@@ -84,16 +84,9 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
   }
 
   for (const auto &Rel : this->Relationships) {
-    std::vector<std::string> FeatureNames;
-    for (auto *Child : Rel->children()) {
-      if (auto *ChildFeature = llvm::dyn_cast<Feature>(Child)) {
-        FeatureNames.emplace_back(ChildFeature->getName());
-      }
-    }
-    if (auto *ParentFeature = llvm::dyn_cast<Feature>(Rel->getParent())) {
-      FMB.emplaceRelationship(Rel->getKind(), FeatureNames,
-                              ParentFeature->getName().str());
-    }
+    FMB.emplaceRelationship(
+        Rel->getKind(),
+        llvm::dyn_cast<Feature>(Rel->getParent())->getName().str());
   }
 
   // We can use recursive cloning on constraints, as we can rely on the

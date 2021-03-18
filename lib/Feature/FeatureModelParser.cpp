@@ -386,8 +386,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
     // Each entry represents an or group as a tuple where the first value is
     // the name of the parent, the second is the relationship kind, and the
     // third a vector consisting of the name of the children
-    std::map<int, std::tuple<std::string, Relationship::RelationshipKind,
-                             std::vector<std::string>>>
+    std::map<int, std::tuple<std::string, Relationship::RelationshipKind>>
         OrGroupMapping;
 
     if (FeatureTree == nullptr) {
@@ -527,7 +526,6 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       auto OrGroup = OrGroupMapping.find(CurrentIndentationLevel);
       if (OrGroup != OrGroupMapping.end()) {
         FMB.emplaceRelationship(std::get<1>(OrGroup->second),
-                                std::get<2>(OrGroup->second),
                                 std::get<0>(OrGroup->second));
         OrGroupMapping.erase(CurrentIndentationLevel);
       }
@@ -540,15 +538,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
           GroupKind = Relationship::RelationshipKind::RK_OR;
         }
         OrGroupMapping[CurrentIndentationLevel] =
-            std::tuple<std::string, Relationship::RelationshipKind,
-                       std::vector<std::string>>(Name, GroupKind,
-                                                 std::vector<std::string>());
-      }
-
-      // Add a child
-      OrGroup = OrGroupMapping.find(CurrentIndentationLevel - 1);
-      if (OrGroup != OrGroupMapping.end()) {
-        std::get<2>(OrGroup->second).push_back(Name);
+            std::tuple<std::string, Relationship::RelationshipKind>(Name,
+                                                                    GroupKind);
       }
 
       LastIndentationLevel = CurrentIndentationLevel;
@@ -557,7 +548,6 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
     // Add the remaining or groups
     for (auto &OrGroup : OrGroupMapping) {
       FMB.emplaceRelationship(std::get<1>(OrGroup.second),
-                              std::get<2>(OrGroup.second),
                               std::get<0>(OrGroup.second));
     }
   }

@@ -126,10 +126,8 @@ TEST(FeatureModelBuilder, addNumericFeatureRef) {
 TEST(FeatureModelBuilder, detectXMLAlternativesSimple) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
-  B.addEdge("a", "aa");
-  B.addEdge("a", "ab");
-  B.makeFeature<BinaryFeature>("aa", false);
-  B.makeFeature<BinaryFeature>("ab", false);
+  B.makeFeature<BinaryFeature>("aa", false)->addEdge("a", "aa");
+  B.makeFeature<BinaryFeature>("ab", false)->addEdge("a", "ab");
 
   B.addConstraint(std::make_unique<ExcludesConstraint>(
       std::make_unique<PrimaryFeatureConstraint>(
@@ -149,6 +147,7 @@ TEST(FeatureModelBuilder, detectXMLAlternativesSimple) {
   if (auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());
       R) {
     EXPECT_TRUE(R->getKind() == Relationship::RelationshipKind::RK_ALTERNATIVE);
+    EXPECT_TRUE(R->hasEdgeFrom(*FM->getFeature("a")));
     EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("aa")));
     EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ab")));
   } else {
@@ -176,38 +175,87 @@ TEST(FeatureModelBuilder, detectXMLAlternativesBroken) {
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
 }
 
-TEST(FeatureModelBuilder, detectXMLAlternativesOutOfOrder) {
+TEST(FeatureModelBuilder, detectXMLAlternativesOptionalBroken) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
   B.addEdge("a", "aa");
   B.addEdge("a", "ab");
-  B.addEdge("a", "ac");
-  B.addEdge("a", "ad");
-  B.addEdge("a", "ae");
   B.makeFeature<BinaryFeature>("aa", false);
-  B.makeFeature<BinaryFeature>("ac", false);
-  B.makeFeature<BinaryFeature>("ae", false);
-  B.makeFeature<BinaryFeature>("ab", false);
-  B.makeFeature<BinaryFeature>("ad", false);
+  B.makeFeature<BinaryFeature>("ab", true);
 
+  B.addConstraint(std::make_unique<ExcludesConstraint>(
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("aa")),
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("ab"))));
   B.addConstraint(std::make_unique<ExcludesConstraint>(
       std::make_unique<PrimaryFeatureConstraint>(
           std::make_unique<BinaryFeature>("ab")),
       std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ad"))));
+          std::make_unique<BinaryFeature>("aa"))));
+  auto FM = B.buildFeatureModel();
+  assert(FM);
+
+  EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
+  EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
+}
+
+TEST(FeatureModelBuilder, detectXMLAlternativesOutOfOrder) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a");
+  B.addEdge("a", "ab");
+  B.addEdge("a", "aa");
+  B.addEdge("a", "ac");
+  B.makeFeature<BinaryFeature>("aa", false);
+  B.makeFeature<BinaryFeature>("ac", false);
+  B.makeFeature<BinaryFeature>("ab", false);
+
   B.addConstraint(std::make_unique<ExcludesConstraint>(
       std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ad")),
+          std::make_unique<BinaryFeature>("aa")),
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("ab"))));
+  B.addConstraint(std::make_unique<ExcludesConstraint>(
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("ab")),
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("aa"))));
+  B.addConstraint(std::make_unique<ExcludesConstraint>(
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("ac")),
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("aa"))));
+  B.addConstraint(std::make_unique<ExcludesConstraint>(
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("ab")),
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("ac"))));
+  B.addConstraint(std::make_unique<ExcludesConstraint>(
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("aa")),
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("ac"))));
+  B.addConstraint(std::make_unique<ExcludesConstraint>(
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("ac")),
       std::make_unique<PrimaryFeatureConstraint>(
           std::make_unique<BinaryFeature>("ab"))));
   auto FM = B.buildFeatureModel();
   assert(FM);
 
-  EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
+  EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
-  EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ac")));
-  EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ad")));
-  EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ae")));
+  EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ac")));
+  if (auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());
+      R) {
+    EXPECT_TRUE(R->getKind() == Relationship::RelationshipKind::RK_ALTERNATIVE);
+    EXPECT_TRUE(R->hasEdgeFrom(*FM->getFeature("a")));
+    EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("aa")));
+    EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ab")));
+    EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ac")));
+  } else {
+    FAIL();
+  }
 }
 
 } // namespace vara::feature
