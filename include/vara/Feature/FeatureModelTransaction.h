@@ -64,8 +64,11 @@ public:
     } else {
       if (this->isUncommited()) { // In modification mode we should ensure that
                                   // changes are committed before destruction
-        llvm::errs() << "error: uncommitted modifications before destruction"
-                     << '\n';
+        llvm::errs()
+            << "warning: Uncommitted modifications before destruction.\n";
+        // TODO(s9latimm): Committing now may break with prior failed commits.
+        //  We need a better way of tracking if a previous commit failed,
+        //  instead of checking locally if FM is nullptr.
         commit();
       }
     }
@@ -101,6 +104,14 @@ public:
       return this->addRelationshipImpl(Kind, Parent);
     } else {
       this->addRelationshipImpl(Kind, Parent);
+    }
+  }
+
+  decltype(auto) addLocation(const FeatureVariant &F, FeatureSourceRange FSR) {
+    if constexpr (IsCopyMode) {
+      return this->addLocationImpl(F, FSR);
+    } else {
+      this->addLocationImpl(F, FSR);
     }
   }
 
@@ -186,6 +197,10 @@ protected:
 
   static void addConstraint(Feature &F, PrimaryFeatureConstraint &Constraint) {
     F.addConstraint(&Constraint);
+  }
+
+  static void addLocation(Feature &F, FeatureSourceRange FSR) {
+    F.addLocation(FSR);
   }
 
   static void setFeature(PrimaryFeatureConstraint &Constraint, Feature &F) {
@@ -332,6 +347,28 @@ private:
 
   Relationship::RelationshipKind Kind;
   FeatureVariant Parent;
+};
+
+//===----------------------------------------------------------------------===//
+//                          AddLocationToFeature
+//===----------------------------------------------------------------------===//
+
+class AddLocationToFeature : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  void operator()(FeatureModel &FM) {
+    addLocation(*resolveVariant(FM, F), FSR);
+  }
+
+private:
+  AddLocationToFeature(FeatureVariant F, FeatureSourceRange FSR)
+      : F(std::move(F)), FSR(std::move(FSR)) {}
+
+  FeatureVariant F;
+  FeatureSourceRange FSR;
 };
 
 //===----------------------------------------------------------------------===//
@@ -537,6 +574,13 @@ protected:
                   *FM, std::move(Parent))))(*FM);
   }
 
+  void addLocationImpl(const FeatureVariant &F, FeatureSourceRange FSR) {
+    assert(FM && "");
+
+    FeatureModelModification::make_modification<AddLocationToFeature>(
+        F, std::move(FSR))(*FM);
+  }
+
   Constraint *addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
     if (!FM) {
       return nullptr;
@@ -627,6 +671,11 @@ protected:
                            const FeatureVariant &Parent) {
     Modifications.push_back(FeatureModelModification::make_unique_modification<
                             AddRelationshipToModel>(Kind, Parent));
+  }
+
+  void addLocationImpl(const FeatureVariant &F, FeatureSourceRange FSR) {
+    Modifications.push_back(FeatureModelModification::make_unique_modification<
+                            AddLocationToFeature>(F, std::move(FSR)));
   }
 
   void addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {

@@ -243,10 +243,6 @@ TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentValid) {
 }
 
 TEST_F(FeatureModelConsistencyCheckerTest, EveryFeatureRequiresParentMissing) {
-  FeatureModelBuilder B;
-  B.makeFeature<BinaryFeature>("a");
-
-  auto FM = B.buildFeatureModel();
   FeatureModelModification::removeParent(*FM->getFeature("a"));
 
   EXPECT_FALSE(FeatureModelConsistencyChecker<
@@ -260,10 +256,6 @@ TEST_F(FeatureModelConsistencyCheckerTest, EveryParentNeedsFeatureAsAChild) {
 
 TEST_F(FeatureModelConsistencyCheckerTest,
        EveryParentNeedsFeatureAsAChildMissing) {
-  FeatureModelBuilder B;
-  B.makeFeature<BinaryFeature>("a");
-  auto FM = B.buildFeatureModel();
-
   FeatureModelModification::removeEdge(*FM->getRoot(), *FM->getFeature("a"));
 
   EXPECT_FALSE(FeatureModelConsistencyChecker<
@@ -277,22 +269,20 @@ TEST_F(FeatureModelConsistencyCheckerTest,
           *FM));
 }
 
-TEST_F(FeatureModelConsistencyCheckerTest, EveryFMNeedsOneRootButNonPresent) {
-  FeatureModelBuilder B;
-  auto FM = B.buildFeatureModel();
+TEST_F(FeatureModelConsistencyCheckerTest, EveryFMNeedsOneRootExceptEmpty) {
+  FeatureModel FM;
 
-  FeatureModelModification::removeFeature(*FM, *FM->getRoot());
-
-  EXPECT_FALSE(
+  EXPECT_EQ(FM.size(), 0);
+  EXPECT_EQ(FM.begin(), FM.end());
+  EXPECT_TRUE(
       FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
-          *FM));
+          FM));
 }
 
 TEST_F(FeatureModelConsistencyCheckerTest,
        EveryFMNeedsOneRootButMultiplePresent) {
-  auto FM = FeatureModelBuilder().buildFeatureModel();
-
-  FeatureModelModification::addFeature(*FM, std::make_unique<RootFeature>("b"));
+  ASSERT_TRUE(FeatureModelModification::addFeature(
+      *FM, std::make_unique<RootFeature>("z")));
 
   EXPECT_FALSE(
       FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
