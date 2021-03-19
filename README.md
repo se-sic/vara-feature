@@ -40,6 +40,7 @@ To execute all unit tests you can use the following command in your build-direct
 
 ```bash
 cmake --build . --target check-vara-feature-unittests
+```
 
 Python bindings
 ---------------
