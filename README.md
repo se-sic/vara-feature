@@ -38,7 +38,7 @@ Test Execution
 ---------------
 To execute all unit tests you can use the following command in your build-directory:
 
-```bash
+```console
 cmake --build . --target check-vara-feature-unittests
 ```
 
