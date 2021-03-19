@@ -24,10 +24,10 @@ using ConsistencyCheck =
     FeatureModelConsistencyChecker<ExactlyOneRootNode,
                                    EveryFeatureRequiresParent,
                                    CheckFeatureParentChildRelationShip>;
-} // namespace detail
 
-using FeatureVariant = std::variant<std::string, Feature *>;
-using FeatureTreeNodeVariant = std::variant<std::string, FeatureTreeNode *>;
+using FeatureVariantTy = std::variant<std::string, Feature *>;
+using FeatureTreeNodeVariantTy = std::variant<std::string, FeatureTreeNode *>;
+} // namespace detail
 
 template <typename CopyMode>
 class FeatureModelTransaction
@@ -100,7 +100,7 @@ public:
   }
 
   decltype(auto) addRelationship(Relationship::RelationshipKind Kind,
-                                 const FeatureVariant &Parent) {
+                                 const detail::FeatureVariantTy &Parent) {
     if constexpr (IsCopyMode) {
       return this->addRelationshipImpl(Kind, Parent);
     } else {
@@ -108,7 +108,8 @@ public:
     }
   }
 
-  decltype(auto) addLocation(const FeatureVariant &F, FeatureSourceRange FSR) {
+  decltype(auto) addLocation(const detail::FeatureVariantTy &F,
+                             FeatureSourceRange FSR) {
     if constexpr (IsCopyMode) {
       return this->addLocationImpl(F, FSR);
     } else {
@@ -140,8 +141,8 @@ public:
     }
   }
 
-  decltype(auto) addChild(const FeatureTreeNodeVariant &Parent,
-                          const FeatureTreeNodeVariant &Child) {
+  decltype(auto) addChild(const detail::FeatureTreeNodeVariantTy &Parent,
+                          const detail::FeatureTreeNodeVariantTy &Child) {
     if constexpr (IsCopyMode) {
       return this->addChildImpl(Parent, Child);
     } else {
@@ -340,11 +341,11 @@ public:
 
 private:
   AddRelationshipToModel(Relationship::RelationshipKind Kind,
-                         FeatureVariant Parent)
+                         FeatureVariantTy Parent)
       : Kind(Kind), Parent(std::move(Parent)) {}
 
   Relationship::RelationshipKind Kind;
-  FeatureVariant Parent;
+  FeatureVariantTy Parent;
 };
 
 //===----------------------------------------------------------------------===//
@@ -369,10 +370,10 @@ public:
   }
 
 private:
-  AddLocationToFeature(FeatureVariant F, FeatureSourceRange FSR)
+  AddLocationToFeature(FeatureVariantTy F, FeatureSourceRange FSR)
       : F(std::move(F)), FSR(std::move(FSR)) {}
 
-  FeatureVariant F;
+  FeatureVariantTy F;
   FeatureSourceRange FSR;
 };
 
@@ -542,11 +543,11 @@ public:
   }
 
 private:
-  AddChild(FeatureTreeNodeVariant Parent, FeatureTreeNodeVariant Child)
+  AddChild(FeatureTreeNodeVariantTy Parent, FeatureTreeNodeVariantTy Child)
       : Child(std::move(Child)), Parent(std::move(Parent)) {}
 
-  FeatureTreeNodeVariant Child;
-  FeatureTreeNodeVariant Parent;
+  FeatureTreeNodeVariantTy Child;
+  FeatureTreeNodeVariantTy Parent;
 };
 
 class FeatureModelCopyTransactionBase {
@@ -585,7 +586,7 @@ protected:
   }
 
   Relationship *addRelationshipImpl(Relationship::RelationshipKind Kind,
-                                    const FeatureVariant &Parent) {
+                                    const FeatureVariantTy &Parent) {
     if (!FM) {
       return nullptr;
     }
@@ -600,7 +601,7 @@ protected:
                                            Parent)))(*FM);
   }
 
-  void addLocationImpl(const FeatureVariant &F, FeatureSourceRange FSR) {
+  void addLocationImpl(const FeatureVariantTy &F, FeatureSourceRange FSR) {
     assert(FM && "");
 
     FeatureModelModification::make_modification<AddLocationToFeature>(
@@ -644,8 +645,8 @@ protected:
         std::move(Root))(*FM);
   }
 
-  static void addChildImpl(const FeatureTreeNodeVariant &Parent,
-                           const FeatureTreeNodeVariant &Child) {
+  static void addChildImpl(const FeatureTreeNodeVariantTy &Parent,
+                           const FeatureTreeNodeVariantTy &Child) {
     FeatureModelModification::make_modification<AddChild>(Parent, Child);
   }
 
@@ -694,12 +695,12 @@ protected:
   }
 
   void addRelationshipImpl(Relationship::RelationshipKind Kind,
-                           const FeatureVariant &Parent) {
+                           const FeatureVariantTy &Parent) {
     Modifications.push_back(FeatureModelModification::make_unique_modification<
                             AddRelationshipToModel>(Kind, Parent));
   }
 
-  void addLocationImpl(const FeatureVariant &F, FeatureSourceRange FSR) {
+  void addLocationImpl(const FeatureVariantTy &F, FeatureSourceRange FSR) {
     Modifications.push_back(FeatureModelModification::make_unique_modification<
                             AddLocationToFeature>(F, std::move(FSR)));
   }
@@ -741,8 +742,8 @@ protected:
             std::move(Root)));
   }
 
-  void addChildImpl(const FeatureTreeNodeVariant &Parent,
-                    const FeatureTreeNodeVariant &Child) {
+  void addChildImpl(const FeatureTreeNodeVariantTy &Parent,
+                    const FeatureTreeNodeVariantTy &Child) {
     assert(FM && "");
 
     Modifications.push_back(

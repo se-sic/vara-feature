@@ -360,8 +360,7 @@ struct ExactlyOneRootNode {
          }))) {
       return true;
     }
-    llvm::errs() << "Failed to validate 'CheckFeatureParentChildRelationShip'."
-                 << '\n';
+    llvm::errs() << "Failed to validate 'ExactlyOneRootNode'." << '\n';
     return false;
   }
 };

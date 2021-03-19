@@ -123,22 +123,25 @@ TEST(FeatureModelBuilder, addNumericFeatureRef) {
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
 }
 
+//===----------------------------------------------------------------------===//
+//                        XMLAlternatives
+//===----------------------------------------------------------------------===//
+
+#define EXCLUDES_CONSTRAINT(A, B)                                              \
+  std::make_unique<ExcludesConstraint>(                                        \
+      std::make_unique<PrimaryFeatureConstraint>(                              \
+          std::make_unique<BinaryFeature>(A)),                                 \
+      std::make_unique<PrimaryFeatureConstraint>(                              \
+          std::make_unique<BinaryFeature>(B)))
+
 TEST(FeatureModelBuilder, detectXMLAlternativesSimple) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
   B.makeFeature<BinaryFeature>("aa", false)->addEdge("a", "aa");
   B.makeFeature<BinaryFeature>("ab", false)->addEdge("a", "ab");
 
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("aa")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ab"))));
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ab")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("aa"))));
+  B.addConstraint(EXCLUDES_CONSTRAINT("aa", "ab"));
+  B.addConstraint(EXCLUDES_CONSTRAINT("ab", "aa"));
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -163,11 +166,7 @@ TEST(FeatureModelBuilder, detectXMLAlternativesBroken) {
   B.makeFeature<BinaryFeature>("aa", false);
   B.makeFeature<BinaryFeature>("ab", false);
 
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("aa")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ab"))));
+  B.addConstraint(EXCLUDES_CONSTRAINT("aa", "ab"));
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -183,16 +182,8 @@ TEST(FeatureModelBuilder, detectXMLAlternativesOptionalBroken) {
   B.makeFeature<BinaryFeature>("aa", false);
   B.makeFeature<BinaryFeature>("ab", true);
 
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("aa")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ab"))));
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ab")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("aa"))));
+  B.addConstraint(EXCLUDES_CONSTRAINT("aa", "ab"));
+  B.addConstraint(EXCLUDES_CONSTRAINT("ab", "aa"));
   auto FM = B.buildFeatureModel();
   assert(FM);
 
@@ -210,36 +201,12 @@ TEST(FeatureModelBuilder, detectXMLAlternativesOutOfOrder) {
   B.makeFeature<BinaryFeature>("ac", false);
   B.makeFeature<BinaryFeature>("ab", false);
 
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("aa")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ab"))));
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ab")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("aa"))));
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ac")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("aa"))));
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ab")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ac"))));
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("aa")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ac"))));
-  B.addConstraint(std::make_unique<ExcludesConstraint>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ac")),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>("ab"))));
+  B.addConstraint(EXCLUDES_CONSTRAINT("aa", "ab"));
+  B.addConstraint(EXCLUDES_CONSTRAINT("ab", "aa"));
+  B.addConstraint(EXCLUDES_CONSTRAINT("ac", "aa"));
+  B.addConstraint(EXCLUDES_CONSTRAINT("ab", "ac"));
+  B.addConstraint(EXCLUDES_CONSTRAINT("aa", "ac"));
+  B.addConstraint(EXCLUDES_CONSTRAINT("ac", "ab"));
   auto FM = B.buildFeatureModel();
   assert(FM);
 
