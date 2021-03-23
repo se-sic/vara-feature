@@ -50,6 +50,11 @@ public:
 
   bool verifyFeatureModel() override;
 
+  /// This method is solely relevant for parsing XML, as alternatives are
+  /// represented als mutual excluded but non-optional features (which requires
+  /// additional processing).
+  static bool detectXMLAlternatives(FeatureModel &FM);
+
 private:
   std::string Xml;
   FeatureModelBuilder FMB;

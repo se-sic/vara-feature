@@ -1,8 +1,9 @@
+#include "vara/Feature/OrderedFeatureVector.h"
 #include "vara/Feature/FeatureModelBuilder.h"
 
 #include "gtest/gtest.h"
 
-namespace vara::feature {
+namespace vara::feature::deprecated {
 
 class OrderedFeatureVectorTest : public ::testing::Test {
 protected:
@@ -38,7 +39,7 @@ TEST_F(OrderedFeatureVectorTest, insert) {
 
   EXPECT_EQ(OFV.size(), FM->size());
   EXPECT_EQ(Expected.size(), FM->size());
-  for (const auto *F : FM->features()) {
+  for (const auto *F : OFV) {
     EXPECT_STREQ(Expected.back()->getName().data(), F->getName().data());
     ASSERT_EQ(*Expected.back(), *F);
     Expected.pop_back();
@@ -56,7 +57,7 @@ TEST_F(OrderedFeatureVectorTest, insertFM) {
 
   EXPECT_EQ(OFV.size(), FM->size());
   EXPECT_EQ(Expected.size(), FM->size());
-  for (const auto *F : FM->features()) {
+  for (const auto *F : OFV) {
     EXPECT_STREQ(Expected.back()->getName().data(), F->getName().data());
     ASSERT_EQ(*Expected.back(), *F);
     Expected.pop_back();
@@ -77,11 +78,11 @@ TEST_F(OrderedFeatureVectorTest, insertVariadic) {
 
   EXPECT_EQ(OFV.size(), FM->size());
   EXPECT_EQ(Expected.size(), FM->size());
-  for (const auto *F : FM->features()) {
+  for (const auto *F : OFV) {
     EXPECT_STREQ(Expected.back()->getName().data(), F->getName().data());
     ASSERT_EQ(*Expected.back(), *F);
     Expected.pop_back();
   }
 }
 
-} // namespace vara::feature
+} // namespace vara::feature::deprecated

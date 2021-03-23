@@ -5,7 +5,7 @@
 
 #include <algorithm>
 
-namespace vara::feature {
+namespace vara::feature::deprecated {
 
 //===----------------------------------------------------------------------===//
 //                            OrderedFeatureVector Class
@@ -59,13 +59,6 @@ public:
     insert(Init.begin(), Init.end());
   }
 
-  void sort() {
-    std::sort(Features.begin(), Features.end(),
-              [](vara::feature::Feature *A, vara::feature::Feature *B) {
-                return *A < *B;
-              });
-  }
-
   [[nodiscard]] unsigned int size() { return Features.size(); }
 
   [[nodiscard]] bool empty() { return Features.empty(); }
@@ -83,6 +76,7 @@ public:
 private:
   llvm::SmallVector<Feature *, 5> Features;
 };
-} // namespace vara::feature
+
+} // namespace vara::feature::deprecated
 
 #endif // VARA_FEATURE_ORDEREDFEATUREVECTOR_H

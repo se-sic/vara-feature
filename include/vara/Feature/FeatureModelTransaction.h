@@ -247,8 +247,6 @@ protected:
     return FM.setRoot(NewRoot);
   }
 
-  static void sort(FeatureModel &FM) { FM.sort(); }
-
   /// \brief Remove \a Feature from a \a FeatureModel.
   ///
   /// \param FM model to remove from
@@ -497,7 +495,6 @@ public:
       }
       setRoot(FM, *NewRoot);
     }
-    sort(FM);
     return FM.getRoot();
   }
 
@@ -539,7 +536,6 @@ public:
     removeEdge(*C->getParent(), *C);
     addEdge(*P, *C);
     setParent(*C, *P);
-    sort(FM);
   }
 
 private:

@@ -19,8 +19,7 @@ public:
       : FM(std::make_unique<FeatureModel>()),
         Features(FeatureModelModifyTransaction::openTransaction(*FM)),
         Transactions(FeatureModelModifyTransaction::openTransaction(*FM)),
-        PostTransactions(FeatureModelModifyTransaction::openTransaction(*FM)),
-        Special(FeatureModelModifyTransaction::openTransaction(*FM)) {}
+        PostTransactions(FeatureModelModifyTransaction::openTransaction(*FM)) {}
 
   /// Try to create a new \a Feature.
   ///
@@ -87,12 +86,6 @@ private:
   FeatureModelTransaction<detail::ModifyTransactionMode> Features;
   FeatureModelTransaction<detail::ModifyTransactionMode> Transactions;
   FeatureModelTransaction<detail::ModifyTransactionMode> PostTransactions;
-  FeatureModelTransaction<detail::ModifyTransactionMode> Special;
-
-  /// This method is solely relevant for parsing XML, as alternatives are
-  /// represented als mutual excluded but non-optional features (which requires
-  /// additional processing).
-  bool detectXMLAlternatives();
 };
 
 } // namespace vara::feature

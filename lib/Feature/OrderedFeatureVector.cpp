@@ -2,7 +2,8 @@
 
 #include <iterator>
 
-namespace vara::feature {
+namespace vara::feature::deprecated {
+
 void OrderedFeatureVector::insert(Feature *F) {
   Features.insert(
       std::upper_bound(Features.begin(), Features.end(), F,
@@ -10,4 +11,5 @@ void OrderedFeatureVector::insert(Feature *F) {
                           vara::feature::Feature *B) { return *A < *B; }),
       F);
 }
-} // namespace vara::feature
+
+} // namespace vara::feature::deprecated

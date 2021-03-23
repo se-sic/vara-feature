@@ -206,6 +206,20 @@ TEST_F(FeatureModelTest, gtSimple) {
   EXPECT_GT(*FM->getFeature("b"), *FM->getFeature("a"));
 }
 
+TEST_F(FeatureModelTest, dfs) {
+  std::vector<Feature *> Expected = {
+      FM->getFeature("c"), FM->getFeature("bb"),  FM->getFeature("ba"),
+      FM->getFeature("b"), FM->getFeature("ab"),  FM->getFeature("aa"),
+      FM->getFeature("a"), FM->getFeature("root")};
+
+  EXPECT_EQ(Expected.size(), FM->size());
+  for (const auto *F : *FM) {
+    EXPECT_STREQ(Expected.back()->getName().data(), F->getName().data());
+    ASSERT_EQ(*Expected.back(), *F);
+    Expected.pop_back();
+  }
+}
+
 //===----------------------------------------------------------------------===//
 //                    FeatureModelConsistencyChecker Tests
 //===----------------------------------------------------------------------===//

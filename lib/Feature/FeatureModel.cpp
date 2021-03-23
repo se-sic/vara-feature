@@ -25,17 +25,13 @@ Feature *FeatureModel::addFeature(std::unique_ptr<Feature> NewFeature) {
   if (!PosInsertedFeature.second) {
     return nullptr;
   }
-  auto *InsertedFeature = PosInsertedFeature.first->getValue().get();
-  assert(InsertedFeature);
-  OrderedFeatures.insert(InsertedFeature);
-  return InsertedFeature;
+  return PosInsertedFeature.first->getValue().get();
 }
 
 void FeatureModel::removeFeature(Feature &F) {
   if (&F == Root) {
     Root = nullptr;
   }
-  OrderedFeatures.remove(&F);
   Features.erase(F.getName());
 }
 

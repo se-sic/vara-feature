@@ -1,4 +1,5 @@
 #include "vara/Feature/FeatureModelBuilder.h"
+#include "vara/Feature/FeatureModelParser.h"
 
 #include "gtest/gtest.h"
 
@@ -145,6 +146,8 @@ TEST(FeatureModelBuilder, detectXMLAlternativesSimple) {
   auto FM = B.buildFeatureModel();
   assert(FM);
 
+  ASSERT_TRUE(FeatureModelXmlParser::detectXMLAlternatives(*FM));
+
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
   if (auto *R = llvm::dyn_cast<Relationship>(*FM->getFeature("a")->begin());
@@ -170,6 +173,8 @@ TEST(FeatureModelBuilder, detectXMLAlternativesBroken) {
   auto FM = B.buildFeatureModel();
   assert(FM);
 
+  ASSERT_TRUE(FeatureModelXmlParser::detectXMLAlternatives(*FM));
+
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
 }
@@ -186,6 +191,8 @@ TEST(FeatureModelBuilder, detectXMLAlternativesOptionalBroken) {
   B.addConstraint(EXCLUDES_CONSTRAINT("ab", "aa"));
   auto FM = B.buildFeatureModel();
   assert(FM);
+
+  ASSERT_TRUE(FeatureModelXmlParser::detectXMLAlternatives(*FM));
 
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
@@ -209,6 +216,8 @@ TEST(FeatureModelBuilder, detectXMLAlternativesOutOfOrder) {
   B.addConstraint(EXCLUDES_CONSTRAINT("ac", "ab"));
   auto FM = B.buildFeatureModel();
   assert(FM);
+
+  ASSERT_TRUE(FeatureModelXmlParser::detectXMLAlternatives(*FM));
 
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
