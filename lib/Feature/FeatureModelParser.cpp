@@ -233,13 +233,56 @@ FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
   return FeatureSourceRange::FeatureSourceLocation(Line, Column);
 }
 
+/// Decide whether feature A excludes B. Beware that this method only detects
+/// very simple trees with binary excludes.
+bool detectExclude(const Feature *A, const Feature *B) {
+  return std::any_of(
+      A->excludes().begin(), A->excludes().end(), [A, B](const auto *E) {
+        if (const auto *LHS =
+                llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand())) {
+          if (const auto *RHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
+                  E->getRightOperand())) {
+            return (LHS->getFeature() &&
+                    LHS->getFeature()->getName() == A->getName() &&
+                    RHS->getFeature() &&
+                    RHS->getFeature()->getName() == B->getName());
+          }
+        }
+        return false;
+      });
+}
+
+bool FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
+  auto Transactions = FeatureModelModifyTransaction::openTransaction(FM);
+  for (auto *F : FM) {
+    auto Children = F->getChildren<Feature>();
+    if (Children.size() > 1 &&
+        std::all_of(Children.begin(), Children.end(), [Children](auto *F) {
+          return !F->isOptional() &&
+                 std::all_of(Children.begin(), Children.end(), [F](auto *C) {
+                   return F == C ||
+                          (detectExclude(F, C) && detectExclude(C, F));
+                 });
+        })) {
+      Transactions.addRelationship(
+          Relationship::RelationshipKind::RK_ALTERNATIVE, F);
+    }
+  }
+  return Transactions.commit();
+}
+
 std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
   auto Doc = parseDoc();
-  if (!Doc) {
+  if (!Doc || !parseVm(xmlDocGetRootElement(Doc.get()))) {
     return nullptr;
   }
-  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
-                                                  : nullptr;
+
+  auto FM = FMB.buildFeatureModel();
+  if (FM) {
+    detectXMLAlternatives(*FM);
+  }
+
+  return FM;
 }
 
 FeatureModelParser::UniqueXmlDtd FeatureModelXmlParser::createDtd() {

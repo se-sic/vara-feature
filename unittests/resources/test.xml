@@ -38,6 +38,7 @@
       <name>AA</name>
       <parent>A</parent>
       <excludedOptions>
+        <options>AB</options>
         <options>AC</options>
         <options>C</options>
       </excludedOptions>
@@ -47,6 +48,7 @@
       <name>AB</name>
       <parent>A</parent>
       <excludedOptions>
+        <options>AA</options>
         <options>AC</options>
       </excludedOptions>
       <optional>False</optional>
@@ -55,6 +57,7 @@
       <name>AC</name>
       <parent>A</parent>
       <excludedOptions>
+        <options>AA</options>
         <options>AB</options>
       </excludedOptions>
       <optional>False</optional>

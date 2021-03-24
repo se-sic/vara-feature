@@ -55,7 +55,7 @@ TEST(NumericFeature, NumericFeatureChildren) {
   B.makeFeature<NumericFeature>("a", std::pair<int, int>(0, 1));
   B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
   auto FM = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM);
 
   EXPECT_EQ(
       std::distance(FM->getFeature("a")->begin(), FM->getFeature("a")->end()),

@@ -2,8 +2,7 @@
 #define VARA_FEATURE_FEATUREMODEL_H
 
 #include "vara/Feature/Constraint.h"
-#include "vara/Feature/FeatureTreeNode.h"
-#include "vara/Feature/OrderedFeatureVector.h"
+#include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
 
 #include "llvm/ADT/SmallSet.h"
@@ -26,28 +25,23 @@ class FeatureModelModification;
 
 /// \brief Tree like representation of features and dependencies.
 class FeatureModel {
+  friend class FeatureModelBuilder;
   // Only Modifications are allowed to edit a FeatureModel after creation.
   friend class detail::FeatureModelModification;
 
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
-  using OrderedFeatureTy = OrderedFeatureVector;
   using ConstraintTy = Constraint;
   using ConstraintContainerTy = std::vector<std::unique_ptr<ConstraintTy>>;
   using RelationshipContainerTy = std::vector<std::unique_ptr<Relationship>>;
 
-  FeatureModel() = default;
-  FeatureModel(std::string Name, fs::path RootPath, std::string Commit,
-               FeatureMapTy Features, ConstraintContainerTy Constraints,
-               RelationshipContainerTy Relationships, RootFeature *Root)
-      : Name(std::move(Name)), Path(std::move(RootPath)),
-        Commit(std::move(Commit)), Features(std::move(Features)),
-        Constraints(std::move(Constraints)),
-        Relationships(std::move(Relationships)), Root(Root) {
-    // Insert all values into ordered data structure.
-    for (const auto &KV : this->Features) {
-      OrderedFeatures.insert(KV.getValue().get());
-    }
+  FeatureModel(
+      std::string Name = "FeatureModel",
+      std::unique_ptr<RootFeature> Root = std::make_unique<RootFeature>("root"),
+      fs::path Path = "", std::string Commit = "")
+      : Name(std::move(Name)), Root(Root.get()), Path(std::move(Path)),
+        Commit(std::move(Commit)) {
+    addFeature(std::move(Root));
   }
 
   [[nodiscard]] unsigned int size() { return Features.size(); }
@@ -64,31 +58,157 @@ public:
   void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
 
   //===--------------------------------------------------------------------===//
-  // Ordered feature iterator
-  OrderedFeatureVector::ordered_feature_iterator begin() {
-    return OrderedFeatures.begin();
-  }
-  [[nodiscard]] OrderedFeatureVector::const_ordered_feature_iterator
-  begin() const {
-    return OrderedFeatures.begin();
+  // DFS feature iterator
+
+  class DFSIterator : public std::iterator<std::forward_iterator_tag, Feature *,
+                                           ptrdiff_t, Feature **, Feature *> {
+
+  public:
+    DFSIterator(Feature *F = nullptr) {
+      if (F) {
+        Frontier.push(F);
+      }
+    }
+    DFSIterator(const DFSIterator &) = default;
+    DFSIterator &operator=(const DFSIterator &) = delete;
+    DFSIterator(DFSIterator &&) = default;
+    DFSIterator &operator=(DFSIterator &&) = delete;
+    ~DFSIterator() = default;
+
+    reference operator*() {
+      return Frontier.empty() ? nullptr : Frontier.top();
+    }
+
+    pointer operator->() {
+      return Frontier.empty() ? nullptr : &Frontier.top();
+    }
+
+    DFSIterator operator++() {
+      if (Frontier.empty()) {
+        return *this;
+      }
+      auto *F = Frontier.top();
+      Frontier.pop();
+      if (F) {
+        Visited.insert(F);
+        llvm::SmallVector<Feature *, 3> Children;
+        for (auto *C : F->getChildren<Feature>()) {
+          Children.insert(std::upper_bound(Children.begin(), Children.end(), C,
+                                           [](Feature *A, Feature *B) {
+                                             return A->getName().lower() >
+                                                    B->getName().lower();
+                                             ;
+                                           }),
+                          C);
+        }
+        std::for_each(Children.begin(), Children.end(), [this](Feature *C) {
+          if (Visited.find(C) == Visited.end()) {
+            Frontier.push(C);
+          }
+        });
+      }
+      return *this;
+    }
+
+    DFSIterator operator++(int) {
+      auto Iter(*this);
+      ++*this;
+      return Iter;
+    }
+
+    bool operator==(const DFSIterator &Other) const {
+      if (Frontier.empty() || Other.Frontier.empty()) {
+        return Frontier.empty() && Other.Frontier.empty();
+      }
+      return *this->Frontier.top() == *Other.Frontier.top();
+    };
+
+    bool operator!=(const DFSIterator &Other) const {
+      return !(*this == Other);
+    };
+
+  private:
+    std::stack<Feature *> Frontier;
+    std::set<Feature *> Visited;
+  };
+
+  using ordered_feature_iterator = DFSIterator;
+  using const_ordered_feature_iterator = DFSIterator;
+
+  ordered_feature_iterator begin() { return DFSIterator(Root); }
+  [[nodiscard]] const_ordered_feature_iterator begin() const {
+    return DFSIterator(Root);
   }
 
-  OrderedFeatureVector::ordered_feature_iterator end() {
-    return OrderedFeatures.end();
+  ordered_feature_iterator end() {
+    return DFSIterator(Root ? Root->getParentFeature() : nullptr);
   }
-  [[nodiscard]] OrderedFeatureVector::const_ordered_feature_iterator
-  end() const {
-    return OrderedFeatures.end();
+  [[nodiscard]] const_ordered_feature_iterator end() const {
+    return DFSIterator(Root ? Root->getParentFeature() : nullptr);
   }
 
-  llvm::iterator_range<OrderedFeatureVector::ordered_feature_iterator>
-  features() {
+  llvm::iterator_range<ordered_feature_iterator> features() {
     return llvm::make_range(begin(), end());
   }
-  [[nodiscard]] llvm::iterator_range<
-      OrderedFeatureVector::const_ordered_feature_iterator>
+  [[nodiscard]] llvm::iterator_range<const_ordered_feature_iterator>
   features() const {
     return llvm::make_range(begin(), end());
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Unordered feature iterator
+
+  class FeatureMapIterator
+      : public std::iterator<std::forward_iterator_tag, Feature *, ptrdiff_t,
+                             Feature *, Feature *> {
+
+  public:
+    FeatureMapIterator(FeatureMapTy::const_iterator MapIter)
+        : MapIter(MapIter) {}
+    FeatureMapIterator(const FeatureMapIterator &) = default;
+    FeatureMapIterator &operator=(const FeatureMapIterator &) = delete;
+    FeatureMapIterator(FeatureMapIterator &&) = default;
+    FeatureMapIterator &operator=(FeatureMapIterator &&) = delete;
+    ~FeatureMapIterator() = default;
+
+    reference operator*() { return MapIter->getValue().get(); }
+
+    pointer operator->() { return **this; }
+
+    FeatureMapIterator operator++() {
+      ++MapIter;
+      return *this;
+    }
+
+    FeatureMapIterator operator++(int) {
+      auto Iter(*this);
+      ++*this;
+      return Iter;
+    }
+
+    bool operator==(const FeatureMapIterator &Other) const {
+      return MapIter == Other.MapIter;
+    };
+
+    bool operator!=(const FeatureMapIterator &Other) const {
+      return !(*this == Other);
+    };
+
+  private:
+    FeatureMapTy::const_iterator MapIter;
+  };
+
+  using unordered_feature_iterator = FeatureMapIterator;
+  using const_unordered_feature_iterator = FeatureMapIterator;
+
+  llvm::iterator_range<unordered_feature_iterator> unordered_features() {
+    return llvm::make_range(FeatureMapIterator(Features.begin()),
+                            FeatureMapIterator(Features.end()));
+  }
+  [[nodiscard]] llvm::iterator_range<const_unordered_feature_iterator>
+  unordered_features() const {
+    return llvm::make_range(FeatureMapIterator(Features.begin()),
+                            FeatureMapIterator(Features.end()));
   }
 
   //===--------------------------------------------------------------------===//
@@ -114,12 +234,12 @@ public:
 
 protected:
   std::string Name;
+  RootFeature *Root;
   fs::path Path;
   std::string Commit;
   FeatureMapTy Features;
   ConstraintContainerTy Constraints;
   RelationshipContainerTy Relationships;
-  RootFeature *Root{nullptr};
 
 private:
   /// Insert a \a Feature into existing model.
@@ -147,10 +267,6 @@ private:
   void setName(std::string NewName) { Name = std::move(NewName); }
 
   void setPath(fs::path NewPath) { Path = std::move(NewPath); }
-
-  void sort() { OrderedFeatures.sort(); }
-
-  OrderedFeatureTy OrderedFeatures;
 };
 
 } // namespace vara::feature
@@ -324,9 +440,10 @@ public:
 
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
-    if (std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-          return llvm::isa<RootFeature>(F) || F->getParentFeature();
-        })) {
+    if (std::all_of(FM.unordered_features().begin(),
+                    FM.unordered_features().end(), [](Feature *F) {
+                      return llvm::isa<RootFeature>(F) || F->getParentFeature();
+                    })) {
       return true;
     }
     llvm::errs() << "Failed to validate 'EveryFeatureRequiresParent'." << '\n';
@@ -336,13 +453,15 @@ struct EveryFeatureRequiresParent {
 
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
-    if (std::all_of(FM.begin(), FM.end(), [](Feature *F) {
-          return llvm::isa<RootFeature>(F) ||
-                 // Every parent of a Feature needs to have it as a child.
-                 std::any_of(
-                     F->getParent()->begin(), F->getParent()->end(),
-                     [F](FeatureTreeNode *Child) { return F == Child; });
-        })) {
+    if (std::all_of(
+            FM.unordered_features().begin(), FM.unordered_features().end(),
+            [](Feature *F) {
+              return llvm::isa<RootFeature>(F) ||
+                     // Every parent of a Feature needs to have it as a child.
+                     std::any_of(
+                         F->getParent()->begin(), F->getParent()->end(),
+                         [F](FeatureTreeNode *Child) { return F == Child; });
+            })) {
       return true;
     }
     llvm::errs() << "Failed to validate 'CheckFeatureParentChildRelationShip'."
@@ -353,11 +472,12 @@ struct CheckFeatureParentChildRelationShip {
 
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
-    if ((!FM.getRoot() && FM.size() == 0) ||
-        (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
-         1 == std::accumulate(FM.begin(), FM.end(), 0, [](int Sum, Feature *F) {
-           return Sum + llvm::isa<RootFeature>(F);
-         }))) {
+    if (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
+        1 == std::accumulate(FM.unordered_features().begin(),
+                             FM.unordered_features().end(), 0,
+                             [](int Sum, Feature *F) {
+                               return Sum + llvm::isa<RootFeature>(F);
+                             })) {
       return true;
     }
     llvm::errs() << "Failed to validate 'ExactlyOneRootNode'." << '\n';

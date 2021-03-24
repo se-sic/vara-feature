@@ -1,5 +1,6 @@
 #include "vara/Feature/FeatureModelWriter.h"
 #include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/OrderedFeatureVector.h"
 
 #include <llvm/Support/Casting.h>
 
@@ -218,7 +219,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
 
   // children
   auto FS = Feature1.getChildren<Feature>();
-  auto Children = OrderedFeatureVector(FS.begin(), FS.end());
+  auto Children = deprecated::OrderedFeatureVector(FS.begin(), FS.end());
 
   if (!Children.empty()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CHILDREN);
@@ -235,7 +236,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // implications
-  OrderedFeatureVector Implications;
+  deprecated::OrderedFeatureVector Implications;
 
   for (const auto *C : Feature1.implications()) {
     if (const auto *LHS =
@@ -268,7 +269,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   }
 
   // excludes
-  OrderedFeatureVector Excludes;
+  deprecated::OrderedFeatureVector Excludes;
 
   if (llvm::isa_and_nonnull<Relationship>(Feature1.getParent())) {
     auto ES = Feature1.getParent()->getChildren<Feature>();
@@ -285,7 +286,10 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
         if (LHS->getFeature() &&
             LHS->getFeature()->getName() == Feature1.getName() &&
             RHS->getFeature()) {
-          Excludes.insert(RHS->getFeature());
+          if (std::find(Excludes.begin(), Excludes.end(), RHS->getFeature()) ==
+              Excludes.end()) {
+            Excludes.insert(RHS->getFeature());
+          }
         }
       }
     }
