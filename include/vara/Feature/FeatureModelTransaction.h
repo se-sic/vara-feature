@@ -598,7 +598,7 @@ protected:
   }
 
   void addLocationImpl(const FeatureVariantTy &F, FeatureSourceRange FSR) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     FeatureModelModification::make_modification<AddLocationToFeature>(
         F, std::move(FSR))(*FM);
@@ -614,20 +614,20 @@ protected:
   }
 
   void setNameImpl(std::string Name) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     FeatureModelModification::make_modification<SetName>(std::move(Name))(*FM);
   }
 
   void setCommitImpl(std::string Commit) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     FeatureModelModification::make_modification<SetCommit>(std::move(Commit))(
         *FM);
   }
 
   void setPathImpl(fs::path Path) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     FeatureModelModification::make_modification<SetPath>(std::move(Path))(*FM);
   }
@@ -683,7 +683,7 @@ protected:
   // Modifications
 
   void addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<AddFeatureToModel>(
@@ -707,7 +707,7 @@ protected:
   }
 
   void setNameImpl(std::string Name) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<SetName>(
@@ -715,7 +715,7 @@ protected:
   }
 
   void setCommitImpl(std::string Commit) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<SetCommit>(
@@ -723,7 +723,7 @@ protected:
   }
 
   void setPathImpl(fs::path Path) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<SetPath>(
@@ -731,7 +731,7 @@ protected:
   }
 
   void setRootImpl(std::unique_ptr<RootFeature> Root) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<SetRoot>(
@@ -740,7 +740,7 @@ protected:
 
   void addChildImpl(const FeatureTreeNodeVariantTy &Parent,
                     const FeatureTreeNodeVariantTy &Child) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
         FeatureModelModification::make_unique_modification<AddChild>(Parent,

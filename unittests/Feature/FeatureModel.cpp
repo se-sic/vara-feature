@@ -21,11 +21,11 @@ TEST(FeatureModel, cloneUnique) {
   B.makeFeature<BinaryFeature>("aa")->addEdge("a", "aa");
   B.makeFeature<BinaryFeature>("b");
   auto FM = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM);
 
   auto Clone = FM->clone();
 
-  assert(Clone);
+  ASSERT_TRUE(Clone);
   for (const auto &Feature : FM->features()) {
     EXPECT_NE(Clone->getFeature(Feature->getName()), Feature);
   }
@@ -35,10 +35,10 @@ TEST(FeatureModel, cloneRoot) {
   FeatureModelBuilder B;
   B.makeRoot("a");
   auto FM = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM);
 
   auto Clone = FM->clone();
-  assert(Clone);
+  ASSERT_TRUE(Clone);
   FM.reset();
 
   // The inner EXPECT_TRUE just handles the nodiscard of getParent
@@ -54,10 +54,10 @@ TEST(FeatureModel, cloneRelationship) {
   B.makeFeature<BinaryFeature>("ab")->addEdge("a", "ab");
   B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "a");
   auto FM = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM);
 
   auto Clone = FM->clone();
-  assert(Clone);
+  ASSERT_TRUE(Clone);
   FM.reset();
 
   EXPECT_FALSE(Clone->getFeature("a")->getChildren<Relationship>().empty());
@@ -71,10 +71,10 @@ TEST(FeatureModel, cloneConstraint) {
   B.addConstraint(std::make_unique<PrimaryFeatureConstraint>(
       std::make_unique<BinaryFeature>("a")));
   auto FM = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM);
 
   auto Clone = FM->clone();
-  assert(Clone);
+  ASSERT_TRUE(Clone);
   auto *Deleted = *FM->getFeature("a")->constraints().begin();
   FM.reset();
 
@@ -104,7 +104,7 @@ protected:
     B.addEdge("b", "bb")->makeFeature<BinaryFeature>("bb");
     B.makeFeature<BinaryFeature>("c");
     FM = B.buildFeatureModel();
-    assert(FM);
+    ASSERT_TRUE(FM);
   }
 
   std::unique_ptr<FeatureModel> FM;
@@ -128,7 +128,7 @@ TEST_F(FeatureModelTest, disjunct) {
   B.makeFeature<BinaryFeature>("a");
   B.makeFeature<BinaryFeature>("b");
   auto FN = B.buildFeatureModel();
-  assert(FN);
+  ASSERT_TRUE(FN);
 
   EXPECT_NE(*FM->getFeature("a"), *FN->getFeature("b"));
   EXPECT_LT(*FM->getFeature("a"), *FN->getFeature("b"));
@@ -147,7 +147,7 @@ TEST_F(FeatureModelTest, ltSameName) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
   auto FN = B.buildFeatureModel();
-  assert(FN);
+  ASSERT_TRUE(FN);
 
   EXPECT_EQ(*FM->getFeature("a"), *FN->getFeature("a"));
   EXPECT_FALSE(*FM->getFeature("a") < *FN->getFeature("a"));
@@ -238,7 +238,7 @@ protected:
     B.addEdge("b", "bb")->makeFeature<BinaryFeature>("bb");
     B.makeFeature<BinaryFeature>("c");
     FM = B.buildFeatureModel();
-    assert(FM);
+    ASSERT_TRUE(FM);
   }
 
   // Dummy method to fulfill the FeatureModelModification interface
@@ -283,12 +283,14 @@ TEST_F(FeatureModelConsistencyCheckerTest,
           *FM));
 }
 
-TEST_F(FeatureModelConsistencyCheckerTest, EveryFMNeedsOneRootExceptEmpty) {
+TEST_F(FeatureModelConsistencyCheckerTest, FMNoRoot) {
   FeatureModel FM;
+
+  FeatureModelModification::removeFeature(FM, *FM.getRoot());
 
   EXPECT_EQ(FM.size(), 0);
   EXPECT_EQ(FM.begin(), FM.end());
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
           FM));
 }

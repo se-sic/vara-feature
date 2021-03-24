@@ -265,7 +265,7 @@ private:
 
 class RootFeature : public Feature {
 public:
-  explicit RootFeature(string Name = "root")
+  explicit RootFeature(string Name)
       : Feature(FeatureKind::FK_ROOT, std::move(Name), false, {}) {}
 
   static bool classof(const Feature *F) {

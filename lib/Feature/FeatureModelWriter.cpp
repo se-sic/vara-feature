@@ -286,7 +286,10 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
         if (LHS->getFeature() &&
             LHS->getFeature()->getName() == Feature1.getName() &&
             RHS->getFeature()) {
-          Excludes.insert(RHS->getFeature());
+          if (std::find(Excludes.begin(), Excludes.end(), RHS->getFeature()) ==
+              Excludes.end()) {
+            Excludes.insert(RHS->getFeature());
+          }
         }
       }
     }

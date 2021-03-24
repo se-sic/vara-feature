@@ -25,6 +25,7 @@ class FeatureModelModification;
 
 /// \brief Tree like representation of features and dependencies.
 class FeatureModel {
+  friend class FeatureModelBuilder;
   // Only Modifications are allowed to edit a FeatureModel after creation.
   friend class detail::FeatureModelModification;
 
@@ -34,14 +35,14 @@ public:
   using ConstraintContainerTy = std::vector<std::unique_ptr<ConstraintTy>>;
   using RelationshipContainerTy = std::vector<std::unique_ptr<Relationship>>;
 
-  FeatureModel() = default;
-  FeatureModel(std::string Name, fs::path RootPath, std::string Commit,
-               FeatureMapTy Features, ConstraintContainerTy Constraints,
-               RelationshipContainerTy Relationships, RootFeature *Root)
-      : Name(std::move(Name)), Path(std::move(RootPath)),
-        Commit(std::move(Commit)), Features(std::move(Features)),
-        Constraints(std::move(Constraints)),
-        Relationships(std::move(Relationships)), Root(Root) {}
+  FeatureModel(
+      std::string Name = "FeatureModel",
+      std::unique_ptr<RootFeature> Root = std::make_unique<RootFeature>("root"),
+      fs::path Path = "", std::string Commit = "")
+      : Name(std::move(Name)), Root(Root.get()), Path(std::move(Path)),
+        Commit(std::move(Commit)) {
+    addFeature(std::move(Root));
+  }
 
   [[nodiscard]] unsigned int size() { return Features.size(); }
 
@@ -233,12 +234,12 @@ public:
 
 protected:
   std::string Name;
+  RootFeature *Root;
   fs::path Path;
   std::string Commit;
   FeatureMapTy Features;
   ConstraintContainerTy Constraints;
   RelationshipContainerTy Relationships;
-  RootFeature *Root{nullptr};
 
 private:
   /// Insert a \a Feature into existing model.
@@ -471,13 +472,12 @@ struct CheckFeatureParentChildRelationShip {
 
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
-    if ((!FM.getRoot() && FM.size() == 0) ||
-        (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
-         1 == std::accumulate(FM.unordered_features().begin(),
-                              FM.unordered_features().end(), 0,
-                              [](int Sum, Feature *F) {
-                                return Sum + llvm::isa<RootFeature>(F);
-                              }))) {
+    if (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
+        1 == std::accumulate(FM.unordered_features().begin(),
+                             FM.unordered_features().end(), 0,
+                             [](int Sum, Feature *F) {
+                               return Sum + llvm::isa<RootFeature>(F);
+                             })) {
       return true;
     }
     llvm::errs() << "Failed to validate 'ExactlyOneRootNode'." << '\n';

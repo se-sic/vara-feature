@@ -16,7 +16,7 @@ protected:
     B.addEdge("b", "ba")->makeFeature<BinaryFeature>("ba");
     B.addEdge("b", "bb")->makeFeature<BinaryFeature>("bb");
     FM = B.buildFeatureModel();
-    assert(FM);
+    ASSERT_TRUE(FM);
   }
 
   std::unique_ptr<FeatureModel> FM;

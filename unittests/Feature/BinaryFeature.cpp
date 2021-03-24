@@ -27,7 +27,7 @@ TEST(BinaryFeature, BinaryFeatureChildren) {
   B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
 
   auto FM = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM);
 
   ASSERT_EQ(
       std::distance(FM->getFeature("a")->begin(), FM->getFeature("a")->end()),

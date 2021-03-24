@@ -83,7 +83,7 @@ protected:
     FeatureModelBuilder B;
     B.makeFeature<BinaryFeature>("a", true);
     FM = B.buildFeatureModel();
-    assert(FM);
+    ASSERT_TRUE(FM);
   }
 
   std::unique_ptr<FeatureModel> FM;
@@ -163,7 +163,7 @@ protected:
     FeatureModelBuilder B;
     B.makeFeature<BinaryFeature>("a", true);
     FM = B.buildFeatureModel();
-    assert(FM);
+    ASSERT_TRUE(FM);
   }
 
   std::unique_ptr<FeatureModel> FM;
@@ -235,7 +235,7 @@ protected:
     FeatureModelBuilder B;
     B.makeFeature<BinaryFeature>("a", true);
     FM = B.buildFeatureModel();
-    assert(FM);
+    ASSERT_TRUE(FM);
   }
 
   std::unique_ptr<FeatureModel> FM;
@@ -372,7 +372,7 @@ protected:
     B.makeFeature<BinaryFeature>("aa", false);
     B.makeFeature<BinaryFeature>("ab", false);
     FM = B.buildFeatureModel();
-    assert(FM);
+    ASSERT_TRUE(FM);
   }
 
   std::unique_ptr<FeatureModel> FM;

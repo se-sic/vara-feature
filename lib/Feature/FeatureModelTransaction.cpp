@@ -73,7 +73,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
                                           F.getLocationsEnd()));
     }
   case Feature::FeatureKind::FK_ROOT:
-    return std::make_unique<RootFeature>();
+    return std::make_unique<RootFeature>(F.getName().str());
   default:
     break;
   }

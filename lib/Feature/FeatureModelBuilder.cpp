@@ -7,16 +7,21 @@ namespace vara::feature {
 //===----------------------------------------------------------------------===//
 
 std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
-  if (!FM->getRoot()) {
-    auto T = FeatureModelModifyTransaction::openTransaction(*FM);
-    T.setRoot(std::make_unique<RootFeature>("root"));
-    if (!T.commit()) {
-      return nullptr;
-    }
+  assert(FM->getRoot() && "FeatureModel has no root.");
+
+  if (!FeatureBuilder.commit()) {
+    llvm::errs() << "Building features failed.";
+    return nullptr;
   }
-  return Features.commit() && Transactions.commit() && PostTransactions.commit()
-             ? std::move(FM)
-             : nullptr;
+  if (!ModelBuilder.commit()) {
+    llvm::errs() << "Building feature tree failed.";
+    return nullptr;
+  }
+  if (!RelationBuilder.commit()) {
+    llvm::errs() << "Building feature relations failed.";
+    return nullptr;
+  }
+  return std::move(FM);
 }
 
 } // namespace vara::feature

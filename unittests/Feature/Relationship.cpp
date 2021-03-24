@@ -19,7 +19,7 @@ protected:
 TEST_F(RelationshipTest, orTree) {
   B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "a");
   auto FM = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM);
 
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
@@ -36,7 +36,7 @@ TEST_F(RelationshipTest, orTree) {
 TEST_F(RelationshipTest, alternativeTree) {
   B.emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, "a");
   auto FM = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM);
 
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));
@@ -62,7 +62,7 @@ TEST(Relationship, outOfOrder) {
 
   B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "a");
   auto FM = B.buildFeatureModel();
-  assert(FM);
+  ASSERT_TRUE(FM);
 
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
   EXPECT_FALSE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("ab")));

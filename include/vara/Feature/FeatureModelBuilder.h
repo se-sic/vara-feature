@@ -17,9 +17,9 @@ class FeatureModelBuilder {
 public:
   FeatureModelBuilder()
       : FM(std::make_unique<FeatureModel>()),
-        Features(FeatureModelModifyTransaction::openTransaction(*FM)),
-        Transactions(FeatureModelModifyTransaction::openTransaction(*FM)),
-        PostTransactions(FeatureModelModifyTransaction::openTransaction(*FM)) {}
+        FeatureBuilder(FeatureModelModifyTransaction::openTransaction(*FM)),
+        ModelBuilder(FeatureModelModifyTransaction::openTransaction(*FM)),
+        RelationBuilder(FeatureModelModifyTransaction::openTransaction(*FM)) {}
 
   /// Try to create a new \a Feature.
   ///
@@ -33,46 +33,46 @@ public:
       std::enable_if_t<std::is_base_of_v<Feature, FeatureTy>, bool> = true>
   FeatureModelBuilder *makeFeature(std::string FeatureName,
                                    Args &&...FurtherArgs) {
-    Features.addFeature(std::make_unique<FeatureTy>(
+    FeatureBuilder.addFeature(std::make_unique<FeatureTy>(
         FeatureName, std::forward<Args>(FurtherArgs)...));
     return this;
   }
 
   FeatureModelBuilder *addEdge(const std::string &ParentName,
                                const std::string &FeatureName) {
-    Transactions.addChild(ParentName, FeatureName);
+    ModelBuilder.addChild(ParentName, FeatureName);
     return this;
   }
 
   FeatureModelBuilder *emplaceRelationship(Relationship::RelationshipKind RK,
                                            const std::string &ParentName) {
-    PostTransactions.addRelationship(RK, ParentName);
+    RelationBuilder.addRelationship(RK, ParentName);
     return this;
   }
 
   FeatureModelBuilder *
   addConstraint(std::unique_ptr<FeatureModel::ConstraintTy> C) {
-    PostTransactions.addConstraint(std::move(C));
+    RelationBuilder.addConstraint(std::move(C));
     return this;
   }
 
   FeatureModelBuilder *setVmName(std::string Name) {
-    Transactions.setName(std::move(Name));
+    ModelBuilder.setName(std::move(Name));
     return this;
   }
 
   FeatureModelBuilder *setPath(const fs::path &Path) {
-    Transactions.setPath(Path);
+    ModelBuilder.setPath(Path);
     return this;
   }
 
   FeatureModelBuilder *setCommit(std::string Commit) {
-    Transactions.setCommit(std::move(Commit));
+    ModelBuilder.setCommit(std::move(Commit));
     return this;
   }
 
   FeatureModelBuilder *makeRoot(const std::string &Name) {
-    Transactions.setRoot(std::make_unique<RootFeature>(Name));
+    ModelBuilder.setRoot(std::make_unique<RootFeature>(Name));
     return this;
   }
 
@@ -83,9 +83,12 @@ public:
 
 private:
   std::unique_ptr<FeatureModel> FM;
-  FeatureModelTransaction<detail::ModifyTransactionMode> Features;
-  FeatureModelTransaction<detail::ModifyTransactionMode> Transactions;
-  FeatureModelTransaction<detail::ModifyTransactionMode> PostTransactions;
+  // Modifications to initialize features as children of root.
+  FeatureModelTransaction<detail::ModifyTransactionMode> FeatureBuilder;
+  // Modifications to build tree structure and set FM meta information.
+  FeatureModelTransaction<detail::ModifyTransactionMode> ModelBuilder;
+  // Modifications to add relationships and constraints.
+  FeatureModelTransaction<detail::ModifyTransactionMode> RelationBuilder;
 };
 
 } // namespace vara::feature
