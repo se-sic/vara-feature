@@ -605,7 +605,14 @@ protected:
     assert(FM && "");
 
     FeatureModelModification::make_modification<AddLocationToFeature>(
-        F, std::move(FSR))(*FM);
+        TranslateFeature(*std::visit(Overloaded{
+                                         [this](const std::string &Name) {
+                                           return FM->getFeature(Name);
+                                         },
+                                         [](Feature *Ptr) { return Ptr; },
+                                     },
+                                     F)),
+        std::move(FSR))(*FM);
   }
 
   Constraint *addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {

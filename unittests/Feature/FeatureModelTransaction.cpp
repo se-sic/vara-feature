@@ -287,7 +287,7 @@ TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
   auto FMMerged = mergeFeatureModels(*FM, *FM2);
   ASSERT_TRUE(FMMerged);
 
-  Feature *F = FM->getFeature("a");
+  Feature *F = FMMerged->getFeature("a");
   EXPECT_EQ(3, std::distance(F->getLocationsBegin(), F->getLocationsEnd()));
   EXPECT_NE(F->getLocationsEnd(),
             std::find(F->getLocationsBegin(), F->getLocationsEnd(), FSR1));
@@ -372,7 +372,7 @@ protected:
     B.makeFeature<BinaryFeature>("aa", false);
     B.makeFeature<BinaryFeature>("ab", false);
     FM = B.buildFeatureModel();
-    assert(FM);
+    ASSERT_TRUE(FM);
   }
 
   std::unique_ptr<FeatureModel> FM;
@@ -538,6 +538,298 @@ TEST_F(FeatureModelRelationshipTransactionTest, ModifyTransactionAddOrGroup) {
       EXPECT_EQ(F, FChild->getParentFeature());
     }
   }
+}
+
+TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionRemoveOrGroup) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "a");
+  B.addEdge("a", "aa");
+  B.addEdge("a", "ab");
+  B.makeFeature<BinaryFeature>("aa", false);
+  B.makeFeature<BinaryFeature>("ab", false);
+  FM = B.buildFeatureModel();
+  ASSERT_TRUE(FM);
+  ASSERT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
+
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  auto V = detail::FeatureVariantTy(FM->getFeature("a"));
+  FT.removeRelationship(V);
+  EXPECT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
+
+  auto FM2 = FT.commit();
+  ASSERT_TRUE(FM2);
+
+  auto *A = FM2->getFeature("a");
+  ASSERT_TRUE(A);
+  EXPECT_EQ(0, A->getChildren<Relationship>().size());
+  EXPECT_EQ(2, A->getChildren<Feature>().size());
+  EXPECT_EQ(A, FM2->getFeature("aa")->getParent());
+  EXPECT_EQ(A, FM2->getFeature("ab")->getParent());
+}
+
+TEST_F(FeatureModelRelationshipTransactionTest,
+       CopyTransactionRemoveEmptyOrGroup) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "a");
+  FM = B.buildFeatureModel();
+  ASSERT_TRUE(FM);
+  ASSERT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
+
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  auto V = detail::FeatureVariantTy(FM->getFeature("a"));
+  FT.removeRelationship(V);
+  ASSERT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
+
+  auto FM2 = FT.commit();
+  ASSERT_TRUE(FM2);
+
+  auto *A = FM2->getFeature("a");
+  ASSERT_TRUE(A);
+  EXPECT_EQ(0, A->getChildren<Relationship>().size());
+  EXPECT_EQ(0, A->getChildren<Feature>().size());
+}
+
+TEST_F(FeatureModelRelationshipTransactionTest,
+       ModifyTransactionRemoveOrGroup) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "a");
+  B.addEdge("a", "aa");
+  B.addEdge("a", "ab");
+  B.makeFeature<BinaryFeature>("aa", false);
+  B.makeFeature<BinaryFeature>("ab", false);
+  FM = B.buildFeatureModel();
+  ASSERT_TRUE(FM);
+  ASSERT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
+
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
+  auto V = detail::FeatureVariantTy(FM->getFeature("a"));
+  FT.removeRelationship(V);
+  ASSERT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
+
+  ASSERT_TRUE(FT.commit());
+
+  auto *A = FM->getFeature("a");
+  ASSERT_TRUE(A);
+  EXPECT_EQ(0, A->getChildren<Relationship>().size());
+  EXPECT_EQ(2, A->getChildren<Feature>().size());
+  EXPECT_EQ(A, FM->getFeature("aa")->getParent());
+  EXPECT_EQ(A, FM->getFeature("ab")->getParent());
+}
+
+TEST_F(FeatureModelRelationshipTransactionTest,
+       ModifyTransactionRemoveEmptyOrGroup) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "a");
+  FM = B.buildFeatureModel();
+  ASSERT_TRUE(FM);
+  ASSERT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
+
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
+  auto V = detail::FeatureVariantTy(FM->getFeature("a"));
+  FT.removeRelationship(V);
+  ASSERT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
+
+  ASSERT_TRUE(FT.commit());
+
+  auto *A = FM->getFeature("a");
+  ASSERT_TRUE(A);
+  EXPECT_EQ(0, A->getChildren<Relationship>().size());
+  EXPECT_EQ(0, A->getChildren<Feature>().size());
+}
+
+//===----------------------------------------------------------------------===//
+//                    FeatureModelLocationsTransactionTest
+//===----------------------------------------------------------------------===//
+
+class FeatureModelLocationsTransactionTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder FB;
+    FB.makeFeature<BinaryFeature>("a", true);
+    FB.makeFeature<BinaryFeature>("b", true);
+    FM = FB.buildFeatureModel();
+    ASSERT_TRUE(FM);
+
+    auto *B = FM->getFeature("b");
+    B->addLocation(FSRInitial);
+  }
+
+  FeatureSourceRange FSRInitial{"path", {2, 4}, {2, 10}};
+  std::unique_ptr<FeatureModel> FM;
+};
+
+TEST_F(FeatureModelLocationsTransactionTest, CopyTransactionAddLocation) {
+  FeatureSourceRange FSRA("path", {2, 4}, {2, 10});
+  FeatureSourceRange FSRB("path", {5, 4}, {5, 10});
+
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  auto VA = detail::FeatureVariantTy(FM->getFeature("a"));
+  auto VB = detail::FeatureVariantTy(FM->getFeature("b"));
+
+  FT.addLocation(VA, FSRA);
+  FT.addLocation(VB, FSRB);
+
+  auto FM2 = FT.commit();
+  ASSERT_TRUE(FM2);
+
+  auto *A = FM2->getFeature("a");
+  auto *B = FM2->getFeature("b");
+  EXPECT_EQ(1, std::distance(A->getLocationsBegin(), A->getLocationsEnd()));
+  EXPECT_EQ(FSRA, *A->getLocationsBegin());
+  EXPECT_EQ(2, std::distance(B->getLocationsBegin(), B->getLocationsEnd()));
+  EXPECT_TRUE(std::find(B->getLocationsBegin(), B->getLocationsEnd(), FSRB) !=
+              B->getLocationsEnd());
+  EXPECT_TRUE(std::find(B->getLocationsBegin(), B->getLocationsEnd(),
+                        FSRInitial) != B->getLocationsEnd());
+}
+
+TEST_F(FeatureModelLocationsTransactionTest, CopyTransactionRemoveLocation) {
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  auto VB = detail::FeatureVariantTy(FM->getFeature("b"));
+
+  FT.removeLocation(VB, FSRInitial);
+
+  auto FM2 = FT.commit();
+  ASSERT_TRUE(FM2);
+
+  auto *A = FM2->getFeature("a");
+  auto *B = FM2->getFeature("b");
+  EXPECT_EQ(0, std::distance(A->getLocationsBegin(), A->getLocationsEnd()));
+  EXPECT_EQ(0, std::distance(B->getLocationsBegin(), B->getLocationsEnd()));
+}
+
+TEST_F(FeatureModelLocationsTransactionTest, ModifyTransactionAddLocation) {
+  FeatureSourceRange FSRA("path", {2, 4}, {2, 10});
+  FeatureSourceRange FSRB("path", {5, 4}, {5, 10});
+
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
+  auto VA = detail::FeatureVariantTy(FM->getFeature("a"));
+  auto VB = detail::FeatureVariantTy(FM->getFeature("b"));
+
+  FT.addLocation(VA, FSRA);
+  FT.addLocation(VB, FSRB);
+
+  ASSERT_TRUE(FT.commit());
+
+  auto *A = FM->getFeature("a");
+  auto *B = FM->getFeature("b");
+  EXPECT_EQ(1, std::distance(A->getLocationsBegin(), A->getLocationsEnd()));
+  EXPECT_EQ(FSRA, *A->getLocationsBegin());
+  EXPECT_EQ(2, std::distance(B->getLocationsBegin(), B->getLocationsEnd()));
+  EXPECT_TRUE(std::find(B->getLocationsBegin(), B->getLocationsEnd(), FSRB) !=
+              B->getLocationsEnd());
+  EXPECT_TRUE(std::find(B->getLocationsBegin(), B->getLocationsEnd(),
+                        FSRInitial) != B->getLocationsEnd());
+}
+
+//===----------------------------------------------------------------------===//
+//                    FeatureModelRemoveFeatureTransactionTest
+//===----------------------------------------------------------------------===//
+
+class FeatureModelRemoveFeatureTransactionTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder FB;
+    FB.makeFeature<BinaryFeature>("a", true);
+    FB.makeFeature<BinaryFeature>("b", true);
+    FB.makeFeature<BinaryFeature>("c", true);
+    FB.addEdge("b", "ba");
+    FB.addEdge("b", "bb");
+    FB.makeFeature<BinaryFeature>("ba");
+    FB.makeFeature<BinaryFeature>("bb");
+    FB.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "c");
+    FB.addEdge("c", "ca");
+    FB.addEdge("c", "cb");
+    FB.makeFeature<BinaryFeature>("ca");
+    FB.makeFeature<BinaryFeature>("cb");
+    FM = FB.buildFeatureModel();
+    ASSERT_TRUE(FM);
+  }
+
+  std::unique_ptr<FeatureModel> FM;
+};
+
+TEST_F(FeatureModelRemoveFeatureTransactionTest, CopyTransactionRemoveFeature) {
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  auto VA = detail::FeatureVariantTy(FM->getFeature("a"));
+
+  FT.removeFeature(VA);
+  EXPECT_TRUE(FM->getFeature("a"));
+
+  auto FM2 = FT.commit();
+  ASSERT_TRUE(FM2);
+
+  auto *A = FM2->getFeature("a");
+  auto *B = FM2->getFeature("b");
+  EXPECT_FALSE(A);
+  EXPECT_TRUE(B);
+}
+
+TEST_F(FeatureModelRemoveFeatureTransactionTest,
+       CopyTransactionRemoveFeatureInGroup) {
+  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  auto VCA = detail::FeatureVariantTy(FM->getFeature("ca"));
+
+  FT.removeFeature(VCA);
+  EXPECT_TRUE(FM->getFeature("ca"));
+
+  auto FM2 = FT.commit();
+  ASSERT_TRUE(FM2);
+
+  auto *A = FM2->getFeature("a");
+  auto *B = FM2->getFeature("b");
+  auto *C = FM2->getFeature("c");
+  EXPECT_EQ(0, A->getChildren<Feature>().size());
+  EXPECT_EQ(2, B->getChildren<Feature>().size());
+  EXPECT_EQ(1, C->getChildren<Feature>().size());
+  EXPECT_EQ(1, C->getChildren<Relationship>().size());
+
+  auto *CB = FM2->getFeature("cb");
+  ASSERT_TRUE(CB);
+  ASSERT_EQ(*C->getChildren<Relationship>().begin(), CB->getParent());
+}
+
+TEST_F(FeatureModelRemoveFeatureTransactionTest,
+       ModifyTransactionRemoveFeature) {
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
+  auto VA = detail::FeatureVariantTy(FM->getFeature("a"));
+
+  FT.removeFeature(VA);
+  EXPECT_TRUE(FM->getFeature("a"));
+
+  ASSERT_TRUE(FT.commit());
+
+  auto *A = FM->getFeature("a");
+  auto *B = FM->getFeature("b");
+  EXPECT_FALSE(A);
+  EXPECT_TRUE(B);
+}
+
+TEST_F(FeatureModelRemoveFeatureTransactionTest,
+       ModifyTransactionRemoveFeatureInGroup) {
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
+  auto VCA = detail::FeatureVariantTy(FM->getFeature("ca"));
+
+  FT.removeFeature(VCA);
+  EXPECT_TRUE(FM->getFeature("ca"));
+
+  ASSERT_TRUE(FT.commit());
+
+  auto *A = FM->getFeature("a");
+  auto *B = FM->getFeature("b");
+  auto *C = FM->getFeature("c");
+  EXPECT_EQ(0, A->getChildren<Feature>().size());
+  EXPECT_EQ(2, B->getChildren<Feature>().size());
+  EXPECT_EQ(1, C->getChildren<Feature>().size());
+  EXPECT_EQ(1, C->getChildren<Relationship>().size());
+
+  auto *CB = FM->getFeature("cb");
+  ASSERT_TRUE(CB);
+  ASSERT_EQ(*C->getChildren<Relationship>().begin(), CB->getParent());
 }
 
 } // namespace vara::feature

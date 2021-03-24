@@ -35,7 +35,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
       for (FeatureSourceRange const &FSR : F.getLocations()) {
         if (std::find(CMP->getLocationsBegin(), CMP->getLocationsEnd(), FSR) ==
             CMP->getLocationsEnd()) {
-          CMP->addLocation(FSR);
+          Trans.addLocation(CMP, FSR);
         }
       }
     } else {
