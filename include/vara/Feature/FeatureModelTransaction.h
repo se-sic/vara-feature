@@ -99,6 +99,11 @@ public:
     }
   }
 
+  void removeFeature(detail::FeatureVariantTy &F, bool Recursive = false) {
+
+    this->removeFeatureImpl(F, Recursive);
+  }
+
   decltype(auto) addRelationship(Relationship::RelationshipKind Kind,
                                  const detail::FeatureVariantTy &Parent) {
     if constexpr (IsCopyMode) {
@@ -108,6 +113,10 @@ public:
     }
   }
 
+  void removeRelationship(detail::FeatureVariantTy &F) {
+    this->removeRelationshipImpl(F);
+  }
+
   decltype(auto) addLocation(const detail::FeatureVariantTy &F,
                              FeatureSourceRange FSR) {
     if constexpr (IsCopyMode) {
@@ -115,6 +124,10 @@ public:
     } else {
       this->addLocationImpl(F, FSR);
     }
+  }
+
+  void removeLocation(detail::FeatureVariantTy &F, FeatureSourceRange FSR) {
+    this->removeLocationImpl(F, FSR);
   }
 
   decltype(auto) addConstraint(std::unique_ptr<Constraint> Constraint) {
@@ -205,6 +218,10 @@ protected:
     F.addLocation(std::move(FSR));
   }
 
+  static void removeLocation(Feature &F, const FeatureSourceRange &FSR) {
+    F.removeLocation(FSR);
+  }
+
   static void setFeature(PrimaryFeatureConstraint &Constraint, Feature &F) {
     Constraint.setFeature(&F);
   }
@@ -224,6 +241,10 @@ protected:
   addRelationship(FeatureModel &FM,
                   std::unique_ptr<Relationship> NewRelationship) {
     return FM.addRelationship(std::move(NewRelationship));
+  }
+
+  static void removeRelationship(FeatureModel &FM, Relationship *R) {
+    FM.removeRelationship(R);
   }
 
   static Constraint *addConstraint(FeatureModel &FM,
@@ -301,6 +322,59 @@ private:
 };
 
 //===----------------------------------------------------------------------===//
+//                          RemoveFeatureFromModel
+//===----------------------------------------------------------------------===//
+
+class RemoveFeatureFromModel : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  void operator()(FeatureModel &FM) {
+    auto *F = std::visit(
+        Overloaded{
+            [&FM](const std::string &Name) { return FM.getFeature(Name); },
+            [](Feature *Ptr) { return Ptr; },
+        },
+        GroupRoot);
+    if (!F) {
+      // TODO handle this
+      return;
+    }
+
+    if (Recursive) {
+      for (auto *C : F->getChildren<Feature>()) {
+        //
+        RemoveFeatureFromModel(C, Recursive)(FM);
+      }
+      for (auto *R : F->getChildren<Relationship>()) {
+        removeEdge(*F, *R);
+        removeRelationship(FM, R);
+      }
+    } else {
+      if (!F->getChildren<Feature>().empty()) {
+        // TODO handle this
+        return;
+      }
+      if (!F->getChildren<Relationship>().empty()) {
+        removeRelationship(FM, *F->getChildren<Relationship>().begin());
+      }
+    }
+
+    removeEdge(*F->getParent(), *F);
+    removeFeature(FM, *F);
+  }
+
+private:
+  RemoveFeatureFromModel(FeatureVariantTy GroupRoot, bool Recursive = false)
+      : GroupRoot(std::move(GroupRoot)), Recursive(Recursive) {}
+
+  FeatureVariantTy GroupRoot;
+  bool Recursive;
+};
+
+//===----------------------------------------------------------------------===//
 //                              AddRelationshipToModel
 //===----------------------------------------------------------------------===//
 
@@ -347,6 +421,49 @@ private:
 };
 
 //===----------------------------------------------------------------------===//
+//                              RemoveRelationshipFromModel
+//===----------------------------------------------------------------------===//
+
+class RemoveRelationshipFromModel : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  void operator()(FeatureModel &FM) {
+    auto *P = std::visit(
+        Overloaded{
+            [&FM](const std::string &Name) { return FM.getFeature(Name); },
+            [](Feature *Ptr) { return Ptr; },
+        },
+        Parent);
+    if (!P) {
+      // TODO handle this
+      return;
+    }
+
+    auto Relationships = P->getChildren<Relationship>();
+    Relationship *R = *Relationships.begin();
+
+    removeEdge(*P, *R);
+
+    for (auto *C : R->getChildren<Feature>()) {
+      assert(R->hasEdgeTo(*C) && C->hasEdgeFrom(*R));
+      removeEdge(*R, *C);
+      addEdge(*P, *C);
+      setParent(*C, *P);
+    }
+    removeRelationship(FM, R);
+  }
+
+private:
+  RemoveRelationshipFromModel(FeatureVariantTy Parent)
+      : Parent(std::move(Parent)) {}
+
+  FeatureVariantTy Parent;
+};
+
+//===----------------------------------------------------------------------===//
 //                          AddLocationToFeature
 //===----------------------------------------------------------------------===//
 
@@ -369,6 +486,35 @@ public:
 
 private:
   AddLocationToFeature(FeatureVariantTy F, FeatureSourceRange FSR)
+      : F(std::move(F)), FSR(std::move(FSR)) {}
+
+  FeatureVariantTy F;
+  FeatureSourceRange FSR;
+};
+
+//===----------------------------------------------------------------------===//
+//                          RemoveLocationFromFeature
+//===----------------------------------------------------------------------===//
+
+class RemoveLocationFromFeature : public FeatureModelModification {
+  friend class FeatureModelModification;
+
+public:
+  void exec(FeatureModel &FM) override { (*this)(FM); }
+
+  void operator()(FeatureModel &FM) {
+    removeLocation(*std::visit(Overloaded{
+                                   [&FM](const std::string &Name) {
+                                     return FM.getFeature(Name);
+                                   },
+                                   [](Feature *Ptr) { return Ptr; },
+                               },
+                               F),
+                   FSR);
+  }
+
+private:
+  RemoveLocationFromFeature(FeatureVariantTy F, FeatureSourceRange FSR)
       : F(std::move(F)), FSR(std::move(FSR)) {}
 
   FeatureVariantTy F;
@@ -581,6 +727,20 @@ protected:
         std::move(NewFeature))(*FM);
   }
 
+  void removeFeatureImpl(FeatureVariantTy &F, bool Recursive = false) {
+    assert(FM && "");
+
+    FeatureModelModification::make_modification<RemoveFeatureFromModel>(
+        TranslateFeature(*std::visit(Overloaded{
+                                         [this](const std::string &Name) {
+                                           return FM->getFeature(Name);
+                                         },
+                                         [](Feature *Ptr) { return Ptr; },
+                                     },
+                                     F)),
+        Recursive)(*FM);
+  }
+
   Relationship *addRelationshipImpl(Relationship::RelationshipKind Kind,
                                     const FeatureVariantTy &Parent) {
     if (!FM) {
@@ -597,6 +757,18 @@ protected:
                                            Parent)))(*FM);
   }
 
+  void removeRelationshipImpl(FeatureVariantTy &F) {
+    assert(FM && "");
+
+    return FeatureModelModification::make_modification<
+        RemoveRelationshipFromModel>(TranslateFeature(*std::visit(
+        Overloaded{
+            [this](const std::string &Name) { return FM->getFeature(Name); },
+            [](Feature *Ptr) { return Ptr; },
+        },
+        F)))(*FM);
+  }
+
   void addLocationImpl(const FeatureVariantTy &F, FeatureSourceRange FSR) {
     assert(FM && "FeatureModel is null.");
 
@@ -609,6 +781,20 @@ protected:
                                      },
                                      F)),
         std::move(FSR))(*FM);
+  }
+
+  void removeLocationImpl(const FeatureVariantTy &F, FeatureSourceRange &FSR) {
+    assert(FM && "");
+
+    FeatureModelModification::make_modification<RemoveLocationFromFeature>(
+        TranslateFeature(*std::visit(Overloaded{
+                                         [this](const std::string &Name) {
+                                           return FM->getFeature(Name);
+                                         },
+                                         [](Feature *Ptr) { return Ptr; },
+                                     },
+                                     F)),
+        FSR)(*FM);
   }
 
   Constraint *addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
@@ -697,15 +883,30 @@ protected:
             std::move(NewFeature), Parent));
   }
 
+  void removeFeatureImpl(FeatureVariantTy &F, bool Recursive = false) {
+    Modifications.push_back(FeatureModelModification::make_unique_modification<
+                            RemoveFeatureFromModel>(F, Recursive));
+  }
+
   void addRelationshipImpl(Relationship::RelationshipKind Kind,
                            const FeatureVariantTy &Parent) {
     Modifications.push_back(FeatureModelModification::make_unique_modification<
                             AddRelationshipToModel>(Kind, Parent));
   }
 
+  void removeRelationshipImpl(FeatureVariantTy &F) {
+    Modifications.push_back(FeatureModelModification::make_unique_modification<
+                            RemoveRelationshipFromModel>(F));
+  }
+
   void addLocationImpl(const FeatureVariantTy &F, FeatureSourceRange FSR) {
     Modifications.push_back(FeatureModelModification::make_unique_modification<
                             AddLocationToFeature>(F, std::move(FSR)));
+  }
+
+  void removeLocationImpl(const FeatureVariantTy &F, FeatureSourceRange &FSR) {
+    Modifications.push_back(FeatureModelModification::make_unique_modification<
+                            RemoveLocationFromFeature>(F, FSR));
   }
 
   void addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
