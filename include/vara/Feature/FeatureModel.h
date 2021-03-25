@@ -254,6 +254,14 @@ private:
     return Relationships.back().get();
   }
 
+  void removeRelationship(Relationship *R) {
+    Relationships.erase(
+        std::find_if(Relationships.begin(), Relationships.end(),
+                     [R](const std::unique_ptr<Relationship> &UniR) {
+                       return UniR.get() == R;
+                     }));
+  }
+
   Constraint *addConstraint(std::unique_ptr<Constraint> Constraint) {
     Constraints.push_back(std::move(Constraint));
     return Constraints.back().get();
