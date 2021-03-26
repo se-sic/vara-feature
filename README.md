@@ -33,6 +33,15 @@ To set the version to version 10.0, for instance, you can use the following comm
 CC=clang CXX=clang++ cmake -DLLVM_REQUESTED_VERSION=10.0 ..
 ```
 
+
+Test Execution
+---------------
+To execute all unit tests you can use the following command in your build-directory:
+
+```console
+cmake --build . --target check-vara-feature-unittests
+```
+
 Python bindings
 ---------------
 The feature library offers python bindings for easier scripting.
