@@ -339,13 +339,14 @@ public:
         },
         GroupRoot);
     if (!F) {
-      // TODO handle this
+      // TODO (se-passau/VaRA#744): error, does not exist
       return;
     }
 
     if (Recursive) {
       for (auto *C : F->getChildren<Feature>()) {
-        //
+        // TODO (se-passau/VaRA#744): error, if call returns error (should not
+        // be possible)
         RemoveFeatureFromModel(C, Recursive)(FM);
       }
       for (auto *R : F->getChildren<Relationship>()) {
@@ -354,7 +355,8 @@ public:
       }
     } else {
       if (!F->getChildren<Feature>().empty()) {
-        // TODO handle this
+        // TODO (se-passau/VaRA#744): error, non recursive 0remove on non leaf
+        // feature
         return;
       }
       if (!F->getChildren<Relationship>().empty()) {
