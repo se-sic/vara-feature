@@ -100,12 +100,12 @@ TEST(FeatureSourceRange, clone) {
   // NOLINTNEXTLINE
   EXPECT_DEATH(EXPECT_TRUE(FSR->hasStart()), ".*");
 
-  ASSERT_EQ(Clone.getPath(), "path");
-  ASSERT_EQ(Clone.getStart()->getLineNumber(), 1);
-  ASSERT_EQ(Clone.getStart()->getColumnOffset(), 2);
-  ASSERT_EQ(Clone.getEnd()->getLineNumber(), 3);
-  ASSERT_EQ(Clone.getEnd()->getColumnOffset(), 4);
-  ASSERT_EQ(Clone.getCategory(), FeatureSourceRange::Category::inessential);
+  EXPECT_EQ(Clone.getPath(), "path");
+  EXPECT_EQ(Clone.getStart()->getLineNumber(), 1);
+  EXPECT_EQ(Clone.getStart()->getColumnOffset(), 2);
+  EXPECT_EQ(Clone.getEnd()->getLineNumber(), 3);
+  EXPECT_EQ(Clone.getEnd()->getColumnOffset(), 4);
+  EXPECT_EQ(Clone.getCategory(), FeatureSourceRange::Category::inessential);
 }
 
 } // namespace vara::feature
