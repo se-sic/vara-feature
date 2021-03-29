@@ -68,7 +68,7 @@ public:
         //  before destruction
         llvm::errs()
             << "warning: Uncommitted modifications before destruction.\n";
-        // TODO(se-passau/VaRA/issues/744): Committing now may break with prior
+        // TODO(se-passau/VaRA#744): Committing now may break with prior
         //  failed commits. We need a better way of tracking if a previous
         //  commit failed, instead of checking locally if FM is nullptr.
         commit();
