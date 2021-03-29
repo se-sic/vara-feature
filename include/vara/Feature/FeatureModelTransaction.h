@@ -63,13 +63,14 @@ public:
       assert(!this->isUncommitted() &&
              "Transaction in CopyMode should be commited before destruction.");
     } else {
-      if (this->isUncommitted()) { // In modification mode we should ensure that
-                                   // changes are committed before destruction
+      if (this->isUncommitted()) {
+        // In modification mode we should ensure that changes are committed
+        //  before destruction
         llvm::errs()
             << "warning: Uncommitted modifications before destruction.\n";
-        // TODO(s9latimm): Committing now may break with prior failed commits.
-        //  We need a better way of tracking if a previous commit failed,
-        //  instead of checking locally if FM is nullptr.
+        // TODO(se-passau/VaRA/issues/744): Committing now may break with prior
+        //  failed commits. We need a better way of tracking if a previous
+        //  commit failed, instead of checking locally if FM is nullptr.
         commit();
       }
     }
@@ -440,7 +441,7 @@ public:
         },
         Parent);
     if (!P) {
-      // TODO handle this
+      // TODO(se-passau/VaRA#744) handle this
       return;
     }
 
@@ -976,8 +977,14 @@ private:
 /// \param FM
 /// \param NewFeature
 /// \param Parent of the new feature
-void addFeature(FeatureModel *FM, std::unique_ptr<Feature> NewFeature,
+void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent = nullptr);
+
+/// Set commit of a FeatureModel.
+///
+/// \param FM
+/// \param NewCommit
+void setCommit(FeatureModel &FM, std::string NewCommit);
 
 /// Merges a FeatureModel into another
 ///

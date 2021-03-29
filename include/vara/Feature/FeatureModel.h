@@ -54,9 +54,6 @@ public:
 
   [[nodiscard]] RootFeature *getRoot() const { return Root; }
 
-  // TODO make this private and use a transaction
-  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
-
   //===--------------------------------------------------------------------===//
   // DFS feature iterator
 
@@ -232,15 +229,6 @@ public:
   LLVM_DUMP_METHOD
   void dump() const;
 
-protected:
-  std::string Name;
-  RootFeature *Root;
-  fs::path Path;
-  std::string Commit;
-  FeatureMapTy Features;
-  ConstraintContainerTy Constraints;
-  RelationshipContainerTy Relationships;
-
 private:
   /// Insert a \a Feature into existing model.
   ///
@@ -275,6 +263,16 @@ private:
   void setName(std::string NewName) { Name = std::move(NewName); }
 
   void setPath(fs::path NewPath) { Path = std::move(NewPath); }
+
+  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
+
+  std::string Name;
+  RootFeature *Root;
+  fs::path Path;
+  std::string Commit;
+  FeatureMapTy Features;
+  ConstraintContainerTy Constraints;
+  RelationshipContainerTy Relationships;
 };
 
 } // namespace vara::feature

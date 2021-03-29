@@ -44,9 +44,9 @@ TEST(NumericFeature, NumericFeatureRoot) {
   B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
   B.makeRoot("F");
 
-  // TODO(s9latimm): As we currently have no error handling for failing
-  //  transactions, the second modification (makeRoot) will not succeed in
-  //  changing the FM, but the build will still complete.
+  // TODO(se-passau/VaRA#744): As we currently have no error handling for
+  //  failing transactions, the second modification (makeRoot) will not succeed
+  //  in changing the FM, but the build will still complete.
   // EXPECT_FALSE(B.buildFeatureModel());
 }
 

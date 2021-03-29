@@ -317,7 +317,6 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   return UniqueXmlDoc(nullptr, nullptr);
 }
 
-// TODO(s9latimm): replace with builder err
 bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 //===----------------------------------------------------------------------===//

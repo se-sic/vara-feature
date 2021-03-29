@@ -46,7 +46,6 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() {
   FMB.setPath(this->getPath().string());
 
   for (const auto &KV : this->Features) {
-    // TODO(s9latimm): Add unittests for cloned FeatureSourceRanges
     std::vector<FeatureSourceRange> SourceRanges(
         KV.getValue()->getLocations().begin(),
         KV.getValue()->getLocations().end());

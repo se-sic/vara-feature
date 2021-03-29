@@ -1,7 +1,7 @@
 #include "pybind11/attr.h"
 #include "pybind_common.h"
-#include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelTransaction.h"
 
 #include "pybind11/detail/common.h"
 #include "pybind11/pybind11.h"
@@ -22,7 +22,9 @@ void init_feature_model_module(py::module &M) {
       .def_property(
           "commit",
           [](const vf::FeatureModel &FM) { return FM.getCommit().str(); },
-          &vf::FeatureModel::setCommit,
+          [](vf::FeatureModel &FM, std::string Commit) {
+            vf::setCommit(FM, std::move(Commit));
+          },
           R"pbdoc(Returns the commit associated to the FeatureModel.)pbdoc")
       .def("get_root", &vf::FeatureModel::getRoot,
            py::return_value_policy::reference,

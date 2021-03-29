@@ -16,6 +16,12 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
   Trans.commit();
 }
 
+void setCommit(FeatureModel &FM, std::string NewCommit) {
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+  Trans.setCommit(std::move(NewCommit));
+  Trans.commit();
+}
+
 [[nodiscard]] std::unique_ptr<FeatureModel>
 mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
   auto Trans = FeatureModelCopyTransaction::openTransaction(FM1);
