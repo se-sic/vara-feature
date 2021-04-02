@@ -1,7 +1,7 @@
 #ifndef VARA_FEATURE_FEATUREMODELPARSER_H
 #define VARA_FEATURE_FEATUREMODELPARSER_H
 
-#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelBuilder.h"
 
 #include "libxml/parser.h"
 #include "libxml/tree.h"
@@ -49,6 +49,11 @@ public:
   std::unique_ptr<FeatureModel> buildFeatureModel() override;
 
   bool verifyFeatureModel() override;
+
+  /// This method is solely relevant for parsing XML, as alternatives are
+  /// represented als mutual excluded but non-optional features (which requires
+  /// additional processing).
+  static bool detectXMLAlternatives(FeatureModel &FM);
 
 private:
   std::string Xml;

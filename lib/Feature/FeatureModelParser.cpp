@@ -99,7 +99,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
 
   // XML has those names specified as root nodes
   if (Name == "root" || Name == "base") {
-    FMB.setRootName(Name);
+    FMB.makeRoot(Name);
     return FMB.makeFeature<RootFeature>(Name);
   }
   if (Num) {
@@ -233,14 +233,56 @@ FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
   return FeatureSourceRange::FeatureSourceLocation(Line, Column);
 }
 
+/// Decide whether feature A excludes B. Beware that this method only detects
+/// very simple trees with binary excludes.
+bool detectExclude(const Feature *A, const Feature *B) {
+  return std::any_of(
+      A->excludes().begin(), A->excludes().end(), [A, B](const auto *E) {
+        if (const auto *LHS =
+                llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand())) {
+          if (const auto *RHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
+                  E->getRightOperand())) {
+            return (LHS->getFeature() &&
+                    LHS->getFeature()->getName() == A->getName() &&
+                    RHS->getFeature() &&
+                    RHS->getFeature()->getName() == B->getName());
+          }
+        }
+        return false;
+      });
+}
+
+bool FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
+  auto Transactions = FeatureModelModifyTransaction::openTransaction(FM);
+  for (auto *F : FM) {
+    auto Children = F->getChildren<Feature>();
+    if (Children.size() > 1 &&
+        std::all_of(Children.begin(), Children.end(), [Children](auto *F) {
+          return !F->isOptional() &&
+                 std::all_of(Children.begin(), Children.end(), [F](auto *C) {
+                   return F == C ||
+                          (detectExclude(F, C) && detectExclude(C, F));
+                 });
+        })) {
+      Transactions.addRelationship(
+          Relationship::RelationshipKind::RK_ALTERNATIVE, F);
+    }
+  }
+  return Transactions.commit();
+}
+
 std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
   auto Doc = parseDoc();
-  if (!Doc) {
+  if (!Doc || !parseVm(xmlDocGetRootElement(Doc.get()))) {
     return nullptr;
   }
-  FMB.init();
-  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
-                                                  : nullptr;
+
+  auto FM = FMB.buildFeatureModel();
+  if (FM) {
+    detectXMLAlternatives(*FM);
+  }
+
+  return FM;
 }
 
 FeatureModelParser::UniqueXmlDtd FeatureModelXmlParser::createDtd() {
@@ -275,7 +317,6 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   return UniqueXmlDoc(nullptr, nullptr);
 }
 
-// TODO(s9latimm): replace with builder err
 bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 //===----------------------------------------------------------------------===//
@@ -287,8 +328,6 @@ std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
   if (!Doc) {
     return nullptr;
   }
-
-  FMB.init();
   return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
                                                   : nullptr;
 }
@@ -389,8 +428,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
     // Each entry represents an or group as a tuple where the first value is
     // the name of the parent, the second is the relationship kind, and the
     // third a vector consisting of the name of the children
-    std::map<int, std::tuple<std::string, Relationship::RelationshipKind,
-                             std::vector<std::string>>>
+    std::map<int, std::tuple<std::string, Relationship::RelationshipKind>>
         OrGroupMapping;
 
     if (FeatureTree == nullptr) {
@@ -530,7 +568,6 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       auto OrGroup = OrGroupMapping.find(CurrentIndentationLevel);
       if (OrGroup != OrGroupMapping.end()) {
         FMB.emplaceRelationship(std::get<1>(OrGroup->second),
-                                std::get<2>(OrGroup->second),
                                 std::get<0>(OrGroup->second));
         OrGroupMapping.erase(CurrentIndentationLevel);
       }
@@ -543,15 +580,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
           GroupKind = Relationship::RelationshipKind::RK_OR;
         }
         OrGroupMapping[CurrentIndentationLevel] =
-            std::tuple<std::string, Relationship::RelationshipKind,
-                       std::vector<std::string>>(Name, GroupKind,
-                                                 std::vector<std::string>());
-      }
-
-      // Add a child
-      OrGroup = OrGroupMapping.find(CurrentIndentationLevel - 1);
-      if (OrGroup != OrGroupMapping.end()) {
-        std::get<2>(OrGroup->second).push_back(Name);
+            std::tuple<std::string, Relationship::RelationshipKind>(Name,
+                                                                    GroupKind);
       }
 
       LastIndentationLevel = CurrentIndentationLevel;
@@ -560,7 +590,6 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
     // Add the remaining or groups
     for (auto &OrGroup : OrGroupMapping) {
       FMB.emplaceRelationship(std::get<1>(OrGroup.second),
-                              std::get<2>(OrGroup.second),
                               std::get<0>(OrGroup.second));
     }
   }

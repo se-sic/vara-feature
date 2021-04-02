@@ -92,9 +92,10 @@ public:
   // Locations
   [[nodiscard]] bool hasLocations() const { return !Locations.empty(); }
 
-  void addLocation(FeatureSourceRange &Fsr) {
+  void addLocation(FeatureSourceRange Fsr) {
     Locations.push_back(std::move(Fsr));
   }
+
   std::vector<FeatureSourceRange>::iterator
   removeLocation(const FeatureSourceRange &Fsr) {
     return Locations.erase(std::find(Locations.begin(), Locations.end(), Fsr));
@@ -264,7 +265,7 @@ private:
 
 class RootFeature : public Feature {
 public:
-  explicit RootFeature(string Name = "root")
+  explicit RootFeature(string Name)
       : Feature(FeatureKind::FK_ROOT, std::move(Name), false, {}) {}
 
   static bool classof(const Feature *F) {
@@ -273,5 +274,17 @@ public:
 };
 
 } // namespace vara::feature
+
+inline std::ostream &operator<<(std::ostream &Out,
+                                const vara::feature::Feature &Feature) {
+  Out << Feature.toString();
+  return Out;
+}
+
+inline llvm::raw_ostream &operator<<(llvm::raw_ostream &Out,
+                                     const vara::feature::Feature &Feature) {
+  Out << Feature.toString();
+  return Out;
+}
 
 #endif // VARA_FEATURE_FEATURE_H

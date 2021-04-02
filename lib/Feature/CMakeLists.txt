@@ -2,6 +2,7 @@ set(FEATURE_LIB_SRC
   Constraint.cpp
   Feature.cpp
   FeatureModel.cpp
+  FeatureModelBuilder.cpp
   FeatureModelParser.cpp
   FeatureModelTransaction.cpp
   FeatureModelWriter.cpp

@@ -3,7 +3,9 @@
 
 #include "vara/Feature/Feature.h"
 
-namespace vara::feature {
+#include <algorithm>
+
+namespace vara::feature::deprecated {
 
 //===----------------------------------------------------------------------===//
 //                            OrderedFeatureVector Class
@@ -74,6 +76,7 @@ public:
 private:
   llvm::SmallVector<Feature *, 5> Features;
 };
-} // namespace vara::feature
+
+} // namespace vara::feature::deprecated
 
 #endif // VARA_FEATURE_ORDEREDFEATUREVECTOR_H

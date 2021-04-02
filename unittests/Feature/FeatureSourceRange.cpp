@@ -59,8 +59,8 @@ TEST(FeatureSourceRange, basicAccessors) {
 }
 
 TEST(FeatureSourceRange, onlyStart) {
-  auto L = FeatureSourceRange(fs::current_path(), FeatureSourceRange::FeatureSourceLocation(1, 4)
-                              );
+  auto L = FeatureSourceRange(fs::current_path(),
+                              FeatureSourceRange::FeatureSourceLocation(1, 4));
 
   EXPECT_TRUE(L.hasStart());
   EXPECT_FALSE(L.hasEnd());
@@ -68,8 +68,7 @@ TEST(FeatureSourceRange, onlyStart) {
 
 TEST(FeatureSourceRange, onlyEnd) {
   auto L = FeatureSourceRange(fs::current_path(), std::nullopt,
-                              FeatureSourceRange::FeatureSourceLocation(3, 5)
-                              );
+                              FeatureSourceRange::FeatureSourceLocation(3, 5));
 
   EXPECT_FALSE(L.hasStart());
   EXPECT_TRUE(L.hasEnd());
@@ -77,7 +76,7 @@ TEST(FeatureSourceRange, onlyEnd) {
 
 TEST(FeatureSourceRange, equality) {
   const auto *Path1 = "path1";
-  auto Fsl1start = FeatureSourceRange::FeatureSourceLocation(1,2);
+  auto Fsl1start = FeatureSourceRange::FeatureSourceLocation(1, 2);
   auto Fsl1end = FeatureSourceRange::FeatureSourceLocation(1, 20);
   auto L1 = FeatureSourceRange(Path1, Fsl1start, Fsl1end);
   const auto *Path2 = "path2";
@@ -89,4 +88,24 @@ TEST(FeatureSourceRange, equality) {
   L2.setPath(Path1);
   EXPECT_EQ(L1, L2);
 }
+
+TEST(FeatureSourceRange, clone) {
+  auto FSR = std::make_unique<FeatureSourceRange>(
+      "path", FeatureSourceRange::FeatureSourceLocation(1, 2),
+      FeatureSourceRange::FeatureSourceLocation(3, 4),
+      FeatureSourceRange::Category::inessential);
+
+  auto Clone = FeatureSourceRange(*FSR);
+  FSR.reset();
+  // NOLINTNEXTLINE
+  EXPECT_DEATH(EXPECT_TRUE(FSR->hasStart()), ".*");
+
+  EXPECT_EQ(Clone.getPath(), "path");
+  EXPECT_EQ(Clone.getStart()->getLineNumber(), 1);
+  EXPECT_EQ(Clone.getStart()->getColumnOffset(), 2);
+  EXPECT_EQ(Clone.getEnd()->getLineNumber(), 3);
+  EXPECT_EQ(Clone.getEnd()->getColumnOffset(), 4);
+  EXPECT_EQ(Clone.getCategory(), FeatureSourceRange::Category::inessential);
+}
+
 } // namespace vara::feature
