@@ -16,6 +16,27 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
   Trans.commit();
 }
 
+void removeFeature(FeatureModel &FM, Feature *OldFeature, bool Recursive) {
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+  detail::FeatureVariantTy F = detail::FeatureVariantTy(OldFeature);
+  Trans.removeFeature(F, Recursive);
+  Trans.commit();
+}
+
+void addRelationship(FeatureModel &FM, Feature *GroupRoot,
+                     Relationship::RelationshipKind Kind) {
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+  detail::FeatureVariantTy GR = detail::FeatureVariantTy(GroupRoot);
+  Trans.addRelationship(Kind, GR);
+  Trans.commit();
+}
+
+void removeRelationship(FeatureModel &FM, detail::FeatureVariantTy &Parent) {
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+  Trans.removeRelationship(Parent);
+  Trans.commit();
+}
+
 void setCommit(FeatureModel &FM, std::string NewCommit) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   Trans.setCommit(std::move(NewCommit));

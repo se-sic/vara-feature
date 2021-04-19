@@ -5,6 +5,7 @@ import os
 import unittest
 from pathlib import Path
 
+import vara_feature as vf
 import vara_feature.feature_model as FM
 import vara_feature.fm_parsers as fm_parsers
 
@@ -90,3 +91,70 @@ class TestFeatureModel(unittest.TestCase):
         self.assertTrue(test_feature_root.is_child(test_feature_a))
         self.assertTrue(test_feature_root.is_child(test_feature_b))
         self.assertTrue(test_feature_root.is_child(test_feature_c))
+
+    def test_add_feature(self):
+        test_new_feature = vf.feature.BinaryFeature("New", True)
+        test_feature_root = self.fm.get_root()
+        self.fm.add_feature(test_new_feature, test_feature_root)
+        test_added_feature = self.fm.get_feature("New")
+        self.assertTrue(test_added_feature)
+        self.assertEqual(test_added_feature.parent(), test_feature_root)
+        pass
+
+    def test_remove_feature_binary(self):
+        """ Checks if a binary feature can be removed. """
+        test_remove_feature = self.fm.get_feature("C")
+        self.fm.remove_feature(test_remove_feature)
+
+        self.assertFalse(self.fm.get_feature("C"))
+
+    def test_remove_feature_numeric(self):
+        """ Checks if a numeric feature can be removed. """
+        test_remove_feature = self.fm.get_feature("N")
+        self.fm.remove_feature(test_remove_feature)
+
+        self.assertFalse(self.fm.get_feature("N"))
+
+    def test_remove_feature_recursive(self):
+        """ Checks if a subtree can be removed. """
+        test_remove_subroot = self.fm.get_feature("A")
+        self.fm.remove_feature(test_remove_subroot, True)
+
+        self.assertFalse(self.fm.get_feature("A"))
+        self.assertFalse(self.fm.get_feature("AA"))
+        self.assertFalse(self.fm.get_feature("AB"))
+        self.assertFalse(self.fm.get_feature("AC"))
+
+    def test_merge_models_idempotence(self):
+        """ Checks if a feature model merged with itself is unchanged. """
+        test_merged = self.fm.merge_with(self.fm)
+
+        self.assertTrue(test_merged)
+        self.assertTrue(test_merged.get_root())
+        self.assertTrue(test_merged.get_feature("A"))
+        self.assertTrue(test_merged.get_feature("AA"))
+        self.assertTrue(test_merged.get_feature("AB"))
+        self.assertTrue(test_merged.get_feature("AC"))
+        self.assertTrue(test_merged.get_feature("B"))
+        self.assertTrue(test_merged.get_feature("C"))
+        self.assertTrue(test_merged.get_feature("N"))
+
+    def test_merge_models(self):
+        """ Checks if merging a feature model with another works correctly. """
+        with open(TEST_INPUTS_DIR / "simple_example_feature_model_merge.xml",
+                  'r') as fm_file:
+            parser = fm_parsers.FeatureModelXmlParser(fm_file.read())
+            test_merge_fm = parser.build_feature_model()
+        test_merged = self.fm.merge_with(test_merge_fm)
+
+        self.assertTrue(test_merged.get_root())
+        self.assertTrue(test_merged.get_feature("A"))
+        self.assertTrue(test_merged.get_feature("AA"))
+        self.assertTrue(test_merged.get_feature("AB"))
+        self.assertTrue(test_merged.get_feature("AC"))
+        self.assertTrue(test_merged.get_feature("B"))
+        self.assertTrue(test_merged.get_feature("C"))
+        self.assertTrue(test_merged.get_feature("N"))
+        self.assertTrue(test_merged.get_feature("X"))
+        self.assertTrue(test_merged.get_feature("Y"))
+        self.assertTrue(test_merged.get_feature("Z"))

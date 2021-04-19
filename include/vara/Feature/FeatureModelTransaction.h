@@ -980,6 +980,16 @@ private:
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent = nullptr);
 
+/// Removes a Feature from the FeatureModel
+///
+/// If the removed feature has Children the recursive option must be enabled.
+///
+/// \param FM
+/// \param OldFeature to remove
+/// \param Recursive removal of children
+void removeFeature(FeatureModel &FM, Feature *OldFeature,
+                   bool Recursive = false);
+
 /// Set commit of a FeatureModel.
 ///
 /// \param FM

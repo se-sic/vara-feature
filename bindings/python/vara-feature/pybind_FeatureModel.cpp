@@ -35,6 +35,27 @@ void init_feature_model_module(py::module &M) {
             return FM.getFeature(Name);
           },
           py::return_value_policy::reference, R"pbdoc(Returns Feature.)pbdoc")
+      .def(
+          "add_feature",
+          [](vf::FeatureModel &FM, vf::Feature &NewFeature,
+             vf::Feature &Parent) {
+            // TODO. Pybind does not allow to pass a unique pointer into
+            // functions, since python has no concept of releasing ownership
+            // (https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html).
+            // While there is some work in progress to allow this, for now we
+            // can either create a copy of the Feature or make a custom smart
+            // pointer. vf::addFeature(FM, std::move(NewFeature), &Parent);
+          },
+          R"pbdoc(Add Feature model.)pbdoc")
+      .def(
+          "remove_feature",
+          [](vf::FeatureModel &FM, vf::Feature &OldFeature, bool Recursive) {
+            vf::removeFeature(FM, &OldFeature, Recursive);
+          },
+          py::arg(), py::arg("recursive") = false,
+          R"pbdoc(Remove Feature from model.)pbdoc")
+      .def("merge_with", &vf::mergeFeatureModels,
+           R"pbdoc(Merge with other Feature model.)pbdoc")
       .def("size", &vf::FeatureModel::size,
            R"pbdoc(Returns the amount of Features in the Model.)pbdoc")
       .def(
