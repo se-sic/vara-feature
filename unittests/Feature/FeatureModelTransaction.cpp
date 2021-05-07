@@ -172,16 +172,13 @@ protected:
 TEST_F(FeatureModelTransactionModifyTest, createAndDestroyWithoutChange) {
   size_t FMSizeBefore = FM->size();
 
-  auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
   // no change
-  auto UpdatedFM = FT.commit();
+  FT.commit();
 
-  EXPECT_NE(FM, UpdatedFM);
   EXPECT_EQ(FMSizeBefore, FM->size());
-  EXPECT_EQ(FMSizeBefore, UpdatedFM->size());
-  EXPECT_NE(nullptr, UpdatedFM->getFeature("a"));
-  EXPECT_TRUE(
-      llvm::isa<RootFeature>(UpdatedFM->getFeature("a")->getParentFeature()));
+  EXPECT_NE(nullptr, FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
 }
 
 TEST_F(FeatureModelTransactionModifyTest, addFeatureToModel) {
