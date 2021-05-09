@@ -171,7 +171,7 @@ public:
                              Feature *, Feature *> {
 
   public:
-    using const_pointer = const Feature *const;
+    using const_pointer = const Feature *;
     using const_reference = const Feature *;
 
     FeatureMapIterator(FeatureMapTy::const_iterator MapIter)
