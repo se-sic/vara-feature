@@ -171,6 +171,9 @@ public:
                              Feature *, Feature *> {
 
   public:
+    using const_pointer = const Feature *const;
+    using const_reference = const Feature *;
+
     FeatureMapIterator(FeatureMapTy::const_iterator MapIter)
         : MapIter(MapIter) {}
     FeatureMapIterator(const FeatureMapIterator &) = default;
@@ -179,9 +182,11 @@ public:
     FeatureMapIterator &operator=(FeatureMapIterator &&) = delete;
     ~FeatureMapIterator() = default;
 
-    reference operator*() const { return MapIter->getValue().get(); }
+    reference operator*() { return MapIter->getValue().get(); }
+    const_reference operator*() const { return MapIter->getValue().get(); }
 
-    pointer operator->() const { return **this; }
+    pointer operator->() { return **this; }
+    const_pointer operator->() const { return **this; }
 
     FeatureMapIterator operator++() {
       ++MapIter;
