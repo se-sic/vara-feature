@@ -13,7 +13,6 @@ TEST_INPUTS_DIR = Path(
 
 class TestFeature(unittest.TestCase):
     """ Test Feature base class functionality.  """
-
     def test_get_name(self):
         """ Checks if we can access the Features name.  """
         test_feature = feature.BinaryFeature("Foo", False)
@@ -49,25 +48,24 @@ class TestFeature(unittest.TestCase):
         path = "test"
         start_lco = feature.LineColumnOffset(3, 4)
         end_lco = feature.LineColumnOffset(3, 20)
-        loc = feature.Location(path, start_lco, end_lco, feature.Location.Category.necessary)
+        loc = feature.Location(path, start_lco, end_lco,
+                               feature.Location.Category.necessary)
         test_feature_0 = feature.BinaryFeature("Test", False, [loc])
 
         gotLoc = list(test_feature_0.locations)[0]
         self.assertEqual(gotLoc.path, path)
-        self.assertEqual(gotLoc.start.line_number,
-                         3)
-        self.assertEqual(
-            gotLoc.start.column_offset, 4)
+        self.assertEqual(gotLoc.start.line_number, 3)
+        self.assertEqual(gotLoc.start.column_offset, 4)
         self.assertEqual(gotLoc.end.line_number, 3)
-        self.assertEqual(gotLoc.end.column_offset,
-                         20)
+        self.assertEqual(gotLoc.end.column_offset, 20)
 
     def test_feature_location_setters(self):
         """ Checks if a feature's location is mutable."""
         path = "test"
         start_lco = feature.LineColumnOffset(3, 4)
         end_lco = feature.LineColumnOffset(3, 20)
-        loc = feature.Location(path, start_lco, end_lco, feature.Location.Category.necessary)
+        loc = feature.Location(path, start_lco, end_lco,
+                               feature.Location.Category.necessary)
         test_feature_0 = feature.BinaryFeature("Test", False, [loc])
 
         gotLoc = list(test_feature_0.locations)[0]
@@ -79,24 +77,23 @@ class TestFeature(unittest.TestCase):
         end.column_offset = 18
 
         self.assertEqual(gotLoc.path, path)
-        self.assertEqual(gotLoc.start.line_number,
-                         4)
-        self.assertEqual(
-            gotLoc.start.column_offset, 2)
+        self.assertEqual(gotLoc.start.line_number, 4)
+        self.assertEqual(gotLoc.start.column_offset, 2)
         self.assertEqual(gotLoc.end.line_number, 4)
-        self.assertEqual(gotLoc.end.column_offset,
-                         18)
+        self.assertEqual(gotLoc.end.column_offset, 18)
 
     def test_feature_location_update(self):
         """ Checks if a feature's location is mutable."""
         path1 = "test1"
         start_lco1 = feature.LineColumnOffset(4, 2)
         end_lco1 = feature.LineColumnOffset(4, 18)
-        loc1 = feature.Location(path1, start_lco1, end_lco1, feature.Location.Category.necessary)
+        loc1 = feature.Location(path1, start_lco1, end_lco1,
+                                feature.Location.Category.necessary)
         path2 = "test2"
         start_lco2 = feature.LineColumnOffset(5, 4)
         end_lco2 = feature.LineColumnOffset(5, 20)
-        loc2 = feature.Location(path2, start_lco2, end_lco2, feature.Location.Category.necessary)
+        loc2 = feature.Location(path2, start_lco2, end_lco2,
+                                feature.Location.Category.necessary)
 
         test_feature_0 = feature.BinaryFeature("Test", False, [loc1])
         self.assertTrue(test_feature_0.updateLocation(loc1, loc2))
@@ -112,11 +109,13 @@ class TestFeature(unittest.TestCase):
         path1 = "test1"
         start_lco1 = feature.LineColumnOffset(4, 2)
         end_lco1 = feature.LineColumnOffset(4, 18)
-        loc1 = feature.Location(path1, start_lco1, end_lco1, feature.Location.Category.necessary)
+        loc1 = feature.Location(path1, start_lco1, end_lco1,
+                                feature.Location.Category.necessary)
         path2 = "test2"
         start_lco2 = feature.LineColumnOffset(5, 4)
         end_lco2 = feature.LineColumnOffset(5, 20)
-        loc2 = feature.Location(path2, start_lco2, end_lco2, feature.Location.Category.necessary)
+        loc2 = feature.Location(path2, start_lco2, end_lco2,
+                                feature.Location.Category.necessary)
 
         test_feature_0 = feature.BinaryFeature("Test", False, [loc1, loc2])
         test_feature_0.removeLocation(loc1)
@@ -132,11 +131,13 @@ class TestFeature(unittest.TestCase):
         path1 = "test1"
         start_lco1 = feature.LineColumnOffset(4, 2)
         end_lco1 = feature.LineColumnOffset(4, 18)
-        loc1 = feature.Location(path1, start_lco1, end_lco1, feature.Location.Category.necessary)
+        loc1 = feature.Location(path1, start_lco1, end_lco1,
+                                feature.Location.Category.necessary)
         path2 = "test2"
         start_lco2 = feature.LineColumnOffset(5, 4)
         end_lco2 = feature.LineColumnOffset(5, 20)
-        loc2 = feature.Location(path2, start_lco2, end_lco2, feature.Location.Category.necessary)
+        loc2 = feature.Location(path2, start_lco2, end_lco2,
+                                feature.Location.Category.necessary)
 
         test_feature_0 = feature.BinaryFeature("Test", False, [loc1, loc2])
         test_feature_0.removeLocation(list(test_feature_0.locations)[0])
@@ -150,7 +151,6 @@ class TestFeature(unittest.TestCase):
 
 class TestBinaryFeature(unittest.TestCase):
     """ Test BinaryFeature functionality.  """
-
     def test_create_binary_feature(self):
         """ Checks if we can successfully create a binary features.  """
         test_feature = feature.BinaryFeature("Foo", False)
@@ -160,7 +160,6 @@ class TestBinaryFeature(unittest.TestCase):
 
 class TestNumericFeature(unittest.TestCase):
     """ Test NumericFeature functionality.  """
-
     def test_create_binary_feature(self):
         """ Checks if we can successfully create a numeric features.  """
         test_feature = feature.NumericFeature("Foo", (40, 42), False)
