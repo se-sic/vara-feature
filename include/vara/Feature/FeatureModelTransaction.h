@@ -996,7 +996,8 @@ void addFeatures(
 ///
 /// \param FM
 /// \param FeatureToBeDeleted
-void removeFeature(FeatureModel &FM, detail::FeatureVariantTy FeatureToBeDeleted,
+void removeFeature(FeatureModel &FM,
+                   detail::FeatureVariantTy FeatureToBeDeleted,
                    bool Recursive = false);
 
 /// Set commit of a FeatureModel.

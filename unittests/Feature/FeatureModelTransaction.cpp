@@ -851,38 +851,38 @@ protected:
 TEST_F(FeatureModelTransactionTest, addFeatureToModel) {
   size_t FMSizeBefore = FM->size();
 
-  vara::feature::addFeature(*FM, std::move(std::make_unique<BinaryFeature>("ab")), FM->getFeature("a")); // committed automatically
+  vara::feature::addFeature(*FM,
+                            std::move(std::make_unique<BinaryFeature>("ab")),
+                            FM->getFeature("a")); // committed automatically
 
   // Changes should be visible on the new model
   EXPECT_EQ(FMSizeBefore, FM->size() - 1);
   EXPECT_TRUE(FM->getFeature("a"));
-  EXPECT_TRUE(
-      llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
   EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
-  EXPECT_EQ(FM->getFeature("a"),
-            FM->getFeature("ab")->getParentFeature());
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
 }
 
 TEST_F(FeatureModelTransactionTest, addFeaturesToModel) {
   size_t FMSizeBefore = FM->size();
 
   std::vector<std::tuple<std::unique_ptr<Feature>, Feature *>> NewFeatures;
-  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ab"), FM->getFeature("a")));
-  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ac"), FM->getFeature("a")));
+  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ab"),
+                                        FM->getFeature("a")));
+  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ac"),
+                                        FM->getFeature("a")));
 
-  vara::feature::addFeatures(*FM, std::move(NewFeatures)); // committed automatically
+  vara::feature::addFeatures(*FM,
+                             std::move(NewFeatures)); // committed automatically
 
   // Changes should be visible on the new model
   EXPECT_EQ(FMSizeBefore, FM->size() - 2);
   EXPECT_TRUE(FM->getFeature("a"));
-  EXPECT_TRUE(
-      llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
   EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
-  EXPECT_EQ(FM->getFeature("a"),
-            FM->getFeature("ab")->getParentFeature());
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_TRUE(FM->getFeature("ac")); // Change should be visible
-  EXPECT_EQ(FM->getFeature("a"),
-            FM->getFeature("ac")->getParentFeature());
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
 }
 
 TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
@@ -890,22 +890,23 @@ TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
 
   // Prepare Model with two Features
   std::vector<std::tuple<std::unique_ptr<Feature>, Feature *>> NewFeatures;
-  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ab"), FM->getFeature("a")));
-  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ac"), FM->getFeature("a")));
-  vara::feature::addFeatures(*FM, std::move(NewFeatures)); // committed automatically
+  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ab"),
+                                        FM->getFeature("a")));
+  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ac"),
+                                        FM->getFeature("a")));
+  vara::feature::addFeatures(*FM,
+                             std::move(NewFeatures)); // committed automatically
 
   // Remove one Feature
-  //std::variant<std::string, Feature *>
+  // std::variant<std::string, Feature *>
   vara::feature::removeFeature(*FM, FM->getFeature("ab"));
 
   // Changes should be visible on the new model
   EXPECT_EQ(FMSizeBefore, FM->size() - 1);
   EXPECT_TRUE(FM->getFeature("a"));
-  EXPECT_TRUE(
-      llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
   EXPECT_TRUE(FM->getFeature("ac")); // Change should be visible
-  EXPECT_EQ(FM->getFeature("a"),
-            FM->getFeature("ac")->getParentFeature());
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
 }
 
 } // namespace vara::feature
