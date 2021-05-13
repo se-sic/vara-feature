@@ -890,10 +890,10 @@ TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
 
   // Prepare Model with two Features
   std::vector<std::tuple<std::unique_ptr<Feature>, Feature *>> NewFeatures;
-  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ab"),
-                                        FM->getFeature("a")));
-  NewFeatures.push_back(std::make_tuple(std::make_unique<BinaryFeature>("ac"),
-                                        FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_tuple(
+      std::make_unique<BinaryFeature>("ab"), FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_tuple(
+      std::make_unique<BinaryFeature>("ac"), FM->getFeature("a")));
   vara::feature::addFeatures(*FM,
                              std::move(NewFeatures)); // committed automatically
 
