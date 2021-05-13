@@ -61,7 +61,7 @@ public:
   ~FeatureModelTransaction() {
     if constexpr (IsCopyMode) {
       assert(!this->isUncommitted() &&
-             "Transaction in CopyMode should be commited before destruction.");
+             "Transaction in CopyMode should be committed before destruction.");
     } else {
       if (this->isUncommitted()) {
         // In modification mode we should ensure that changes are committed
@@ -979,6 +979,25 @@ private:
 /// \param Parent of the new feature
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent = nullptr);
+
+/// Adds multiple Features to the FeatureModel
+///
+/// The vector of Features contains tuples of a parent and a new Feature.
+/// If a Parent is passed it needs to be already in the FeatureModel,
+/// otherwise, root is assumed as the parent Feature.
+///
+/// \param FM
+/// \param NewFeatures
+void addFeatures(
+    FeatureModel &FM,
+    std::vector<std::tuple<std::unique_ptr<Feature>, Feature *>> NewFeatures);
+
+/// Removes a Feature from the FeatureModel
+///
+/// \param FM
+/// \param FeatureToBeDeleted
+void removeFeature(FeatureModel &FM, detail::FeatureVariantTy FeatureToBeDeleted,
+                   bool Recursive = false);
 
 /// Set commit of a FeatureModel.
 ///
