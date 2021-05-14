@@ -851,8 +851,7 @@ protected:
 TEST_F(FeatureModelTransactionTest, addFeatureToModel) {
   size_t FMSizeBefore = FM->size();
 
-  vara::feature::addFeature(*FM,
-                            std::make_unique<BinaryFeature>("ab"),
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
                             FM->getFeature("a")); // committed automatically
 
   EXPECT_EQ(FMSizeBefore, FM->size() - 1);
