@@ -852,7 +852,7 @@ TEST_F(FeatureModelTransactionTest, addFeatureToModel) {
   size_t FMSizeBefore = FM->size();
 
   vara::feature::addFeature(*FM,
-                            std::move(std::make_unique<BinaryFeature>("ab")),
+                            std::make_unique<BinaryFeature>("ab"),
                             FM->getFeature("a")); // committed automatically
 
   // Changes should be visible on the new model
