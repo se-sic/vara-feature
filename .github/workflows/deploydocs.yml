@@ -47,7 +47,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
             -DLLVM_REQUESTED_VERSION=$LLVM_VERSION \
             -DCMAKE_CXX_COMPILER=$CXX \
-            -DVARA_FEATURE_BUILD_DOC=True
+            -DVARA_FEATURE_BUILD_DOC=True \
             -DVARA_FEATURE_DOXYGEN_SVG=True
           cmake --build . --target build-docs
 
