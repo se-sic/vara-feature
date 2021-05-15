@@ -35,9 +35,9 @@ jobs:
 
       - name: Build docs
         env:
-          BUILD_TYPE: ${{ Release }}
-          LLVM_VERSION: ${{ 11 }}.${{ 1 }}
-          CXX: ${{ clang++-11 }}
+          BUILD_TYPE: Release
+          LLVM_VERSION: 11.1
+          CXX: clang++-11
         shell: bash
         run: |
           mkdir build
