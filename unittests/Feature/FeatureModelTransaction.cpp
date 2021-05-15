@@ -832,4 +832,76 @@ TEST_F(FeatureModelRemoveFeatureTransactionTest,
   ASSERT_EQ(*C->getChildren<Relationship>().begin(), CB->getParent());
 }
 
+//===----------------------------------------------------------------------===//
+//                     FeatureModelTransaction Tests
+//===----------------------------------------------------------------------===//
+
+class FeatureModelTransactionTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder B;
+    B.makeFeature<BinaryFeature>("a", true);
+    FM = B.buildFeatureModel();
+    ASSERT_TRUE(FM);
+  }
+
+  std::unique_ptr<FeatureModel> FM;
+};
+
+TEST_F(FeatureModelTransactionTest, addFeatureToModel) {
+  size_t FMSizeBefore = FM->size();
+
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
+                            FM->getFeature("a")); // committed automatically
+
+  EXPECT_EQ(FMSizeBefore, FM->size() - 1);
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
+}
+
+TEST_F(FeatureModelTransactionTest, addFeaturesToModel) {
+  size_t FMSizeBefore = FM->size();
+
+  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
+                                          FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ac"),
+                                          FM->getFeature("a")));
+
+  vara::feature::addFeatures(*FM,
+                             std::move(NewFeatures)); // committed automatically
+
+  EXPECT_EQ(FMSizeBefore, FM->size() - 2);
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
+  EXPECT_TRUE(FM->getFeature("ac")); // Change should be visible
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
+}
+
+TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
+  size_t FMSizeBefore = FM->size();
+
+  // Prepare Model with two Features
+  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
+                                          FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ac"),
+                                          FM->getFeature("a")));
+  vara::feature::addFeatures(*FM,
+                             std::move(NewFeatures)); // committed automatically
+
+  vara::feature::removeFeature(*FM, FM->getFeature("ab"));
+
+  EXPECT_EQ(FMSizeBefore, FM->size() - 1);
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ac")); // Change should be visible
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
+  EXPECT_FALSE(FM->getFeature("ab"));
+}
+
 } // namespace vara::feature
