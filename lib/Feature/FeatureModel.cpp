@@ -39,7 +39,7 @@ RootFeature *FeatureModel::setRoot(RootFeature &NewRoot) {
   return Root = &NewRoot;
 }
 
-std::unique_ptr<FeatureModel> FeatureModel::clone() {
+std::unique_ptr<FeatureModel> FeatureModel::clone() const {
   FeatureModelBuilder FMB;
   FMB.setVmName(this->getName().str());
   FMB.setCommit(this->getCommit().str());
