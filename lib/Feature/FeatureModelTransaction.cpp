@@ -21,8 +21,7 @@ void addFeatures(
     std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   for (auto &NewFeature : NewFeatures) {
-    Trans.addFeature(std::move(NewFeature.first),
-                     NewFeature.second);
+    Trans.addFeature(std::move(NewFeature.first), NewFeature.second);
   }
   Trans.commit();
 }
