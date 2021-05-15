@@ -111,7 +111,7 @@ jobs:
     name: Deploy Documentation
     runs-on: ubuntu-20.04
     needs: [build]
-    if: contains(github.ref, "f-AddsDocs") # TODO: switch before merge
+    if: contains(github.ref, 'f-AddsDocs') # TODO: switch before merge
     steps:
       - name: Install doc deps
         shell: bash
