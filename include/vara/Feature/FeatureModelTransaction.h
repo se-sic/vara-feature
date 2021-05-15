@@ -980,6 +980,14 @@ private:
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent = nullptr);
 
+/// Removes multiple Features from the FeatureModel
+///
+/// \param FM
+/// \param FeaturesToBeDeleted
+void removeFeatures(FeatureModel &FM,
+                    std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
+                    bool Recursive = false);
+
 /// Set commit of a FeatureModel.
 ///
 /// \param FM

@@ -16,6 +16,56 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
   Trans.commit();
 }
 
+void removeFeatures(FeatureModel &FM,
+                    std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
+                    bool Recursive) {
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+
+  // create mapping of <Parent, Child> to decide later if a Feature has a child
+  // assumption: every parent can only have one child --> Is this correct?
+  std::map<Feature *, Feature *> ParentChildMapping;
+  std::map<Feature *, Feature *> ChildParentMapping;
+  for (auto FeatureVariant : FeaturesToBeDeleted) {
+    Feature *ActualFeature = get_if<Feature *>(&FeatureVariant)
+                                 ? get<Feature *>(FeatureVariant)
+                                 : FM.getFeature(get<string>(FeatureVariant));
+    if (ActualFeature->getParentFeature()) {
+      ParentChildMapping.insert(
+          std::make_pair(ActualFeature->getParentFeature(), ActualFeature));
+      ChildParentMapping.insert(
+          std::make_pair(ActualFeature, ActualFeature->getParentFeature()));
+    }
+  }
+
+  std::vector<detail::FeatureVariantTy> CopiedFeatures;
+  std::copy(FeaturesToBeDeleted.begin(), FeaturesToBeDeleted.end(),
+            CopiedFeatures);
+
+  while (!CopiedFeatures.empty()) {
+    std::vector<detail::FeatureVariantTy> RemainingFeatures;
+    std::copy(CopiedFeatures.begin(), CopiedFeatures.end(), RemainingFeatures);
+    // loop over all Leaves/Feature until they are all gone
+    for (auto FeatureIterator = CopiedFeatures.begin();
+         FeatureIterator != CopiedFeatures.end(); ++FeatureIterator) {
+      // if we truly have a Leave/Feature --> current Feature is not a parent
+      Feature *ActualFeature =
+          get_if<Feature *>(&(*FeatureIterator))
+              ? get<Feature *>((*FeatureIterator))
+              : FM.getFeature(get<string>((*FeatureIterator)));
+      // if Feature is not a parent
+      if (ParentChildMapping.find(ActualFeature) == ParentChildMapping.end()) {
+        Trans.removeFeature(*FeatureIterator, Recursive);
+        RemainingFeatures.erase(FeatureIterator);
+        ParentChildMapping.erase(ChildParentMapping[ActualFeature]);
+      }
+    }
+    std::copy(RemainingFeatures.begin(), RemainingFeatures.end(),
+              CopiedFeatures);
+  }
+
+  Trans.commit();
+}
+
 void setCommit(FeatureModel &FM, std::string NewCommit) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   Trans.setCommit(std::move(NewCommit));
