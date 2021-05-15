@@ -7,7 +7,7 @@ set(DOXYGEN_HHC_PROGRAM)
 set(DOXYGEN_GENERATE_HTMLHELP NO)
 set(DOXYGEN_ENABLE_SEARCHENGINE)
 
-option(VARA_DOXYGEN_SVG
+option(VARA_FEATURE_DOXYGEN_SVG
   "Use svg instead of png files for doxygen graphs." OFF)
 if (VARA_DOXYGEN_SVG)
   set(DOT_IMAGE_FORMAT "svg")
@@ -21,7 +21,7 @@ set(DOXYGEN_CONFIGURED_INPUT ${DOXYGEN_OUTPUT_DIR}/doxyfile)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen.cfg.in
   ${DOXYGEN_CONFIGURED_INPUT} @ONLY)
 
-add_custom_target(doc
+add_custom_target(build-docs
   COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_CONFIGURED_INPUT}
   WORKING_DIRECTORY ${DOXYGEN_INPUT_DIR}
 )
