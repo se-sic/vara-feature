@@ -3,8 +3,6 @@ name: VaRA Feature Build and Deploy Docs
 on:
   push:
     branches: [ vara, vara-dev ]
-  pull_request:
-    branches: [ vara, vara-dev ]
 
 jobs:
   deploy-docs:
