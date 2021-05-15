@@ -7,7 +7,8 @@ on:
     branches: [ vara, vara-dev ]
 
 jobs:
-  build:
+  deploy-docs:
+    name: Deploy Documentation
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -48,3 +49,9 @@ jobs:
             -DCMAKE_CXX_COMPILER=$CXX \
             -DVARA_FEATURE_BUILD_DOC=True
           cmake --build . --target doc
+
+      - name: Deploy Documentation to gh-pages
+          uses: peaceiris/actions-gh-pages@v3
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN  }}
+            publish_dir: ./docs
