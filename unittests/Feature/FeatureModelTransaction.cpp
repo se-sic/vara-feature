@@ -935,21 +935,18 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
   EXPECT_FALSE(FM->getFeature("ae"));
 }
 
-/*TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
+TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
   size_t FMSizeBefore = FM->size();
 
   // Prepare Model with several Features
-  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
-  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
-                                          FM->getFeature("a")));
-  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ac"),
-                                          FM->getFeature("a")));
-  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ad"),
-                                          FM->getFeature("ab")));
-  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ae"),
-                                          FM->getFeature("ad")));
-  vara::feature::addFeatures(*FM,
-                             std::move(NewFeatures)); // committed automatically
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
+                            FM->getFeature("ab"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
+                            FM->getFeature("ad"));
 
   // Prepare Features for deletion
   std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted;
@@ -966,6 +963,6 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
   EXPECT_FALSE(FM->getFeature("ac"));
   EXPECT_FALSE(FM->getFeature("ad"));
   EXPECT_TRUE(FM->getFeature("ae"));
-}*/
+}
 
 } // namespace vara::feature

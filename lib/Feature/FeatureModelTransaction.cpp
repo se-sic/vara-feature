@@ -37,47 +37,24 @@ void removeFeature(FeatureModel &FM,
 void removeFeatures(FeatureModel &FM,
                     std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
                     bool Recursive) {
-  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
-
-  // 1. Preparations
-  // create mapping of <Parent, Child> to decide later if a Feature has a child
-  // TODO clarify assumption: every parent can only have one child --> Is this
-  // correct?
-  std::map<Feature *, Feature *> ParentChildMapping;
-  std::map<Feature *, Feature *> ChildParentMapping;
-  for (auto FeatureVariant : FeaturesToBeDeleted) {
-    // TODO: move to own private function
-    Feature *ActualFeature =
-        std::get_if<Feature *>(&FeatureVariant)
-            ? std::get<Feature *>(FeatureVariant)
-            : FM.getFeature(std::get<string>(FeatureVariant));
-    if (ActualFeature->getParentFeature()) {
-      ParentChildMapping.insert(
-          std::make_pair(ActualFeature->getParentFeature(), ActualFeature));
-      ChildParentMapping.insert(
-          std::make_pair(ActualFeature, ActualFeature->getParentFeature()));
-    }
-  }
-
-  // 2. Iterate over Features and deleted them iff they are leaves (don't have
+  // Iterate over Features and deleted them iff they are leaves (don't have
   // children)
   std::vector<detail::FeatureVariantTy> RemainingFeatures;
   std::copy(FeaturesToBeDeleted.begin(), FeaturesToBeDeleted.end(),
             std::back_inserter(RemainingFeatures));
   while (!RemainingFeatures.empty()) {
+    auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
     std::vector<detail::FeatureVariantTy> DeleteFeatures;
     for (auto FeatureIterator = RemainingFeatures.begin();
          FeatureIterator != RemainingFeatures.end(); ++FeatureIterator) {
-      // TODO: use previously created private function from above
       Feature *ActualFeature =
           std::get_if<Feature *>(&(*FeatureIterator))
               ? std::get<Feature *>((*FeatureIterator))
               : FM.getFeature(std::get<string>((*FeatureIterator)));
       // if Feature is not a parent it can be deleted
-      if (ParentChildMapping.find(ActualFeature) == ParentChildMapping.end()) {
+      if (ActualFeature->children().empty()) {
         Trans.removeFeature(*FeatureIterator, Recursive);
         DeleteFeatures.emplace_back(*FeatureIterator);
-        ParentChildMapping.erase(ChildParentMapping[ActualFeature]);
       }
     }
     std::sort(DeleteFeatures.begin(), DeleteFeatures.end());
@@ -88,8 +65,9 @@ void removeFeatures(FeatureModel &FM,
                                               DeleteFeatures.end(), x);
                        }),
         RemainingFeatures.end());
+    Trans.commit();
   }
-  Trans.commit();
+  // TODO: return list of non-deletable Features?
 }
 
 void setCommit(FeatureModel &FM, std::string NewCommit) {
