@@ -148,7 +148,7 @@ if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
 endif ()
 
 if (${VARA_FEATURE_BUILD_DOC})
-  add_subdirectory(doc)
+  add_subdirectory(docs)
 endif()
 
 if (VARA_FEATURE_IN_TREE)
