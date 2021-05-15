@@ -107,20 +107,20 @@ jobs:
   ########################
   ## Build and deploy docs
 
-  deploy_docs:
-    name: Deploy Documentation
-    runs-on: ubuntu-20.04
-    needs: [build]
-    if: contains(github.ref, 'f-AddsDocs') # TODO: switch before merge
-    steps:
-      - name: Install doc deps
-        shell: bash
-        run: |
-          sudo apt install doxygen
+          #deploy_docs:
+          #  name: Deploy Documentation
+          #  runs-on: ubuntu-20.04
+          #  needs: [build]
+          #  if: contains(github.ref, 'f-AddsDocs') # TODO: switch before merge
+          #  steps:
+          #    - name: Install doc deps
+          #      shell: bash
+          #      run: |
+          #        sudo apt install doxygen
 
-      - name: Build docs
-        shell: bash
-        run: |
-          cd build
-          cmake . -DVARA_FEATURE_BUILD_DOC=True
-          cmake --build . --target doc
+          #    - name: Build docs
+          #      shell: bash
+          #      run: |
+          #        cd build
+          #        cmake . -DVARA_FEATURE_BUILD_DOC=True
+          #        cmake --build . --target doc
