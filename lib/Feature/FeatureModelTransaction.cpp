@@ -39,14 +39,18 @@ void removeFeatures(FeatureModel &FM,
                     bool Recursive) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
 
+  // 1. Preparations
   // create mapping of <Parent, Child> to decide later if a Feature has a child
-  // assumption: every parent can only have one child --> Is this correct?
+  // TODO clarify assumption: every parent can only have one child --> Is this
+  // correct?
   std::map<Feature *, Feature *> ParentChildMapping;
   std::map<Feature *, Feature *> ChildParentMapping;
   for (auto FeatureVariant : FeaturesToBeDeleted) {
-    Feature *ActualFeature = get_if<Feature *>(&FeatureVariant)
-                                 ? get<Feature *>(FeatureVariant)
-                                 : FM.getFeature(get<string>(FeatureVariant));
+    // TODO: move to own private function
+    Feature *ActualFeature =
+        std::get_if<Feature *>(&FeatureVariant)
+            ? std::get<Feature *>(FeatureVariant)
+            : FM.getFeature(std::get<string>(FeatureVariant));
     if (ActualFeature->getParentFeature()) {
       ParentChildMapping.insert(
           std::make_pair(ActualFeature->getParentFeature(), ActualFeature));
@@ -55,30 +59,35 @@ void removeFeatures(FeatureModel &FM,
     }
   }
 
-  std::vector<detail::FeatureVariantTy> CopiedFeatures;
+  // 2. Iterate over Features and deleted them iff they are leaves (don't have
+  // children)
+  std::vector<detail::FeatureVariantTy> RemainingFeatures;
   std::copy(FeaturesToBeDeleted.begin(), FeaturesToBeDeleted.end(),
-            CopiedFeatures);
-
-  while (!CopiedFeatures.empty()) {
-    std::vector<detail::FeatureVariantTy> RemainingFeatures;
-    std::copy(CopiedFeatures.begin(), CopiedFeatures.end(), RemainingFeatures);
-    // loop over all Leaves/Feature until they are all gone
-    for (auto FeatureIterator = CopiedFeatures.begin();
-         FeatureIterator != CopiedFeatures.end(); ++FeatureIterator) {
-      // if we truly have a Leave/Feature --> current Feature is not a parent
+            std::back_inserter(RemainingFeatures));
+  while (!RemainingFeatures.empty()) {
+    std::vector<detail::FeatureVariantTy> DeleteFeatures;
+    for (auto FeatureIterator = RemainingFeatures.begin();
+         FeatureIterator != RemainingFeatures.end(); ++FeatureIterator) {
+      // TODO: use previously created private function from above
       Feature *ActualFeature =
-          get_if<Feature *>(&(*FeatureIterator))
-              ? get<Feature *>((*FeatureIterator))
-              : FM.getFeature(get<string>((*FeatureIterator)));
-      // if Feature is not a parent
+          std::get_if<Feature *>(&(*FeatureIterator))
+              ? std::get<Feature *>((*FeatureIterator))
+              : FM.getFeature(std::get<string>((*FeatureIterator)));
+      // if Feature is not a parent it can be deleted
       if (ParentChildMapping.find(ActualFeature) == ParentChildMapping.end()) {
         Trans.removeFeature(*FeatureIterator, Recursive);
-        RemainingFeatures.erase(FeatureIterator);
+        DeleteFeatures.emplace_back(*FeatureIterator);
         ParentChildMapping.erase(ChildParentMapping[ActualFeature]);
       }
     }
-    std::copy(RemainingFeatures.begin(), RemainingFeatures.end(),
-              CopiedFeatures);
+    std::sort(DeleteFeatures.begin(), DeleteFeatures.end());
+    RemainingFeatures.erase(
+        std::remove_if(RemainingFeatures.begin(), RemainingFeatures.end(),
+                       [&](auto x) {
+                         return binary_search(DeleteFeatures.begin(),
+                                              DeleteFeatures.end(), x);
+                       }),
+        RemainingFeatures.end());
   }
   Trans.commit();
 }

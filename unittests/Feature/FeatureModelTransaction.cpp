@@ -904,4 +904,68 @@ TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
   EXPECT_FALSE(FM->getFeature("ab"));
 }
 
+TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
+  size_t FMSizeBefore = FM->size();
+
+  // Prepare Model with several Features
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
+                            FM->getFeature("ab"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
+                            FM->getFeature("ad"));
+
+  // Prepare Features for deletion
+  std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted;
+  FeaturesToBeDeleted.emplace_back(FM->getFeature("ad"));
+  FeaturesToBeDeleted.emplace_back(FM->getFeature("ac"));
+  FeaturesToBeDeleted.emplace_back(FM->getFeature("ae"));
+
+  vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
+
+  EXPECT_EQ(FMSizeBefore, FM->size() - 1);
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
+  EXPECT_FALSE(FM->getFeature("ac"));
+  EXPECT_FALSE(FM->getFeature("ad"));
+  EXPECT_FALSE(FM->getFeature("ae"));
+}
+
+/*TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
+  size_t FMSizeBefore = FM->size();
+
+  // Prepare Model with several Features
+  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
+                                          FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ac"),
+                                          FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ad"),
+                                          FM->getFeature("ab")));
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ae"),
+                                          FM->getFeature("ad")));
+  vara::feature::addFeatures(*FM,
+                             std::move(NewFeatures)); // committed automatically
+
+  // Prepare Features for deletion
+  std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted;
+  FeaturesToBeDeleted.emplace_back(FM->getFeature("ad"));
+  FeaturesToBeDeleted.emplace_back(FM->getFeature("ac"));
+
+  vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
+
+  EXPECT_EQ(FMSizeBefore, FM->size() - 2);
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
+  EXPECT_FALSE(FM->getFeature("ac"));
+  EXPECT_FALSE(FM->getFeature("ad"));
+  EXPECT_TRUE(FM->getFeature("ae"));
+}*/
+
 } // namespace vara::feature

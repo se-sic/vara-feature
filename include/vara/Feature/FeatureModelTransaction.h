@@ -982,7 +982,7 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
 
 /// Adds multiple Features to the FeatureModel
 ///
-/// The vector of Features contains tuples of a parent and a new Feature.
+/// The vector of Features contains tuples of a new Feature and a parent.
 /// If a Parent is passed it needs to be already in the FeatureModel,
 /// otherwise, root is assumed as the parent Feature.
 ///
