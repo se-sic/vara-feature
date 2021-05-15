@@ -1,0 +1,4 @@
+<map id="vara::feature::FeatureModelWriter" name="vara::feature::FeatureModelWriter">
+<area shape="rect" id="node1" title="Base class for parsers with different input formats." alt="" coords="5,5,208,47"/>
+<area shape="rect" id="node2" href="$classvara_1_1feature_1_1FeatureModelXmlWriter.html" title="Parsers for feature models in XML." alt="" coords="5,95,208,136"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="vara::feature::NotConstraint" name="vara::feature::NotConstraint">
+<area shape="rect" id="node1" title=" " alt="" coords="225,185,429,212"/>
+<area shape="rect" id="node2" href="$classvara_1_1feature_1_1UnaryConstraint.html" title=" " alt="" coords="91,109,311,136"/>
+<area shape="rect" id="node3" href="$classvara_1_1feature_1_1Constraint.html" title="Tree like representation of constraints between features." alt="" coords="5,13,187,39"/>
+<area shape="rect" id="node4" title=" " alt="" coords="211,5,402,47"/>
+<area shape="rect" id="node5" href="$classvara_1_1feature_1_1BooleanConstraint.html" title=" " alt="" coords="336,109,571,136"/>
+</map>

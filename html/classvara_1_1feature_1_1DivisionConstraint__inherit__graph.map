@@ -1,0 +1,6 @@
+<map id="vara::feature::DivisionConstraint" name="vara::feature::DivisionConstraint">
+<area shape="rect" id="node1" title=" " alt="" coords="126,155,361,181"/>
+<area shape="rect" id="node2" href="$classvara_1_1feature_1_1BinaryConstraint.html" title=" " alt="" coords="5,80,228,107"/>
+<area shape="rect" id="node3" href="$classvara_1_1feature_1_1Constraint.html" title="Tree like representation of constraints between features." alt="" coords="26,5,207,32"/>
+<area shape="rect" id="node4" href="$classvara_1_1feature_1_1NumericConstraint.html" title=" " alt="" coords="252,80,488,107"/>
+</map>

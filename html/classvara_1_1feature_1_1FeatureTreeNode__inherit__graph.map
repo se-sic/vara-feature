@@ -1,0 +1,9 @@
+<map id="vara::feature::FeatureTreeNode" name="vara::feature::FeatureTreeNode">
+<area shape="rect" id="node1" title=" " alt="" coords="257,81,481,108"/>
+<area shape="rect" id="node3" href="$classvara_1_1feature_1_1Feature.html" title="Base class for components of FeatureModel." alt="" coords="545,56,708,83"/>
+<area shape="rect" id="node7" href="$classvara_1_1feature_1_1Relationship.html" title=" " alt="" coords="529,107,724,133"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,74,209,115"/>
+<area shape="rect" id="node4" href="$classvara_1_1feature_1_1BinaryFeature.html" title="Options without arguments." alt="" coords="779,5,984,32"/>
+<area shape="rect" id="node5" href="$classvara_1_1feature_1_1NumericFeature.html" title="Options with numeric values." alt="" coords="772,56,991,83"/>
+<area shape="rect" id="node6" href="$classvara_1_1feature_1_1RootFeature.html" title=" " alt="" coords="785,107,978,133"/>
+</map>

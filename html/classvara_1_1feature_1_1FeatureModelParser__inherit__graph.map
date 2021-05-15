@@ -1,0 +1,5 @@
+<map id="vara::feature::FeatureModelParser" name="vara::feature::FeatureModelParser">
+<area shape="rect" id="node1" title="Base class for parsers with different input formats." alt="" coords="119,5,321,47"/>
+<area shape="rect" id="node2" href="$classvara_1_1feature_1_1FeatureModelSxfmParser.html" title="Parsers for feature models in SXFM." alt="" coords="5,95,208,136"/>
+<area shape="rect" id="node3" href="$classvara_1_1feature_1_1FeatureModelXmlParser.html" title="Parsers for feature models in XML." alt="" coords="232,95,435,136"/>
+</map>

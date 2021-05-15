@@ -1,0 +1,12 @@
+<map id="vara::feature::NumericConstraint" name="vara::feature::NumericConstraint">
+<area shape="rect" id="node1" title=" " alt="" coords="5,224,241,251"/>
+<area shape="rect" id="node2" href="$classvara_1_1feature_1_1AdditionConstraint.html" title=" " alt="" coords="289,5,524,32"/>
+<area shape="rect" id="node3" href="$classvara_1_1feature_1_1DivisionConstraint.html" title=" " alt="" coords="289,56,524,83"/>
+<area shape="rect" id="node4" href="$classvara_1_1feature_1_1GreaterConstraint.html" title=" " alt="" coords="291,107,522,133"/>
+<area shape="rect" id="node5" href="$classvara_1_1feature_1_1GreaterEqualConstraint.html" title=" " alt="" coords="307,158,506,199"/>
+<area shape="rect" id="node6" href="$classvara_1_1feature_1_1LessConstraint.html" title=" " alt="" coords="301,224,512,251"/>
+<area shape="rect" id="node7" href="$classvara_1_1feature_1_1LessEqualConstraint.html" title=" " alt="" coords="317,275,496,317"/>
+<area shape="rect" id="node8" href="$classvara_1_1feature_1_1MultiplicationConstraint.html" title=" " alt="" coords="305,341,508,382"/>
+<area shape="rect" id="node9" href="$classvara_1_1feature_1_1NegConstraint.html" title=" " alt="" coords="303,407,510,433"/>
+<area shape="rect" id="node10" href="$classvara_1_1feature_1_1SubtractionConstraint.html" title=" " alt="" coords="313,458,501,499"/>
+</map>
