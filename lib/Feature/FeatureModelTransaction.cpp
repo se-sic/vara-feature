@@ -80,7 +80,6 @@ void removeFeatures(FeatureModel &FM,
     std::copy(RemainingFeatures.begin(), RemainingFeatures.end(),
               CopiedFeatures);
   }
-  // TODO: delete features
   Trans.commit();
 }
 
