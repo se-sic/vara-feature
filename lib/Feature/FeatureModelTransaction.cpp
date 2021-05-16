@@ -38,7 +38,10 @@ void removeFeatures(FeatureModel &FM,
                     std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
                     bool Recursive) {
   // Iterate over Features and deleted them iff they are leaves (don't have
-  // children)
+  // children).
+  // Even if we are in the recursive mode, we need to delete the children among
+  // FeaturesToBeDeleted first. Otherwise, the commit gets stuck in an endless
+  // loop.
   std::vector<detail::FeatureVariantTy> RemainingFeatures;
   std::copy(FeaturesToBeDeleted.begin(), FeaturesToBeDeleted.end(),
             std::back_inserter(RemainingFeatures));
@@ -57,12 +60,12 @@ void removeFeatures(FeatureModel &FM,
         DeleteFeatures.emplace_back(*FeatureIterator);
       }
     }
-    // We have only parents left with children that should not be deleted -->
-    // error
+    // We are not in recursive mode and have only parents left with children
+    // that should not be deleted --> abort execution
     if (DeleteFeatures.empty()) {
       Trans.commit();
       if (Recursive) {
-        removeFeaturesRecursive(FM, std::move(RemainingFeatures));
+        removeFeaturesRecursively(FM, std::move(RemainingFeatures));
       }
       // TODO: return list of non-deletable Features?
       return;
@@ -79,7 +82,7 @@ void removeFeatures(FeatureModel &FM,
   }
 }
 
-void removeFeaturesRecursive(
+void removeFeaturesRecursively(
     FeatureModel &FM,
     std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);

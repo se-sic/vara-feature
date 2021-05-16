@@ -1013,7 +1013,7 @@ void removeFeatures(FeatureModel &FM,
 ///
 /// \param FM
 /// \param FeaturesToBeDeleted
-void removeFeaturesRecursive(
+void removeFeaturesRecursively(
     FeatureModel &FM,
     std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted);
 
