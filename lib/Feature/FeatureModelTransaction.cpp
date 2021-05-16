@@ -1,5 +1,7 @@
 #include "vara/Feature/FeatureModelTransaction.h"
 
+#include "vara/Utils/VariantUtil.h"
+
 #include <iostream>
 
 namespace vara::feature {
@@ -50,10 +52,13 @@ void removeFeatures(FeatureModel &FM,
     std::vector<detail::FeatureVariantTy> DeleteFeatures;
     for (auto FeatureIterator = RemainingFeatures.begin();
          FeatureIterator != RemainingFeatures.end(); ++FeatureIterator) {
-      Feature *ActualFeature =
-          std::get_if<Feature *>(&(*FeatureIterator))
-              ? std::get<Feature *>((*FeatureIterator))
-              : FM.getFeature(std::get<string>((*FeatureIterator)));
+      Feature *ActualFeature;
+      std::visit(
+          Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
+                     [&ActualFeature, &FM](string &F) {
+                       ActualFeature = FM.getFeature(F);
+                     }},
+          *FeatureIterator);
       // if Feature is not a parent it can be deleted
       if (ActualFeature->children().empty()) {
         Trans.removeFeature(*FeatureIterator, Recursive);
