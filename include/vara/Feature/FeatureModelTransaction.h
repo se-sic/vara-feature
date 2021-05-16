@@ -1004,9 +1004,18 @@ void removeFeature(FeatureModel &FM,
 ///
 /// \param FM
 /// \param FeaturesToBeDeleted
+/// \param Recursive
 void removeFeatures(FeatureModel &FM,
                     std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
                     bool Recursive = false);
+
+/// Removes multiple Features from the FeatureModel recursively
+///
+/// \param FM
+/// \param FeaturesToBeDeleted
+void removeFeaturesRecursive(
+    FeatureModel &FM,
+    std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted);
 
 /// Set commit of a FeatureModel.
 ///

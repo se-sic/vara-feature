@@ -57,6 +57,16 @@ void removeFeatures(FeatureModel &FM,
         DeleteFeatures.emplace_back(*FeatureIterator);
       }
     }
+    // We have only parents left with children that should not be deleted -->
+    // error
+    if (DeleteFeatures.empty()) {
+      Trans.commit();
+      if (Recursive) {
+        removeFeaturesRecursive(FM, std::move(RemainingFeatures));
+      }
+      // TODO: return list of non-deletable Features?
+      return;
+    }
     std::sort(DeleteFeatures.begin(), DeleteFeatures.end());
     RemainingFeatures.erase(
         std::remove_if(RemainingFeatures.begin(), RemainingFeatures.end(),
@@ -67,7 +77,16 @@ void removeFeatures(FeatureModel &FM,
         RemainingFeatures.end());
     Trans.commit();
   }
-  // TODO: return list of non-deletable Features?
+}
+
+void removeFeaturesRecursive(
+    FeatureModel &FM,
+    std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted) {
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+  for (detail::FeatureVariantTy FeatureVariant : FeaturesToBeDeleted) {
+    Trans.removeFeature(FeatureVariant, true);
+  }
+  Trans.commit();
 }
 
 void setCommit(FeatureModel &FM, std::string NewCommit) {
