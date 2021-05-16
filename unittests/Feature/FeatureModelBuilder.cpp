@@ -40,22 +40,20 @@ TEST(FeatureModelBuilder, addImpliedExcludeConstraint) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
   B.makeFeature<BinaryFeature>("b");
-  auto C = std::make_unique<ImpliesConstraint>(
+  auto InputConstraint = std::make_unique<ImpliesConstraint>(
       std::make_unique<PrimaryFeatureConstraint>(
           std::make_unique<Feature>("a")),
       std::make_unique<NotConstraint>(
           std::make_unique<PrimaryFeatureConstraint>(
               std::make_unique<Feature>("b"))));
-  auto Expected = C->toString();
+  auto ExpectedConstraint = InputConstraint->clone();
 
-  B.addConstraint(std::move(C));
+  B.addConstraint(std::move(InputConstraint));
 
   auto FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
-
-  EXPECT_EQ(
-      (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
-      Expected);
+  EXPECT_EQ(*((*FM->getFeature("a")->constraints().begin())->getRoot()),
+            *ExpectedConstraint);
 }
 
 // TODO(se-passau/VaRA#701): Replace string equals with subtree comparison

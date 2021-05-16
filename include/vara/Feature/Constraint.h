@@ -1,10 +1,13 @@
 #ifndef VARA_FEATURE_CONSTRAINT_H
 #define VARA_FEATURE_CONSTRAINT_H
 
+#include "vara/Utils/VariantUtil.h"
+
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/FormatVariadic.h"
 
 #include <cassert>
+#include <llvm/Support/Casting.h>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -52,6 +55,9 @@ public:
   Constraint &operator=(Constraint &) = delete;
   Constraint(Constraint &&) = delete;
   Constraint &operator=(Constraint &&) = delete;
+  bool operator==(const Constraint &Other) const {
+    return this->equals(Other);
+  };
   virtual ~Constraint() = default;
 
   [[nodiscard]] ConstraintKind getKind() const { return Kind; };
@@ -80,6 +86,8 @@ public:
   [[nodiscard]] virtual std::string toHTML() const { return toString(); }
 
   virtual void accept(ConstraintVisitor &V) = 0;
+
+  [[nodiscard]] virtual bool equals(const Constraint &Other) const = 0;
 
 private:
   const ConstraintKind Kind;
@@ -120,6 +128,15 @@ public:
       : BinaryConstraint(ConstraintKind::CK_OR, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  bool equals(const Constraint &Other) const override {
+    auto *OtherOr = llvm::dyn_cast<OrConstraint>(&Other);
+    if (OtherOr) {
+      return LeftOperand == OtherOr->LeftOperand &&
+             RightOperand == OtherOr->RightOperand;
+    }
+    return false;
+  }
+
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<OrConstraint>(this->getLeftOperand()->clone(),
                                           this->getRightOperand()->clone());
@@ -142,6 +159,15 @@ public:
       : BinaryConstraint(ConstraintKind::CK_XOR, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  bool equals(const Constraint &Other) const override {
+    auto *OtherXor = llvm::dyn_cast<XorConstraint>(&Other);
+    if (OtherXor) {
+      return LeftOperand == OtherXor->LeftOperand &&
+             RightOperand == OtherXor->RightOperand;
+    }
+    return false;
+  }
+
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<XorConstraint>(this->getLeftOperand()->clone(),
                                            this->getRightOperand()->clone());
@@ -163,6 +189,15 @@ public:
                 std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_AND, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherAnd = llvm::dyn_cast<AndConstraint>(&Other);
+    if (OtherAnd) {
+      return LeftOperand == OtherAnd->LeftOperand &&
+             RightOperand == OtherAnd->RightOperand;
+    }
+    return false;
+  }
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<AndConstraint>(this->getLeftOperand()->clone(),
@@ -191,6 +226,15 @@ public:
       : BinaryConstraint(ConstraintKind::CK_EQUALS, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  bool equals(const Constraint &Other) const override {
+    auto *OtherEquals = llvm::dyn_cast<EqualsConstraint>(&Other);
+    if (OtherEquals) {
+      return LeftOperand == OtherEquals->LeftOperand &&
+             RightOperand == OtherEquals->RightOperand;
+    }
+    return false;
+  }
+
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<EqualsConstraint>(this->getLeftOperand()->clone(),
                                               this->getRightOperand()->clone());
@@ -212,6 +256,15 @@ public:
                     std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_IMPLIES, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherImplies = llvm::dyn_cast<ImpliesConstraint>(&Other);
+    if (OtherImplies) {
+      return LeftOperand->equals(*(OtherImplies->LeftOperand)) &&
+             RightOperand->equals(*(OtherImplies->RightOperand));
+    }
+    return false;
+  }
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<ImpliesConstraint>(
@@ -239,6 +292,15 @@ public:
                      std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_EXCLUDES, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherExcludes = llvm::dyn_cast<ExcludesConstraint>(&Other);
+    if (OtherExcludes) {
+      return LeftOperand->equals(*(OtherExcludes->LeftOperand)) &&
+             RightOperand->equals(*(OtherExcludes->RightOperand));
+    }
+    return false;
+  }
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<ExcludesConstraint>(
@@ -268,6 +330,15 @@ public:
       : BinaryConstraint(ConstraintKind::CK_EQUIVALENCE, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  bool equals(const Constraint &Other) const override {
+    auto *OtherEquivalence = llvm::dyn_cast<EquivalenceConstraint>(&Other);
+    if (OtherEquivalence) {
+      return LeftOperand->equals(*(OtherEquivalence->LeftOperand)) &&
+             RightOperand->equals(*(OtherEquivalence->RightOperand));
+    }
+    return false;
+  }
+
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<EquivalenceConstraint>(
         this->getLeftOperand()->clone(), this->getRightOperand()->clone());
@@ -295,6 +366,15 @@ public:
       : BinaryConstraint(ConstraintKind::CK_ADDITION, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  bool equals(const Constraint &Other) const override {
+    auto *OtherAddition = llvm::dyn_cast<AdditionConstraint>(&Other);
+    if (OtherAddition) {
+      return LeftOperand->equals(*(OtherAddition->LeftOperand)) &&
+             RightOperand->equals(*(OtherAddition->RightOperand));
+    }
+    return false;
+  }
+
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<AdditionConstraint>(
         this->getLeftOperand()->clone(), this->getRightOperand()->clone());
@@ -317,6 +397,15 @@ public:
                         std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_SUBTRACTION, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherSubtraction = llvm::dyn_cast<SubtractionConstraint>(&Other);
+    if (OtherSubtraction) {
+      return LeftOperand->equals(*(OtherSubtraction->LeftOperand)) &&
+             RightOperand->equals(*(OtherSubtraction->RightOperand));
+    }
+    return false;
+  }
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<SubtractionConstraint>(
@@ -341,6 +430,16 @@ public:
       : BinaryConstraint(ConstraintKind::CK_MULTIPLICATION,
                          std::move(LeftOperand), std::move(RightOperand)) {}
 
+  bool equals(const Constraint &Other) const override {
+    auto *OtherMultiplication =
+        llvm::dyn_cast<MultiplicationConstraint>(&Other);
+    if (OtherMultiplication) {
+      return LeftOperand->equals(*(OtherMultiplication->LeftOperand)) &&
+             RightOperand->equals(*(OtherMultiplication->RightOperand));
+    }
+    return false;
+  }
+
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<MultiplicationConstraint>(
         this->getLeftOperand()->clone(), this->getRightOperand()->clone());
@@ -363,6 +462,15 @@ public:
       : BinaryConstraint(ConstraintKind::CK_DIVISION, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  bool equals(const Constraint &Other) const override {
+    auto *OtherDivision = llvm::dyn_cast<DivisionConstraint>(&Other);
+    if (OtherDivision) {
+      return LeftOperand->equals(*(OtherDivision->LeftOperand)) &&
+             RightOperand->equals(*(OtherDivision->RightOperand));
+    }
+    return false;
+  }
+
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<DivisionConstraint>(
         this->getLeftOperand()->clone(), this->getRightOperand()->clone());
@@ -384,6 +492,15 @@ public:
                  std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_LESS, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherLess = llvm::dyn_cast<LessConstraint>(&Other);
+    if (OtherLess) {
+      return LeftOperand->equals(*(OtherLess->LeftOperand)) &&
+             RightOperand->equals(*(OtherLess->RightOperand));
+    }
+    return false;
+  }
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<LessConstraint>(this->getLeftOperand()->clone(),
@@ -412,6 +529,15 @@ public:
       : BinaryConstraint(ConstraintKind::CK_GREATER, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
+  bool equals(const Constraint &Other) const override {
+    auto *OtherGreater = llvm::dyn_cast<GreaterConstraint>(&Other);
+    if (OtherGreater) {
+      return LeftOperand->equals(*(OtherGreater->LeftOperand)) &&
+             RightOperand->equals(*(OtherGreater->RightOperand));
+    }
+    return false;
+  }
+
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<GreaterConstraint>(
         this->getLeftOperand()->clone(), this->getRightOperand()->clone());
@@ -438,6 +564,15 @@ public:
                       std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_LESSEQUAL, std::move(LeftOperand),
                          std::move(RightOperand)) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherLessEqual = llvm::dyn_cast<LessEqualConstraint>(&Other);
+    if (OtherLessEqual) {
+      return LeftOperand->equals(*(OtherLessEqual->LeftOperand)) &&
+             RightOperand->equals(*(OtherLessEqual->RightOperand));
+    }
+    return false;
+  }
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<LessEqualConstraint>(
@@ -466,6 +601,15 @@ public:
                          std::unique_ptr<Constraint> RightOperand)
       : BinaryConstraint(ConstraintKind::CK_GREATEREQUAL,
                          std::move(LeftOperand), std::move(RightOperand)) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherGreaterEqual = llvm::dyn_cast<GreaterEqualConstraint>(&Other);
+    if (OtherGreaterEqual) {
+      return LeftOperand->equals(*(OtherGreaterEqual->LeftOperand)) &&
+             RightOperand->equals(*(OtherGreaterEqual->RightOperand));
+    }
+    return false;
+  }
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<GreaterEqualConstraint>(
@@ -507,6 +651,14 @@ public:
   NotConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(ConstraintKind::CK_NOT, std::move(Operand)) {}
 
+  bool equals(const Constraint &Other) const override {
+    auto *OtherNot = llvm::dyn_cast<NotConstraint>(&Other);
+    if (OtherNot) {
+      return Operand->equals(*(OtherNot->Operand));
+    }
+    return false;
+  }
+
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<NotConstraint>(this->getOperand()->clone());
   }
@@ -524,6 +676,14 @@ class NegConstraint : public UnaryConstraint, public NumericConstraint {
 public:
   NegConstraint(std::unique_ptr<Constraint> Operand)
       : UnaryConstraint(ConstraintKind::CK_NEG, std::move(Operand)) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherNeg = llvm::dyn_cast<NegConstraint>(&Other);
+    if (OtherNeg) {
+      return Operand->equals(*(OtherNeg->Operand));
+    }
+    return false;
+  }
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<NegConstraint>(this->getOperand()->clone());
@@ -549,6 +709,15 @@ class PrimaryIntegerConstraint : public PrimaryConstraint {
 public:
   PrimaryIntegerConstraint(int Value)
       : PrimaryConstraint(ConstraintKind::CK_INTEGER), Value(Value) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherPrimaryInteger =
+        llvm::dyn_cast<PrimaryIntegerConstraint>(&Other);
+    if (OtherPrimaryInteger) {
+      return this->Value == OtherPrimaryInteger->Value;
+    }
+    return false;
+  }
 
   [[nodiscard]] int getValue() const { return Value; }
 
@@ -582,6 +751,35 @@ class PrimaryFeatureConstraint : public PrimaryConstraint {
 public:
   PrimaryFeatureConstraint(std::variant<Feature *, std::unique_ptr<Feature>> FV)
       : PrimaryConstraint(ConstraintKind::CK_FEATURE), FV(std::move(FV)) {}
+
+  bool equals(const Constraint &Other) const override {
+    auto *OtherPrimaryFeature =
+        llvm::dyn_cast<PrimaryFeatureConstraint>(&Other);
+    if (OtherPrimaryFeature) {
+      // Since FV can contains pointers and equals comparison does not compare
+      // values for pointers, this needs to be done manually
+      Feature *ActualFeature;
+      std::visit(
+          Overloaded{[&ActualFeature](Feature *F) { ActualFeature = F; },
+                     [&ActualFeature](const std::unique_ptr<Feature> &F) {
+                       ActualFeature = F.get();
+                     }},
+          FV);
+      Feature *ActualOtherFeature;
+      std::visit(
+          Overloaded{
+              [&ActualOtherFeature](Feature *F) { ActualOtherFeature = F; },
+              [&ActualOtherFeature](const std::unique_ptr<Feature> &F) {
+                ActualOtherFeature = F.get();
+              }},
+          OtherPrimaryFeature->FV);
+
+      // TODO: f-701 it seems that here are really two different values inside.
+      // Maybe copy in addImpliedExcludeConstraint fails
+      return (&(*ActualFeature)) == (&(*ActualOtherFeature));
+    }
+    return false;
+  }
 
   [[nodiscard]] Feature *getFeature() const;
 
