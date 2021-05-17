@@ -36,17 +36,49 @@ void init_feature_model_module(py::module &M) {
           },
           py::return_value_policy::reference, R"pbdoc(Returns Feature.)pbdoc")
       .def(
-          "add_feature",
-          [](vf::FeatureModel &FM, vf::Feature &NewFeature,
-             vf::Feature &Parent) {
-            // TODO. Pybind does not allow to pass a unique pointer into
-            // functions, since python has no concept of releasing ownership
-            // (https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html).
-            // While there is some work in progress to allow this, for now we
-            // can either create a copy of the Feature or make a custom smart
-            // pointer. vf::addFeature(FM, std::move(NewFeature), &Parent);
+          "add_binary_feature",
+          [](vf::FeatureModel &FM, vf::Feature &Parent, std::string Name,
+             bool Opt) {
+            vf::addFeature(
+                FM, std::make_unique<vf::BinaryFeature>(std::move(Name), Opt),
+                &Parent);
           },
-          R"pbdoc(Add Feature model.)pbdoc")
+          R"pbdoc(Add binary feature with given properties to Feature model.)pbdoc")
+      .def(
+          "add_binary_feature",
+          [](vf::FeatureModel &FM, vf::Feature &Parent, std::string Name,
+             bool Opt,
+             std::vector<vara::feature::FeatureSourceRange> Locations) {
+            vf::addFeature(FM,
+                           std::make_unique<vf::BinaryFeature>(
+                               std::move(Name), Opt, std::move(Locations)),
+                           &Parent);
+          },
+          R"pbdoc(Add binary feature with given properties to Feature model.)pbdoc")
+      .def(
+          "add_numeric_feature",
+          [](vf::FeatureModel &FM, vf::Feature &Parent, std::string Name,
+             std::variant<std::pair<int, int>, std::vector<int>> Values,
+             bool Opt) {
+            vf::addFeature(FM,
+                           std::make_unique<vf::NumericFeature>(
+                               std::move(Name), std::move(Values), Opt),
+                           &Parent);
+          },
+          R"pbdoc(Add numeric feature with given properties to Feature model.)pbdoc")
+      .def(
+          "add_numeric_feature",
+          [](vf::FeatureModel &FM, vf::Feature &Parent, std::string Name,
+             std::variant<std::pair<int, int>, std::vector<int>> Values,
+             bool Opt,
+             std::vector<vara::feature::FeatureSourceRange> Locations) {
+            vf::addFeature(FM,
+                           std::make_unique<vf::NumericFeature>(
+                               std::move(Name), std::move(Values), Opt,
+                               std::move(Locations)),
+                           &Parent);
+          },
+          R"pbdoc(Add numeric feature with given properties to Feature model.)pbdoc")
       .def(
           "remove_feature",
           [](vf::FeatureModel &FM, vf::Feature &OldFeature, bool Recursive) {
@@ -54,7 +86,8 @@ void init_feature_model_module(py::module &M) {
           },
           py::arg(), py::arg("recursive") = false,
           R"pbdoc(Remove Feature from model.)pbdoc")
-      .def("merge_with", &vf::mergeFeatureModels,
+      .def("merge_with", &vf::mergeFeatureModels, py::arg(),
+           py::arg("strict") = true,
            R"pbdoc(Merge with other Feature model.)pbdoc")
       .def("size", &vf::FeatureModel::size,
            R"pbdoc(Returns the amount of Features in the Model.)pbdoc")

@@ -5,9 +5,9 @@
 namespace vara::feature {
 
 bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel const &FM,
-                  Feature &F);
+                  Feature &F, bool Strict);
 std::unique_ptr<Feature> FeatureCopy(Feature &F);
-bool CompareProperties(const Feature &F1, const Feature &F2);
+bool CompareProperties(const Feature &F1, const Feature &F2, bool Strict);
 
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent) {
@@ -31,9 +31,9 @@ void addRelationship(FeatureModel &FM, Feature *GroupRoot,
   Trans.commit();
 }
 
-void removeRelationship(FeatureModel &FM, detail::FeatureVariantTy &Parent) {
+void removeRelationship(FeatureModel &FM, detail::FeatureVariantTy &GroupRoot) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
-  Trans.removeRelationship(Parent);
+  Trans.removeRelationship(GroupRoot);
   Trans.commit();
 }
 
@@ -44,9 +44,9 @@ void setCommit(FeatureModel &FM, std::string NewCommit) {
 }
 
 [[nodiscard]] std::unique_ptr<FeatureModel>
-mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
+mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
   auto Trans = FeatureModelCopyTransaction::openTransaction(FM1);
-  if (!mergeSubtree(Trans, FM1, *FM2.getRoot())) {
+  if (!mergeSubtree(Trans, FM1, *FM2.getRoot(), Strict)) {
     Trans.abort();
     return nullptr;
   }
@@ -54,10 +54,11 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
 }
 
 [[nodiscard]] bool mergeSubtree(FeatureModelCopyTransaction &Trans,
-                                FeatureModel const &FM, Feature &F) {
+                                FeatureModel const &FM, Feature &F,
+                                bool Strict) {
   // Is there a similar Feature in the original FM
   if (Feature *CMP = FM.getFeature(F.getName())) {
-    if (CompareProperties(*CMP, F)) {
+    if (CompareProperties(*CMP, F, Strict)) {
       // similar feature, maybe merge locations
       for (FeatureSourceRange const &FSR : F.getLocations()) {
         if (std::find(CMP->getLocationsBegin(), CMP->getLocationsEnd(), FSR) ==
@@ -78,7 +79,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
 
   // copy children if missing
   for (Feature *Child : F.getChildren<Feature>()) {
-    if (!mergeSubtree(Trans, FM, *Child)) {
+    if (!mergeSubtree(Trans, FM, *Child, Strict)) {
       return false;
     }
   }
@@ -107,21 +108,30 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2) {
   return nullptr;
 }
 
-[[nodiscard]] bool CompareProperties(const Feature &F1, const Feature &F2) {
+[[nodiscard]] bool CompareProperties(const Feature &F1, const Feature &F2,
+                                     bool Strict) {
   if (F1.getName() != F2.getName()) {
+    return false;
+  }
+  if (F1.getKind() != Feature::FeatureKind::FK_ROOT &&
+      F2.getKind() != Feature::FeatureKind::FK_ROOT) {
+    if (*(F1.getParentFeature()) != *(F2.getParentFeature())) {
+      return false;
+    }
+  }
+  if (!Strict) {
+    // strict merging still requires equal parent names, otherwise we might
+    // introduce implicit constraint due to model structure, e.g. merging group
+    return true;
+  }
+  if (F1.isOptional() != F2.isOptional()) {
     return false;
   }
   if (F1.getKind() != F2.getKind()) {
     return false;
   }
-  if (F1.isOptional() != F2.isOptional()) {
-    return false;
-  }
   if (F1.getKind() == Feature::FeatureKind::FK_ROOT) {
     return true;
-  }
-  if (*(F1.getParentFeature()) != *(F2.getParentFeature())) {
-    return false;
   }
   if (F1.getParent()->getKind() != F2.getParent()->getKind()) {
     return false;

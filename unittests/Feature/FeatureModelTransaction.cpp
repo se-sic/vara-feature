@@ -247,7 +247,7 @@ TEST_F(FeatureModelMergeTransactionTest, Simple) {
   auto FM2 = B.buildFeatureModel();
   ASSERT_TRUE(FM2);
 
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   ASSERT_TRUE(FMMerged);
 
   Feature *F1 = FMMerged->getFeature("a");
@@ -261,7 +261,7 @@ TEST_F(FeatureModelMergeTransactionTest, Simple) {
 TEST_F(FeatureModelMergeTransactionTest, Idempotence) {
   size_t FMSizeBefore = FM->size();
 
-  auto FMMerged = mergeFeatureModels(*FM, *FM);
+  auto FMMerged = mergeFeatureModels(*FM, *FM, true);
   ASSERT_TRUE(FMMerged);
 
   EXPECT_EQ(FMSizeBefore, FMMerged->size());
@@ -284,7 +284,7 @@ TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
   auto FM2 = B.buildFeatureModel();
   ASSERT_TRUE(FM2);
 
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   ASSERT_TRUE(FMMerged);
 
   Feature *F = FMMerged->getFeature("a");
@@ -309,7 +309,7 @@ TEST_F(FeatureModelMergeTransactionTest, MultipleLevels) {
   auto FM2 = B.buildFeatureModel();
   ASSERT_TRUE(FM2);
 
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   ASSERT_TRUE(FMMerged);
 
   EXPECT_EQ(FMSizeBefore + 3, FMMerged->size());
@@ -330,8 +330,21 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceOptional) {
   ASSERT_TRUE(FM2);
 
   // Expect fail, property optional is different
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   EXPECT_FALSE(FMMerged);
+}
+
+TEST_F(FeatureModelMergeTransactionTest, AcceptNonStrictDifferenceOptional) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", false);
+  auto FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, false);
+  ASSERT_TRUE(FMMerged);
+  Feature *F1 = FMMerged->getFeature("a");
+  EXPECT_TRUE(F1);
+  EXPECT_TRUE(F1->isOptional());
 }
 
 TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceParent) {
@@ -343,7 +356,20 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceParent) {
   ASSERT_TRUE(FM2);
 
   // Expect fail, feature a has different parents; root vs. b
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
+  EXPECT_FALSE(FMMerged);
+}
+
+TEST_F(FeatureModelMergeTransactionTest, RejectNonStrictDifferenceParent) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("b", true);
+  B.addEdge("b", "a");
+  B.makeFeature<BinaryFeature>("a", true);
+  auto FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  // Expect fail, feature a has different parents; root vs. b
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, false);
   EXPECT_FALSE(FMMerged);
 }
 
@@ -354,8 +380,21 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceKind) {
   ASSERT_TRUE(FM2);
 
   // Expect fail, feature a has different kinds; binary vs. numeric
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   EXPECT_FALSE(FMMerged);
+}
+
+TEST_F(FeatureModelMergeTransactionTest, AcceptNonStrictDifferenceKind) {
+  FeatureModelBuilder B;
+  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3}, true);
+  auto FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, false);
+  EXPECT_TRUE(FMMerged);
+  Feature *F1 = FMMerged->getFeature("a");
+  EXPECT_TRUE(F1);
+  EXPECT_EQ(F1->getKind(), Feature::FeatureKind::FK_BINARY);
 }
 
 //===----------------------------------------------------------------------===//

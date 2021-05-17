@@ -990,6 +990,20 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
 void removeFeature(FeatureModel &FM, Feature *OldFeature,
                    bool Recursive = false);
 
+/// Adds a Relationship to a Feature
+///
+/// \param FM
+/// \param GroupRoot of relationship group
+/// \param Kind of relationship
+void addRelationship(FeatureModel &FM, Feature *GroupRoot,
+                     Relationship::RelationshipKind Kind);
+
+/// Removes the Relationship from Group
+///
+/// \param FM
+/// \param GroupRoot of Relationship
+void removeRelationship(FeatureModel &FM, detail::FeatureVariantTy &GroupRoot);
+
 /// Set commit of a FeatureModel.
 ///
 /// \param FM
@@ -998,15 +1012,17 @@ void setCommit(FeatureModel &FM, std::string NewCommit);
 
 /// Merges a FeatureModel into another
 ///
-/// Merging fails if both FeatureModels contain a Feature with equal name,
-/// but different properties.
+/// Strict merging fails if both FeatureModels contain a Feature with equal
+/// name, but different properties. Non-strict merging prefers properties of
+/// Feature in \p FM1.
 ///
 /// \param FM1
 /// \param FM2
+/// \param Strict mode
 ///
 /// \return New merged FeatureModel or nullptr if merging failed
 [[nodiscard]] std::unique_ptr<FeatureModel>
-mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2);
+mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict = true);
 
 } // namespace vara::feature
 
