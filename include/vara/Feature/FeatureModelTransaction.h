@@ -114,7 +114,7 @@ public:
     }
   }
 
-  void removeRelationship(detail::FeatureVariantTy &F) {
+  void removeRelationship(const detail::FeatureVariantTy &F) {
     this->removeRelationshipImpl(F);
   }
 
@@ -760,7 +760,7 @@ protected:
                                            Parent)))(*FM);
   }
 
-  void removeRelationshipImpl(FeatureVariantTy &F) {
+  void removeRelationshipImpl(const FeatureVariantTy &F) {
     assert(FM && "");
 
     return FeatureModelModification::make_modification<
@@ -897,7 +897,7 @@ protected:
                             AddRelationshipToModel>(Kind, Parent));
   }
 
-  void removeRelationshipImpl(FeatureVariantTy &F) {
+  void removeRelationshipImpl(const FeatureVariantTy &F) {
     Modifications.push_back(FeatureModelModification::make_unique_modification<
                             RemoveRelationshipFromModel>(F));
   }
@@ -1005,14 +1005,16 @@ void removeFeature(FeatureModel &FM,
 /// \param FM
 /// \param GroupRoot of relationship group
 /// \param Kind of relationship
-void addRelationship(FeatureModel &FM, Feature *GroupRoot,
+void addRelationship(FeatureModel &FM,
+                     const detail::FeatureVariantTy &GroupRoot,
                      Relationship::RelationshipKind Kind);
 
 /// Removes the Relationship from Group
 ///
 /// \param FM
 /// \param GroupRoot of Relationship
-void removeRelationship(FeatureModel &FM, detail::FeatureVariantTy &GroupRoot);
+void removeRelationship(FeatureModel &FM,
+                        const detail::FeatureVariantTy &GroupRoot);
 
 /// Set commit of a FeatureModel.
 ///

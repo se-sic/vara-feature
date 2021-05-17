@@ -34,15 +34,16 @@ void removeFeature(FeatureModel &FM,
   Trans.commit();
 }
 
-void addRelationship(FeatureModel &FM, Feature *GroupRoot,
+void addRelationship(FeatureModel &FM,
+                     const detail::FeatureVariantTy &GroupRoot,
                      Relationship::RelationshipKind Kind) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
-  detail::FeatureVariantTy GR = detail::FeatureVariantTy(GroupRoot);
-  Trans.addRelationship(Kind, GR);
+  Trans.addRelationship(Kind, GroupRoot);
   Trans.commit();
 }
 
-void removeRelationship(FeatureModel &FM, detail::FeatureVariantTy &GroupRoot) {
+void removeRelationship(FeatureModel &FM,
+                        const detail::FeatureVariantTy &GroupRoot) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   Trans.removeRelationship(GroupRoot);
   Trans.commit();

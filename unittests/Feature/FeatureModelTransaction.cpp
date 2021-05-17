@@ -940,4 +940,42 @@ TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
   EXPECT_FALSE(FM->getFeature("ab"));
 }
 
+TEST_F(FeatureModelTransactionTest, addRelationshipToGroup) {
+  size_t FMSizeBefore = FM->size();
+
+  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("aa"),
+                                          FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
+                                          FM->getFeature("a")));
+  vara::feature::addFeatures(*FM, std::move(NewFeatures));
+  ASSERT_EQ(FMSizeBefore + 2, FM->size());
+
+  vara::feature::addRelationship(*FM, FM->getFeature("a"),
+                                 Relationship::RelationshipKind::RK_OR);
+  EXPECT_EQ(FMSizeBefore + 2, FM->size());
+  EXPECT_EQ(FM->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  EXPECT_EQ(FM->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+TEST_F(FeatureModelTransactionTest, removeRelationshipFromGroup) {
+  size_t FMSizeBefore = FM->size();
+
+  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("aa"),
+                                          FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
+                                          FM->getFeature("a")));
+  vara::feature::addFeatures(*FM, std::move(NewFeatures));
+  vara::feature::addRelationship(*FM, FM->getFeature("a"),
+                                 Relationship::RelationshipKind::RK_OR);
+  vara::feature::removeRelationship(*FM, FM->getFeature("a"));
+  EXPECT_EQ(FMSizeBefore + 2, FM->size());
+  EXPECT_NE(FM->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  EXPECT_NE(FM->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
 } // namespace vara::feature
