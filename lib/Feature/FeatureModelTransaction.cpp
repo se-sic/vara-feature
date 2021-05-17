@@ -16,10 +16,21 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
   Trans.commit();
 }
 
-void removeFeature(FeatureModel &FM, Feature *OldFeature, bool Recursive) {
+void addFeatures(
+    FeatureModel &FM,
+    std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
-  detail::FeatureVariantTy F = detail::FeatureVariantTy(OldFeature);
-  Trans.removeFeature(F, Recursive);
+  for (auto &NewFeature : NewFeatures) {
+    Trans.addFeature(std::move(NewFeature.first), NewFeature.second);
+  }
+  Trans.commit();
+}
+
+void removeFeature(FeatureModel &FM,
+                   detail::FeatureVariantTy FeatureToBeDeleted,
+                   bool Recursive) {
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+  Trans.removeFeature(FeatureToBeDeleted, Recursive);
   Trans.commit();
 }
 

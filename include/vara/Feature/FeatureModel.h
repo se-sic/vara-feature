@@ -44,7 +44,7 @@ public:
     addFeature(std::move(Root));
   }
 
-  [[nodiscard]] unsigned int size() { return Features.size(); }
+  [[nodiscard]] unsigned int size() const { return Features.size(); }
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
 
@@ -61,6 +61,9 @@ public:
                                            ptrdiff_t, Feature **, Feature *> {
 
   public:
+    using const_pointer = const Feature *const *;
+    using const_reference = const Feature *;
+
     DFSIterator(Feature *F = nullptr) {
       if (F) {
         Frontier.push(F);
@@ -76,7 +79,15 @@ public:
       return Frontier.empty() ? nullptr : Frontier.top();
     }
 
+    const_reference operator*() const {
+      return Frontier.empty() ? nullptr : Frontier.top();
+    }
+
     pointer operator->() {
+      return Frontier.empty() ? nullptr : &Frontier.top();
+    }
+
+    const_pointer operator->() const {
       return Frontier.empty() ? nullptr : &Frontier.top();
     }
 
@@ -160,6 +171,9 @@ public:
                              Feature *, Feature *> {
 
   public:
+    using const_pointer = const Feature *;
+    using const_reference = const Feature *;
+
     FeatureMapIterator(FeatureMapTy::const_iterator MapIter)
         : MapIter(MapIter) {}
     FeatureMapIterator(const FeatureMapIterator &) = default;
@@ -169,8 +183,10 @@ public:
     ~FeatureMapIterator() = default;
 
     reference operator*() { return MapIter->getValue().get(); }
+    const_reference operator*() const { return MapIter->getValue().get(); }
 
     pointer operator->() { return **this; }
+    const_pointer operator->() const { return **this; }
 
     FeatureMapIterator operator++() {
       ++MapIter;
@@ -224,7 +240,7 @@ public:
   /// Create deep clone of whole data structure.
   ///
   /// \return new \a FeatureModel
-  std::unique_ptr<FeatureModel> clone();
+  [[nodiscard]] std::unique_ptr<FeatureModel> clone() const;
 
   LLVM_DUMP_METHOD
   void dump() const;
@@ -293,7 +309,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
 
   GraphWriter(raw_ostream &O, const GraphType &G, bool SN) : O(O), G(G) {}
 
-  void writeGraph(const std::string &Title = "") {
+  void writeGraph(const std::string &Title = "") const {
     // Output the header for the graph
     writeHeader(Title);
 
@@ -304,7 +320,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
     writeFooter();
   }
 
-  void writeHeader(const std::string &Title) {
+  void writeHeader(const std::string &Title) const {
     if (!Title.empty()) {
       O << "digraph \"" << DOT::EscapeString(Title) << "\" {\n";
     } else {
@@ -321,9 +337,9 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   }
 
   /// Output tree structure of feature model and additional edges.
-  void writeNodes() { emitCluster(G->getRoot()); }
+  void writeNodes() const { emitCluster(G->getRoot()); }
 
-  void writeFooter() { O << "}\n"; }
+  void writeFooter() const { O << "}\n"; }
 
   using FeatureEdgeSetTy = llvm::SmallSet<
       std::pair<vara::feature::Feature *, vara::feature::Feature *>, 10>;
@@ -344,7 +360,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   ///
   /// \param[in] Node Root of subtree.
   /// \param[in] Indent Value to indent statements in dot file.
-  void emitCluster(NodeRef Node, const int Indent = 0) {
+  void emitCluster(NodeRef Node, const int Indent = 0) const {
     O.indent(Indent);
     emitNode(Node);
     if (Node->begin() != Node->end()) {
@@ -375,7 +391,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   }
 
   /// Output \a Feature node with custom attributes.
-  void emitNode(NodeRef Node) {
+  void emitNode(NodeRef Node) const {
     std::string Label;
     std::string Shape;
     if (auto *F = llvm::dyn_cast<vara::feature::Feature>(Node); F) {
@@ -419,7 +435,7 @@ template <> struct GraphWriter<vara::feature::FeatureModel *> {
   }
 
   void emitEdge(NodeRef SrcNode, NodeRef DestNode,
-                const std::string &Attrs = "") {
+                const std::string &Attrs = "") const {
     O.indent(2) << "node_" << static_cast<void *>(SrcNode) << " -> node_"
                 << static_cast<void *>(DestNode);
     if (!Attrs.empty()) {

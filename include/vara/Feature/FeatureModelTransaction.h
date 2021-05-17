@@ -61,7 +61,7 @@ public:
   ~FeatureModelTransaction() {
     if constexpr (IsCopyMode) {
       assert(!this->isUncommitted() &&
-             "Transaction in CopyMode should be commited before destruction.");
+             "Transaction in CopyMode should be committed before destruction.");
     } else {
       if (this->isUncommitted()) {
         // In modification mode we should ensure that changes are committed
@@ -980,14 +980,24 @@ private:
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent = nullptr);
 
-/// Removes a Feature from the FeatureModel
+/// Adds multiple Features to the FeatureModel
 ///
-/// If the removed feature has Children the recursive option must be enabled.
+/// The vector of Features contains tuples of a parent and a new Feature.
+/// If a Parent is passed it needs to be already in the FeatureModel,
+/// otherwise, root is assumed as the parent Feature.
 ///
 /// \param FM
-/// \param OldFeature to remove
-/// \param Recursive removal of children
-void removeFeature(FeatureModel &FM, Feature *OldFeature,
+/// \param NewFeatures
+void addFeatures(
+    FeatureModel &FM,
+    std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures);
+
+/// Removes a Feature from the FeatureModel
+///
+/// \param FM
+/// \param FeatureToBeDeleted
+void removeFeature(FeatureModel &FM,
+                   detail::FeatureVariantTy FeatureToBeDeleted,
                    bool Recursive = false);
 
 /// Adds a Relationship to a Feature
