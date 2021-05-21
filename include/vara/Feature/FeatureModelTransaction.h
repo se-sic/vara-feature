@@ -731,7 +731,7 @@ protected:
   }
 
   void removeFeatureImpl(FeatureVariantTy &F, bool Recursive = false) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     FeatureModelModification::make_modification<RemoveFeatureFromModel>(
         TranslateFeature(*std::visit(Overloaded{
@@ -761,7 +761,7 @@ protected:
   }
 
   void removeRelationshipImpl(const FeatureVariantTy &F) {
-    assert(FM && "");
+    assert(FM && "Feature model is null.");
 
     return FeatureModelModification::make_modification<
         RemoveRelationshipFromModel>(TranslateFeature(*std::visit(
@@ -787,7 +787,7 @@ protected:
   }
 
   void removeLocationImpl(const FeatureVariantTy &F, FeatureSourceRange &FSR) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     FeatureModelModification::make_modification<RemoveLocationFromFeature>(
         TranslateFeature(*std::visit(Overloaded{

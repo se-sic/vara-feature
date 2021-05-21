@@ -6,7 +6,9 @@ namespace vara::feature {
 
 bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel const &FM,
                   Feature &F, bool Strict);
+
 std::unique_ptr<Feature> FeatureCopy(Feature &F);
+
 bool CompareProperties(const Feature &F1, const Feature &F2, bool Strict);
 
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
@@ -133,7 +135,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
   }
   if (!Strict) {
     // strict merging still requires equal parent names, otherwise we might
-    // introduce implicit constraint due to model structure, e.g. merging group
+    // introduce implicit constraint due to model structure, e.g., merging group
     return true;
   }
   if (F1.isOptional() != F2.isOptional()) {

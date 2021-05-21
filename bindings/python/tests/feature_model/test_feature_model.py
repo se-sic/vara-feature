@@ -94,7 +94,9 @@ class TestFeatureModelStatic(unittest.TestCase):
 
     def test_merge_models_idempotence(self):
         """ Checks if a feature model merged with itself is unchanged. """
+        test_size = self.fm.size()
         test_merged = self.fm.merge_with(self.fm)
+        self.assertEqual(test_size, test_merged.size())
 
         self.assertTrue(test_merged)
         self.assertTrue(test_merged.get_root())
@@ -107,29 +109,45 @@ class TestFeatureModelStatic(unittest.TestCase):
         self.assertTrue(test_merged.get_feature("N"))
 
     def test_merge_models(self):
-        """ Checks if merging a feature model with another works correctly. """
+        """
+        Checks if merging a feature model with another works correctly.
+
+        Merging should unify two models such each feature of both models is present in the resulting model.
+        Features should have the same parents as in their source models.
+        """
         with open(TEST_INPUTS_DIR / "simple_example_feature_model_merge.xml",
                   'r') as fm_file:
             parser = fm_parsers.FeatureModelXmlParser(fm_file.read())
             test_merge_fm = parser.build_feature_model()
         test_merged = self.fm.merge_with(test_merge_fm)
 
+        self.assertEqual(test_merged.size(), 11)
         self.assertTrue(test_merged.get_root())
         self.assertTrue(test_merged.get_feature("A"))
+        self.assertEqual(test_merged.get_feature("A").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("AA"))
+        self.assertEqual(test_merged.get_feature("AA").parent().name.str(), "A")
         self.assertTrue(test_merged.get_feature("AB"))
+        self.assertEqual(test_merged.get_feature("AB").parent().name.str(), "A")
         self.assertTrue(test_merged.get_feature("AC"))
+        self.assertEqual(test_merged.get_feature("AC").parent().name.str(), "A")
         self.assertTrue(test_merged.get_feature("B"))
+        self.assertEqual(test_merged.get_feature("B").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("C"))
+        self.assertEqual(test_merged.get_feature("C").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("N"))
+        self.assertEqual(test_merged.get_feature("N").parent().name.str(), "B")
         self.assertTrue(test_merged.get_feature("X"))
+        self.assertEqual(test_merged.get_feature("X").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("Y"))
+        self.assertEqual(test_merged.get_feature("Y").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("Z"))
+        self.assertEqual(test_merged.get_feature("Z").parent().name.str(), "root")
 
 
 class TestFeatureModelModifications(unittest.TestCase):
     """
-    Check if ur generated FeatureModel bindings work correctly.
+    Check if our generated FeatureModel bindings work correctly.
     """
 
     def setUp(cls):
@@ -139,6 +157,7 @@ class TestFeatureModelModifications(unittest.TestCase):
                   'r') as fm_file:
             parser = fm_parsers.FeatureModelXmlParser(fm_file.read())
             cls.fm = parser.build_feature_model()
+            cls.assertEqual(cls.fm.size(), 8)
 
     def test_add_binary_feature(self):
         test_feature_root = self.fm.get_root()
@@ -146,6 +165,7 @@ class TestFeatureModelModifications(unittest.TestCase):
         test_added_feature = self.fm.get_feature("New")
         self.assertTrue(test_added_feature)
         self.assertEqual(test_added_feature.parent(), test_feature_root)
+        self.assertEqual(self.fm.size(), 9)
 
     def test_add_numeric_with_pair_feature(self):
         test_feature_root = self.fm.get_root()
@@ -153,6 +173,7 @@ class TestFeatureModelModifications(unittest.TestCase):
         test_added_feature = self.fm.get_feature("New")
         self.assertTrue(test_added_feature)
         self.assertEqual(test_added_feature.parent(), test_feature_root)
+        self.assertEqual(self.fm.size(), 9)
 
     def test_add_numeric_with_list_feature(self):
         test_feature_root = self.fm.get_root()
@@ -160,6 +181,7 @@ class TestFeatureModelModifications(unittest.TestCase):
         test_added_feature = self.fm.get_feature("New")
         self.assertTrue(test_added_feature)
         self.assertEqual(test_added_feature.parent(), test_feature_root)
+        self.assertEqual(self.fm.size(), 9)
 
     def test_remove_feature_binary(self):
         """ Checks if a binary feature can be removed. """
@@ -167,6 +189,7 @@ class TestFeatureModelModifications(unittest.TestCase):
         self.fm.remove_feature(test_remove_feature)
 
         self.assertFalse(self.fm.get_feature("C"))
+        self.assertEqual(self.fm.size(), 7)
 
     def test_remove_feature_numeric(self):
         """ Checks if a numeric feature can be removed. """
@@ -174,6 +197,7 @@ class TestFeatureModelModifications(unittest.TestCase):
         self.fm.remove_feature(test_remove_feature)
 
         self.assertFalse(self.fm.get_feature("N"))
+        self.assertEqual(self.fm.size(), 7)
 
     def test_remove_feature_recursive(self):
         """ Checks if a subtree can be removed. """
@@ -184,3 +208,4 @@ class TestFeatureModelModifications(unittest.TestCase):
         self.assertFalse(self.fm.get_feature("AA"))
         self.assertFalse(self.fm.get_feature("AB"))
         self.assertFalse(self.fm.get_feature("AC"))
+        self.assertEqual(self.fm.size(), 4)
