@@ -956,10 +956,11 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
   EXPECT_EQ(FMSizeBefore, FM->size() - 3);
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ab"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
-  // ad should not be removed in without recursive mode because it this has a child
+  // ad should not be removed in without recursive mode because it this has a
+  // child
   EXPECT_TRUE(FM->getFeature("ad"));
   EXPECT_TRUE(FM->getFeature("ae"));
 }
@@ -1055,7 +1056,7 @@ TEST_F(FeatureModelTransactionTest,
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
   EXPECT_FALSE(FM->getFeature("ad"));
-  // should be remove in recursive mode because ae is a child of ad
+  // should be removed in recursive mode because ae is a child of ad
   EXPECT_FALSE(FM->getFeature("ae"));
 }
 
