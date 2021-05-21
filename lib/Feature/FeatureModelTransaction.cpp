@@ -52,19 +52,18 @@ void removeFeatures(FeatureModel &FM,
   while (!RemainingFeatures.empty()) {
     auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
     std::vector<detail::FeatureVariantTy> DeleteFeatures;
-    for (auto FeatureIterator = RemainingFeatures.begin();
-         FeatureIterator != RemainingFeatures.end(); ++FeatureIterator) {
+    for (auto &RemainingFeature : RemainingFeatures) {
       Feature *ActualFeature;
       std::visit(
           Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
                      [&ActualFeature, &FM](string &F) {
                        ActualFeature = FM.getFeature(F);
                      }},
-          *FeatureIterator);
+          RemainingFeature);
       // if Feature is not a parent it can be deleted
       if (ActualFeature->children().empty()) {
-        Trans.removeFeature(*FeatureIterator, Recursive);
-        DeleteFeatures.emplace_back(*FeatureIterator);
+        Trans.removeFeature(RemainingFeature, Recursive);
+        DeleteFeatures.emplace_back(RemainingFeature);
       }
     }
     // We are not in recursive mode and have only parents left with children
@@ -91,13 +90,11 @@ void removeFeatures(FeatureModel &FM,
                                             ActualFeature2 = FM.getFeature(F);
                                           }},
                                FV2);
-                    int foo1 = countNumberOfSuccessors(ActualFeature1);
-                    int foo2 = countNumberOfSuccessors(ActualFeature2);
 
                     return countNumberOfSuccessors(ActualFeature1) <
                            countNumberOfSuccessors(ActualFeature2);
                   });
-        removeFeaturesRecursively(FM, std::move(RemainingFeatures));
+        removeFeaturesRecursively(FM, RemainingFeatures);
       }
       // TODO: return list of non-deletable Features?
       return;
@@ -122,7 +119,7 @@ int countNumberOfSuccessors(FeatureTreeNode *F) {
   auto Count = std::distance(F->children().begin(), F->children().end());
 
   // count children of children
-  for (auto Child : F->children()) {
+  for (auto *Child : F->children()) {
     Count += countNumberOfSuccessors(Child);
   }
   return Count;
