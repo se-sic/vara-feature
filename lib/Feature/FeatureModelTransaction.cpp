@@ -2,7 +2,9 @@
 
 #include "vara/Utils/VariantUtil.h"
 
+#include <algorithm>
 #include <iostream>
+#include <vector>
 
 namespace vara::feature {
 
@@ -70,6 +72,31 @@ void removeFeatures(FeatureModel &FM,
     if (DeleteFeatures.empty()) {
       Trans.commit();
       if (Recursive) {
+        std::sort(RemainingFeatures.begin(), RemainingFeatures.end(),
+                  [&FM](detail::FeatureVariantTy &FV1,
+                        detail::FeatureVariantTy &FV2) -> bool {
+                    Feature *ActualFeature1;
+                    std::visit(Overloaded{[&ActualFeature1, &FM](Feature *F) {
+                                            ActualFeature1 = F;
+                                          },
+                                          [&ActualFeature1, &FM](string &F) {
+                                            ActualFeature1 = FM.getFeature(F);
+                                          }},
+                               FV1);
+                    Feature *ActualFeature2;
+                    std::visit(Overloaded{[&ActualFeature2, &FM](Feature *F) {
+                                            ActualFeature2 = F;
+                                          },
+                                          [&ActualFeature2, &FM](string &F) {
+                                            ActualFeature2 = FM.getFeature(F);
+                                          }},
+                               FV2);
+                    int foo1 = countNumberOfSuccessors(ActualFeature1);
+                    int foo2 = countNumberOfSuccessors(ActualFeature2);
+
+                    return countNumberOfSuccessors(ActualFeature1) <
+                           countNumberOfSuccessors(ActualFeature2);
+                  });
         removeFeaturesRecursively(FM, std::move(RemainingFeatures));
       }
       // TODO: return list of non-deletable Features?
@@ -78,18 +105,31 @@ void removeFeatures(FeatureModel &FM,
     std::sort(DeleteFeatures.begin(), DeleteFeatures.end());
     RemainingFeatures.erase(
         std::remove_if(RemainingFeatures.begin(), RemainingFeatures.end(),
-                       [&](auto x) {
+                       [&](auto X) {
                          return binary_search(DeleteFeatures.begin(),
-                                              DeleteFeatures.end(), x);
+                                              DeleteFeatures.end(), X);
                        }),
         RemainingFeatures.end());
     Trans.commit();
   }
 }
 
+int countNumberOfSuccessors(FeatureTreeNode *F) {
+  if (F->children().empty()) {
+    return 0;
+  }
+  auto Count = std::distance(F->children().begin(), F->children().end());
+
+  // count children of children
+  for (auto Child : F->children()) {
+    Count += countNumberOfSuccessors(Child);
+  }
+  return Count;
+}
+
 void removeFeaturesRecursively(
     FeatureModel &FM,
-    std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted) {
+    const std::vector<detail::FeatureVariantTy> &FeaturesToBeDeleted) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   for (detail::FeatureVariantTy FeatureVariant : FeaturesToBeDeleted) {
     Trans.removeFeature(FeatureVariant, true);

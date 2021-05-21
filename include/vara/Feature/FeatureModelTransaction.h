@@ -1011,11 +1011,16 @@ void removeFeatures(FeatureModel &FM,
 
 /// Removes multiple Features from the FeatureModel recursively
 ///
+/// The FeaturesToBeDeleted need to be properly ordered so that not a parent is
+/// deleted first and its child afterwards.
+///
 /// \param FM
 /// \param FeaturesToBeDeleted
 void removeFeaturesRecursively(
     FeatureModel &FM,
-    std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted);
+    const std::vector<detail::FeatureVariantTy> &FeaturesToBeDeleted);
+
+int countNumberOfSuccessors(FeatureTreeNode *F);
 
 /// Set commit of a FeatureModel.
 ///
