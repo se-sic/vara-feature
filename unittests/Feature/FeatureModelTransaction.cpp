@@ -960,7 +960,8 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
   EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
-  EXPECT_TRUE(FM->getFeature("ad")); // only true, because could not be deleted
+  // ad should not be removed in without recursive mode because it this has a child
+  EXPECT_TRUE(FM->getFeature("ad"));
   EXPECT_TRUE(FM->getFeature("ae"));
 }
 
