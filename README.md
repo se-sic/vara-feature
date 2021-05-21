@@ -59,3 +59,5 @@ Development
 All VaRA development is coordinated from the main [VaRA]() repository.
 So, for issues, please visit the [VaRA bugtracker](https://github.com/se-passau/VaRA/labels/FeatureLibrary) and search for the `FeatureLib` tag.
 If you want to reference a issue, please use the full reference `se-passau/VaRA#42`.
+
+Internal API documentation for vara-feature can be found [here](https://se-sic.github.io/vara-feature/index.html)
