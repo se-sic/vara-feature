@@ -1055,6 +1055,7 @@ TEST_F(FeatureModelTransactionTest,
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
   EXPECT_FALSE(FM->getFeature("ad"));
+  // should be remove in recursive mode because ae is a child of ad
   EXPECT_FALSE(FM->getFeature("ae"));
 }
 
