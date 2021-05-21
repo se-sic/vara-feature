@@ -918,10 +918,9 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
                             FM->getFeature("ad"));
 
   // Prepare Features for deletion
-  std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted;
-  FeaturesToBeDeleted.emplace_back(FM->getFeature("ad"));
-  FeaturesToBeDeleted.emplace_back(FM->getFeature("ac"));
-  FeaturesToBeDeleted.emplace_back(FM->getFeature("ae"));
+  std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
+  FM->getFeature("ac"), FM->getFeature("ad"), FM->getFeature("ae")
+  };
 
   vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
 
@@ -961,7 +960,8 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
   EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
-  EXPECT_TRUE(FM->getFeature("ad")); // only true, because could not be deleted
+  // ad should not be removed in without recursive mode because it this has a child
+  EXPECT_TRUE(FM->getFeature("ad"));
   EXPECT_TRUE(FM->getFeature("ae"));
 }
 
@@ -1056,6 +1056,7 @@ TEST_F(FeatureModelTransactionTest,
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
   EXPECT_FALSE(FM->getFeature("ad"));
+  // should be remove in recursive mode because ae is a child of ad
   EXPECT_FALSE(FM->getFeature("ae"));
 }
 

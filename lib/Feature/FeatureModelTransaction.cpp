@@ -102,6 +102,7 @@ void removeFeatures(FeatureModel &FM,
       // TODO: return list of non-deletable Features?
       return;
     }
+
     std::sort(DeleteFeatures.begin(), DeleteFeatures.end());
     RemainingFeatures.erase(
         std::remove_if(RemainingFeatures.begin(), RemainingFeatures.end(),
