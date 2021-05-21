@@ -857,7 +857,7 @@ TEST_F(FeatureModelTransactionTest, addFeatureToModel) {
   EXPECT_EQ(FMSizeBefore, FM->size() - 1);
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ab"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
 }
 
@@ -876,9 +876,9 @@ TEST_F(FeatureModelTransactionTest, addFeaturesToModel) {
   EXPECT_EQ(FMSizeBefore, FM->size() - 2);
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ab"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
-  EXPECT_TRUE(FM->getFeature("ac")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ac"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
 }
 
@@ -899,7 +899,7 @@ TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
   EXPECT_EQ(FMSizeBefore, FM->size() - 1);
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ac")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ac"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ab"));
 }
@@ -928,7 +928,7 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
   EXPECT_EQ(FMSizeBefore, FM->size() - 1);
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ab"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
   EXPECT_FALSE(FM->getFeature("ad"));
@@ -990,7 +990,7 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelRecursive) {
   EXPECT_EQ(FMSizeBefore, FM->size() - 1);
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ab"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
   EXPECT_FALSE(FM->getFeature("ad"));
@@ -1052,7 +1052,7 @@ TEST_F(FeatureModelTransactionTest,
   EXPECT_EQ(FMSizeBefore, FM->size() - 1);
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ab"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
   EXPECT_FALSE(FM->getFeature("ad"));
