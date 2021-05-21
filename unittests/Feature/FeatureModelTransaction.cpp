@@ -919,8 +919,7 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
 
   // Prepare Features for deletion
   std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
-  FM->getFeature("ac"), FM->getFeature("ad"), FM->getFeature("ae")
-  };
+      FM->getFeature("ac"), FM->getFeature("ad"), FM->getFeature("ae")};
 
   vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
 
