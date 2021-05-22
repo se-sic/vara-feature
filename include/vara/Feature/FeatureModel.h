@@ -225,6 +225,21 @@ public:
   }
 
   //===--------------------------------------------------------------------===//
+  // Constraints
+
+  using constraint_iterator = typename ConstraintContainerTy::iterator;
+  using const_constraint_iterator =
+      typename ConstraintContainerTy::const_iterator;
+
+  [[nodiscard]] llvm::iterator_range<constraint_iterator> constraints() {
+    return llvm::make_range(Constraints.begin(), Constraints.end());
+  }
+  [[nodiscard]] llvm::iterator_range<const_constraint_iterator>
+  constraints() const {
+    return llvm::make_range(Constraints.begin(), Constraints.end());
+  }
+
+  //===--------------------------------------------------------------------===//
   // Utility
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
