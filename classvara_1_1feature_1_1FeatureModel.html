@@ -113,6 +113,10 @@ Public Types</h2></td></tr>
 <tr class="separator:a3dd33907ee9f39f55a7aaa3903127c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a288d090b69105b13917bba3476206ac3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a288d090b69105b13917bba3476206ac3">const_unordered_feature_iterator</a> = <a class="el" href="classvara_1_1feature_1_1FeatureModel_1_1FeatureMapIterator.html">FeatureMapIterator</a></td></tr>
 <tr class="separator:a288d090b69105b13917bba3476206ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb991797eb63a761b488945f7fdc436c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html#aeb991797eb63a761b488945f7fdc436c">constraint_iterator</a> = typename ConstraintContainerTy::iterator</td></tr>
+<tr class="separator:aeb991797eb63a761b488945f7fdc436c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88d452b13684794665b42ac116e76e80"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a88d452b13684794665b42ac116e76e80">const_constraint_iterator</a> = typename ConstraintContainerTy::const_iterator</td></tr>
+<tr class="separator:a88d452b13684794665b42ac116e76e80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -144,6 +148,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae90eea1ee65e9b60ffeda4b3da7549d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a302e7456e808fc2720969cc07983d79b"><td class="memItemLeft" align="right" valign="top">llvm::iterator_range&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a288d090b69105b13917bba3476206ac3">const_unordered_feature_iterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a302e7456e808fc2720969cc07983d79b">unordered_features</a> () const</td></tr>
 <tr class="separator:a302e7456e808fc2720969cc07983d79b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5867e80e7eddc1c45138693e881b7614"><td class="memItemLeft" align="right" valign="top">llvm::iterator_range&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html#aeb991797eb63a761b488945f7fdc436c">constraint_iterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a5867e80e7eddc1c45138693e881b7614">constraints</a> ()</td></tr>
+<tr class="separator:a5867e80e7eddc1c45138693e881b7614"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f1ad349ad95086ba61c3f100ae4619b"><td class="memItemLeft" align="right" valign="top">llvm::iterator_range&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a88d452b13684794665b42ac116e76e80">const_constraint_iterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a7f1ad349ad95086ba61c3f100ae4619b">constraints</a> () const</td></tr>
+<tr class="separator:a7f1ad349ad95086ba61c3f100ae4619b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e5662b1c241263e1f67c6c42d69a6ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a4e5662b1c241263e1f67c6c42d69a6ab">view</a> ()</td></tr>
 <tr class="separator:a4e5662b1c241263e1f67c6c42d69a6ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c039362dc72752063f967ff17682bc1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a4c039362dc72752063f967ff17682bc1">getFeature</a> (llvm::StringRef F) const</td></tr>
@@ -166,6 +174,22 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00027">27</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a88d452b13684794665b42ac116e76e80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88d452b13684794665b42ac116e76e80">&#9670;&nbsp;</a></span>const_constraint_iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a88d452b13684794665b42ac116e76e80">vara::feature::FeatureModel::const_constraint_iterator</a> =  typename ConstraintContainerTy::const_iterator</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00232">232</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
+
+</div>
+</div>
 <a id="aecba38cf855677d92090e4ecb9c899e7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aecba38cf855677d92090e4ecb9c899e7">&#9670;&nbsp;</a></span>const_ordered_feature_iterator</h2>
 
@@ -195,6 +219,22 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00215">215</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
+
+</div>
+</div>
+<a id="aeb991797eb63a761b488945f7fdc436c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb991797eb63a761b488945f7fdc436c">&#9670;&nbsp;</a></span>constraint_iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classvara_1_1feature_1_1FeatureModel.html#aeb991797eb63a761b488945f7fdc436c">vara::feature::FeatureModel::constraint_iterator</a> =  typename ConstraintContainerTy::iterator</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00230">230</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
 
 </div>
 </div>
@@ -426,6 +466,60 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="a5867e80e7eddc1c45138693e881b7614"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5867e80e7eddc1c45138693e881b7614">&#9670;&nbsp;</a></span>constraints() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">llvm::iterator_range&lt;<a class="el" href="classvara_1_1feature_1_1FeatureModel.html#aeb991797eb63a761b488945f7fdc436c">constraint_iterator</a>&gt; vara::feature::FeatureModel::constraints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00234">234</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
+
+</div>
+</div>
+<a id="a7f1ad349ad95086ba61c3f100ae4619b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f1ad349ad95086ba61c3f100ae4619b">&#9670;&nbsp;</a></span>constraints() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">llvm::iterator_range&lt;<a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a88d452b13684794665b42ac116e76e80">const_constraint_iterator</a>&gt; vara::feature::FeatureModel::constraints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00238">238</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
+
+</div>
+</div>
 <a id="a99ce93899da12e44b1937e500fd2e3f2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a99ce93899da12e44b1937e500fd2e3f2">&#9670;&nbsp;</a></span>dump()</h2>
 
@@ -608,7 +702,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00232">232</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00247">247</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00053">vara::feature::mergeSubtree()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00335">vara::feature::detail::RemoveFeatureFromModel::operator()()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00390">vara::feature::detail::AddRelationshipToModel::operator()()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00436">vara::feature::detail::RemoveRelationshipFromModel::operator()()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00479">vara::feature::detail::AddLocationToFeature::operator()()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00508">vara::feature::detail::RemoveLocationFromFeature::operator()()</a>, and <a class="el" href="FeatureModelTransaction_8h_source.html#l00666">vara::feature::detail::AddChild::operator()()</a>.</p>
 
@@ -697,7 +791,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00055">55</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModel_8h_source.html#l00496">vara::feature::ExactlyOneRootNode::check()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00044">vara::feature::mergeFeatureModels()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00301">vara::feature::detail::AddFeatureToModel::operator()()</a>, and <a class="el" href="FeatureModelTransaction_8h_source.html#l00633">vara::feature::detail::SetRoot::operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8h_source.html#l00511">vara::feature::ExactlyOneRootNode::check()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00044">vara::feature::mergeFeatureModels()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00301">vara::feature::detail::AddFeatureToModel::operator()()</a>, and <a class="el" href="FeatureModelTransaction_8h_source.html#l00633">vara::feature::detail::SetRoot::operator()()</a>.</p>
 
 </div>
 </div>
@@ -753,7 +847,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00217">217</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModel_8h_source.html#l00464">vara::feature::EveryFeatureRequiresParent::check()</a>, <a class="el" href="FeatureModel_8h_source.html#l00477">vara::feature::CheckFeatureParentChildRelationShip::check()</a>, and <a class="el" href="FeatureModel_8h_source.html#l00496">vara::feature::ExactlyOneRootNode::check()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8h_source.html#l00479">vara::feature::EveryFeatureRequiresParent::check()</a>, <a class="el" href="FeatureModel_8h_source.html#l00492">vara::feature::CheckFeatureParentChildRelationShip::check()</a>, and <a class="el" href="FeatureModel_8h_source.html#l00511">vara::feature::ExactlyOneRootNode::check()</a>.</p>
 
 </div>
 </div>
@@ -807,7 +901,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00230">230</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8h_source.html#l00245">245</a> of file <a class="el" href="FeatureModel_8h_source.html">FeatureModel.h</a>.</p>
 
 </div>
 </div>
@@ -867,7 +961,7 @@ Friends</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 17 2021 11:32:05 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 22 2021 11:50:06 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
