@@ -95,7 +95,9 @@ class TestFeatureModelStatic(unittest.TestCase):
     def test_merge_models_idempotence(self):
         """ Checks if a feature model merged with itself is unchanged. """
         test_size = self.fm.size()
+
         test_merged = self.fm.merge_with(self.fm)
+
         self.assertEqual(test_size, test_merged.size())
 
         self.assertTrue(test_merged)
