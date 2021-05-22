@@ -127,8 +127,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9c38d6d5950fe2e21236c5e572edb032"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06c67b906495cbcdf70cc7e9cf533b25"><td class="memItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#a06c67b906495cbcdf70cc7e9cf533b25">addRelationship</a> (<a class="el" href="classvara_1_1feature_1_1Relationship.html#a81d167870625ca1ce69f088c19bc95c7">Relationship::RelationshipKind</a> Kind, const <a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;Parent)</td></tr>
 <tr class="separator:a06c67b906495cbcdf70cc7e9cf533b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a230969b8e30b1a63ebb8349efa22dda9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#a230969b8e30b1a63ebb8349efa22dda9">removeRelationship</a> (<a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;F)</td></tr>
-<tr class="separator:a230969b8e30b1a63ebb8349efa22dda9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff2cb765edd6026a2202448f63bd39e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#aff2cb765edd6026a2202448f63bd39e4">removeRelationship</a> (const <a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;F)</td></tr>
+<tr class="separator:aff2cb765edd6026a2202448f63bd39e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa25334b76b2ea873d7b1d7d1acf3145d"><td class="memItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#aa25334b76b2ea873d7b1d7d1acf3145d">addLocation</a> (const <a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;F, <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> FSR)</td></tr>
 <tr class="separator:aa25334b76b2ea873d7b1d7d1acf3145d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89a695bc93ac858689625d3aba0c1c6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#a89a695bc93ac858689625d3aba0c1c6c">removeLocation</a> (<a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;F, <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> FSR)</td></tr>
@@ -389,7 +389,7 @@ template&lt;typename CopyMode &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00094">94</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00053">vara::feature::mergeSubtree()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00070">vara::feature::mergeSubtree()</a>.</p>
 
 </div>
 </div>
@@ -431,7 +431,7 @@ template&lt;typename CopyMode &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00121">121</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00053">vara::feature::mergeSubtree()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00070">vara::feature::mergeSubtree()</a>.</p>
 
 </div>
 </div>
@@ -541,7 +541,7 @@ template&lt;typename CopyMode &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00048">48</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00012">vara::feature::addFeature()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00019">vara::feature::addFeatures()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00044">vara::feature::mergeFeatureModels()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00029">vara::feature::removeFeature()</a>, and <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00037">vara::feature::setCommit()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00014">vara::feature::addFeature()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00021">vara::feature::addFeatures()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00039">vara::feature::addRelationship()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00061">vara::feature::mergeFeatureModels()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00031">vara::feature::removeFeature()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00047">vara::feature::removeRelationship()</a>, and <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00054">vara::feature::setCommit()</a>.</p>
 
 </div>
 </div>
@@ -681,8 +681,8 @@ template&lt;typename CopyMode &gt; </div>
 
 </div>
 </div>
-<a id="a230969b8e30b1a63ebb8349efa22dda9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a230969b8e30b1a63ebb8349efa22dda9">&#9670;&nbsp;</a></span>removeRelationship()</h2>
+<a id="aff2cb765edd6026a2202448f63bd39e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff2cb765edd6026a2202448f63bd39e4">&#9670;&nbsp;</a></span>removeRelationship()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -695,7 +695,7 @@ template&lt;typename CopyMode &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html">vara::feature::FeatureModelTransaction</a>&lt; CopyMode &gt;::removeRelationship </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;&#160;</td>
           <td class="paramname"><em>F</em></td><td>)</td>
           <td></td>
         </tr>
@@ -837,7 +837,7 @@ template&lt;typename CopyMode &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat May 22 2021 11:50:06 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 22 2021 12:36:31 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
