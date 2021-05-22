@@ -98,7 +98,11 @@ int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr Writer) {
   RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::ROOT,
                                    charToUChar(Fm.getPath().string().data()));
   CHECK_RC
-
+  if (!Fm.getCommit().empty()) {
+    RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::COMMIT,
+                                     charToUChar(Fm.getCommit().data()));
+  }
+  CHECK_RC
   RC = writeBinaryFeatures(Writer);
   CHECK_RC
 

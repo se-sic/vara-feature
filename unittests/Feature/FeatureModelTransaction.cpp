@@ -244,7 +244,7 @@ TEST_F(FeatureModelMergeTransactionTest, Simple) {
   auto FM2 = B.buildFeatureModel();
   ASSERT_TRUE(FM2);
 
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   ASSERT_TRUE(FMMerged);
 
   Feature *F1 = FMMerged->getFeature("a");
@@ -258,7 +258,7 @@ TEST_F(FeatureModelMergeTransactionTest, Simple) {
 TEST_F(FeatureModelMergeTransactionTest, Idempotence) {
   size_t FMSizeBefore = FM->size();
 
-  auto FMMerged = mergeFeatureModels(*FM, *FM);
+  auto FMMerged = mergeFeatureModels(*FM, *FM, true);
   ASSERT_TRUE(FMMerged);
 
   EXPECT_EQ(FMSizeBefore, FMMerged->size());
@@ -281,7 +281,7 @@ TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
   auto FM2 = B.buildFeatureModel();
   ASSERT_TRUE(FM2);
 
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   ASSERT_TRUE(FMMerged);
 
   Feature *F = FMMerged->getFeature("a");
@@ -306,7 +306,7 @@ TEST_F(FeatureModelMergeTransactionTest, MultipleLevels) {
   auto FM2 = B.buildFeatureModel();
   ASSERT_TRUE(FM2);
 
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   ASSERT_TRUE(FMMerged);
 
   EXPECT_EQ(FMSizeBefore + 3, FMMerged->size());
@@ -327,8 +327,21 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceOptional) {
   ASSERT_TRUE(FM2);
 
   // Expect fail, property optional is different
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   EXPECT_FALSE(FMMerged);
+}
+
+TEST_F(FeatureModelMergeTransactionTest, AcceptNonStrictDifferenceOptional) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", false);
+  auto FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, false);
+  ASSERT_TRUE(FMMerged);
+  Feature *F1 = FMMerged->getFeature("a");
+  EXPECT_TRUE(F1);
+  EXPECT_TRUE(F1->isOptional());
 }
 
 TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceParent) {
@@ -340,7 +353,20 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceParent) {
   ASSERT_TRUE(FM2);
 
   // Expect fail, feature a has different parents; root vs. b
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
+  EXPECT_FALSE(FMMerged);
+}
+
+TEST_F(FeatureModelMergeTransactionTest, RejectNonStrictDifferenceParent) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("b", true);
+  B.addEdge("b", "a");
+  B.makeFeature<BinaryFeature>("a", true);
+  auto FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  // Expect fail, feature a has different parents; root vs. b
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, false);
   EXPECT_FALSE(FMMerged);
 }
 
@@ -351,8 +377,21 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceKind) {
   ASSERT_TRUE(FM2);
 
   // Expect fail, feature a has different kinds; binary vs. numeric
-  auto FMMerged = mergeFeatureModels(*FM, *FM2);
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, true);
   EXPECT_FALSE(FMMerged);
+}
+
+TEST_F(FeatureModelMergeTransactionTest, AcceptNonStrictDifferenceKind) {
+  FeatureModelBuilder B;
+  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3}, true);
+  auto FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  auto FMMerged = mergeFeatureModels(*FM, *FM2, false);
+  EXPECT_TRUE(FMMerged);
+  Feature *F1 = FMMerged->getFeature("a");
+  EXPECT_TRUE(F1);
+  EXPECT_EQ(F1->getKind(), Feature::FeatureKind::FK_BINARY);
 }
 
 //===----------------------------------------------------------------------===//
@@ -901,4 +940,42 @@ TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
   EXPECT_FALSE(FM->getFeature("ab"));
 }
 
+TEST_F(FeatureModelTransactionTest, addRelationshipToGroup) {
+  size_t FMSizeBefore = FM->size();
+
+  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("aa"),
+                                          FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
+                                          FM->getFeature("a")));
+  vara::feature::addFeatures(*FM, std::move(NewFeatures));
+  ASSERT_EQ(FMSizeBefore + 2, FM->size());
+
+  vara::feature::addRelationship(*FM, FM->getFeature("a"),
+                                 Relationship::RelationshipKind::RK_OR);
+  EXPECT_EQ(FMSizeBefore + 2, FM->size());
+  EXPECT_EQ(FM->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  EXPECT_EQ(FM->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+TEST_F(FeatureModelTransactionTest, removeRelationshipFromGroup) {
+  size_t FMSizeBefore = FM->size();
+
+  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("aa"),
+                                          FM->getFeature("a")));
+  NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
+                                          FM->getFeature("a")));
+  vara::feature::addFeatures(*FM, std::move(NewFeatures));
+  vara::feature::addRelationship(*FM, FM->getFeature("a"),
+                                 Relationship::RelationshipKind::RK_OR);
+  vara::feature::removeRelationship(*FM, FM->getFeature("a"));
+  EXPECT_EQ(FMSizeBefore + 2, FM->size());
+  EXPECT_NE(FM->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  EXPECT_NE(FM->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
 } // namespace vara::feature
