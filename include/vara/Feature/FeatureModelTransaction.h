@@ -304,8 +304,12 @@ public:
       return nullptr;
     }
     if (Parent) {
-      setParent(*InsertedFeature, *Parent);
-      addEdge(*Parent, *InsertedFeature);
+      FeatureTreeNode *ParentNode = Parent;
+      if (!Parent->getChildren<Relationship>().empty()) {
+        ParentNode = *(Parent->getChildren<Relationship>().begin());
+      }
+      setParent(*InsertedFeature, *ParentNode);
+      addEdge(*ParentNode, *InsertedFeature);
     } else if (FM.getRoot()) {
       setParent(*InsertedFeature, *FM.getRoot());
       addEdge(*FM.getRoot(), *InsertedFeature);

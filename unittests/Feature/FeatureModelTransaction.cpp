@@ -395,6 +395,230 @@ TEST_F(FeatureModelMergeTransactionTest, AcceptNonStrictDifferenceKind) {
 }
 
 //===----------------------------------------------------------------------===//
+//                    FeatureModelMergeRelationshipsTransaction Tests
+//===----------------------------------------------------------------------===//
+
+class FeatureModelMergeRelationshipsTransactionTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder B;
+    B.makeFeature<BinaryFeature>("a", true);
+    B.emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, "a");
+    B.makeFeature<BinaryFeature>("aa", false);
+    B.makeFeature<BinaryFeature>("ab", false);
+    B.addEdge("a", "aa");
+    B.addEdge("a", "ab");
+    FM1 = B.buildFeatureModel();
+    ASSERT_TRUE(FM1);
+    ASSERT_FALSE(FM1->getFeature("a")->getChildren<Relationship>().empty());
+  }
+
+  std::unique_ptr<FeatureModel> FM1;
+};
+
+TEST_F(FeatureModelMergeRelationshipsTransactionTest, Idempotence) {
+  size_t FMSizeBefore = FM1->size();
+  auto FMMerged = mergeFeatureModels(*FM1, *FM1);
+  ASSERT_TRUE(FMMerged);
+
+  // Relationship should be in merge result
+  EXPECT_EQ(FMMerged->size(), FMSizeBefore);
+  EXPECT_TRUE(FMMerged->getFeature("root"));
+  ASSERT_TRUE(FMMerged->getFeature("a"));
+  EXPECT_EQ(FMMerged->getFeature("a")->getChildren<Relationship>().size(), 1);
+  ASSERT_TRUE(FMMerged->getFeature("aa"));
+  EXPECT_EQ(FMMerged->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  ASSERT_TRUE(FMMerged->getFeature("ab"));
+  EXPECT_EQ(FMMerged->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+TEST_F(FeatureModelMergeRelationshipsTransactionTest,
+       RejectMissingRelationship) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  B.makeFeature<BinaryFeature>("aa", false);
+  B.makeFeature<BinaryFeature>("ab", false);
+  B.addEdge("a", "aa");
+  std::unique_ptr<FeatureModel> FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  // Expect fail, relationships should match if both have more than one child
+  auto FMMerged = mergeFeatureModels(*FM1, *FM2);
+  EXPECT_FALSE(FMMerged);
+
+  // Expect fail, also if direction is reversed
+  FMMerged = mergeFeatureModels(*FM2, *FM1);
+  EXPECT_FALSE(FMMerged);
+}
+
+TEST_F(FeatureModelMergeRelationshipsTransactionTest,
+       CheckRelationshipsOfAdded) {
+  FeatureModelBuilder B;
+  std::unique_ptr<FeatureModel> FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  // Expect success, feature group of "a" should also be a group after merge.
+  auto FMMerged = mergeFeatureModels(*FM2, *FM1);
+  ASSERT_TRUE(FMMerged);
+
+  ASSERT_TRUE(FMMerged->getFeature("a"));
+  ASSERT_TRUE(FMMerged->getFeature("aa"));
+  EXPECT_EQ(FMMerged->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  ASSERT_TRUE(FMMerged->getFeature("ab"));
+  EXPECT_EQ(FMMerged->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+TEST_F(FeatureModelMergeRelationshipsTransactionTest,
+       AcceptMissingRelationshipOnLeaf) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  std::unique_ptr<FeatureModel> FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  // Expect success, feature should be merged even if relationship is only
+  // present in original.
+  auto FMMerged = mergeFeatureModels(*FM1, *FM2);
+  ASSERT_TRUE(FMMerged);
+
+  ASSERT_TRUE(FMMerged->getFeature("a"));
+  ASSERT_TRUE(FMMerged->getFeature("aa"));
+  EXPECT_EQ(FMMerged->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  ASSERT_TRUE(FMMerged->getFeature("ab"));
+  EXPECT_EQ(FMMerged->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+TEST_F(FeatureModelMergeRelationshipsTransactionTest,
+       AcceptMissingRelationshipOnLeafReversed) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  std::unique_ptr<FeatureModel> FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  // Expect success, relationship should be added to childless feature in FM2.
+  // Fixes XML format shortcomings (groups cannot be specified for 0 or 1 child)
+  auto FMMerged = mergeFeatureModels(*FM2, *FM1);
+  ASSERT_TRUE(FMMerged);
+
+  ASSERT_TRUE(FMMerged->getFeature("a"));
+  ASSERT_TRUE(FMMerged->getFeature("aa"));
+  EXPECT_EQ(FMMerged->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  ASSERT_TRUE(FMMerged->getFeature("ab"));
+  EXPECT_EQ(FMMerged->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+TEST_F(FeatureModelMergeRelationshipsTransactionTest,
+       AcceptMissingRelationshipForSingleChild) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  B.makeFeature<BinaryFeature>("ab", false);
+  B.addEdge("a", "ab");
+  std::unique_ptr<FeatureModel> FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  // Expect success, relationship should be added to childless feature in FM2.
+  // Fixes XML format shortcomings (groups cannot be specified for 0 or 1 child)
+  auto FMMerged = mergeFeatureModels(*FM1, *FM2);
+  ASSERT_TRUE(FMMerged);
+
+  ASSERT_TRUE(FMMerged->getFeature("a"));
+  ASSERT_TRUE(FMMerged->getFeature("aa"));
+  EXPECT_EQ(FMMerged->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  ASSERT_TRUE(FMMerged->getFeature("ab"));
+  EXPECT_EQ(FMMerged->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+TEST_F(FeatureModelMergeRelationshipsTransactionTest,
+       AcceptMissingRelationshipForSingleChildReversed) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  B.makeFeature<BinaryFeature>("ab", false);
+  B.addEdge("a", "ab");
+  std::unique_ptr<FeatureModel> FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+
+  // Expect success, relationship should be added to childless feature in FM2.
+  // Fixes XML format shortcomings (groups cannot be specified for 0 or 1 child)
+  auto FMMerged = mergeFeatureModels(*FM2, *FM1);
+  ASSERT_TRUE(FMMerged);
+
+  ASSERT_TRUE(FMMerged->getFeature("a"));
+  ASSERT_TRUE(FMMerged->getFeature("aa"));
+  EXPECT_EQ(FMMerged->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  ASSERT_TRUE(FMMerged->getFeature("ab"));
+  EXPECT_EQ(FMMerged->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+TEST_F(FeatureModelMergeRelationshipsTransactionTest,
+       MissingRelationshipNonStrict) {
+  size_t FMSizeBefore = FM1->size();
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  B.makeFeature<BinaryFeature>("aa", false);
+  B.makeFeature<BinaryFeature>("ab", false);
+  B.addEdge("a", "aa");
+  B.addEdge("a", "ab");
+  std::unique_ptr<FeatureModel> FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+  ASSERT_EQ(FMSizeBefore, FM2->size());
+
+  // Expect success, relationships of first Model should be used
+  auto FMMerged = mergeFeatureModels(*FM1, *FM2, false);
+  ASSERT_TRUE(FMMerged);
+
+  EXPECT_EQ(FMMerged->size(), FMSizeBefore);
+  ASSERT_TRUE(FMMerged->getFeature("root"));
+  ASSERT_TRUE(FMMerged->getFeature("a"));
+  EXPECT_EQ(FMMerged->getFeature("a")->getChildren<Relationship>().size(), 1);
+  ASSERT_TRUE(FMMerged->getFeature("aa"));
+  EXPECT_EQ(FMMerged->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  ASSERT_TRUE(FMMerged->getFeature("ab"));
+  EXPECT_EQ(FMMerged->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+TEST_F(FeatureModelMergeRelationshipsTransactionTest,
+       MissingRelationshipNonStrictReversed) {
+  size_t FMSizeBefore = FM1->size();
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a", true);
+  B.makeFeature<BinaryFeature>("aa", false);
+  B.makeFeature<BinaryFeature>("ab", false);
+  B.addEdge("a", "aa");
+  B.addEdge("a", "ab");
+  std::unique_ptr<FeatureModel> FM2 = B.buildFeatureModel();
+  ASSERT_TRUE(FM2);
+  ASSERT_EQ(FMSizeBefore, FM2->size());
+
+  // Expect success, relationships of first Model should be used
+  auto FMMerged = mergeFeatureModels(*FM2, *FM1, false);
+  ASSERT_TRUE(FMMerged);
+
+  EXPECT_EQ(FMMerged->size(), FMSizeBefore);
+  ASSERT_TRUE(FMMerged->getFeature("root"));
+  ASSERT_TRUE(FMMerged->getFeature("a"));
+  EXPECT_EQ(FMMerged->getFeature("a")->getChildren<Relationship>().size(), 1);
+  ASSERT_TRUE(FMMerged->getFeature("aa"));
+  EXPECT_EQ(FMMerged->getFeature("aa")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+  ASSERT_TRUE(FMMerged->getFeature("ab"));
+  EXPECT_EQ(FMMerged->getFeature("ab")->getParent()->getKind(),
+            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
+}
+
+//===----------------------------------------------------------------------===//
 //                    FeatureModelRelationshipTransaction Tests
 //===----------------------------------------------------------------------===//
 
