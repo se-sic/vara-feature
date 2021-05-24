@@ -116,7 +116,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
     // add relationship to new feature
     auto Relationship = getFeatureRelationship(F);
     if (Relationship.has_value()) {
-      Trans.addRelationship(Relationship.value()->getKind(), F.getName());
+      Trans.addRelationship(Relationship.value()->getKind(), F.getName().str());
     }
   }
 
