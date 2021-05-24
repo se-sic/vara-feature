@@ -609,13 +609,11 @@ TEST_F(FeatureModelMergeRelationshipsTransactionTest,
   EXPECT_EQ(FMMerged->size(), FMSizeBefore);
   ASSERT_TRUE(FMMerged->getFeature("root"));
   ASSERT_TRUE(FMMerged->getFeature("a"));
-  EXPECT_EQ(FMMerged->getFeature("a")->getChildren<Relationship>().size(), 1);
+  // first model, fm2 has no relationship and "a" has 2 children so relationship
+  // is not moved
+  EXPECT_EQ(FMMerged->getFeature("a")->getChildren<Relationship>().size(), 0);
   ASSERT_TRUE(FMMerged->getFeature("aa"));
-  EXPECT_EQ(FMMerged->getFeature("aa")->getParent()->getKind(),
-            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
   ASSERT_TRUE(FMMerged->getFeature("ab"));
-  EXPECT_EQ(FMMerged->getFeature("ab")->getParent()->getKind(),
-            FeatureTreeNode::NodeKind::NK_RELATIONSHIP);
 }
 
 //===----------------------------------------------------------------------===//

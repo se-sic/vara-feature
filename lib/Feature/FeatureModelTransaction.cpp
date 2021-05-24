@@ -82,16 +82,17 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
       auto FRelationship = getFeatureRelationship(F);
       auto CMPRelationship = getFeatureRelationship(*CMP);
       if (FRelationship && CMPRelationship) {
-        // Relationships must match
-        if (FRelationship.value()->getKind() !=
-            CMPRelationship.value()->getKind()) {
+        // Relationships must match in strict mode
+        if (Strict && (FRelationship.value()->getKind() !=
+                       CMPRelationship.value()->getKind())) {
           return false;
         }
       } else if (FRelationship && !CMPRelationship) {
+        // Relationship is carried over to work around xml format limits
         if (CMP->getChildren<Feature>().size() < 2) {
           Trans.addRelationship(FRelationship.value()->getKind(),
                                 F.getName().str());
-        } else {
+        } else if (Strict) {
           return false;
         }
       }
@@ -192,11 +193,13 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
 }
 
 std::optional<Relationship *> getFeatureRelationship(Feature &F) {
-  auto Relationships = F.getChildren<Relationship>();
-  if (Relationships.empty()) {
-    return std::nullopt;
+  if (!F.children().empty()) {
+    auto *C = *(F.children().begin());
+    if (auto *R = llvm::dyn_cast<Relationship>(C)) {
+      return R;
+    }
   }
-  return *(Relationships.begin());
+  return std::nullopt;
 }
 
 } // namespace vara::feature
