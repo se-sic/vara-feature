@@ -89,7 +89,8 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
         }
       } else if (FRelationship && !CMPRelationship) {
         if (CMP->getChildren<Feature>().size() < 2) {
-          Trans.addRelationship(FRelationship.value()->getKind(), F.getName());
+          Trans.addRelationship(FRelationship.value()->getKind(),
+                                F.getName().str());
         } else {
           return false;
         }
