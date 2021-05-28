@@ -79,4 +79,19 @@ TEST(Relationship, outOfOrder) {
   }
 }
 
+TEST(Relationship, getChildren) {
+  FeatureModelBuilder B;
+  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3});
+  B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+  B.addEdge("a", "ab")->makeFeature<BinaryFeature>("ab");
+
+  B.emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, "a");
+  auto FM = B.buildFeatureModel();
+  ASSERT_TRUE(FM);
+
+  EXPECT_EQ(FM->getFeature("a")->getChildren<Relationship>(0).size(), 0);
+  EXPECT_EQ(FM->getFeature("a")->getChildren<Relationship>(1).size(), 1);
+  EXPECT_EQ(FM->getFeature("a")->getChildren<Relationship>(2).size(), 1);
+}
+
 } // namespace vara::feature
