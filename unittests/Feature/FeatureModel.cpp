@@ -248,14 +248,6 @@ protected:
   std::unique_ptr<FeatureModel> FM;
 };
 
-TEST_F(FeatureModelGetChildrenTest, Root_getRelationships) {
-  EXPECT_EQ(FM->getRoot()->getChildren<Relationship>().size(), 0);
-}
-
-TEST_F(FeatureModelGetChildrenTest, Root_getFeature) {
-  EXPECT_EQ(FM->getRoot()->getChildren<Feature>().size(), 3);
-}
-
 //===----------------------------------------------------------------------===//
 //                    FeatureModelConsistencyChecker Tests
 //===----------------------------------------------------------------------===//

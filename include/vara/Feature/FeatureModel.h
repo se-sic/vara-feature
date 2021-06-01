@@ -286,6 +286,14 @@ private:
     return Constraints.back().get();
   }
 
+  void removeConstraint(Constraint *C) {
+    Constraints.erase(
+        std::find_if(Constraints.begin(), Constraints.end(),
+                     [C](const std::unique_ptr<Constraint> &UniC) {
+                       return UniC.get() == C;
+                     }));
+  }
+
   /// Delete a \a Feature.
   void removeFeature(Feature &Feature);
 

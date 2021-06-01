@@ -13,6 +13,7 @@ set(FEATURE_LIB_TEST_FILES
   test_only_children.xml
   test_only_parents.xml
   test_out_of_order.xml
+  FeatureModel_v0.600.xml
   sxfm/sxfm_example.sxfm
   sxfm/test.sxfm
   sxfm/test_wrong_indentation.sxfm

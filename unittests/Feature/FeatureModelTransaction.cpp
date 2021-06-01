@@ -1,9 +1,12 @@
 #include "vara/Feature/FeatureModelTransaction.h"
 #include "vara/Feature/FeatureModelBuilder.h"
 
+#include "UnittestHelper.h"
 #include "gtest/gtest.h"
 
+#include <llvm/Support/MemoryBuffer.h>
 #include <memory>
+#include <vara/Feature/FeatureModelParser.h>
 
 namespace vara::feature {
 namespace detail {
@@ -614,6 +617,37 @@ TEST_F(FeatureModelMergeRelationshipsTransactionTest,
   EXPECT_EQ(FMMerged->getFeature("a")->getChildren<Relationship>().size(), 0);
   ASSERT_TRUE(FMMerged->getFeature("aa"));
   ASSERT_TRUE(FMMerged->getFeature("ab"));
+}
+
+TEST(SOMETHING, test) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("FeatureModel_v0.600.xml"));
+  EXPECT_TRUE(FS && "Input file could not be read");
+  auto FM =
+      FeatureModelXmlParser(FS.get()->getBuffer().str()).buildFeatureModel();
+
+  auto T = FeatureModelCopyTransaction::openTransaction(*FM);
+  detail::FeatureVariantTy V{FM->getFeature("level")};
+  T.removeFeature(V);
+  V = FM->getFeature("maxWindowSize");
+  T.removeFeature(V);
+  V = FM->getFeature("processorCount");
+  T.removeFeature(V);
+  V = FM->getFeature("thresholdTestingDisabled");
+  T.removeFeature(V);
+  V = FM->getFeature("compressionBzip2");
+  T.removeFeature(V);
+  V = FM->getFeature("compressionGzip");
+  T.removeFeature(V);
+  V = FM->getFeature("compressionDisabled");
+  T.removeFeature(V);
+  V = FM->getFeature("compressionLzo");
+  T.removeFeature(V);
+  V = FM->getFeature("compressionZpaq");
+  T.removeFeature(V);
+  auto FM2 = T.commit();
+
+  auto FM3 = mergeFeatureModels(*FM2, *FM);
 }
 
 //===----------------------------------------------------------------------===//

@@ -193,7 +193,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
 }
 
 std::optional<Relationship *> getFeatureRelationship(Feature &F) {
-  if (!F.children().empty()) {
+  if (!F.getChildren<Relationship>(1).empty()) {
     auto *C = *(F.children().begin());
     if (auto *R = llvm::dyn_cast<Relationship>(C)) {
       return R;
