@@ -1,0 +1,299 @@
+<vm name="lrzip" commit="v0.600">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <!-- compression type group -->
+      <name>compression</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <!-- Option b, bzip2 -->
+      <name>compressionBzip2</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>compression</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionGzip</options>
+        <options>compressionLzo</options>
+        <options>compressionLzma</options>
+        <options>compressionZpaq</options>
+        <options>compressionDisabled</options>
+      </excludedOptions>
+      <optional>False</optional>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>545</line>
+            <column>4</column>
+          </start>
+          <end>
+            <line>545</line>
+            <column>41</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <!-- Option g, gzip using zlib -->
+      <name>compressionGzip</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>compression</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionBzip2</options>
+        <options>compressionLzo</options>
+        <options>compressionLzma</options>
+        <options>compressionZpaq</options>
+        <options>compressionDisabled</options>
+      </excludedOptions>
+      <optional>False</optional>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>566</line>
+            <column>4</column>
+          </start>
+          <end>
+            <line>566</line>
+            <column>40</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <!-- Option l, lzo compression -->
+      <name>compressionLzo</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>compression</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionBzip2</options>
+        <options>compressionGzip</options>
+        <options>compressionLzma</options>
+        <options>compressionZpaq</options>
+        <options>compressionDisabled</options>
+      </excludedOptions>
+      <optional>False</optional>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>584</line>
+            <column>4</column>
+          </start>
+          <end>
+            <line>584</line>
+            <column>39</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <!-- default, no option value, so no location in argparser -->
+      <name>compressionLzma</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>compression</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionBzip2</options>
+        <options>compressionGzip</options>
+        <options>compressionLzo</options>
+        <options>compressionZpaq</options>
+        <options>compressionDisabled</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <!-- Option z -->
+      <name>compressionZpaq</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>compression</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionBzip2</options>
+        <options>compressionGzip</options>
+        <options>compressionLzo</options>
+        <options>compressionLzma</options>
+        <options>compressionDisabled</options>
+      </excludedOptions>
+      <optional>False</optional>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>663</line>
+            <column>4</column>
+          </start>
+          <end>
+            <line>663</line>
+            <column>40</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <!-- Option n -->
+      <name>compressionDisabled</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>compression</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionBzip2</options>
+        <options>compressionGzip</options>
+        <options>compressionLzo</options>
+        <options>compressionLzma</options>
+        <options>compressionZpaq</options>
+      </excludedOptions>
+      <optional>False</optional>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>594</line>
+            <column>4</column>
+          </start>
+          <end>
+            <line>594</line>
+            <column>38</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <!-- Option T -->
+      <name>thresholdTestingDisabled</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>638</line>
+            <column>4</column>
+          </start>
+          <end>
+            <line>638</line>
+            <column>40</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions>
+    <configurationOption>
+      <!-- Option L, lzma/bzip2/gzip compression level -->
+      <!-- unreasonable to change this if none of those compressions is selected -->
+      <name>level</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <minValue>1</minValue>
+      <maxValue>9</maxValue>
+      <stepFunction>level + 1</stepFunction>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>587</line>
+            <column>4</column>
+          </start>
+          <end>
+            <line>587</line>
+            <column>45</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <!-- Option w, maximum compression window -->
+      <!-- this option cannot be set in conjunction with -U (unlimited) -->
+      <name>maxWindowSize</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <minValue>1</minValue>
+      <maxValue>8</maxValue>
+      <stepFunction>maxWindowSize * 2</stepFunction>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>658</line>
+            <column>4</column>
+          </start>
+          <end>
+            <line>658</line>
+            <column>34</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <!-- Option p, thread count -->
+      <name>processorCount</name>
+      <outputString />
+      <prefix />
+      <postfix />
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <minValue>1</minValue>
+      <maxValue>8</maxValue> <!-- this is an arbitrary upper limit, core count is more reasonable -->
+      <stepFunction>processorCount * 2</stepFunction>
+      <locations>
+        <sourceRange>
+          <path>main.c</path>
+          <start>
+            <line>618</line>
+            <column>4</column>
+          </start>
+          <end>
+            <line>618</line>
+            <column>35</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+  </numericOptions>
+  <booleanConstraints />
+  <nonBooleanConstraints />
+</vm>
