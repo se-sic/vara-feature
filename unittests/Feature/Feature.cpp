@@ -95,20 +95,4 @@ TEST(Feature, locationUpdate) {
   EXPECT_EQ(*TestLCO.getLocationsBegin(), Fsr2);
 }
 
-TEST(Feature, getChildren) {
-  FeatureModelBuilder B;
-  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3});
-  B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
-  B.addEdge("a", "ab")->makeFeature<BinaryFeature>("ab");
-
-  B.emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, "a");
-  auto FM = B.buildFeatureModel();
-  ASSERT_TRUE(FM);
-
-  EXPECT_EQ(FM->getFeature("a")->getChildren<Feature>(0).size(), 0);
-  EXPECT_EQ(FM->getFeature("a")->getChildren<Feature>(1).size(), 0);
-  EXPECT_EQ(FM->getFeature("a")->getChildren<Feature>(2).size(), 2);
-  EXPECT_EQ(FM->getFeature("a")->getChildren<Feature>(3).size(), 2);
-}
-
 } // namespace vara::feature

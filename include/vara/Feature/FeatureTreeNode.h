@@ -86,7 +86,8 @@ public:
   ///  children of this node are considered and disables expansions.
   ///
   /// \return Set of children nodes.
-  template <typename T> llvm::SmallSet<T *, 3> getChildren(int Depth = -1) {
+  template <typename T = FeatureTreeNode>
+  llvm::SmallSet<T *, 3> getChildren(int Depth = -1) {
     llvm::SmallSet<T *, 3> FS;
     getChildrenImpl(this, &FS, Depth);
     return FS;
