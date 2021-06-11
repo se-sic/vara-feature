@@ -76,10 +76,20 @@ public:
     return std::find(begin(), end(), &N) != end();
   }
 
-  /// Search all children of given type in tree structure.
-  template <typename T> llvm::SmallSet<T *, 3> getChildren() {
+  /// Search first (possibly transitive) children of given type in tree
+  ///  structure.
+  ///
+  /// \tparam[in] T Type of expected nodes.
+  ///
+  /// \param[in] Depth Maximal recursion depth to which nodes, which does not
+  ///  match T are expanded to their children. A depth of one means, only
+  ///  children of this node are considered and disables expansions.
+  ///
+  /// \return Set of children nodes.
+  template <typename T = FeatureTreeNode>
+  llvm::SmallSet<T *, 3> getChildren(int Depth = -1) {
     llvm::SmallSet<T *, 3> FS;
-    getChildrenImpl(this, &FS);
+    getChildrenImpl(this, &FS, Depth);
     return FS;
   }
 
@@ -107,12 +117,15 @@ private:
 
   template <typename T>
   static void getChildrenImpl(FeatureTreeNode *N,
-                              llvm::SmallPtrSetImpl<T *> *FS) {
+                              llvm::SmallPtrSetImpl<T *> *FS, int Depth) {
+    if (Depth == 0) {
+      return;
+    }
     for (auto *C : N->children()) {
       if (auto *F = llvm::dyn_cast<T>(C); F) {
         FS->insert(F);
       } else {
-        getChildrenImpl(C, FS);
+        getChildrenImpl(C, FS, Depth - 1);
       }
     }
   }
