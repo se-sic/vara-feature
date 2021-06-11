@@ -1,7 +1,7 @@
 var searchData=
 [
   ['getcategory_507',['getCategory',['../classvara_1_1feature_1_1FeatureSourceRange.html#ae3ebd7c83da7e151693d256d809f341c',1,'vara::feature::FeatureSourceRange']]],
-  ['getchildren_508',['getChildren',['../classvara_1_1feature_1_1FeatureTreeNode.html#a8026ad79478f11b79d19f14b5f989716',1,'vara::feature::FeatureTreeNode']]],
+  ['getchildren_508',['getChildren',['../classvara_1_1feature_1_1FeatureTreeNode.html#aab96af5ef11a4066cbab4631041d222d',1,'vara::feature::FeatureTreeNode']]],
   ['getcolumnoffset_509',['getColumnOffset',['../classvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation.html#a0c9aeee5f3b5940c3c47493dc094b921',1,'vara::feature::FeatureSourceRange::FeatureSourceLocation']]],
   ['getcommit_510',['getCommit',['../classvara_1_1feature_1_1FeatureModel.html#a369a45b58b32f312d216f75201d44bdd',1,'vara::feature::FeatureModel']]],
   ['getend_511',['getEnd',['../classvara_1_1feature_1_1FeatureSourceRange.html#a71d5b517350f4d75d55947e18ce7379f',1,'vara::feature::FeatureSourceRange']]],
