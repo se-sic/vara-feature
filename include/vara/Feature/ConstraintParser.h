@@ -54,12 +54,6 @@ public:
 
   [[nodiscard]] PrecedenceTy calcPrecedence() const {
     switch (Kind) {
-    case ConstraintTokenKind::L_PAR:
-    case ConstraintTokenKind::R_PAR:
-      return 1;
-    case ConstraintTokenKind::NOT:
-    case ConstraintTokenKind::NEG:
-      return 2;
     case ConstraintTokenKind::STAR:
       return 3;
     case ConstraintTokenKind::PLUS:
@@ -67,20 +61,20 @@ public:
       return 4;
     case ConstraintTokenKind::LESS:
     case ConstraintTokenKind::GREATER:
-      return 5;
+      return 6;
     case ConstraintTokenKind::EQUAL:
     case ConstraintTokenKind::NOT_EQUAL:
-      return 6;
-    case ConstraintTokenKind::AND:
       return 7;
+    case ConstraintTokenKind::AND:
+      return 11;
     case ConstraintTokenKind::OR:
-      return 8;
+      return 12;
     case ConstraintTokenKind::IMPLIES:
-      return 9;
+      return 13;
     case ConstraintTokenKind::EQUIVALENT:
-      return 10;
+      return 14;
     default:
-      return 0;
+      return 15;
     }
   }
 
@@ -259,6 +253,7 @@ private:
         case ConstraintToken::ConstraintTokenKind::WHITESPACE:
           consume(ConstraintToken::ConstraintTokenKind::WHITESPACE);
           continue;
+        case ConstraintToken::ConstraintTokenKind::R_PAR:
         case ConstraintToken::ConstraintTokenKind::END_OF_FILE:
           return LHS;
         case ConstraintToken::ConstraintTokenKind::EQUAL:
@@ -279,14 +274,15 @@ private:
           LHS = parseBinaryExpression(std::move(LHS), NextPrecedence);
           continue;
         }
-        case ConstraintToken::ConstraintTokenKind::ERROR:
         case ConstraintToken::ConstraintTokenKind::IDENTIFIER:
         case ConstraintToken::ConstraintTokenKind::NUMBER:
         case ConstraintToken::ConstraintTokenKind::L_PAR:
-        case ConstraintToken::ConstraintTokenKind::R_PAR:
         case ConstraintToken::ConstraintTokenKind::NOT:
         case ConstraintToken::ConstraintTokenKind::NEG:
           llvm::errs() << "Unexpected token in expression.\n";
+          return nullptr;
+        case ConstraintToken::ConstraintTokenKind::ERROR:
+          llvm::errs() << "Error.\n";
           return nullptr;
         }
       }

@@ -75,7 +75,9 @@ TEST(ConstraintParser, parsePresecende) {
 }
 
 TEST(ConstraintParser, parseParenthesis) {
-  EXPECT_TRUE(ConstraintParser("(a => 1) + (2 + 3) * 4").buildConstraint());
+  EXPECT_EQ(
+      ConstraintParser("(a -> 1) + (2 + 3) * 4").buildConstraint()->toString(),
+      "((a -> 1) + ((2 + 3) * 4))");
 }
 
 } // namespace vara::feature
