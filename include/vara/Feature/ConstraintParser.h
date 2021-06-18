@@ -18,7 +18,7 @@ namespace vara::feature {
 class ConstraintToken {
 public:
   using PrecedenceTy = unsigned int;
-  static const PrecedenceTy MAX_PRECEDENCE = 14;
+  static const PrecedenceTy MaxPrecedence = 9;
 
   enum class ConstraintTokenKind {
     ERROR,
@@ -55,26 +55,27 @@ public:
   [[nodiscard]] PrecedenceTy calcPrecedence() const {
     switch (Kind) {
     case ConstraintTokenKind::STAR:
-      return 3;
+      return 1;
     case ConstraintTokenKind::PLUS:
     case ConstraintTokenKind::MINUS:
-      return 4;
+      return 2;
     case ConstraintTokenKind::LESS:
     case ConstraintTokenKind::GREATER:
-      return 6;
+      return 3;
     case ConstraintTokenKind::EQUAL:
     case ConstraintTokenKind::NOT_EQUAL:
-      return 7;
+      return 4;
     case ConstraintTokenKind::AND:
-      return 11;
+      return 5;
     case ConstraintTokenKind::OR:
-      return 12;
+      return 6;
     case ConstraintTokenKind::IMPLIES:
-      return 13;
+      return 7;
     case ConstraintTokenKind::EQUIVALENT:
-      return 14;
+      return 8;
     default:
-      return 15;
+      static_assert(ConstraintToken::MaxPrecedence >= 9);
+      return ConstraintToken::MaxPrecedence;
     }
   }
 
@@ -246,7 +247,7 @@ private:
 
   std::unique_ptr<Constraint>
   parseExpression(ConstraintToken::PrecedenceTy Precedence =
-                      ConstraintToken::MAX_PRECEDENCE) {
+                      ConstraintToken::MaxPrecedence) {
     if (auto LHS = parseUnaryExpression()) {
       while (true) {
         switch (peek().getKind()) {

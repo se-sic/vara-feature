@@ -48,7 +48,7 @@ TEST(ConstraintParser, parseError) {
 }
 
 TEST(ConstraintParser, parseEOF) {
-  EXPECT_EQ(ConstraintParser("feature_A \0 => feature_B")
+  EXPECT_EQ(ConstraintParser("feature_A \0 => feature_B") // NOLINT
                 .buildConstraint()
                 ->toString(),
             "feature_A");
