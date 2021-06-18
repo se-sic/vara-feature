@@ -75,9 +75,10 @@ TEST(ConstraintParser, parsePresecende) {
 }
 
 TEST(ConstraintParser, parseParenthesis) {
+  // TODO(s9latimm): Fix diff representation
   EXPECT_EQ(
       ConstraintParser("(a -> 1) + (2 + 3) * 4").buildConstraint()->toString(),
-      "((a -> 1) + ((2 + 3) * 4))");
+      "((a => 1) + ((2 + 3) * 4))");
 }
 
 } // namespace vara::feature
