@@ -21,26 +21,28 @@ public:
   static const PrecedenceTy MaxPrecedence = 9;
 
   enum class ConstraintTokenKind {
-    ERROR,
-    END_OF_FILE,
-    WHITESPACE,
-    IDENTIFIER,
-    NUMBER,
-    L_PAR,
-    R_PAR,
-    NOT,
-    NEG,
-    STAR,
-    PLUS,
-    MINUS,
-    LESS,
-    GREATER,
-    EQUAL,
-    NOT_EQUAL,
     AND,
-    OR,
+    END_OF_FILE,
+    EQUAL,
+    EQUIVALENT,
+    ERROR,
+    GREATER,
+    GREATER_EQUAL,
+    IDENTIFIER,
     IMPLIES,
-    EQUIVALENT
+    L_PAR,
+    LESS,
+    LESS_EQUAL,
+    MINUS,
+    NEG,
+    NOT,
+    NOT_EQUAL,
+    NUMBER,
+    OR,
+    PLUS,
+    R_PAR,
+    STAR,
+    WHITESPACE
   };
 
   ConstraintToken(ConstraintTokenKind Kind) : Kind(Kind) {}
@@ -59,8 +61,10 @@ public:
     case ConstraintTokenKind::PLUS:
     case ConstraintTokenKind::MINUS:
       return 2;
-    case ConstraintTokenKind::LESS:
     case ConstraintTokenKind::GREATER:
+    case ConstraintTokenKind::GREATER_EQUAL:
+    case ConstraintTokenKind::LESS:
+    case ConstraintTokenKind::LESS_EQUAL:
       return 3;
     case ConstraintTokenKind::EQUAL:
     case ConstraintTokenKind::NOT_EQUAL:
@@ -138,13 +142,8 @@ private:
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::L_PAR), 1};
     case ')':
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::R_PAR), 1};
-    case '!':
-      return {ConstraintToken(ConstraintToken::ConstraintTokenKind::NOT), 1};
     case '+':
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::PLUS), 1};
-    case '>':
-      return {ConstraintToken(ConstraintToken::ConstraintTokenKind::GREATER),
-              1};
     case '~':
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::NEG), 1};
     case '*':
@@ -154,6 +153,9 @@ private:
     case '|':
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::OR), 1};
     case '-':
+    case '!':
+    case '=':
+    case '>':
     case '<':
       return munchOperator(Str);
     case '0' ... '9':
@@ -183,11 +185,36 @@ private:
                 2};
       }
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::MINUS), 1};
+    case '!':
+      if (Str.startswith("!=")) {
+        return {
+            ConstraintToken(ConstraintToken::ConstraintTokenKind::NOT_EQUAL),
+            2};
+      }
+      return {ConstraintToken(ConstraintToken::ConstraintTokenKind::NOT), 1};
+    case '=':
+      if (Str.startswith("=>")) {
+        return {ConstraintToken(ConstraintToken::ConstraintTokenKind::IMPLIES),
+                2};
+      }
+      return {ConstraintToken(ConstraintToken::ConstraintTokenKind::EQUAL), 1};
+    case '>':
+      if (Str.startswith(">=")) {
+        return {ConstraintToken(
+                    ConstraintToken::ConstraintTokenKind::GREATER_EQUAL),
+                2};
+      }
+      return {ConstraintToken(ConstraintToken::ConstraintTokenKind::GREATER),
+              1};
     case '<':
-      if (Str.startswith("<->")) {
+      if (Str.startswith("<->") || Str.startswith("<=>")) {
         return {
             ConstraintToken(ConstraintToken::ConstraintTokenKind::EQUIVALENT),
             3};
+      } else if (Str.startswith("<=")) {
+        return {
+            ConstraintToken(ConstraintToken::ConstraintTokenKind::LESS_EQUAL),
+            2};
       }
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::LESS), 1};
     default:
@@ -246,44 +273,55 @@ private:
   }
 
   std::unique_ptr<Constraint>
-  parseExpression(ConstraintToken::PrecedenceTy Precedence =
+  parseExpression(int NestingLevel = 0,
+                  ConstraintToken::PrecedenceTy Precedence =
                       ConstraintToken::MaxPrecedence) {
-    if (auto LHS = parseUnaryExpression()) {
-      while (true) {
+    if (auto LHS = parseUnaryExpression(NestingLevel)) {
+      while (LHS) {
         switch (peek().getKind()) {
+        case ConstraintToken::ConstraintTokenKind::ERROR:
+          assert(peek().getValue().has_value());
+          llvm::errs() << "Lexical error: Unexpected character '"
+                       << *peek().getValue() << "'\n";
+          return nullptr;
         case ConstraintToken::ConstraintTokenKind::WHITESPACE:
           consume(ConstraintToken::ConstraintTokenKind::WHITESPACE);
           continue;
         case ConstraintToken::ConstraintTokenKind::R_PAR:
+          if (NestingLevel) {
+            return LHS;
+          }
+          llvm::errs() << "Syntax error: Unexpected closing parenthesis.\n";
+          return nullptr;
         case ConstraintToken::ConstraintTokenKind::END_OF_FILE:
           return LHS;
+        case ConstraintToken::ConstraintTokenKind::AND:
         case ConstraintToken::ConstraintTokenKind::EQUAL:
         case ConstraintToken::ConstraintTokenKind::EQUIVALENT:
         case ConstraintToken::ConstraintTokenKind::GREATER:
-        case ConstraintToken::ConstraintTokenKind::NOT_EQUAL:
-        case ConstraintToken::ConstraintTokenKind::STAR:
-        case ConstraintToken::ConstraintTokenKind::PLUS:
-        case ConstraintToken::ConstraintTokenKind::MINUS:
-        case ConstraintToken::ConstraintTokenKind::LESS:
-        case ConstraintToken::ConstraintTokenKind::AND:
-        case ConstraintToken::ConstraintTokenKind::OR:
+        case ConstraintToken::ConstraintTokenKind::GREATER_EQUAL:
         case ConstraintToken::ConstraintTokenKind::IMPLIES: {
+        case ConstraintToken::ConstraintTokenKind::LESS:
+        case ConstraintToken::ConstraintTokenKind::LESS_EQUAL:
+        case ConstraintToken::ConstraintTokenKind::MINUS:
+        case ConstraintToken::ConstraintTokenKind::NOT_EQUAL:
+        case ConstraintToken::ConstraintTokenKind::OR:
+        case ConstraintToken::ConstraintTokenKind::PLUS:
+        case ConstraintToken::ConstraintTokenKind::STAR:
           auto NextPrecedence = peek().calcPrecedence();
           if (NextPrecedence >= Precedence) {
             return LHS;
           }
-          LHS = parseBinaryExpression(std::move(LHS), NextPrecedence);
+          LHS = parseBinaryExpression(NestingLevel, std::move(LHS),
+                                      NextPrecedence);
           continue;
         }
         case ConstraintToken::ConstraintTokenKind::IDENTIFIER:
-        case ConstraintToken::ConstraintTokenKind::NUMBER:
         case ConstraintToken::ConstraintTokenKind::L_PAR:
-        case ConstraintToken::ConstraintTokenKind::NOT:
         case ConstraintToken::ConstraintTokenKind::NEG:
-          llvm::errs() << "Unexpected token in expression.\n";
-          return nullptr;
-        case ConstraintToken::ConstraintTokenKind::ERROR:
-          llvm::errs() << "Error.\n";
+        case ConstraintToken::ConstraintTokenKind::NOT:
+        case ConstraintToken::ConstraintTokenKind::NUMBER:
+          llvm::errs() << "Syntax error: Unexpected token in expression.\n";
           return nullptr;
         }
       }
@@ -291,116 +329,155 @@ private:
     return nullptr;
   }
 
+  template <typename T>
+  auto createConstraint(std::unique_ptr<Constraint> LHS, int NestingLevel,
+                        ConstraintToken::PrecedenceTy Precedence) {
+    consume(ConstraintToken::ConstraintTokenKind::EQUAL);
+    auto Inner = parseExpression(NestingLevel + 1, Precedence);
+    return Inner ? std::make_unique<T>(std::move(LHS), std::move(Inner))
+                 : nullptr;
+  }
+
+  template <typename T>
+  auto createConstraint(int NestingLevel) {
+    consume(ConstraintToken::ConstraintTokenKind::EQUAL);
+    auto Inner = parseExpression(NestingLevel + 1);
+    return Inner ? std::make_unique<T>(std::move(Inner)) : nullptr;
+  }
+
   std::unique_ptr<Constraint>
-  parseBinaryExpression(std::unique_ptr<Constraint> LHS,
+  parseBinaryExpression(int NestingLevel, std::unique_ptr<Constraint> LHS,
                         ConstraintToken::PrecedenceTy Precedence) {
     while (true) {
       switch (peek().getKind()) {
+      case ConstraintToken::ConstraintTokenKind::ERROR:
+        assert(peek().getValue().has_value());
+        llvm::errs() << "Lexical error: Unexpected character '"
+                     << *peek().getValue() << "'\n";
+        return nullptr;
+      case ConstraintToken::ConstraintTokenKind::END_OF_FILE:
+        llvm::errs() << "Syntax error: Unexpected end of binary expression\n";
+        return nullptr;
       case ConstraintToken::ConstraintTokenKind::WHITESPACE:
         consume(ConstraintToken::ConstraintTokenKind::WHITESPACE);
         continue;
-      case ConstraintToken::ConstraintTokenKind::END_OF_FILE:
-        return LHS;
       case ConstraintToken::ConstraintTokenKind::EQUAL:
         consume(ConstraintToken::ConstraintTokenKind::EQUAL);
-        return std::make_unique<EqualsConstraint>(std::move(LHS),
-                                                  parseExpression(Precedence));
+        return createConstraint<EqualConstraint>(std::move(LHS),
+                                                 NestingLevel + 1, Precedence);
       case ConstraintToken::ConstraintTokenKind::EQUIVALENT:
         consume(ConstraintToken::ConstraintTokenKind::EQUIVALENT);
-        return std::make_unique<EquivalenceConstraint>(
-            std::move(LHS), parseExpression(Precedence));
+        return createConstraint<EquivalenceConstraint>(
+            std::move(LHS), NestingLevel + 1, Precedence);
       case ConstraintToken::ConstraintTokenKind::GREATER:
         consume(ConstraintToken::ConstraintTokenKind::GREATER);
-        return std::make_unique<GreaterConstraint>(std::move(LHS),
-                                                   parseExpression(Precedence));
+        return createConstraint<GreaterConstraint>(
+            std::move(LHS), NestingLevel + 1, Precedence);
+      case ConstraintToken::ConstraintTokenKind::GREATER_EQUAL:
+        consume(ConstraintToken::ConstraintTokenKind::GREATER_EQUAL);
+        return createConstraint<GreaterEqualConstraint>(
+            std::move(LHS), NestingLevel + 1, Precedence);
       case ConstraintToken::ConstraintTokenKind::NOT_EQUAL:
         consume(ConstraintToken::ConstraintTokenKind::NOT_EQUAL);
-        return std::make_unique<NotConstraint>(
-            std::make_unique<EqualsConstraint>(std::move(LHS),
-                                               parseExpression(Precedence)));
+        return createConstraint<NotEqualConstraint>(
+            std::move(LHS), NestingLevel + 1, Precedence);
       case ConstraintToken::ConstraintTokenKind::STAR:
         consume(ConstraintToken::ConstraintTokenKind::STAR);
-        return std::make_unique<MultiplicationConstraint>(
-            std::move(LHS), parseExpression(Precedence));
+        return createConstraint<MultiplicationConstraint>(
+            std::move(LHS), NestingLevel + 1, Precedence);
       case ConstraintToken::ConstraintTokenKind::PLUS:
         consume(ConstraintToken::ConstraintTokenKind::PLUS);
-        return std::make_unique<AdditionConstraint>(
-            std::move(LHS), parseExpression(Precedence));
+        return createConstraint<AdditionConstraint>(
+            std::move(LHS), NestingLevel + 1, Precedence);
       case ConstraintToken::ConstraintTokenKind::MINUS:
         consume(ConstraintToken::ConstraintTokenKind::MINUS);
-        return std::make_unique<SubtractionConstraint>(
-            std::move(LHS), parseExpression(Precedence));
+        return createConstraint<SubtractionConstraint>(
+            std::move(LHS), NestingLevel + 1, Precedence);
       case ConstraintToken::ConstraintTokenKind::LESS:
         consume(ConstraintToken::ConstraintTokenKind::LESS);
-        return std::make_unique<LessConstraint>(std::move(LHS),
-                                                parseExpression(Precedence));
+        return createConstraint<LessConstraint>(std::move(LHS),
+                                                NestingLevel + 1, Precedence);
+      case ConstraintToken::ConstraintTokenKind::LESS_EQUAL:
+        consume(ConstraintToken::ConstraintTokenKind::LESS_EQUAL);
+        return createConstraint<LessEqualConstraint>(
+            std::move(LHS), NestingLevel + 1, Precedence);
       case ConstraintToken::ConstraintTokenKind::AND:
         consume(ConstraintToken::ConstraintTokenKind::AND);
-        return std::make_unique<AndConstraint>(std::move(LHS),
-                                               parseExpression(Precedence));
+        return createConstraint<AndConstraint>(std::move(LHS), NestingLevel + 1,
+                                               Precedence);
       case ConstraintToken::ConstraintTokenKind::OR:
         consume(ConstraintToken::ConstraintTokenKind::OR);
-        return std::make_unique<OrConstraint>(std::move(LHS),
-                                              parseExpression(Precedence));
+        return createConstraint<OrConstraint>(std::move(LHS), NestingLevel + 1,
+                                              Precedence);
       case ConstraintToken::ConstraintTokenKind::IMPLIES:
         consume(ConstraintToken::ConstraintTokenKind::IMPLIES);
-        return std::make_unique<ImpliesConstraint>(std::move(LHS),
-                                                   parseExpression(Precedence));
-      case ConstraintToken::ConstraintTokenKind::ERROR:
+        return createConstraint<ImpliesConstraint>(
+            std::move(LHS), NestingLevel + 1, Precedence);
       case ConstraintToken::ConstraintTokenKind::IDENTIFIER:
-      case ConstraintToken::ConstraintTokenKind::NUMBER:
       case ConstraintToken::ConstraintTokenKind::L_PAR:
-      case ConstraintToken::ConstraintTokenKind::R_PAR:
-      case ConstraintToken::ConstraintTokenKind::NOT:
       case ConstraintToken::ConstraintTokenKind::NEG:
-        llvm::errs() << "Unexpected token in binary expression.\n";
+      case ConstraintToken::ConstraintTokenKind::NOT:
+      case ConstraintToken::ConstraintTokenKind::NUMBER:
+      case ConstraintToken::ConstraintTokenKind::R_PAR:
+        llvm::errs()
+            << "Syntax error: Unexpected token in binary expression.\n";
         return nullptr;
       }
     }
   }
 
-  std::unique_ptr<Constraint> parseUnaryExpression() {
+  std::unique_ptr<Constraint> parseUnaryExpression(int NestingLevel) {
     while (true) {
       switch (peek().getKind()) {
+      case ConstraintToken::ConstraintTokenKind::ERROR:
+        assert(peek().getValue().has_value());
+        llvm::errs() << "Lexical error: Unexpected character '"
+                     << *peek().getValue() << "'\n";
+        return nullptr;
+      case ConstraintToken::ConstraintTokenKind::END_OF_FILE:
+        llvm::errs() << "Syntax error: Unexpected end of unary expression.\n";
+        return nullptr;
       case ConstraintToken::ConstraintTokenKind::WHITESPACE:
         consume(ConstraintToken::ConstraintTokenKind::WHITESPACE);
         continue;
+      case ConstraintToken::ConstraintTokenKind::AND:
       case ConstraintToken::ConstraintTokenKind::EQUAL:
       case ConstraintToken::ConstraintTokenKind::EQUIVALENT:
       case ConstraintToken::ConstraintTokenKind::GREATER:
-      case ConstraintToken::ConstraintTokenKind::NOT_EQUAL:
-      case ConstraintToken::ConstraintTokenKind::STAR:
-      case ConstraintToken::ConstraintTokenKind::PLUS:
-      case ConstraintToken::ConstraintTokenKind::MINUS:
-      case ConstraintToken::ConstraintTokenKind::LESS:
-      case ConstraintToken::ConstraintTokenKind::AND:
-      case ConstraintToken::ConstraintTokenKind::OR:
+      case ConstraintToken::ConstraintTokenKind::GREATER_EQUAL:
       case ConstraintToken::ConstraintTokenKind::IMPLIES:
-      case ConstraintToken::ConstraintTokenKind::END_OF_FILE:
-        llvm::errs() << "Unexpected token before unary expression.\n";
+      case ConstraintToken::ConstraintTokenKind::LESS:
+      case ConstraintToken::ConstraintTokenKind::LESS_EQUAL:
+      case ConstraintToken::ConstraintTokenKind::MINUS:
+      case ConstraintToken::ConstraintTokenKind::NOT_EQUAL:
+      case ConstraintToken::ConstraintTokenKind::OR:
+      case ConstraintToken::ConstraintTokenKind::PLUS:
+      case ConstraintToken::ConstraintTokenKind::STAR:
+        llvm::errs()
+            << "Syntax error: Unexpected token before unary expression.\n";
         return nullptr;
       case ConstraintToken::ConstraintTokenKind::R_PAR:
-        llvm::errs() << "Unexpected closing parenthesis.\n";
-        return nullptr;
-      case ConstraintToken::ConstraintTokenKind::ERROR:
+        llvm::errs() << "Syntax error: Unexpected closing parenthesis.\n";
         return nullptr;
       case ConstraintToken::ConstraintTokenKind::IDENTIFIER:
+        assert(peek().getValue().has_value());
         return std::make_unique<PrimaryFeatureConstraint>(
             std::make_unique<Feature>(*next().getValue()));
       case ConstraintToken::ConstraintTokenKind::NUMBER:
+        assert(peek().getValue().has_value());
         return std::make_unique<PrimaryIntegerConstraint>(
             std::stoi(*next().getValue()));
       case ConstraintToken::ConstraintTokenKind::NOT:
         consume(ConstraintToken::ConstraintTokenKind::NOT);
-        return std::make_unique<NotConstraint>(parseExpression());
+        return createConstraint<NotConstraint>(NestingLevel + 1);
       case ConstraintToken::ConstraintTokenKind::NEG:
         consume(ConstraintToken::ConstraintTokenKind::NEG);
-        return std::make_unique<NegConstraint>(parseExpression());
+        return createConstraint<NegConstraint>(NestingLevel + 1);
       case ConstraintToken::ConstraintTokenKind::L_PAR:
         consume(ConstraintToken::ConstraintTokenKind::L_PAR);
-        auto Inner = parseExpression();
+        auto Inner = parseExpression(NestingLevel + 1);
         if (!consume(ConstraintToken::ConstraintTokenKind::R_PAR)) {
-          llvm::errs() << "Expected closing parenthesis.\n";
+          llvm::errs() << "Syntax error: Missing closing parenthesis.\n";
           return nullptr;
         }
         return Inner;

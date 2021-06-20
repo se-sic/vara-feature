@@ -23,28 +23,29 @@ class ConstraintVisitor;
 class Constraint {
 public:
   enum class ConstraintKind {
-    CK_BINARY,
-    CK_OR,
-    CK_XOR,
-    CK_AND,
-    CK_EQUALS,
-    CK_IMPLIES,
-    CK_EXCLUDES,
-    CK_EQUIVALENCE,
     CK_ADDITION,
-    CK_SUBTRACTION,
-    CK_MULTIPLICATION,
+    CK_AND,
+    CK_BINARY,
     CK_DIVISION,
-    CK_LESS,
+    CK_EQUAL,
+    CK_EQUIVALENCE,
+    CK_EXCLUDES,
+    CK_FEATURE,
     CK_GREATER,
-    CK_LESSEQUAL,
-    CK_GREATEREQUAL,
-    CK_UNARY,
-    CK_NOT,
-    CK_NEG,
-    CK_PRIMARY,
+    CK_GREATER_EQUAL,
+    CK_IMPLIES,
     CK_INTEGER,
-    CK_FEATURE
+    CK_LESS,
+    CK_LESS_EQUAL,
+    CK_MULTIPLICATION,
+    CK_NEG,
+    CK_NOT,
+    CK_NOT_EQUAL,
+    CK_OR,
+    CK_PRIMARY,
+    CK_SUBTRACTION,
+    CK_UNARY,
+    CK_XOR
   };
 
   Constraint(ConstraintKind Kind) : Kind(Kind) {}
@@ -184,16 +185,16 @@ public:
   }
 };
 
-class EqualsConstraint : public BinaryConstraint, public BooleanConstraint {
+class EqualConstraint : public BinaryConstraint, public BooleanConstraint {
 public:
-  EqualsConstraint(std::unique_ptr<Constraint> LeftOperand,
-                   std::unique_ptr<Constraint> RightOperand)
-      : BinaryConstraint(ConstraintKind::CK_EQUALS, std::move(LeftOperand),
+  EqualConstraint(std::unique_ptr<Constraint> LeftOperand,
+                  std::unique_ptr<Constraint> RightOperand)
+      : BinaryConstraint(ConstraintKind::CK_EQUAL, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
   std::unique_ptr<Constraint> clone() override {
-    return std::make_unique<EqualsConstraint>(this->getLeftOperand()->clone(),
-                                              this->getRightOperand()->clone());
+    return std::make_unique<EqualConstraint>(this->getLeftOperand()->clone(),
+                                             this->getRightOperand()->clone());
   }
 
   [[nodiscard]] std::string toString() const override {
@@ -202,7 +203,29 @@ public:
   }
 
   static bool classof(const Constraint *C) {
-    return C->getKind() == ConstraintKind::CK_EQUALS;
+    return C->getKind() == ConstraintKind::CK_EQUAL;
+  }
+};
+
+class NotEqualConstraint : public BinaryConstraint, public BooleanConstraint {
+public:
+  NotEqualConstraint(std::unique_ptr<Constraint> LeftOperand,
+                     std::unique_ptr<Constraint> RightOperand)
+      : BinaryConstraint(ConstraintKind::CK_NOT_EQUAL, std::move(LeftOperand),
+                         std::move(RightOperand)) {}
+
+  std::unique_ptr<Constraint> clone() override {
+    return std::make_unique<NotEqualConstraint>(
+        this->getLeftOperand()->clone(), this->getRightOperand()->clone());
+  }
+
+  [[nodiscard]] std::string toString() const override {
+    return llvm::formatv("({0} != {1})", LeftOperand->toString(),
+                         RightOperand->toString());
+  }
+
+  static bool classof(const Constraint *C) {
+    return C->getKind() == ConstraintKind::CK_NOT_EQUAL;
   }
 };
 
@@ -436,7 +459,7 @@ class LessEqualConstraint : public BinaryConstraint, public NumericConstraint {
 public:
   LessEqualConstraint(std::unique_ptr<Constraint> LeftOperand,
                       std::unique_ptr<Constraint> RightOperand)
-      : BinaryConstraint(ConstraintKind::CK_LESSEQUAL, std::move(LeftOperand),
+      : BinaryConstraint(ConstraintKind::CK_LESS_EQUAL, std::move(LeftOperand),
                          std::move(RightOperand)) {}
 
   std::unique_ptr<Constraint> clone() override {
@@ -455,7 +478,7 @@ public:
   }
 
   static bool classof(const Constraint *C) {
-    return C->getKind() == ConstraintKind::CK_LESSEQUAL;
+    return C->getKind() == ConstraintKind::CK_LESS_EQUAL;
   }
 };
 
@@ -464,7 +487,7 @@ class GreaterEqualConstraint : public BinaryConstraint,
 public:
   GreaterEqualConstraint(std::unique_ptr<Constraint> LeftOperand,
                          std::unique_ptr<Constraint> RightOperand)
-      : BinaryConstraint(ConstraintKind::CK_GREATEREQUAL,
+      : BinaryConstraint(ConstraintKind::CK_GREATER_EQUAL,
                          std::move(LeftOperand), std::move(RightOperand)) {}
 
   std::unique_ptr<Constraint> clone() override {
@@ -483,7 +506,7 @@ public:
   }
 
   static bool classof(const Constraint *C) {
-    return C->getKind() == ConstraintKind::CK_GREATEREQUAL;
+    return C->getKind() == ConstraintKind::CK_GREATER_EQUAL;
   }
 };
 
@@ -623,4 +646,5 @@ public:
 };
 
 } // namespace vara::feature
+
 #endif // VARA_FEATURE_CONSTRAINT_H
