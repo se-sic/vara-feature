@@ -251,7 +251,7 @@ public:
   explicit ConstraintParser(std::string Cnt)
       : TokenList(ConstraintLexer(std::move(Cnt)).tokenize()) {}
 
-  std::unique_ptr<Constraint> buildConstraint() { return parseExpression(); }
+  std::unique_ptr<Constraint> buildConstraint() { return parseConstraint(); }
 
 private:
   [[nodiscard]] const ConstraintToken &peek() const {
@@ -273,10 +273,10 @@ private:
   }
 
   std::unique_ptr<Constraint>
-  parseExpression(int NestingLevel = 0,
+  parseConstraint(int NestingLevel = 0,
                   ConstraintToken::PrecedenceTy Precedence =
                       ConstraintToken::MaxPrecedence) {
-    if (auto LHS = parseUnaryExpression(NestingLevel)) {
+    if (auto LHS = parseUnaryConstraint(NestingLevel)) {
       while (LHS) {
         switch (peek().getKind()) {
         case ConstraintToken::ConstraintTokenKind::ERROR:
@@ -312,7 +312,7 @@ private:
           if (NextPrecedence >= Precedence) {
             return LHS;
           }
-          LHS = parseBinaryExpression(NestingLevel, std::move(LHS),
+          LHS = parseBinaryConstraint(NestingLevel, std::move(LHS),
                                       NextPrecedence);
           continue;
         }
@@ -332,21 +332,20 @@ private:
   template <typename T>
   auto createConstraint(std::unique_ptr<Constraint> LHS, int NestingLevel,
                         ConstraintToken::PrecedenceTy Precedence) {
-    consume(ConstraintToken::ConstraintTokenKind::EQUAL);
-    auto Inner = parseExpression(NestingLevel + 1, Precedence);
-    return Inner ? std::make_unique<T>(std::move(LHS), std::move(Inner))
-                 : nullptr;
+    auto Constraint = parseConstraint(NestingLevel + 1, Precedence);
+    return Constraint
+               ? std::make_unique<T>(std::move(LHS), std::move(Constraint))
+               : nullptr;
   }
 
   template <typename T>
   auto createConstraint(int NestingLevel) {
-    consume(ConstraintToken::ConstraintTokenKind::EQUAL);
-    auto Inner = parseExpression(NestingLevel + 1);
-    return Inner ? std::make_unique<T>(std::move(Inner)) : nullptr;
+    auto Constraint = parseConstraint(NestingLevel + 1);
+    return Constraint ? std::make_unique<T>(std::move(Constraint)) : nullptr;
   }
 
   std::unique_ptr<Constraint>
-  parseBinaryExpression(int NestingLevel, std::unique_ptr<Constraint> LHS,
+  parseBinaryConstraint(int NestingLevel, std::unique_ptr<Constraint> LHS,
                         ConstraintToken::PrecedenceTy Precedence) {
     while (true) {
       switch (peek().getKind()) {
@@ -426,7 +425,7 @@ private:
     }
   }
 
-  std::unique_ptr<Constraint> parseUnaryExpression(int NestingLevel) {
+  std::unique_ptr<Constraint> parseUnaryConstraint(int NestingLevel) {
     while (true) {
       switch (peek().getKind()) {
       case ConstraintToken::ConstraintTokenKind::ERROR:
@@ -475,12 +474,12 @@ private:
         return createConstraint<NegConstraint>(NestingLevel + 1);
       case ConstraintToken::ConstraintTokenKind::L_PAR:
         consume(ConstraintToken::ConstraintTokenKind::L_PAR);
-        auto Inner = parseExpression(NestingLevel + 1);
+        auto Constraint = parseConstraint(NestingLevel + 1);
         if (!consume(ConstraintToken::ConstraintTokenKind::R_PAR)) {
           llvm::errs() << "Syntax error: Missing closing parenthesis.\n";
           return nullptr;
         }
-        return Inner;
+        return Constraint;
       }
     }
   }
