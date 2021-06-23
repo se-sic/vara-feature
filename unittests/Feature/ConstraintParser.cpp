@@ -163,6 +163,18 @@ TEST_F(ConstraintParserTest, presecende) {
                   "(3 + (1 * 2))");
 }
 
+TEST_F(ConstraintParserTest, notnot) {
+  checkExpression(Constraint::ConstraintKind::CK_NOT, "!!feature_A",
+                  "!!feature_A");
+  checkExpression(Constraint::ConstraintKind::CK_IMPLIES,
+                  "!!feature_A => !feature_A", "(!!feature_A => !feature_A)");
+  checkExpression(Constraint::ConstraintKind::CK_NOT,
+                  "!(!!feature_A => !feature_A)",
+                  "!(!!feature_A => !feature_A)");
+  checkExpression(Constraint::ConstraintKind::CK_NOT,
+                  "!!(feature_A <=> feature_A)", "!!(feature_A <=> feature_A)");
+}
+
 TEST_F(ConstraintParserTest, parenthesis) {
   checkExpression(Constraint::ConstraintKind::CK_FEATURE, "(feature_A)",
                   "feature_A");

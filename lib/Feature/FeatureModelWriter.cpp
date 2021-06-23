@@ -195,8 +195,34 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
     CHECK_RC
   }
 
-  // TODO(se-passau/VaRA#664): write other boolean constraints if they are
-  //  parsed
+  for (const auto &Constraint : Fm.constraints()) {
+    if (auto *Implies = llvm::dyn_cast<ImpliesConstraint>(Constraint.get())) {
+      if (llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
+              Implies->getLeftOperand()) &&
+          llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
+              Implies->getRightOperand())) {
+        // already covered by implied options
+        continue;
+      }
+    }
+    if (auto *Excludes = llvm::dyn_cast<ExcludesConstraint>(Constraint.get())) {
+      if (llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
+              Excludes->getLeftOperand()) &&
+          llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
+              Excludes->getRightOperand())) {
+        // already covered by excluded options
+        continue;
+      }
+    }
+
+    RC = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
+    CHECK_RC
+    RC = xmlTextWriterWriteString(Writer,
+                                  charToUChar(Constraint->toString().data()));
+    CHECK_RC
+    RC = xmlTextWriterEndElement(Writer); // CONSTRAINT
+    CHECK_RC
+  }
 
   RC = xmlTextWriterEndElement(Writer); // BOOLEANCONSTRAINT
   return RC;
