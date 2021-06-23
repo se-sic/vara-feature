@@ -273,236 +273,262 @@ $(function() {
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  }</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="comment">// TODO(se-passau/VaRA#664): write other boolean constraints if they are</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="comment">//  parsed</span></div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160; </div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// BOOLEANCONSTRAINT</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="keywordflow">return</span> RC;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;}</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160; </div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="keywordtype">int</span> FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;                                        Feature &amp;Feature1) {</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <span class="keywordtype">int</span> RC;</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160; </div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8655164f5b246ac12262853f9d161d53">XmlConstants::CONFIGURATIONOPTION</a>);</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; </div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aaf2d54f1d085fb22b01e35f8a281aa72">XmlConstants::NAME</a>,</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;                                 <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(Feature1.getName().data()));</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160; </div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <span class="comment">// parent</span></div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <span class="keywordflow">if</span> (Feature1.getParentFeature()) {</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    RC = xmlTextWriterWriteElement(</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#acefac1a63655f3bd63b1f447be9e5061">XmlConstants::PARENT</a>,</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(Feature1.getParentFeature()-&gt;getName().data()));</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  }</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160; </div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="comment">// children</span></div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keyword">auto</span> FS = Feature1.getChildren&lt;Feature&gt;();</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <span class="keyword">auto</span> Children = deprecated::OrderedFeatureVector(FS.begin(), FS.end());</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordflow">if</span> (!Children.empty()) {</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a65aa6a90c36ba19ce6b29c1e61cd2954">XmlConstants::CHILDREN</a>);</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160; </div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="keywordflow">for</span> (Feature *F : Children) {</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>,</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(F-&gt;getName().data()));</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    }</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;Constraint : Fm.<a class="code" href="classvara_1_1feature_1_1FeatureModel.html#a5867e80e7eddc1c45138693e881b7614">constraints</a>()) {</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">auto</span> *Implies = llvm::dyn_cast&lt;ImpliesConstraint&gt;(Constraint.get())) {</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      <span class="keywordflow">if</span> (llvm::isa_and_nonnull&lt;PrimaryFeatureConstraint&gt;(</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;              Implies-&gt;getLeftOperand()) &amp;&amp;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;          llvm::isa_and_nonnull&lt;PrimaryFeatureConstraint&gt;(</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;              Implies-&gt;getRightOperand())) {</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        <span class="comment">// already covered by implied options</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      }</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    }</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">auto</span> *Excludes = llvm::dyn_cast&lt;ExcludesConstraint&gt;(Constraint.get())) {</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;      <span class="keywordflow">if</span> (llvm::isa_and_nonnull&lt;PrimaryFeatureConstraint&gt;(</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;              Excludes-&gt;getLeftOperand()) &amp;&amp;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;          llvm::isa_and_nonnull&lt;PrimaryFeatureConstraint&gt;(</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;              Excludes-&gt;getRightOperand())) {</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;        <span class="comment">// already covered by excluded options</span></div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;      }</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    }</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160; </div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a267413639029e8252fa9ce2e4f090ed9">XmlConstants::CONSTRAINT</a>);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    RC = xmlTextWriterWriteString(Writer,</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;                                  <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(Constraint-&gt;toString().data()));</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    RC = xmlTextWriterEndElement(Writer); <span class="comment">// CONSTRAINT</span></div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  }</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160; </div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// BOOLEANCONSTRAINT</span></div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordflow">return</span> RC;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;}</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160; </div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="keywordtype">int</span> FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;                                        Feature &amp;Feature1) {</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <span class="keywordtype">int</span> RC;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160; </div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8655164f5b246ac12262853f9d161d53">XmlConstants::CONFIGURATIONOPTION</a>);</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    RC = xmlTextWriterEndElement(Writer); <span class="comment">// CHILDREN</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  }</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aaf2d54f1d085fb22b01e35f8a281aa72">XmlConstants::NAME</a>,</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;                                 <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(Feature1.getName().data()));</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160; </div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <span class="comment">// implications</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  deprecated::OrderedFeatureVector Implications;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160; </div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *C : Feature1.implications()) {</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *LHS =</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            llvm::dyn_cast&lt;PrimaryFeatureConstraint&gt;(C-&gt;getLeftOperand());</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        LHS) {</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;      <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *RHS =</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;              llvm::dyn_cast&lt;PrimaryFeatureConstraint&gt;(C-&gt;getRightOperand());</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;          RHS) {</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        <span class="keywordflow">if</span> (LHS-&gt;getFeature() &amp;&amp;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;            LHS-&gt;getFeature()-&gt;getName() == Feature1.getName() &amp;&amp;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;            RHS-&gt;getFeature()) {</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;          Implications.insert(RHS-&gt;getFeature());</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        }</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;      }</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    }</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  }</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160; </div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="keywordflow">if</span> (!Implications.empty()) {</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a1052cb3c3e60860251acd85ace9fd619">XmlConstants::IMPLIEDOPTIONS</a>);</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160; </div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <span class="keywordflow">for</span> (Feature *F : Implications) {</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>,</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(F-&gt;getName().data()));</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    }</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <span class="comment">// parent</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  <span class="keywordflow">if</span> (Feature1.getParentFeature()) {</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    RC = xmlTextWriterWriteElement(</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#acefac1a63655f3bd63b1f447be9e5061">XmlConstants::PARENT</a>,</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(Feature1.getParentFeature()-&gt;getName().data()));</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  }</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160; </div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <span class="comment">// children</span></div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  <span class="keyword">auto</span> FS = Feature1.getChildren&lt;Feature&gt;();</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  <span class="keyword">auto</span> Children = deprecated::OrderedFeatureVector(FS.begin(), FS.end());</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160; </div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  <span class="keywordflow">if</span> (!Children.empty()) {</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a65aa6a90c36ba19ce6b29c1e61cd2954">XmlConstants::CHILDREN</a>);</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160; </div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keywordflow">for</span> (Feature *F : Children) {</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>,</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(F-&gt;getName().data()));</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    }</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160; </div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    RC = xmlTextWriterEndElement(Writer); <span class="comment">// CHILDREN</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  }</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160; </div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="comment">// implications</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  deprecated::OrderedFeatureVector Implications;</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160; </div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    RC = xmlTextWriterEndElement(Writer); <span class="comment">// IMPLIEDOPTIONS</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  }</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160; </div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  <span class="comment">// excludes</span></div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  deprecated::OrderedFeatureVector Excludes;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160; </div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <span class="keywordflow">if</span> (llvm::isa_and_nonnull&lt;Relationship&gt;(Feature1.getParent())) {</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keyword">auto</span> ES = Feature1.getParent()-&gt;getChildren&lt;Feature&gt;();</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    ES.erase(&amp;Feature1);</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    Excludes.insert(ES.begin(), ES.end());</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  }</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *C : Feature1.excludes()) {</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *LHS =</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;            llvm::dyn_cast&lt;PrimaryFeatureConstraint&gt;(C-&gt;getLeftOperand());</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        LHS) {</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;      <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *RHS =</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;              llvm::dyn_cast&lt;PrimaryFeatureConstraint&gt;(C-&gt;getRightOperand());</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;          RHS) {</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        <span class="keywordflow">if</span> (LHS-&gt;getFeature() &amp;&amp;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;            LHS-&gt;getFeature()-&gt;getName() == Feature1.getName() &amp;&amp;</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;            RHS-&gt;getFeature()) {</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;          <span class="keywordflow">if</span> (std::find(Excludes.begin(), Excludes.end(), RHS-&gt;getFeature()) ==</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;              Excludes.end()) {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;            Excludes.insert(RHS-&gt;getFeature());</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;          }</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        }</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      }</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    }</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  }</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160; </div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  <span class="keywordflow">if</span> (!Excludes.empty()) {</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a06bc5c25f5bd26089852cba37fe7593a">XmlConstants::EXCLUDEDOPTIONS</a>);</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160; </div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    <span class="keywordflow">for</span> (Feature *F : Excludes) {</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>,</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(F-&gt;getName().data()));</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    }</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160; </div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    RC = xmlTextWriterEndElement(Writer); <span class="comment">// EXCLUDEDOPTIONS</span></div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  }</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160; </div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="comment">// optional</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  RC = xmlTextWriterWriteElement(</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a6526295f7c3f9585641fd916d7f89928">XmlConstants::OPTIONAL</a>,</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;      <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>((Feature1.isOptional() ? <span class="stringliteral">&quot;True&quot;</span> : <span class="stringliteral">&quot;False&quot;</span>)));</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160; </div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  <span class="comment">// numeric elements</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *NF = llvm::dyn_cast&lt;NumericFeature&gt;(&amp;Feature1)) {</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="keyword">auto</span> ValueVariant = NF-&gt;getValues();</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordflow">if</span> (std::holds_alternative&lt;std::pair&lt;int, int&gt;&gt;(ValueVariant)) {</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;      <span class="keyword">auto</span> [Min, Max] = std::get&lt;std::pair&lt;int, int&gt;&gt;(ValueVariant);</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ade45033f3268fad93c0d909d09ef5a8c">XmlConstants::MINVALUE</a>,</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(std::to_string(Min).data()));</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160; </div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac65c431d8234048c457a505c3ca398b4">XmlConstants::MAXVALUE</a>,</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(std::to_string(Max).data()));</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;      <span class="keyword">auto</span> Values = std::get&lt;std::vector&lt;int&gt;&gt;(ValueVariant);</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;      std::string Str;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      std::for_each(std::begin(Values), std::end(Values) - 1, [&amp;Str](<span class="keywordtype">int</span> X) {</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        Str.append(std::to_string(X));</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        Str.push_back(<span class="charliteral">&#39;;&#39;</span>);</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      });</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;      Str.append(std::to_string(Values.back()));</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160; </div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a1f418c4eeaea09dd29ee42583526d13c">XmlConstants::VALUES</a>,</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(Str.data()));</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    }</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  }</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160; </div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="comment">// locations?</span></div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  <span class="keywordflow">if</span> (Feature1.hasLocations()) {</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a0abcab7975528368515466ec3660bade">XmlConstants::LOCATIONS</a>);</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    <span class="keywordflow">for</span> (FeatureSourceRange &amp;Fsr : Feature1.getLocations()) {</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;      RC = writeSourceRange(Writer, Fsr);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *C : Feature1.implications()) {</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *LHS =</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;            llvm::dyn_cast&lt;PrimaryFeatureConstraint&gt;(C-&gt;getLeftOperand());</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        LHS) {</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;      <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *RHS =</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;              llvm::dyn_cast&lt;PrimaryFeatureConstraint&gt;(C-&gt;getRightOperand());</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;          RHS) {</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="keywordflow">if</span> (LHS-&gt;getFeature() &amp;&amp;</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;            LHS-&gt;getFeature()-&gt;getName() == Feature1.getName() &amp;&amp;</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;            RHS-&gt;getFeature()) {</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;          Implications.insert(RHS-&gt;getFeature());</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        }</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;      }</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    }</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  }</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160; </div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <span class="keywordflow">if</span> (!Implications.empty()) {</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a1052cb3c3e60860251acd85ace9fd619">XmlConstants::IMPLIEDOPTIONS</a>);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160; </div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keywordflow">for</span> (Feature *F : Implications) {</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>,</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(F-&gt;getName().data()));</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    }</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160; </div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    RC = xmlTextWriterEndElement(Writer); <span class="comment">// IMPLIEDOPTIONS</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  }</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160; </div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="comment">// excludes</span></div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  deprecated::OrderedFeatureVector Excludes;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160; </div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="keywordflow">if</span> (llvm::isa_and_nonnull&lt;Relationship&gt;(Feature1.getParent())) {</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keyword">auto</span> ES = Feature1.getParent()-&gt;getChildren&lt;Feature&gt;();</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    ES.erase(&amp;Feature1);</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    Excludes.insert(ES.begin(), ES.end());</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  }</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *C : Feature1.excludes()) {</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *LHS =</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;            llvm::dyn_cast&lt;PrimaryFeatureConstraint&gt;(C-&gt;getLeftOperand());</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        LHS) {</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;      <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> *RHS =</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;              llvm::dyn_cast&lt;PrimaryFeatureConstraint&gt;(C-&gt;getRightOperand());</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;          RHS) {</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        <span class="keywordflow">if</span> (LHS-&gt;getFeature() &amp;&amp;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;            LHS-&gt;getFeature()-&gt;getName() == Feature1.getName() &amp;&amp;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;            RHS-&gt;getFeature()) {</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;          <span class="keywordflow">if</span> (std::find(Excludes.begin(), Excludes.end(), RHS-&gt;getFeature()) ==</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;              Excludes.end()) {</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;            Excludes.insert(RHS-&gt;getFeature());</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;          }</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        }</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;      }</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    }</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  }</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160; </div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  <span class="keywordflow">if</span> (!Excludes.empty()) {</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a06bc5c25f5bd26089852cba37fe7593a">XmlConstants::EXCLUDEDOPTIONS</a>);</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160; </div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    <span class="keywordflow">for</span> (Feature *F : Excludes) {</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>,</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(F-&gt;getName().data()));</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    }</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160; </div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    RC = xmlTextWriterEndElement(Writer); <span class="comment">// EXCLUDEDOPTIONS</span></div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  }</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160; </div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  <span class="comment">// optional</span></div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  RC = xmlTextWriterWriteElement(</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a6526295f7c3f9585641fd916d7f89928">XmlConstants::OPTIONAL</a>,</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;      <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>((Feature1.isOptional() ? <span class="stringliteral">&quot;True&quot;</span> : <span class="stringliteral">&quot;False&quot;</span>)));</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160; </div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="comment">// numeric elements</span></div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *NF = llvm::dyn_cast&lt;NumericFeature&gt;(&amp;Feature1)) {</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    <span class="keyword">auto</span> ValueVariant = NF-&gt;getValues();</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keywordflow">if</span> (std::holds_alternative&lt;std::pair&lt;int, int&gt;&gt;(ValueVariant)) {</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      <span class="keyword">auto</span> [Min, Max] = std::get&lt;std::pair&lt;int, int&gt;&gt;(ValueVariant);</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ade45033f3268fad93c0d909d09ef5a8c">XmlConstants::MINVALUE</a>,</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(std::to_string(Min).data()));</div>
 <div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    }</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    RC = xmlTextWriterEndElement(Writer); <span class="comment">// LOCATIONS</span></div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  }</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160; </div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// CONFIGURATIONOPTION</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  <span class="keywordflow">return</span> RC;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;}</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160; </div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;<span class="keywordtype">int</span> FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr Writer,</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;                                            FeatureSourceRange &amp;Location) {</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  <span class="keywordtype">int</span> RC;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160; </div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac65c431d8234048c457a505c3ca398b4">XmlConstants::MAXVALUE</a>,</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(std::to_string(Max).data()));</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;      <span class="keyword">auto</span> Values = std::get&lt;std::vector&lt;int&gt;&gt;(ValueVariant);</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;      std::string Str;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;      std::for_each(std::begin(Values), std::end(Values) - 1, [&amp;Str](<span class="keywordtype">int</span> X) {</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;        Str.append(std::to_string(X));</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;        Str.push_back(<span class="charliteral">&#39;;&#39;</span>);</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;      });</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      Str.append(std::to_string(Values.back()));</div>
 <div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160; </div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a49bef00c08565bef1478992f97d5d907">XmlConstants::SOURCERANGE</a>);</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160; </div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  <span class="keywordflow">switch</span> (Location.getCategory()) {</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aec94c63d602e631f9e7bcc0e6a29160a">FeatureSourceRange::Category::necessary</a>:</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    RC = xmlTextWriterWriteAttribute(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8f755e1423176d59938deee823e719f9">XmlConstants::CATEGORY</a>,</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;                                     <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a248e1138ce6a3d9dc039e74787342f77">XmlConstants::NECESSARY</a>);</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;  <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aa1e918278d1a5f5966ee6db0d750f635">FeatureSourceRange::Category::inessential</a>:</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    RC = xmlTextWriterWriteAttribute(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8f755e1423176d59938deee823e719f9">XmlConstants::CATEGORY</a>,</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;                                     <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac684f8d10ed49cb3fe83440c337bc1bc">XmlConstants::INESSENTIAL</a>);</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  }</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160; </div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  RC = xmlTextWriterWriteElement(</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac000d875eefd82d7eea19284c57e13f1">XmlConstants::PATH</a>,</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;      <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(Location.getPath().string().data()));</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160; </div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a482244015ae83d8d5e17439cd9286cdf">XmlConstants::START</a>);</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160; </div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  <span class="keyword">auto</span> *Start = Location.getStart();</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  RC = xmlTextWriterWriteElement(</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ad57078cb9402bb2a2f67905279f77ae9">XmlConstants::LINE</a>,</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;      BAD_CAST std::to_string(Start-&gt;getLineNumber()).data());</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a1f418c4eeaea09dd29ee42583526d13c">XmlConstants::VALUES</a>,</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(Str.data()));</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    }</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  }</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160; </div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  <span class="comment">// locations?</span></div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;  <span class="keywordflow">if</span> (Feature1.hasLocations()) {</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a0abcab7975528368515466ec3660bade">XmlConstants::LOCATIONS</a>);</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    <span class="keywordflow">for</span> (FeatureSourceRange &amp;Fsr : Feature1.getLocations()) {</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;      RC = writeSourceRange(Writer, Fsr);</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    }</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    RC = xmlTextWriterEndElement(Writer); <span class="comment">// LOCATIONS</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;    <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  }</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160; </div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// CONFIGURATIONOPTION</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="keywordflow">return</span> RC;</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;}</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160; </div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;<span class="keywordtype">int</span> FeatureModelXmlWriter::writeSourceRange(xmlTextWriterPtr Writer,</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;                                            FeatureSourceRange &amp;Location) {</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  <span class="keywordtype">int</span> RC;</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160; </div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a49bef00c08565bef1478992f97d5d907">XmlConstants::SOURCERANGE</a>);</div>
 <div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
 <div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160; </div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  RC = xmlTextWriterWriteElement(</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac3be8a4e0c9c5e35e2740cdba526ae8a">XmlConstants::COLUMN</a>,</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;      BAD_CAST std::to_string(Start-&gt;getColumnOffset()).data());</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160; </div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// START</span></div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160; </div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;  RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aa63a52fab7ec49d904238153eb145299">XmlConstants::END</a>);</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160; </div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  <span class="keyword">auto</span> *End = Location.getEnd();</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  <span class="keywordflow">switch</span> (Location.getCategory()) {</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;  <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aec94c63d602e631f9e7bcc0e6a29160a">FeatureSourceRange::Category::necessary</a>:</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    RC = xmlTextWriterWriteAttribute(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8f755e1423176d59938deee823e719f9">XmlConstants::CATEGORY</a>,</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;                                     <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a248e1138ce6a3d9dc039e74787342f77">XmlConstants::NECESSARY</a>);</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aa1e918278d1a5f5966ee6db0d750f635">FeatureSourceRange::Category::inessential</a>:</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    RC = xmlTextWriterWriteAttribute(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8f755e1423176d59938deee823e719f9">XmlConstants::CATEGORY</a>,</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;                                     <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac684f8d10ed49cb3fe83440c337bc1bc">XmlConstants::INESSENTIAL</a>);</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;  }</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160; </div>
 <div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  RC = xmlTextWriterWriteElement(</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ad57078cb9402bb2a2f67905279f77ae9">XmlConstants::LINE</a>,</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;      BAD_CAST std::to_string(End-&gt;getLineNumber()).data());</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac000d875eefd82d7eea19284c57e13f1">XmlConstants::PATH</a>,</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;      <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(Location.getPath().string().data()));</div>
 <div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
 <div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160; </div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  RC = xmlTextWriterWriteElement(</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac3be8a4e0c9c5e35e2740cdba526ae8a">XmlConstants::COLUMN</a>,</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;      BAD_CAST std::to_string(End-&gt;getColumnOffset()).data());</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160; </div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// END</span></div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160; </div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// SOURCERANGE</span></div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  <span class="keywordflow">return</span> RC;</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;}</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160; </div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a482244015ae83d8d5e17439cd9286cdf">XmlConstants::START</a>);</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160; </div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  <span class="keyword">auto</span> *Start = Location.getStart();</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  RC = xmlTextWriterWriteElement(</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ad57078cb9402bb2a2f67905279f77ae9">XmlConstants::LINE</a>,</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;      BAD_CAST std::to_string(Start-&gt;getLineNumber()).data());</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160; </div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  RC = xmlTextWriterWriteElement(</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac3be8a4e0c9c5e35e2740cdba526ae8a">XmlConstants::COLUMN</a>,</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;      BAD_CAST std::to_string(Start-&gt;getColumnOffset()).data());</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160; </div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// START</span></div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160; </div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;  RC = xmlTextWriterStartElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aa63a52fab7ec49d904238153eb145299">XmlConstants::END</a>);</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160; </div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;  <span class="keyword">auto</span> *End = Location.getEnd();</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;  RC = xmlTextWriterWriteElement(</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ad57078cb9402bb2a2f67905279f77ae9">XmlConstants::LINE</a>,</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;      BAD_CAST std::to_string(End-&gt;getLineNumber()).data());</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160; </div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;  RC = xmlTextWriterWriteElement(</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;      Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac3be8a4e0c9c5e35e2740cdba526ae8a">XmlConstants::COLUMN</a>,</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;      BAD_CAST std::to_string(End-&gt;getColumnOffset()).data());</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160; </div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// END</span></div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;  <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160; </div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;  RC = xmlTextWriterEndElement(Writer); <span class="comment">// SOURCERANGE</span></div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;  <span class="keywordflow">return</span> RC;</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;}</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160; </div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aOrderedFeatureVector_8h_html"><div class="ttname"><a href="OrderedFeatureVector_8h.html">OrderedFeatureVector.h</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a39f248bdf20a86244233c0a7430cf408"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a39f248bdf20a86244233c0a7430cf408">vara::feature::XmlConstants::ROOT</a></div><div class="ttdeci">static constexpr xmlChar ROOT[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00040">XmlConstants.h:40</a></div></div>
@@ -543,6 +569,7 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a6526295f7c3f9585641fd916d7f89928"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a6526295f7c3f9585641fd916d7f89928">vara::feature::XmlConstants::OPTIONAL</a></div><div class="ttdeci">static constexpr xmlChar OPTIONAL[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00020">XmlConstants.h:20</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a8655164f5b246ac12262853f9d161d53"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a8655164f5b246ac12262853f9d161d53">vara::feature::XmlConstants::CONFIGURATIONOPTION</a></div><div class="ttdeci">static constexpr xmlChar CONFIGURATIONOPTION[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00038">XmlConstants.h:38</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_ac65c431d8234048c457a505c3ca398b4"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#ac65c431d8234048c457a505c3ca398b4">vara::feature::XmlConstants::MAXVALUE</a></div><div class="ttdeci">static constexpr xmlChar MAXVALUE[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00035">XmlConstants.h:35</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModel_html_a5867e80e7eddc1c45138693e881b7614"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModel.html#a5867e80e7eddc1c45138693e881b7614">vara::feature::FeatureModel::constraints</a></div><div class="ttdeci">llvm::iterator_range&lt; constraint_iterator &gt; constraints()</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModel_8h_source.html#l00234">FeatureModel.h:234</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a65aa6a90c36ba19ce6b29c1e61cd2954"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a65aa6a90c36ba19ce6b29c1e61cd2954">vara::feature::XmlConstants::CHILDREN</a></div><div class="ttdeci">static constexpr xmlChar CHILDREN[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00022">XmlConstants.h:22</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a0abcab7975528368515466ec3660bade"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a0abcab7975528368515466ec3660bade">vara::feature::XmlConstants::LOCATIONS</a></div><div class="ttdeci">static constexpr xmlChar LOCATIONS[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00026">XmlConstants.h:26</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a267413639029e8252fa9ce2e4f090ed9"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a267413639029e8252fa9ce2e4f090ed9">vara::feature::XmlConstants::CONSTRAINT</a></div><div class="ttdeci">static constexpr xmlChar CONSTRAINT[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00039">XmlConstants.h:39</a></div></div>
@@ -550,7 +577,7 @@ $(function() {
 <div class="ttc" id="anamespacevara_1_1feature_html_ab36c13804f2d432699f44adc99de2657"><div class="ttname"><a href="namespacevara_1_1feature.html#ab36c13804f2d432699f44adc99de2657">vara::feature::ENCODING</a></div><div class="ttdeci">static constexpr char ENCODING[]</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelWriter_8cpp_source.html#l00023">FeatureModelWriter.cpp:23</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 11 2021 09:45:01 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 23 2021 08:46:06 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

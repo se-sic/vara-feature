@@ -1,11 +1,12 @@
 <map id="vara::feature::BooleanConstraint" name="vara::feature::BooleanConstraint">
-<area shape="rect" id="node1" title=" " alt="" coords="5,199,240,225"/>
-<area shape="rect" id="node2" href="$classvara_1_1feature_1_1AndConstraint.html" title=" " alt="" coords="304,5,511,32"/>
-<area shape="rect" id="node3" href="$classvara_1_1feature_1_1EqualsConstraint.html" title=" " alt="" coords="295,56,519,83"/>
-<area shape="rect" id="node4" href="$classvara_1_1feature_1_1EquivalenceConstraint.html" title=" " alt="" coords="311,107,504,149"/>
-<area shape="rect" id="node5" href="$classvara_1_1feature_1_1ExcludesConstraint.html" title=" " alt="" coords="288,173,527,200"/>
-<area shape="rect" id="node6" href="$classvara_1_1feature_1_1ImpliesConstraint.html" title=" " alt="" coords="293,224,522,251"/>
-<area shape="rect" id="node7" href="$classvara_1_1feature_1_1NotConstraint.html" title=" " alt="" coords="305,275,509,301"/>
-<area shape="rect" id="node8" href="$classvara_1_1feature_1_1OrConstraint.html" title=" " alt="" coords="309,325,505,352"/>
-<area shape="rect" id="node9" href="$classvara_1_1feature_1_1XorConstraint.html" title=" " alt="" coords="306,376,509,403"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,224,240,251"/>
+<area shape="rect" id="node2" href="$classvara_1_1feature_1_1AndConstraint.html" title=" " alt="" coords="305,5,511,32"/>
+<area shape="rect" id="node3" href="$classvara_1_1feature_1_1EqualConstraint.html" title=" " alt="" coords="299,56,517,83"/>
+<area shape="rect" id="node4" href="$classvara_1_1feature_1_1EquivalenceConstraint.html" title=" " alt="" coords="311,107,505,149"/>
+<area shape="rect" id="node5" href="$classvara_1_1feature_1_1ExcludesConstraint.html" title=" " alt="" coords="289,173,527,200"/>
+<area shape="rect" id="node6" href="$classvara_1_1feature_1_1ImpliesConstraint.html" title=" " alt="" coords="293,224,523,251"/>
+<area shape="rect" id="node7" href="$classvara_1_1feature_1_1NotConstraint.html" title=" " alt="" coords="306,275,510,301"/>
+<area shape="rect" id="node8" href="$classvara_1_1feature_1_1NotEqualConstraint.html" title=" " alt="" coords="288,325,528,352"/>
+<area shape="rect" id="node9" href="$classvara_1_1feature_1_1OrConstraint.html" title=" " alt="" coords="310,376,506,403"/>
+<area shape="rect" id="node10" href="$classvara_1_1feature_1_1XorConstraint.html" title=" " alt="" coords="307,427,509,453"/>
 </map>

@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['necessary_738',['necessary',['../classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aec94c63d602e631f9e7bcc0e6a29160a',1,'vara::feature::FeatureSourceRange']]],
-  ['nk_5ffeature_739',['NK_FEATURE',['../classvara_1_1feature_1_1FeatureTreeNode.html#aed13fda25fe24e527286a7851cd009afa0f36246b69f46ca13d13eac4bdd5aa14',1,'vara::feature::FeatureTreeNode']]],
-  ['nk_5frelationship_740',['NK_RELATIONSHIP',['../classvara_1_1feature_1_1FeatureTreeNode.html#aed13fda25fe24e527286a7851cd009afa8c846b57451f27dc82c9cce1ce7af3ab',1,'vara::feature::FeatureTreeNode']]]
+  ['fk_5fbinary_794',['FK_BINARY',['../classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661a62bdf4598ccbde09b15ae910ac7083af',1,'vara::feature::Feature']]],
+  ['fk_5fnumeric_795',['FK_NUMERIC',['../classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661a00980f19ff8cdfbc471d858271f03302',1,'vara::feature::Feature']]],
+  ['fk_5froot_796',['FK_ROOT',['../classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661a5c5c8dd420600a0c45369ae28fc44281',1,'vara::feature::Feature']]],
+  ['fk_5funknown_797',['FK_UNKNOWN',['../classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661acb2cd563a57b52cc9d696c0ad7ee9dfb',1,'vara::feature::Feature']]]
 ];
