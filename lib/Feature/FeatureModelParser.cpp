@@ -1,4 +1,5 @@
 #include "vara/Feature/FeatureModelParser.h"
+#include "vara/Feature/ConstraintParser.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -166,14 +167,17 @@ bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
   return true;
 }
 
-bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
+bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
-        std::string Cnt{reinterpret_cast<char *>(
-            UniqueXmlChar(xmlNodeGetContent(H), xmlFree).get())};
-        // TODO(se-passau/VaRA#664): Implement advanced parsing into constraint
-        //  tree
+        UniqueXmlChar Cnt(xmlNodeGetContent(H), xmlFree);
+        if (auto Constraint =
+                ConstraintParser(
+                    std::string(reinterpret_cast<char *>(Cnt.get())))
+                    .buildConstraint()) {
+          FMB.addConstraint(std::move(Constraint));
+        }
       }
     }
   }
