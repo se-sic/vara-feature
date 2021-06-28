@@ -24,7 +24,7 @@ endif()
 
 # add_vara_unittest(test_dirname file1.cpp file2.cpp)
 #
-# Will compile the list of files together and link against VaRA and its dependences.
+# Will compile the list of files together and link against VaRA and its dependencies.
 function(add_vara_unittest test_name)
   if(COMMAND add_unittest)
     add_unittest(VaRAFeatureUnitTests ${test_name} ${ARGN})

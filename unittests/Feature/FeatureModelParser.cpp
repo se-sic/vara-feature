@@ -7,9 +7,64 @@
 
 namespace vara::feature {
 
+TEST(FeatureModelParser, mismatchParentChild) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_mismatch_parent_child.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, nonExistentChild) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_non_existent_child.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, nonExistentExclude) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_non_existent_exclude.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, nonExistentImplication) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_non_existent_implication.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, nonExistentParent) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_non_existent_parent.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
 TEST(FeatureModelParser, onlyChildren) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_only_children.xml"));
+      getTestResource("xml/test_only_children.xml"));
   assert(FS);
 
   auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
@@ -20,7 +75,7 @@ TEST(FeatureModelParser, onlyChildren) {
 
 TEST(FeatureModelParser, onlyParents) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_only_parents.xml"));
+      getTestResource("xml/test_only_parents.xml"));
   assert(FS);
 
   auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
@@ -31,13 +86,52 @@ TEST(FeatureModelParser, onlyParents) {
 
 TEST(FeatureModelParser, outOfOrder) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_out_of_order.xml"));
+      getTestResource("xml/test_out_of_order.xml"));
   assert(FS);
 
   auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
 
   EXPECT_TRUE(P.verifyFeatureModel());
   EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, rootEmptyParent) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_root_empty_parent.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  auto FM = P.buildFeatureModel();
+  EXPECT_TRUE(FM);
+  EXPECT_TRUE(FM->getRoot());
+}
+
+TEST(FeatureModelParser, rootNoParent) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_root_no_parent.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  auto FM = P.buildFeatureModel();
+  EXPECT_TRUE(FM);
+  EXPECT_TRUE(FM->getRoot());
+}
+
+TEST(FeatureModelParser, rootParentRoot) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_root_parent_root.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  auto FM = P.buildFeatureModel();
+  EXPECT_TRUE(FM);
+  EXPECT_TRUE(FM->getRoot());
 }
 
 //===----------------------------------------------------------------------===//

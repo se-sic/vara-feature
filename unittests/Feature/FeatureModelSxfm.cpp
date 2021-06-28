@@ -15,8 +15,8 @@ namespace vara::feature {
 /// Specifically, we test the size of the feature model, the name of the
 /// feature model and also the names and types of the features.
 TEST(SxfmParser, validation) {
-  auto FS =
-      llvm::MemoryBuffer::getFileAsStream(getTestResource("sxfm_example.sxfm"));
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("sxfm/sxfm_example.sxfm"));
   EXPECT_TRUE(FS && "Input file could not be read.");
   auto FM =
       FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
@@ -38,7 +38,8 @@ TEST(SxfmParser, validation) {
 /// Note that also the format of the sxfm file differs a bit from the previous
 /// test in that we use default indentation with tabulators.
 TEST(SxfmParser, parsing) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(getTestResource("test.sxfm"));
+  auto FS =
+      llvm::MemoryBuffer::getFileAsStream(getTestResource("sxfm/test.sxfm"));
   EXPECT_TRUE(FS && "Input file could not be read.");
   auto FM =
       FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
@@ -66,7 +67,7 @@ TEST(SxfmParser, parsing) {
 /// Check whether the wrong indentation leads to errors.
 TEST(SxfmParser, wrong_indentation) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_wrong_indentation.sxfm"));
+      getTestResource("sxfm/test_wrong_indentation.sxfm"));
   EXPECT_TRUE(FS && "Input file could not be read.");
   auto FM =
       FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
@@ -76,7 +77,7 @@ TEST(SxfmParser, wrong_indentation) {
 /// Check whether a wrong xml format leads to errors.
 TEST(SxfmParser, wrong_xml_format) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_wrong_xml_format.sxfm"));
+      getTestResource("sxfm/test_wrong_xml_format.sxfm"));
   EXPECT_TRUE(FS && "Input file could not be read.");
   auto FM = FeatureModelSxfmParser(FS.get()->getBuffer().str());
   EXPECT_FALSE(FM.verifyFeatureModel());

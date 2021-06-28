@@ -11,8 +11,8 @@
 namespace vara::feature {
 
 TEST(XmlWriter, children) {
-  auto FS =
-      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_children.xml"));
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_children.xml"));
   EXPECT_TRUE(FS && "Input file could not be read");
   auto FM =
       FeatureModelXmlParser(FS.get()->getBuffer().str()).buildFeatureModel();
@@ -28,8 +28,8 @@ TEST(XmlWriter, children) {
 }
 
 TEST(XmlWriter, excludes) {
-  auto FS =
-      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_excludes.xml"));
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("xml/test_excludes.xml"));
   EXPECT_TRUE(FS && "Input file could not be read");
   auto FM =
       FeatureModelXmlParser(FS.get()->getBuffer().str()).buildFeatureModel();
@@ -45,7 +45,8 @@ TEST(XmlWriter, excludes) {
 }
 
 TEST(XmlWriter, test) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(getTestResource("test.xml"));
+  auto FS =
+      llvm::MemoryBuffer::getFileAsStream(getTestResource("xml/test.xml"));
   EXPECT_TRUE(FS && "Input file could not be read");
   auto FM =
       FeatureModelXmlParser(FS.get()->getBuffer().str()).buildFeatureModel();
@@ -56,7 +57,7 @@ TEST(XmlWriter, test) {
   std::string ActualOutput = Output.value();
   EXPECT_FALSE(ActualOutput.empty());
 
-  FS = llvm::MemoryBuffer::getFileAsStream(getTestResource("test.xml"));
+  FS = llvm::MemoryBuffer::getFileAsStream(getTestResource("xml/test.xml"));
   EXPECT_TRUE(FS && "Comparisson file could not be read");
   std::string ExpectedOutput = FS.get()->getBuffer().str();
   EXPECT_EQ(ExpectedOutput, ActualOutput);

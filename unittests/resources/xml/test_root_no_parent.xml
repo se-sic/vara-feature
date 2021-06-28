@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="ABC" root="test">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <optional>False</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions/>
+  <booleanConstraints/>
+</vm>
