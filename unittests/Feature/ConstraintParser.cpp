@@ -102,6 +102,27 @@ TEST_F(ConstraintLexerTest, tokenize) {
   checkUnary(ConstraintToken::ConstraintTokenKind::NOT, "!");
 }
 
+TEST(ConstraintLexer, tokenizeSxfmOr) {
+  ConstraintLexer L("feature_Aor or orfeature_B");
+
+  auto TokenList = L.tokenize();
+  ASSERT_EQ(TokenList.size(), 6);
+
+  EXPECT_EQ(TokenList[0].getKind(),
+            ConstraintToken::ConstraintTokenKind::IDENTIFIER);
+  EXPECT_EQ(*TokenList[0].getValue(), "feature_Aor");
+  EXPECT_EQ(TokenList[1].getKind(),
+            ConstraintToken::ConstraintTokenKind::WHITESPACE);
+  EXPECT_EQ(TokenList[2].getKind(), ConstraintToken::ConstraintTokenKind::OR);
+  EXPECT_EQ(TokenList[3].getKind(),
+            ConstraintToken::ConstraintTokenKind::WHITESPACE);
+  EXPECT_EQ(TokenList[4].getKind(),
+            ConstraintToken::ConstraintTokenKind::IDENTIFIER);
+  EXPECT_EQ(*TokenList[4].getValue(), "orfeature_B");
+  EXPECT_EQ(TokenList[5].getKind(),
+            ConstraintToken::ConstraintTokenKind::END_OF_FILE);
+}
+
 TEST(ConstraintParser, error) {
   EXPECT_FALSE(ConstraintParser("feature_A feature_B").buildConstraint());
   EXPECT_FALSE(ConstraintParser("feature_A#feature_B").buildConstraint());

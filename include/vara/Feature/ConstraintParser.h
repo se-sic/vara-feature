@@ -236,6 +236,12 @@ private:
   static ResultTy munchIdentifier(const llvm::StringRef &Str) {
     auto Munch =
         Str.take_while([](auto C) { return llvm::isAlnum(C) || C == '_'; });
+
+    // operator used in SXFM constraints
+    if (Munch == "or") {
+      return {ConstraintToken(ConstraintToken::ConstraintTokenKind::OR), 2};
+    }
+
     return {ConstraintToken(ConstraintToken::ConstraintTokenKind::IDENTIFIER,
                             Munch.str()),
             Munch.size()};
