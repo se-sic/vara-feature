@@ -132,9 +132,53 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Parsers for feature models in SXFM. </p>
-<p>The SXFM (simple XML feature model) format is a feature model format embeded in an XML structure. </p>
+<h1><a class="anchor" id="SXFM"></a>
+SXFM</h1>
+<p>SXFM stands for Simple XML <a class="el" href="classvara_1_1feature_1_1Feature.html" title="Base class for components of FeatureModel.">Feature</a> Model and represents a format that is used to store feature models. In general, feature models consist of a feature model in a tree-like format and cross-tree constraints (i.e., constraints that would violate the tree-like feature). The SXFM format also distinguishes between a feature tree and cross-tree-constraints. The feature tree is embeded as a tabulator indented text in an XML tag called <code><code>feature_tree</code></code> whereas the cross-tree-constraints are embeded in XML xml tag called <code><code>constraint</code></code>. A brief example and description of the SXFM format can be found at SPLOT (go to <code>Edit an existing model</code> -&gt; <code>SXFM format</code>). However, they have not given a formal description of the syntax in form of a syntax diagram. Note that the SXFM format does only support binary features.</p>
+<h2><a class="anchor" id="FeatureTree"></a>
+FeatureTree</h2>
+<p>In the following, we show the syntax diagram for the syntax of feature trees.</p>
+<div class="image">
+<img src="feature_tree.png" alt=""/>
+</div>
+<p>The item <code><code>tabulator</code></code> stands for the tabulator symbol.</p>
+<p>By using the sequence diagram generator, the syntax diagrams can be generated when using the following rules:</p>
+<div class="fragment"><div class="line"> macro_rules! sxfm_feature_tree {</div>
+<div class="line">    (:r $name:expr $id:ident) =&gt; { ... };</div>
+<div class="line">    (:r $name:expr) =&gt; { ... };</div>
+<div class="line">    ($tabulator:item $($tabulator:item)* :o $name:expr $id:ident ) =&gt; { ...</div>
+<div class="line">    };</div>
+<div class="line">    ($tabulator:item $($tabulator:item)* :o $name:expr ) =&gt; { ... };</div>
+<div class="line">    ($tabulator:item $($tabulator:item)* :m $name:expr $id:ident) =&gt; { ... };</div>
+<div class="line">    ($tabulator:item $($tabulator:item)* :m $name:expr ) =&gt; { ... };</div>
+<div class="line">    ($tabulator:item $($tabulator:item)* :g [1..*] ) =&gt; { ... };</div>
+<div class="line">    ($tabulator:item $($tabulator:item)* :g [1..1] ) =&gt; { ... };</div>
+<div class="line">    ($tabulator:item $($tabulator:item)* : $name:expr ) =&gt; { ... };</div>
+<div class="line">    ($tabulator:item $($tabulator:item)* : $name:expr $id:ident ) =&gt; { ... };</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Note that the tabulators indicate the level of the feature. Only the root feature is on level 0 (all other features have a higher indentation). There are different kind of features:</p>
+<ul>
+<li><code><code></code>:r</code> the root feature </li>
+<li><code><code></code>:o</code> the optional feature </li>
+<li><code><code></code>:m</code> the mandatory feature </li>
+<li><code><code></code>:g</code> the parent node of an or group </li>
+<li><code><code></code>:</code> child of an or group</li>
+</ul>
+<p>Note that the or-group features (<code>'</code>:g' ) have no name.</p>
+<h2><a class="anchor" id="Constraints"></a>
+Constraints</h2>
+<div class="image">
+<img src="constraints.png" alt=""/>
+</div>
+<p>or alternatively: </p><div class="fragment"><div class="line">macro_rules! sxfm_constraints {</div>
+<div class="line">    (:$name:ident $cnf_formula:tt) =&gt; {...};</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>The constraints have to be provided in CNF format. Therebey, <code><code>~</code></code> stands for negation, <code><code>or</code></code> for a disjunction. Each constraint is written in a separate XML tag <code><code>constraints</code></code>.</p>
+<dl class="section see"><dt>See also</dt><dd><a href="http://www.splot-research.org/sxfm.html">SPLOT</a> </dd>
+<dd>
+<a href="https://lukaslueg.github.io/macro_railroad_wasm_demo/">SequenceDiagramGenerator</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8h_source.html#l00082">82</a> of file <a class="el" href="FeatureModelParser_8h_source.html">FeatureModelParser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8h_source.html#l00153">153</a> of file <a class="el" href="FeatureModelParser_8h_source.html">FeatureModelParser.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a81391bfc777ccaeb3d55c71a521b72b8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a81391bfc777ccaeb3d55c71a521b72b8">&#9670;&nbsp;</a></span>FeatureModelSxfmParser()</h2>
@@ -160,7 +204,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8h_source.html#l00084">84</a> of file <a class="el" href="FeatureModelParser_8h_source.html">FeatureModelParser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8h_source.html#l00155">155</a> of file <a class="el" href="FeatureModelParser_8h_source.html">FeatureModelParser.h</a>.</p>
 
 </div>
 </div>
@@ -225,7 +269,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classvara_1_1feature_1_1FeatureModelParser.html#ac669b85cc52c17ae02af1455dc247227">vara::feature::FeatureModelParser</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8h_source.html#l00089">89</a> of file <a class="el" href="FeatureModelParser_8h_source.html">FeatureModelParser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8h_source.html#l00160">160</a> of file <a class="el" href="FeatureModelParser_8h_source.html">FeatureModelParser.h</a>.</p>
 
 </div>
 </div>
@@ -236,7 +280,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 9 2021 10:12:07 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jul 15 2021 18:27:04 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
