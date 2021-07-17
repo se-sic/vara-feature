@@ -236,6 +236,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a4dda78a9fd4c0d93131726e05880060d"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a4dda78a9fd4c0d93131726e05880060d">mergeFeatureModels</a> (<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM1, <a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM2, bool Strict=true)</td></tr>
 <tr class="memdesc:a4dda78a9fd4c0d93131726e05880060d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges a <a class="el" href="classvara_1_1feature_1_1FeatureModel.html" title="Tree like representation of features and dependencies.">FeatureModel</a> into another.  <a href="namespacevara_1_1feature.html#a4dda78a9fd4c0d93131726e05880060d">More...</a><br /></td></tr>
 <tr class="separator:a4dda78a9fd4c0d93131726e05880060d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29d38436795ec4d0c548c844ba6967df"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a> (llvm::StringRef S)</td></tr>
+<tr class="separator:a29d38436795ec4d0c548c844ba6967df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ad035e46820da0175681abdcdbcc987"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a0ad035e46820da0175681abdcdbcc987">detectExclude</a> (const <a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> *A, const <a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> *B)</td></tr>
 <tr class="memdesc:a0ad035e46820da0175681abdcdbcc987"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decide whether feature A excludes B.  <a href="namespacevara_1_1feature.html#a0ad035e46820da0175681abdcdbcc987">More...</a><br /></td></tr>
 <tr class="separator:a0ad035e46820da0175681abdcdbcc987"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -519,7 +521,7 @@ Variables</h2></td></tr>
 <p>Decide whether feature A excludes B. </p>
 <p>Beware that this method only detects very simple trees with binary excludes. </p>
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8cpp_source.html#l00242">242</a> of file <a class="el" href="FeatureModelParser_8cpp_source.html">FeatureModelParser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8cpp_source.html#l00249">249</a> of file <a class="el" href="FeatureModelParser_8cpp_source.html">FeatureModelParser.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="Feature_8h_source.html#l00148">vara::feature::Feature::excludes()</a>.</p>
 
@@ -774,6 +776,26 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="a29d38436795ec4d0c548c844ba6967df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29d38436795ec4d0c548c844ba6967df">&#9670;&nbsp;</a></span>trim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string vara::feature::trim </td>
+          <td>(</td>
+          <td class="paramtype">llvm::StringRef&#160;</td>
+          <td class="paramname"><em>S</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8cpp_source.html#l00018">18</a> of file <a class="el" href="FeatureModelParser_8cpp_source.html">FeatureModelParser.cpp</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="ab36c13804f2d432699f44adc99de2657"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab36c13804f2d432699f44adc99de2657">&#9670;&nbsp;</a></span>ENCODING</h2>
@@ -828,7 +850,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 15 2021 18:27:04 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jul 17 2021 15:25:12 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
