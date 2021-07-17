@@ -15,7 +15,7 @@ using std::make_unique;
 
 namespace vara::feature {
 
-std::string trim(const std::string &S) {
+std::string trim(llvm::StringRef S) {
   return llvm::StringRef(S).trim().str();
 }
 
