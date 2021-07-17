@@ -25,8 +25,16 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   std::vector<FeatureSourceRange> SourceRanges;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
-      std::string Cnt{reinterpret_cast<char *>(
-          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get())};
+      std::string Cnt =
+          llvm::StringRef(
+              reinterpret_cast<char *>(
+                  UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()))
+              .trim()
+              .str();
+      if (Cnt.empty()) {
+        continue;
+      }
+
       // The DTD enforces name to be the first element of an
       // configurationOption. This method is never called without validating
       // the input beforehand.

@@ -682,7 +682,9 @@ public:
                          Parent);
     assert(C && P);
 
-    removeEdge(*C->getParent(), *C);
+    if(C->getParent()) {
+      removeEdge(*C->getParent(), *C);
+    }
     addEdge(*P, *C);
     setParent(*C, *P);
   }
