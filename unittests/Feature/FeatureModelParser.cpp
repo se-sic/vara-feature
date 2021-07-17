@@ -8,8 +8,8 @@
 namespace vara::feature {
 
 TEST(FeatureModelParser, trim) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_trim.xml"));
+  auto FS =
+      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_trim.xml"));
   assert(FS);
 
   auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
