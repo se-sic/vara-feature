@@ -15,9 +15,7 @@ using std::make_unique;
 
 namespace vara::feature {
 
-std::string trim(llvm::StringRef S) {
-  return llvm::StringRef(S).trim().str();
-}
+std::string trim(llvm::StringRef S) { return llvm::StringRef(S).trim().str(); }
 
 bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                      bool Num = false) {
