@@ -278,12 +278,12 @@ protected:
   }
 
   template <typename ModTy, typename... ArgTys>
-  static ModTy make_modification(ArgTys &&... Args) {
+  static ModTy make_modification(ArgTys &&...Args) {
     return ModTy(std::forward<ArgTys>(Args)...);
   }
 
   template <typename ModTy, typename... ArgTys>
-  static std::unique_ptr<ModTy> make_unique_modification(ArgTys &&... Args) {
+  static std::unique_ptr<ModTy> make_unique_modification(ArgTys &&...Args) {
     return std::unique_ptr<ModTy>(new ModTy(std::forward<ArgTys>(Args)...));
   }
 };
