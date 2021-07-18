@@ -7,6 +7,17 @@
 
 namespace vara::feature {
 
+TEST(FeatureModelParser, trim) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_with_whitespaces.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
 TEST(FeatureModelParser, onlyChildren) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
       getTestResource("test_only_children.xml"));
