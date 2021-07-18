@@ -225,7 +225,8 @@ private:
   std::string Sxfm;
   FeatureModelBuilder FMB;
   std::string Indentation = "\t";
-  std::map<std::string, std::string> IdentifierMap = std::map<std::string, std::string>();
+  std::map<std::string, std::string> IdentifierMap =
+      std::map<std::string, std::string>();
 };
 
 } // namespace vara::feature

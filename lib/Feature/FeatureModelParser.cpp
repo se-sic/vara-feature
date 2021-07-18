@@ -523,8 +523,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       // Remove the cardinality
       if (Name.find_first_of('[') != std::string::npos) {
         Name = ToStringRef
-            .substr(Pos + 1, ToStringRef.find('[', Pos + 1) - Pos - 1)
-            .str();
+                   .substr(Pos + 1, ToStringRef.find('[', Pos + 1) - Pos - 1)
+                   .str();
 
         if (Name.empty()) {
           // In this case, the name could also be after the cardinality.
@@ -542,9 +542,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       // Search for identifier
       std::regex Regex(R"(\([a-zA-Z\d_]*\))");
       std::string CurrentLine = ToStringRef.str();
-      for (std::sregex_iterator Match = std::sregex_iterator(CurrentLine.begin(),
-                                                             CurrentLine.end(),
-                                                             Regex);
+      for (std::sregex_iterator Match = std::sregex_iterator(
+               CurrentLine.begin(), CurrentLine.end(), Regex);
            Match != std::sregex_iterator(); Match++) {
         std::string Identifier = (*Match).str();
         Identifier = Identifier.substr(1, Identifier.size() - 2);
@@ -621,17 +620,18 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
 
 bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
   if (Constraints == nullptr) {
-    llvm::errs() << "Failed to read in constraints. Is the constraint field empty?\n";
+    llvm::errs()
+        << "Failed to read in constraints. Is the constraint field empty?\n";
     return false;
   }
 
   std::stringstream Ss(reinterpret_cast<const char *>(
-                           UniqueXmlChar(xmlNodeGetContent(Constraints), xmlFree).get()));
+      UniqueXmlChar(xmlNodeGetContent(Constraints), xmlFree).get()));
   std::string To;
 
   // Prepare the identifiers for later replacement
   std::vector<std::string> Keys{};
-  for (const auto&[key, value]: IdentifierMap) {
+  for (const auto &[key, value] : IdentifierMap) {
     auto It = Keys.begin();
     Keys.insert(It, key);
   }
@@ -646,26 +646,29 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
       continue;
     }
 
-    // We ignore the indentation in the beginning of each line since the format does not force it
+    // We ignore the indentation in the beginning of each line since the format
+    // does not force it
     llvm::StringRef ToStringRef(To);
 
     if (!ToStringRef.contains(':')) {
-      llvm::errs() << "Failed to read in a constraint since it does not contain a colon.";
+      llvm::errs() << "Failed to read in a constraint since it does not "
+                      "contain a colon.";
       llvm::errs() << "This violates the format.";
       return false;
     }
 
     auto Pos = ToStringRef.find(':');
-    ToStringRef = ToStringRef.substr(Pos + 1,
-                                     ToStringRef.size() - Pos - 1);
+    ToStringRef = ToStringRef.substr(Pos + 1, ToStringRef.size() - Pos - 1);
     std::string CnfFormula = ToStringRef.str();
 
-    // In the following lines, we replace all identifiers by the real feature name
+    // In the following lines, we replace all identifiers by the real feature
+    // name
     for (auto &Key : Keys) {
       std::string Value = IdentifierMap[Key];
       while (CnfFormula.find(Key) != std::string::npos) {
         auto FoundPos = CnfFormula.find(Key);
-        CnfFormula = CnfFormula.replace(FoundPos, FoundPos + Key.length(), Value);
+        CnfFormula =
+            CnfFormula.replace(FoundPos, FoundPos + Key.length(), Value);
       }
     }
 
