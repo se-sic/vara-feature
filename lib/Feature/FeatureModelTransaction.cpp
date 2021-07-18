@@ -91,8 +91,8 @@ void removeFeatures(FeatureModel &FM,
                                           }},
                                FV2);
 
-                    return countNumberOfSuccessors(ActualFeature1) <
-                           countNumberOfSuccessors(ActualFeature2);
+                    return ActualFeature1->countNumberOfSuccessors() <
+                           ActualFeature2->countNumberOfSuccessors();
                   });
         removeFeaturesRecursively(FM, RemainingFeatures);
       }
@@ -110,19 +110,6 @@ void removeFeatures(FeatureModel &FM,
         RemainingFeatures.end());
     Trans.commit();
   }
-}
-
-int countNumberOfSuccessors(FeatureTreeNode *F) {
-  if (F->children().empty()) {
-    return 0;
-  }
-  auto Count = std::distance(F->children().begin(), F->children().end());
-
-  // count children of children
-  for (auto *Child : F->children()) {
-    Count += countNumberOfSuccessors(Child);
-  }
-  return Count;
 }
 
 void removeFeaturesRecursively(

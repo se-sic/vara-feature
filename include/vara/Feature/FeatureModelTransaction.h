@@ -1020,13 +1020,6 @@ void removeFeaturesRecursively(
     FeatureModel &FM,
     const std::vector<detail::FeatureVariantTy> &FeaturesToBeDeleted);
 
-/// Counting the number of successors of a FeatureTreeNode (all transitive
-/// children)
-///
-/// \param F
-/// \return number of all transitive children
-int countNumberOfSuccessors(FeatureTreeNode *F);
-
 /// Set commit of a FeatureModel.
 ///
 /// \param FM
