@@ -199,7 +199,7 @@ private:
   /// \param Constraints the node containing the constraint string
   ///
   /// \returns true iff parsing and processing the constraints was successful
-  static bool parseConstraints(xmlNode *Constraints);
+  bool parseConstraints(xmlNode *Constraints);
 
   /// This method extracts the cardinality from the given line.
   /// The cardinality is wrapped in square brackets (e.g., [1,1])
@@ -225,6 +225,7 @@ private:
   std::string Sxfm;
   FeatureModelBuilder FMB;
   std::string Indentation = "\t";
+  std::map<std::string, std::string> IdentifierMap = std::map<std::string, std::string>();
 };
 
 } // namespace vara::feature

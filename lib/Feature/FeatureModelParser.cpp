@@ -329,11 +329,10 @@ bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
   UniqueXmlDoc Doc = parseDoc();
-  if (!Doc) {
+  if (!Doc || !parseVm(xmlDocGetRootElement(Doc.get()))) {
     return nullptr;
   }
-  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
-                                                  : nullptr;
+  return FMB.buildFeatureModel();
 }
 
 FeatureModelSxfmParser::UniqueXmlDtd FeatureModelSxfmParser::createDtd() {
@@ -517,8 +516,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       // Remove the cardinality
       if (Name.find_first_of('[') != std::string::npos) {
         Name = ToStringRef
-                   .substr(Pos + 1, ToStringRef.find('[', Pos + 1) - Pos - 1)
-                   .str();
+            .substr(Pos + 1, ToStringRef.find('[', Pos + 1) - Pos - 1)
+            .str();
 
         if (Name.empty()) {
           // In this case, the name could also be after the cardinality.
@@ -531,6 +530,18 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
             Name = Tokens.second.str();
           }
         }
+      }
+
+      // Search for identifier
+      std::regex Regex(R"(\([a-zA-Z\d_]*\))");
+      std::string CurrentLine = ToStringRef.str();
+      for (std::sregex_iterator Match = std::sregex_iterator(CurrentLine.begin(),
+                                                             CurrentLine.end(),
+                                                             Regex);
+           Match != std::sregex_iterator(); Match++) {
+        std::string Identifier = (*Match).str();
+        Identifier = Identifier.substr(1, Identifier.size() - 2);
+        IdentifierMap[Identifier] = Name;
       }
 
       // Note that we ignore the ID and use the name of the feature
@@ -602,8 +613,60 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
 }
 
 bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
-  // TODO (se-passau/VaRA#702): This has to wait until the constraint part is
-  // implemented
+  if (Constraints == nullptr) {
+    llvm::errs() << "Failed to read in constraints. Is the constraint field empty?\n";
+    return false;
+  }
+
+  std::stringstream Ss(reinterpret_cast<const char *>(
+                           UniqueXmlChar(xmlNodeGetContent(Constraints), xmlFree).get()));
+  std::string To;
+
+  // Prepare the identifiers for later replacement
+  std::vector<std::string> Keys{};
+  for (const auto&[key, value]: IdentifierMap) {
+    auto It = Keys.begin();
+    Keys.insert(It, key);
+  }
+  std::sort(Keys.begin(), Keys.end(),
+            [](const std::string &First, const std::string &Second) {
+              return First.size() > Second.size();
+            });
+
+  while (std::getline(Ss, To)) {
+    // Ignore if a line is empty
+    if (To.empty() || std::all_of(To.begin(), To.end(), isspace)) {
+      continue;
+    }
+
+    // We ignore the indentation in the beginning of each line since the format does not force it
+    llvm::StringRef ToStringRef(To);
+
+    if (!ToStringRef.contains(':')) {
+      llvm::errs() << "Failed to read in a constraint since it does not contain a colon.";
+      llvm::errs() << "This violates the format.";
+      return false;
+    }
+
+    auto Pos = ToStringRef.find(':');
+    ToStringRef = ToStringRef.substr(Pos + 1,
+                                     ToStringRef.size() - Pos - 1);
+    std::string CnfFormula = ToStringRef.str();
+
+    // In the following lines, we replace all identifiers by the real feature name
+    for (auto &Key : Keys) {
+      std::string Value = IdentifierMap[Key];
+      while (CnfFormula.find(Key) != std::string::npos) {
+        auto FoundPos = CnfFormula.find(Key);
+        CnfFormula = CnfFormula.replace(FoundPos, FoundPos + Key.length(), Value);
+      }
+    }
+
+    if (auto Constraint = ConstraintParser(CnfFormula).buildConstraint()) {
+      FMB.addConstraint(std::move(Constraint));
+    }
+  }
+
   return true;
 }
 

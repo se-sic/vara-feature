@@ -17,6 +17,7 @@ set(FEATURE_LIB_TEST_FILES
   sxfm/test.sxfm
   sxfm/test_wrong_indentation.sxfm
   sxfm/test_wrong_xml_format.sxfm
+  sxfm/test_wrong_constraint_format.sxfm
   )
 
 foreach(file_name ${FEATURE_LIB_TEST_FILES})
