@@ -140,7 +140,7 @@ private:
 /// or alternatively:
 /// \code{unparsed}
 /// macro_rules! sxfm_constraints {
-///     (:$name:ident $cnf_formula:tt) => {...};
+///     ($name:ident : $cnf_formula:tt) => {...};
 /// }
 /// \endcode
 ///
