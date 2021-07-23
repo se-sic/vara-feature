@@ -87,5 +87,8 @@
       <values>1;5;9</values>
     </configurationOption>
   </numericOptions>
-  <booleanConstraints/>
+  <booleanConstraints>
+    <constraint>(AA =&gt; (AB | B))</constraint>
+    <constraint>((AA + AB) &lt; N)</constraint>
+  </booleanConstraints>
 </vm>
