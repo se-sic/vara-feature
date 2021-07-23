@@ -619,37 +619,6 @@ TEST_F(FeatureModelMergeRelationshipsTransactionTest,
   ASSERT_TRUE(FMMerged->getFeature("ab"));
 }
 
-TEST(SOMETHING, test) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("FeatureModel_v0.600.xml"));
-  EXPECT_TRUE(FS && "Input file could not be read");
-  auto FM =
-      FeatureModelXmlParser(FS.get()->getBuffer().str()).buildFeatureModel();
-
-  auto T = FeatureModelCopyTransaction::openTransaction(*FM);
-  detail::FeatureVariantTy V{FM->getFeature("level")};
-  T.removeFeature(V);
-  V = FM->getFeature("maxWindowSize");
-  T.removeFeature(V);
-  V = FM->getFeature("processorCount");
-  T.removeFeature(V);
-  V = FM->getFeature("thresholdTestingDisabled");
-  T.removeFeature(V);
-  V = FM->getFeature("compressionBzip2");
-  T.removeFeature(V);
-  V = FM->getFeature("compressionGzip");
-  T.removeFeature(V);
-  V = FM->getFeature("compressionDisabled");
-  T.removeFeature(V);
-  V = FM->getFeature("compressionLzo");
-  T.removeFeature(V);
-  V = FM->getFeature("compressionZpaq");
-  T.removeFeature(V);
-  auto FM2 = T.commit();
-
-  auto FM3 = mergeFeatureModels(*FM2, *FM);
-}
-
 //===----------------------------------------------------------------------===//
 //                    FeatureModelRelationshipTransaction Tests
 //===----------------------------------------------------------------------===//
