@@ -38,12 +38,47 @@ void removeFeature(FeatureModel &FM,
   Trans.commit();
 }
 
+bool fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
+  Feature *ActualFeature;
+  std::visit(
+      Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
+                 [&ActualFeature, &FM](string &F) {
+                   ActualFeature = FM.getFeature(F);
+                 }},
+      FV);
+  return ActualFeature.isLeave();
+}
+
 void removeFeatures(FeatureModel &FM,
                     std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
                     bool Recursive) {
+  // if everything was deleted
+  if (FeaturesToBeDeleted.size() == 0) {
+    return;
+  }
+
+  // partition FeaturesToBeDeleted into others and leaves --> remove leaves and
+  // recursively call this function on others
+  auto NonLeavesIt = std::partition(FeaturesToBeDeleted.begin(),
+                                    FeaturesToBeDeleted.end(), fvIsLeave);
+  auto LeavesIt = std::partition(FeaturesToBeDeleted.begin(),
+                                 FeaturesToBeDeleted.end(), !fvIsLeave);
+
+  // if we
+
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+  auto Leave = LeavesIt;
+  while (Leave != FeaturesToBeDeleted.end()) {
+    Trans.removeFeature(*Leave, true);
+    Leave = std::next(LeavesIt);
+  }
+  Trans.commit();
+
+  /*
   // Iterate over Features and deleted them iff they are leaves (don't have
   // children).
-  // Even if we are in the recursive mode, we need to delete the children among
+  // Even if we are in the recursive mode, we need to delete the children
+  among
   // FeaturesToBeDeleted first. Otherwise, the commit gets stuck in an endless
   // loop.
   std::vector<detail::FeatureVariantTy> RemainingFeatures;
@@ -95,22 +130,22 @@ void removeFeatures(FeatureModel &FM,
                            ActualFeature2->countNumberOfSuccessors();
                   });
         removeFeaturesRecursively(FM, RemainingFeatures);
-      }
-      // TODO: return list of non-deletable Features?
-      return;
-    }
-
-    std::sort(DeleteFeatures.begin(), DeleteFeatures.end());
-    RemainingFeatures.erase(
-        std::remove_if(RemainingFeatures.begin(), RemainingFeatures.end(),
-                       [&](auto X) {
-                         return binary_search(DeleteFeatures.begin(),
-                                              DeleteFeatures.end(), X);
-                       }),
-        RemainingFeatures.end());
-    Trans.commit();
-  }
+      }*/
+  // TODO: return list of non-deletable Features?
+  return;
 }
+
+/*std::sort(DeleteFeatures.begin(), DeleteFeatures.end());
+RemainingFeatures.erase(std::remove_if(RemainingFeatures.begin(),
+                                       RemainingFeatures.end(),
+                                       [&](auto X) {
+                                         return binary_search(
+                                             DeleteFeatures.begin(),
+                                             DeleteFeatures.end(), X);
+                                       }),
+                        RemainingFeatures.end());
+Trans.commit();
+}*/
 
 void removeFeaturesRecursively(
     FeatureModel &FM,
