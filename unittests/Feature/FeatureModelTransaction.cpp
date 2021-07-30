@@ -1,12 +1,15 @@
 #include "vara/Feature/FeatureModelTransaction.h"
 #include "vara/Feature/FeatureModelBuilder.h"
+#include "vara/Feature/FeatureModelParser.h"
 
 #include "UnittestHelper.h"
+
 #include "gtest/gtest.h"
 
-#include <llvm/Support/MemoryBuffer.h>
+#include "llvm/Support/MemoryBuffer.h"
+
 #include <memory>
-#include <vara/Feature/FeatureModelParser.h>
+
 
 namespace vara::feature {
 namespace detail {
