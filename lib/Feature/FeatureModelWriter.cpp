@@ -25,7 +25,7 @@ static constexpr char ENCODING[] = "UTF-8";
 int FeatureModelXmlWriter::writeFeatureModel(std::string Path) {
   int RC;
   std::unique_ptr<xmlTextWriter, void (*)(xmlTextWriterPtr)> Writer(
-      xmlNewTextWriterFilename(Path.c_str(), 0), &xmlFreeTextWriter);
+      xmlNewTextWriterFilename(Path.data(), 0), &xmlFreeTextWriter);
   if (!Writer) {
     llvm::errs() << "Could not create filewriter for " << Path << '\n';
     return false;

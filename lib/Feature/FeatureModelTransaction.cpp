@@ -7,9 +7,6 @@ namespace vara::feature {
 bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel const &FM,
                   Feature &F, bool Strict);
 
-bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel const &FM,
-                  Relationship &R, bool Strict);
-
 std::unique_ptr<Feature> FeatureCopy(Feature &F);
 
 bool CompareProperties(const Feature &F1, const Feature &F2, bool Strict);
@@ -178,9 +175,6 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
   if (F1.getKind() == Feature::FeatureKind::FK_ROOT) {
     return true;
   }
-  //  if (F1.getParent()->getKind() != F2.getParent()->getKind()) {
-  //    return false;
-  //  }
   if (F1.getKind() == Feature::FeatureKind::FK_BINARY) {
     return true;
   }

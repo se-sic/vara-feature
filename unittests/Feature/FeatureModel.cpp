@@ -221,7 +221,7 @@ TEST_F(FeatureModelTest, dfs) {
 }
 
 //===----------------------------------------------------------------------===//
-//                    FeatureModelConsistencyChecker Tests
+//                    FeatureModelGetChildren Tests
 //===----------------------------------------------------------------------===//
 
 class FeatureModelGetChildrenTest : public ::testing::Test {

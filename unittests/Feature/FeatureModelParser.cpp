@@ -29,6 +29,17 @@ TEST(FeatureModelParser, onlyChildren) {
   EXPECT_TRUE(P.buildFeatureModel());
 }
 
+TEST(FeatureModelParser, onlyParents) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_only_parents.xml"));
+  assert(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_TRUE(P.buildFeatureModel());
+}
+
 TEST(FeatureModelParser, outOfOrder) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
       getTestResource("test_out_of_order.xml"));

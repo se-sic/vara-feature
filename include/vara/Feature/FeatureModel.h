@@ -287,6 +287,7 @@ private:
   }
 
   void removeConstraint(Constraint *C) {
+    // TODO se-sic/VaRA#701 implement tree based comparison
     Constraints.erase(
         std::find_if(Constraints.begin(), Constraints.end(),
                      [C](const std::unique_ptr<Constraint> &UniC) {
