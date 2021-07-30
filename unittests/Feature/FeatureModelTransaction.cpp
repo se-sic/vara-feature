@@ -10,7 +10,6 @@
 
 #include <memory>
 
-
 namespace vara::feature {
 namespace detail {
 
