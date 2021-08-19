@@ -341,11 +341,10 @@ Result FeatureModelXmlParser::verifyFeatureModel() {
 
 std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
   UniqueXmlDoc Doc = parseDoc();
-  if (!Doc) {
+  if (!Doc || !parseVm(xmlDocGetRootElement(Doc.get()))) {
     return nullptr;
   }
-  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
-                                                  : nullptr;
+  return FMB.buildFeatureModel();
 }
 
 FeatureModelSxfmParser::UniqueXmlDtd FeatureModelSxfmParser::createDtd() {

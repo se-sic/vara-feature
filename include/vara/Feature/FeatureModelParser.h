@@ -26,15 +26,15 @@ public:
 
   virtual ~FeatureModelParser() = default;
 
+  /// Checks whether input is a valid feature model as acyclic graph with unique
+  /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.
+  virtual Result verifyFeatureModel() = 0;
+
   /// Build \a FeatureModel after parsing. May return null if parsing or
   /// building failed.
   ///
   /// \returns an instance of \a FeatureModel or \a nullptr
   virtual std::unique_ptr<FeatureModel> buildFeatureModel() = 0;
-
-  /// Checks whether input is a valid feature model as acyclic graph with unique
-  /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.
-  virtual Result verifyFeatureModel() = 0;
 };
 
 //===----------------------------------------------------------------------===//
@@ -46,9 +46,9 @@ class FeatureModelXmlParser : public FeatureModelParser {
 public:
   explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
 
-  std::unique_ptr<FeatureModel> buildFeatureModel() override;
-
   Result verifyFeatureModel() override;
+
+  std::unique_ptr<FeatureModel> buildFeatureModel() override;
 
   /// This method is solely relevant for parsing XML, as alternatives are
   /// represented als mutual excluded but non-optional features (which requires

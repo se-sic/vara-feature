@@ -969,8 +969,8 @@ protected:
   }
 
   void abortImpl() {
-    FM = nullptr;
     Continue = false;
+    FM = nullptr;
   }
 
   [[nodiscard]] inline bool isUncommitted() const {
