@@ -22,7 +22,7 @@ protected:
   }
 
   // Dummy method to fulfill the FeatureModelModification interface
-  bool exec(FeatureModel &_) override { return false; }
+  ErrorOr<> exec(FeatureModel &_) override { return {ERROR}; }
 
   std::unique_ptr<FeatureModel> FM;
 };
@@ -111,7 +111,7 @@ TEST_F(FeatureModelTransactionCopyTest, addFeatureToModel) {
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
   EXPECT_FALSE(FM->getFeature("ab")); // Change should not be visible
 
-  auto NewFM = FT.commit(); // Commit changes
+  auto NewFM = *FT.commit(); // Commit changes
 
   // Changes should not be visible on the old model
   EXPECT_FALSE(FM->getFeature("ab"));
@@ -129,7 +129,7 @@ TEST_F(FeatureModelTransactionCopyTest, addFeatureToModel) {
             NewFM->getFeature("ab")->getParentFeature());
 }
 
-TEST_F(FeatureModelTransactionCopyTest, addFeatureToModelThenAboard) {
+TEST_F(FeatureModelTransactionCopyTest, addFeatureToModelThenAbort) {
   size_t FMSizeBefore = FM->size();
 
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
@@ -142,10 +142,12 @@ TEST_F(FeatureModelTransactionCopyTest, addFeatureToModelThenAboard) {
 
   FT.abort();
 
-  auto NewFM = FT.commit(); // Commit changes, should not change anything and
-                            // return no new FeatureModel
+  auto E = FT.commit();
 
-  EXPECT_EQ(NewFM.get(), nullptr);
+  // Commit changes, should not change anything and
+  //  return no new FeatureModel
+  ASSERT_FALSE(E);
+  EXPECT_EQ(E.getError(), ABORTED);
 
   EXPECT_EQ(FMSizeBefore, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
@@ -465,7 +467,7 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddXorGroup) {
     }
   }
 
-  auto NewFM = FT.commit();
+  auto NewFM = *FT.commit();
   {
     auto *F = NewFM->getFeature("a");
     EXPECT_EQ(1, F->getChildren<Relationship>().size());
@@ -510,7 +512,7 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionAddOrGroup) {
     }
   }
 
-  auto NewFM = FT.commit();
+  auto NewFM = *FT.commit();
   {
     auto *F = NewFM->getFeature("a");
     EXPECT_EQ(1, F->getChildren<Relationship>().size());
@@ -593,7 +595,7 @@ TEST_F(FeatureModelRelationshipTransactionTest, CopyTransactionRemoveOrGroup) {
   FT.removeRelationship(V);
   EXPECT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
 
-  auto FM2 = FT.commit();
+  auto FM2 = *FT.commit();
   ASSERT_TRUE(FM2);
 
   auto *A = FM2->getFeature("a");
@@ -618,7 +620,7 @@ TEST_F(FeatureModelRelationshipTransactionTest,
   FT.removeRelationship(V);
   ASSERT_EQ(1, FM->getFeature("a")->getChildren<Relationship>().size());
 
-  auto FM2 = FT.commit();
+  auto FM2 = *FT.commit();
   ASSERT_TRUE(FM2);
 
   auto *A = FM2->getFeature("a");
@@ -709,7 +711,7 @@ TEST_F(FeatureModelLocationsTransactionTest, CopyTransactionAddLocation) {
   FT.addLocation(VA, FSRA);
   FT.addLocation(VB, FSRB);
 
-  auto FM2 = FT.commit();
+  auto FM2 = *FT.commit();
   ASSERT_TRUE(FM2);
 
   auto *A = FM2->getFeature("a");
@@ -729,7 +731,7 @@ TEST_F(FeatureModelLocationsTransactionTest, CopyTransactionRemoveLocation) {
 
   FT.removeLocation(VB, FSRInitial);
 
-  auto FM2 = FT.commit();
+  auto FM2 = *FT.commit();
   ASSERT_TRUE(FM2);
 
   auto *A = FM2->getFeature("a");
@@ -796,7 +798,7 @@ TEST_F(FeatureModelRemoveFeatureTransactionTest, CopyTransactionRemoveFeature) {
   FT.removeFeature(VA);
   EXPECT_TRUE(FM->getFeature("a"));
 
-  auto FM2 = FT.commit();
+  auto FM2 = *FT.commit();
   ASSERT_TRUE(FM2);
 
   auto *A = FM2->getFeature("a");
@@ -813,7 +815,7 @@ TEST_F(FeatureModelRemoveFeatureTransactionTest,
   FT.removeFeature(VCA);
   EXPECT_TRUE(FM->getFeature("ca"));
 
-  auto FM2 = FT.commit();
+  auto FM2 = *FT.commit();
   ASSERT_TRUE(FM2);
 
   auto *A = FM2->getFeature("a");

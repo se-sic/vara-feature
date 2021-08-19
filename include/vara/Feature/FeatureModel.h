@@ -2,6 +2,7 @@
 #define VARA_FEATURE_FEATUREMODEL_H
 
 #include "vara/Feature/Constraint.h"
+#include "vara/Feature/Error.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
 
@@ -314,7 +315,8 @@ namespace llvm {
 //                     GraphWriter for FeatureModel
 //===----------------------------------------------------------------------===//
 
-template <> struct GraphWriter<vara::feature::FeatureModel *> {
+template <>
+struct GraphWriter<vara::feature::FeatureModel *> {
   using GraphType = typename vara::feature::FeatureModel *;
 
   raw_ostream &O;
@@ -468,10 +470,14 @@ namespace vara::feature {
 //                        FeatureModelConsistencyRules
 //===----------------------------------------------------------------------===//
 
-template <typename... Rules> class FeatureModelConsistencyChecker {
+template <typename... Rules>
+class FeatureModelConsistencyChecker {
 public:
-  static bool isFeatureModelValid(FeatureModel &FM) {
-    return (Rules::check(FM) && ... && true);
+  static ErrorOr<> isFeatureModelValid(FeatureModel &FM) {
+    if (auto E = (Rules::check(FM) && ... && true); !E) {
+      return {INCONSISTENT};
+    }
+    return {};
   }
 };
 

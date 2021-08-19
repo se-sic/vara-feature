@@ -64,7 +64,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
     Trans.abort();
     return nullptr;
   }
-  return Trans.commit();
+  return *Trans.commit();
 }
 
 [[nodiscard]] bool mergeSubtree(FeatureModelCopyTransaction &Trans,
