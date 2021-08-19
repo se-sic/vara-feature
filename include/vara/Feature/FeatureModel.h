@@ -473,7 +473,7 @@ namespace vara::feature {
 template <typename... Rules>
 class FeatureModelConsistencyChecker {
 public:
-  static ErrorOr<> isFeatureModelValid(FeatureModel &FM) {
+  static Result isFeatureModelValid(FeatureModel &FM) {
     if (auto E = (Rules::check(FM) && ... && true); !E) {
       return {INCONSISTENT};
     }

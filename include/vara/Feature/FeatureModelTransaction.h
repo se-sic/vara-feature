@@ -191,7 +191,7 @@ public:
   virtual ~FeatureModelModification() = default;
 
   /// \brief Execute the modification on the given FeatureModel.
-  virtual ErrorOr<> exec(FeatureModel &FM) = 0;
+  virtual Result exec(FeatureModel &FM) = 0;
 
 protected:
   /// \brief Set the parent of a \a Feature.
@@ -297,9 +297,9 @@ class AddFeatureToModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
@@ -336,14 +336,14 @@ class RemoveFeatureFromModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
 
-  ErrorOr<> operator()(FeatureModel &FM) {
+  Result operator()(FeatureModel &FM) {
     auto *F = std::visit(
         Overloaded{
             [&FM](const std::string &Name) { return FM.getFeature(Name); },
@@ -397,9 +397,9 @@ class AddRelationshipToModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
@@ -448,14 +448,14 @@ class RemoveRelationshipFromModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
 
-  ErrorOr<> operator()(FeatureModel &FM) {
+  Result operator()(FeatureModel &FM) {
     auto *P = std::visit(
         Overloaded{
             [&FM](const std::string &Name) { return FM.getFeature(Name); },
@@ -497,14 +497,14 @@ class AddLocationToFeature : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
 
-  ErrorOr<> operator()(FeatureModel &FM) {
+  Result operator()(FeatureModel &FM) {
     addLocation(*std::visit(Overloaded{
                                 [&FM](const std::string &Name) {
                                   return FM.getFeature(Name);
@@ -532,14 +532,14 @@ class RemoveLocationFromFeature : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
 
-  ErrorOr<> operator()(FeatureModel &FM) {
+  Result operator()(FeatureModel &FM) {
     removeLocation(*std::visit(Overloaded{
                                    [&FM](const std::string &Name) {
                                      return FM.getFeature(Name);
@@ -567,9 +567,9 @@ class AddConstraintToModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
@@ -614,14 +614,14 @@ class SetName : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
 
-  ErrorOr<> operator()(FeatureModel &FM) {
+  Result operator()(FeatureModel &FM) {
     setName(FM, std::move(Name));
     return {};
   }
@@ -640,14 +640,14 @@ class SetCommit : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
 
-  ErrorOr<> operator()(FeatureModel &FM) {
+  Result operator()(FeatureModel &FM) {
     setCommit(FM, std::move(Commit));
     return {};
   }
@@ -666,14 +666,14 @@ class SetPath : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
 
-  ErrorOr<> operator()(FeatureModel &FM) {
+  Result operator()(FeatureModel &FM) {
     setPath(FM, std::move(Path));
     return {};
   }
@@ -692,9 +692,9 @@ class SetRoot : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
@@ -730,14 +730,14 @@ class AddChild : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  ErrorOr<> exec(FeatureModel &FM) override {
+  Result exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      ErrorOr(E.getError());
+      return {E.getError()};
     }
     return {};
   }
 
-  ErrorOr<> operator()(FeatureModel &FM) {
+  Result operator()(FeatureModel &FM) {
     auto *C = std::visit(Overloaded{
                              [&FM](const std::string &Name) {
                                return llvm::dyn_cast_or_null<FeatureTreeNode>(
@@ -941,7 +941,7 @@ class FeatureModelModifyTransactionBase {
 protected:
   FeatureModelModifyTransactionBase(FeatureModel &FM) : FM(&FM) {}
 
-  ErrorOr<> commitImpl() {
+  Result commitImpl() {
     //    assert(FM && "Cannot commit Modifications without a FeatureModel
     //    present.");
     if (isUncommitted() && FM) {

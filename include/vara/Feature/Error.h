@@ -49,12 +49,10 @@ inline llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
   return OS;
 }
 
-template <typename ValueTy = std::monostate, typename ErrorTy = ErrorCode,
+template <typename ValueTy, typename ErrorTy = ErrorCode,
           std::enable_if_t<!std::is_same_v<ValueTy, ErrorTy>, bool> = true>
 class ErrorOr {
 public:
-  ErrorOr() : Value(ValueTy{}) {}
-
   ErrorOr(ValueTy Value) : Value(std::move(Value)) {}
 
   ErrorOr(ErrorTy Error) : Value(std::move(Error)) {}
@@ -74,6 +72,12 @@ public:
 
 private:
   std::variant<ValueTy, ErrorTy> Value;
+};
+
+class Result : public ErrorOr<std::monostate, ErrorCode> {
+public:
+  Result() : ErrorOr<std::monostate, ErrorCode>(std::monostate{}) {}
+  Result(ErrorCode Error) : ErrorOr<std::monostate, ErrorCode>(Error) {}
 };
 
 } // namespace vara::feature

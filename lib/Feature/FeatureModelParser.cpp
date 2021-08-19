@@ -17,8 +17,8 @@ namespace vara::feature {
 
 std::string trim(llvm::StringRef S) { return llvm::StringRef(S).trim().str(); }
 
-ErrorOr<> FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
-                                                          bool Num = false) {
+Result FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
+                                                       bool Num = false) {
   std::string Name{"root"};
   bool Opt = false;
   int MinValue = 0;
@@ -160,7 +160,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   return FeatureSourceRange(Path, Start, End, Category);
 }
 
-ErrorOr<> FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
+Result FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONFIGURATIONOPTION)) {
@@ -173,7 +173,7 @@ ErrorOr<> FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
   return {};
 }
 
-ErrorOr<> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
+Result FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
@@ -191,7 +191,7 @@ ErrorOr<> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   return {};
 }
 
-ErrorOr<> FeatureModelXmlParser::parseVm(xmlNode *Node) {
+Result FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
     UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::NAME), xmlFree);
     FMB.setVmName(trim(reinterpret_cast<char *>(Cnt.get())));
@@ -263,7 +263,7 @@ bool detectExclude(const Feature *A, const Feature *B) {
       });
 }
 
-ErrorOr<> FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
+Result FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
   auto Transactions = FeatureModelModifyTransaction::openTransaction(FM);
   for (auto *F : FM) {
     auto Children = F->getChildren<Feature>();
@@ -328,7 +328,7 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   return UniqueXmlDoc(nullptr, nullptr);
 }
 
-ErrorOr<> FeatureModelXmlParser::verifyFeatureModel() {
+Result FeatureModelXmlParser::verifyFeatureModel() {
   if (!parseDoc().get()) {
     return {ERROR};
   }

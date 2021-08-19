@@ -34,7 +34,7 @@ public:
 
   /// Checks whether input is a valid feature model as acyclic graph with unique
   /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.
-  virtual ErrorOr<> verifyFeatureModel() = 0;
+  virtual Result verifyFeatureModel() = 0;
 };
 
 //===----------------------------------------------------------------------===//
@@ -48,21 +48,21 @@ public:
 
   std::unique_ptr<FeatureModel> buildFeatureModel() override;
 
-  ErrorOr<> verifyFeatureModel() override;
+  Result verifyFeatureModel() override;
 
   /// This method is solely relevant for parsing XML, as alternatives are
   /// represented als mutual excluded but non-optional features (which requires
   /// additional processing).
-  static ErrorOr<> detectXMLAlternatives(FeatureModel &FM);
+  static Result detectXMLAlternatives(FeatureModel &FM);
 
 private:
   std::string Xml;
   FeatureModelBuilder FMB;
 
-  ErrorOr<> parseConfigurationOption(xmlNode *Node, bool Num);
-  ErrorOr<> parseOptions(xmlNode *Node, bool Num);
-  ErrorOr<> parseConstraints(xmlNode *Node);
-  ErrorOr<> parseVm(xmlNode *Node);
+  Result parseConfigurationOption(xmlNode *Node, bool Num);
+  Result parseOptions(xmlNode *Node, bool Num);
+  Result parseConstraints(xmlNode *Node);
+  Result parseVm(xmlNode *Node);
 
   static FeatureSourceRange::FeatureSourceLocation
   createFeatureSourceLocation(xmlNode *Node);
@@ -157,7 +157,7 @@ public:
   /// This method checks if the given feature model is valid
   ///
   /// \returns true iff the feature model is valid
-  ErrorOr<> verifyFeatureModel() override {
+  Result verifyFeatureModel() override {
     if (!parseDoc().get()) {
       return {ERROR};
     }

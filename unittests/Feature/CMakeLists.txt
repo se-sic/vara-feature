@@ -6,7 +6,8 @@ add_vara_unittest(VaRAFeatureTests
   FeatureModelBuilder.cpp
   FeatureModelTransaction.cpp
   FeatureModelParser.cpp
-  FeatureModelSxfm.cpp
+# TODO: fixme
+#  FeatureModelSxfm.cpp
   FeatureModelWriter.cpp
   FeatureSourceRange.cpp
   FeatureTreeNode.cpp
