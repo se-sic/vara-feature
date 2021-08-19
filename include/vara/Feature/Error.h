@@ -20,35 +20,6 @@ enum ErrorCode {
   INCONSISTENT
 };
 
-inline llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
-                                     const ErrorCode &EC) {
-  switch (EC) {
-  // TODO(s9latimm): meaningful error msg
-  case ABORTED:
-    OS << "ABORTED";
-    break;
-  case ERROR:
-    OS << "ERROR";
-    break;
-  case MISSING_FEATURE:
-    OS << "MISSING_FEATURE";
-    break;
-  case MISSING_PARENT:
-    OS << "MISSING_PARENT";
-    break;
-  case ALREADY_PRESENT:
-    OS << "ALREADY_PRESENT";
-    break;
-  case MISSING_MODEL:
-    OS << "MISSING_MODEL";
-    break;
-  case INCONSISTENT:
-    OS << "INCONSISTENT";
-    break;
-  }
-  return OS;
-}
-
 template <typename ValueTy, typename ErrorTy = ErrorCode,
           std::enable_if_t<!std::is_same_v<ValueTy, ErrorTy>, bool> = true>
 class ErrorOr {
@@ -70,7 +41,7 @@ public:
     return std::move(std::get<ErrorTy>(Value));
   }
 
-private:
+protected:
   std::variant<ValueTy, ErrorTy> Value;
 };
 
@@ -78,6 +49,29 @@ class Result : public ErrorOr<std::monostate, ErrorCode> {
 public:
   Result() : ErrorOr<std::monostate, ErrorCode>(std::monostate{}) {}
   Result(ErrorCode Error) : ErrorOr<std::monostate, ErrorCode>(Error) {}
+
+  std::string toString() {
+    if (this->operator bool()) {
+      return "SUCCESS";
+    }
+    switch (getError()) {
+      // TODO(s9latimm): meaningful error msg
+    case vara::feature::ABORTED:
+      return "ABORTED";
+    case vara::feature::ERROR:
+      return "ERROR";
+    case vara::feature::MISSING_FEATURE:
+      return "MISSING_FEATURE";
+    case vara::feature::MISSING_PARENT:
+      return "MISSING_PARENT";
+    case vara::feature::ALREADY_PRESENT:
+      return "ALREADY_PRESENT";
+    case vara::feature::MISSING_MODEL:
+      return "MISSING_MODEL";
+    case vara::feature::INCONSISTENT:
+      return "INCONSISTENT";
+    }
+  }
 };
 
 } // namespace vara::feature

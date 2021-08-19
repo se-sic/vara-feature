@@ -10,17 +10,26 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
   assert(FM->getRoot() && "FeatureModel has no root.");
 
   if (Result E = FeatureBuilder.commit(); !E) {
-    llvm::errs() << "Building features failed with error " << E;
+    llvm::errs() << "Building features failed with error " << E.toString()
+                 << '\n';
+    ModelBuilder.abort();
+    RelationBuilder.abort();
     return nullptr;
   }
+
   if (Result E = ModelBuilder.commit(); !E) {
-    llvm::errs() << "Building feature tree failed with error " << E;
+    llvm::errs() << "Building feature tree failed with error " << E.toString()
+                 << '\n';
+    RelationBuilder.abort();
     return nullptr;
   }
+
   if (Result E = RelationBuilder.commit(); !E) {
-    llvm::errs() << "Building feature relations failed with error " << E;
+    llvm::errs() << "Building feature relations failed with error "
+                 << E.toString() << '\n';
     return nullptr;
   }
+
   return std::move(FM);
 }
 

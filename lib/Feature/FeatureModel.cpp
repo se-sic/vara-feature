@@ -92,7 +92,9 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() const {
     FMB.addConstraint(C->clone());
   }
 
-  return FMB.buildFeatureModel();
+  auto FM = FMB.buildFeatureModel();
+  assert(FM);
+  return FM;
 }
 
 } // namespace vara::feature

@@ -700,6 +700,10 @@ public:
   }
 
   ErrorOr<RootFeature *> operator()(FeatureModel &FM) {
+    if (FM.getRoot() && FM.getRoot()->getName() == Root->getName()) {
+      // TODO(s9latimm): swap root
+      return {FM.getRoot()};
+    }
     if (auto *NewRoot = llvm::dyn_cast_or_null<RootFeature>(
             addFeature(FM, std::move(Root)));
         NewRoot) {
@@ -712,8 +716,9 @@ public:
         removeFeature(FM, *FM.getRoot());
       }
       setRoot(FM, *NewRoot);
+      return {FM.getRoot()};
     }
-    return {FM.getRoot()};
+    return {ALREADY_PRESENT};
   }
 
 private:
