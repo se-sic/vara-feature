@@ -44,7 +44,6 @@ TEST(NumericFeature, NumericFeatureRoot) {
   B.makeFeature<NumericFeature>("F", std::pair<int, int>(0, 1));
   B.makeRoot("F");
 
-  // TODO: fixme
   EXPECT_FALSE(B.buildFeatureModel());
 }
 

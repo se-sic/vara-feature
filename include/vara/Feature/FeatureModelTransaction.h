@@ -69,9 +69,6 @@ public:
         //  before destruction
         llvm::errs()
             << "warning: Uncommitted modifications before destruction.\n";
-        // TODO(se-passau/VaRA#744): Committing now may break with prior
-        //  failed commits. We need a better way of tracking if a previous
-        //  commit failed, instead of checking locally if FM is nullptr.
         commit();
       }
     }
@@ -367,8 +364,8 @@ public:
       }
     } else {
       if (!F->getChildren<Feature>().empty()) {
-        // TODO (se-passau/VaRA#744): error, non recursive 0remove on non leaf
-        // feature
+        // TODO (se-passau/VaRA#744): error, non recursive remove on non leaf
+        //  feature
         return {MISSING_FEATURE};
       }
       if (!F->getChildren<Relationship>().empty()) {

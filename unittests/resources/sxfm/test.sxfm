@@ -14,7 +14,7 @@
 			: a3 (RSA)
 		:g [1,1] alt4(symmetric)
 			: a4 (AES)
-			: a4 (DES)
+			: a5 (DES)
 	:g [1,1] compressionLevel(compressionLevel)
 		: compressionLevel_9(compressionLevel_9)
 		: compressionLevel_5(compressionLevel_5)

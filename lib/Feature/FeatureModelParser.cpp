@@ -558,7 +558,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
 
       // Create the feature
       if (IsRoot) {
-        FMB.makeFeature<RootFeature>(Name);
+        FMB.makeRoot(Name);
       } else {
         FMB.makeFeature<BinaryFeature>(Name, Opt);
       }
