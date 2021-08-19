@@ -20,7 +20,7 @@ TEST(SxfmParser, validation) {
   EXPECT_TRUE(FS && "Input file could not be read.");
   auto FM =
       FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
-  EXPECT_TRUE(FM);
+  ASSERT_TRUE(FM);
   EXPECT_EQ(FM->size(), 17);
   EXPECT_EQ(FM->getName(), "My feature model");
 
@@ -42,7 +42,7 @@ TEST(SxfmParser, parsing) {
   EXPECT_TRUE(FS && "Input file could not be read.");
   auto FM =
       FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
-  EXPECT_TRUE(FM);
+  ASSERT_TRUE(FM);
   EXPECT_EQ(FM->size(), 37);
   EXPECT_EQ(FM->getName(), "apache");
 
