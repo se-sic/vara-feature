@@ -8,6 +8,7 @@ var searchData=
   ['lessequalconstraint_219',['LessEqualConstraint',['../classvara_1_1feature_1_1LessEqualConstraint.html',1,'vara::feature::LessEqualConstraint'],['../classvara_1_1feature_1_1LessEqualConstraint.html#ad9d46c5cafca47754acaf2fa3059725f',1,'vara::feature::LessEqualConstraint::LessEqualConstraint()']]],
   ['line_220',['LINE',['../classvara_1_1feature_1_1XmlConstants.html#ad57078cb9402bb2a2f67905279f77ae9',1,'vara::feature::XmlConstants']]],
   ['llvm_221',['llvm',['../namespacellvm.html',1,'']]],
-  ['locations_222',['LOCATIONS',['../classvara_1_1feature_1_1XmlConstants.html#a0abcab7975528368515466ec3660bade',1,'vara::feature::XmlConstants']]],
-  ['locations_5fiterator_223',['locations_iterator',['../classvara_1_1feature_1_1Feature.html#a40891de27d35a219b2d1cf8493de8759',1,'vara::feature::Feature']]]
+  ['loadfeaturemodel_222',['loadFeatureModel',['../namespacevara_1_1feature.html#ae34c88f0a2ae9fbdddf2c29bb08dd407',1,'vara::feature']]],
+  ['locations_223',['LOCATIONS',['../classvara_1_1feature_1_1XmlConstants.html#a0abcab7975528368515466ec3660bade',1,'vara::feature::XmlConstants']]],
+  ['locations_5fiterator_224',['locations_iterator',['../classvara_1_1feature_1_1Feature.html#a40891de27d35a219b2d1cf8493de8759',1,'vara::feature::Feature']]]
 ];
