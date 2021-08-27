@@ -28,7 +28,7 @@ public:
 
   /// Checks whether input is a valid feature model as acyclic graph with unique
   /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.
-  virtual Result verifyFeatureModel() = 0;
+  virtual Result<FTErrorCode> verifyFeatureModel() = 0;
 
   /// Build \a FeatureModel after parsing. May return null if parsing or
   /// building failed.
@@ -46,23 +46,23 @@ class FeatureModelXmlParser : public FeatureModelParser {
 public:
   explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
 
-  Result verifyFeatureModel() override;
+  Result<FTErrorCode> verifyFeatureModel() override;
 
   std::unique_ptr<FeatureModel> buildFeatureModel() override;
 
   /// This method is solely relevant for parsing XML, as alternatives are
   /// represented als mutual excluded but non-optional features (which requires
   /// additional processing).
-  static Result detectXMLAlternatives(FeatureModel &FM);
+  static Result<FTErrorCode> detectXMLAlternatives(FeatureModel &FM);
 
 private:
   std::string Xml;
   FeatureModelBuilder FMB;
 
-  Result parseConfigurationOption(xmlNode *Node, bool Num);
-  Result parseOptions(xmlNode *Node, bool Num);
-  Result parseConstraints(xmlNode *Node);
-  Result parseVm(xmlNode *Node);
+  Result<FTErrorCode> parseConfigurationOption(xmlNode *Node, bool Num);
+  Result<FTErrorCode> parseOptions(xmlNode *Node, bool Num);
+  Result<FTErrorCode> parseConstraints(xmlNode *Node);
+  Result<FTErrorCode> parseVm(xmlNode *Node);
 
   static FeatureSourceRange::FeatureSourceLocation
   createFeatureSourceLocation(xmlNode *Node);
@@ -157,11 +157,11 @@ public:
   /// This method checks if the given feature model is valid
   ///
   /// \returns true iff the feature model is valid
-  Result verifyFeatureModel() override {
+  Result<FTErrorCode> verifyFeatureModel() override {
     if (!parseDoc().get()) {
-      return {ERROR};
+      return Error(ERROR);
     }
-    return {};
+    return Ok();
   }
 
   /// Reads in and returns the feature model in the sxfm format

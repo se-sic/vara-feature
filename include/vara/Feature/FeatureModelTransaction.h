@@ -3,6 +3,7 @@
 
 #include "vara/Feature/Error.h"
 #include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/Result.h"
 #include "vara/Utils/VariantUtil.h"
 
 #include "llvm/ADT/StringRef.h"
@@ -188,7 +189,7 @@ public:
   virtual ~FeatureModelModification() = default;
 
   /// \brief Execute the modification on the given FeatureModel.
-  virtual Result exec(FeatureModel &FM) = 0;
+  virtual Result<FTErrorCode> exec(FeatureModel &FM) = 0;
 
 protected:
   /// \brief Set the parent of a \a Feature.
@@ -294,17 +295,17 @@ class AddFeatureToModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  ErrorOr<Feature *> operator()(FeatureModel &FM) {
+  Result<FTErrorCode, Feature *> operator()(FeatureModel &FM) {
     auto *InsertedFeature = addFeature(FM, std::move(NewFeature));
     if (!InsertedFeature) {
-      return {ALREADY_PRESENT};
+      return Error(ALREADY_PRESENT);
     }
     if (Parent) {
       setParent(*InsertedFeature, *Parent);
@@ -313,7 +314,7 @@ public:
       setParent(*InsertedFeature, *FM.getRoot());
       addEdge(*FM.getRoot(), *InsertedFeature);
     }
-    return {InsertedFeature};
+    return Ok(InsertedFeature);
   }
 
 private:
@@ -333,14 +334,14 @@ class RemoveFeatureFromModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  Result operator()(FeatureModel &FM) {
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
     auto *F = std::visit(
         Overloaded{
             [&FM](const std::string &Name) { return FM.getFeature(Name); },
@@ -349,7 +350,7 @@ public:
         GroupRoot);
     if (!F) {
       // TODO (se-passau/VaRA#744): error, does not exist
-      return {MISSING_FEATURE};
+      return Error(MISSING_FEATURE);
     }
 
     if (Recursive) {
@@ -366,7 +367,7 @@ public:
       if (!F->getChildren<Feature>().empty()) {
         // TODO (se-passau/VaRA#744): error, non recursive remove on non leaf
         //  feature
-        return {MISSING_FEATURE};
+        return Error(MISSING_FEATURE);
       }
       if (!F->getChildren<Relationship>().empty()) {
         removeRelationship(FM, *F->getChildren<Relationship>().begin());
@@ -375,7 +376,7 @@ public:
 
     removeEdge(*F->getParent(), *F);
     removeFeature(FM, *F);
-    return {};
+    return Ok();
   }
 
 private:
@@ -394,18 +395,18 @@ class AddRelationshipToModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  ErrorOr<Relationship *> operator()(FeatureModel &FM) {
+  Result<FTErrorCode, Relationship *> operator()(FeatureModel &FM) {
     auto *InsertedRelationship =
         addRelationship(FM, std::make_unique<Relationship>(Kind));
     if (!InsertedRelationship) {
-      return nullptr;
+      return Error(ERROR);
     }
 
     auto *P = std::visit(
@@ -425,7 +426,7 @@ public:
       setParent(*C, *InsertedRelationship);
     }
 
-    return {InsertedRelationship};
+    return Ok(InsertedRelationship);
   }
 
 private:
@@ -445,14 +446,14 @@ class RemoveRelationshipFromModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  Result operator()(FeatureModel &FM) {
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
     auto *P = std::visit(
         Overloaded{
             [&FM](const std::string &Name) { return FM.getFeature(Name); },
@@ -461,7 +462,7 @@ public:
         Parent);
     if (!P) {
       // TODO(se-passau/VaRA#744) handle this
-      return {MISSING_PARENT};
+      return Error(MISSING_PARENT);
     }
 
     auto Relationships = P->getChildren<Relationship>();
@@ -476,7 +477,7 @@ public:
       setParent(*C, *P);
     }
     removeRelationship(FM, R);
-    return {};
+    return Ok();
   }
 
 private:
@@ -494,14 +495,14 @@ class AddLocationToFeature : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  Result operator()(FeatureModel &FM) {
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
     addLocation(*std::visit(Overloaded{
                                 [&FM](const std::string &Name) {
                                   return FM.getFeature(Name);
@@ -510,7 +511,7 @@ public:
                             },
                             F),
                 FSR);
-    return {};
+    return Ok();
   }
 
 private:
@@ -529,14 +530,14 @@ class RemoveLocationFromFeature : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  Result operator()(FeatureModel &FM) {
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
     removeLocation(*std::visit(Overloaded{
                                    [&FM](const std::string &Name) {
                                      return FM.getFeature(Name);
@@ -545,7 +546,7 @@ public:
                                },
                                F),
                    FSR);
-    return {};
+    return Ok();
   }
 
 private:
@@ -564,21 +565,21 @@ class AddConstraintToModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  ErrorOr<Constraint *> operator()(FeatureModel &FM) {
+  Result<FTErrorCode, Constraint *> operator()(FeatureModel &FM) {
     auto *InsertedConstraint = addConstraint(FM, std::move(NewConstraint));
     if (!InsertedConstraint) {
-      return nullptr;
+      return Error(ERROR);
     }
     auto V = AddConstraintToModelVisitor(&FM);
     InsertedConstraint->accept(V);
-    return {InsertedConstraint};
+    return Ok(InsertedConstraint);
   }
 
 private:
@@ -611,16 +612,16 @@ class SetName : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  Result operator()(FeatureModel &FM) {
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
     setName(FM, std::move(Name));
-    return {};
+    return Ok();
   }
 
 private:
@@ -637,16 +638,16 @@ class SetCommit : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  Result operator()(FeatureModel &FM) {
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
     setCommit(FM, std::move(Commit));
-    return {};
+    return Ok();
   }
 
 private:
@@ -663,16 +664,16 @@ class SetPath : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  Result operator()(FeatureModel &FM) {
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
     setPath(FM, std::move(Path));
-    return {};
+    return Ok();
   }
 
 private:
@@ -689,17 +690,17 @@ class SetRoot : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  ErrorOr<RootFeature *> operator()(FeatureModel &FM) {
+  Result<FTErrorCode, RootFeature *> operator()(FeatureModel &FM) {
     if (FM.getRoot() && FM.getRoot()->getName() == Root->getName()) {
       // TODO(s9latimm): swap root
-      return {FM.getRoot()};
+      return Ok(FM.getRoot());
     }
     if (auto *NewRoot = llvm::dyn_cast_or_null<RootFeature>(
             addFeature(FM, std::move(Root)));
@@ -713,9 +714,9 @@ public:
         removeFeature(FM, *FM.getRoot());
       }
       setRoot(FM, *NewRoot);
-      return {FM.getRoot()};
+      return Ok(FM.getRoot());
     }
-    return {ALREADY_PRESENT};
+    return Error(ALREADY_PRESENT);
   }
 
 private:
@@ -732,14 +733,14 @@ class AddChild : public FeatureModelModification {
   friend class FeatureModelModification;
 
 public:
-  Result exec(FeatureModel &FM) override {
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return {E.getError()};
+      return Error(E.getError());
     }
-    return {};
+    return Ok();
   }
 
-  Result operator()(FeatureModel &FM) {
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
     auto *C = std::visit(Overloaded{
                              [&FM](const std::string &Name) {
                                return llvm::dyn_cast_or_null<FeatureTreeNode>(
@@ -763,7 +764,7 @@ public:
     }
     addEdge(*P, *C);
     setParent(*C, *P);
-    return {};
+    return Ok();
   }
 
 private:
@@ -778,12 +779,13 @@ class FeatureModelCopyTransactionBase {
 protected:
   FeatureModelCopyTransactionBase(FeatureModel &FM) : FM(FM.clone()) {}
 
-  [[nodiscard]] inline ErrorOr<std::unique_ptr<FeatureModel>> commitImpl() {
+  [[nodiscard]] inline Result<FTErrorCode, std::unique_ptr<FeatureModel>>
+  commitImpl() {
     if (isUncommitted() && FM && ConsistencyCheck::isFeatureModelValid(*FM)) {
-      return {std::move(FM)};
+      return Ok(std::move(FM));
     }
     abortImpl();
-    return {ABORTED};
+    return Error(ABORTED);
   };
 
   void abortImpl() {
@@ -798,21 +800,21 @@ protected:
   //===--------------------------------------------------------------------===//
   // Modifications
 
-  ErrorOr<Feature *> addFeatureImpl(std::unique_ptr<Feature> NewFeature,
-                                    Feature *Parent) {
+  Result<FTErrorCode, Feature *>
+  addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
     if (!FM) {
-      return nullptr;
+      return Error(ERROR);
     }
 
     if (Parent) {
       // To correctly add a parent, we need to translate it to a Feature in
       // our copied FeatureModel
-      return {FeatureModelModification::make_modification<AddFeatureToModel>(
-          std::move(NewFeature), TranslateFeature(*Parent))(*FM)};
+      return FeatureModelModification::make_modification<AddFeatureToModel>(
+          std::move(NewFeature), TranslateFeature(*Parent))(*FM);
     }
 
-    return {FeatureModelModification::make_modification<AddFeatureToModel>(
-        std::move(NewFeature))(*FM)};
+    return FeatureModelModification::make_modification<AddFeatureToModel>(
+        std::move(NewFeature))(*FM);
   }
 
   void removeFeatureImpl(FeatureVariantTy &F, bool Recursive = false) {
@@ -829,21 +831,21 @@ protected:
         Recursive)(*FM);
   }
 
-  ErrorOr<Relationship *>
+  Result<FTErrorCode, Relationship *>
   addRelationshipImpl(Relationship::RelationshipKind Kind,
                       const FeatureVariantTy &Parent) {
     if (!FM) {
-      return nullptr;
+      return Error(ERROR);
     }
 
-    return {FeatureModelModification::make_modification<AddRelationshipToModel>(
+    return FeatureModelModification::make_modification<AddRelationshipToModel>(
         Kind, TranslateFeature(*std::visit(Overloaded{
                                                [this](const std::string &Name) {
                                                  return FM->getFeature(Name);
                                                },
                                                [](Feature *Ptr) { return Ptr; },
                                            },
-                                           Parent)))(*FM)};
+                                           Parent)))(*FM);
   }
 
   void removeRelationshipImpl(const FeatureVariantTy &F) {
@@ -887,14 +889,14 @@ protected:
         FSR)(*FM);
   }
 
-  ErrorOr<Constraint *>
+  Result<FTErrorCode, Constraint *>
   addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
     if (!FM) {
-      return nullptr;
+      return Error(ERROR);
     }
 
-    return {FeatureModelModification::make_modification<AddConstraintToModel>(
-        std::move(NewConstraint))(*FM)};
+    return FeatureModelModification::make_modification<AddConstraintToModel>(
+        std::move(NewConstraint))(*FM);
   }
 
   void setNameImpl(std::string Name) {
@@ -916,13 +918,14 @@ protected:
     FeatureModelModification::make_modification<SetPath>(std::move(Path))(*FM);
   }
 
-  ErrorOr<RootFeature *> setRootImpl(std::unique_ptr<RootFeature> Root) {
+  Result<FTErrorCode, RootFeature *>
+  setRootImpl(std::unique_ptr<RootFeature> Root) {
     if (!FM) {
-      return nullptr;
+      return Error(ERROR);
     }
 
-    return {FeatureModelModification::make_modification<SetRoot>(
-        std::move(Root))(*FM)};
+    return FeatureModelModification::make_modification<SetRoot>(
+        std::move(Root))(*FM);
   }
 
   static void addChildImpl(const FeatureTreeNodeVariantTy &Parent,
@@ -943,7 +946,7 @@ class FeatureModelModifyTransactionBase {
 protected:
   FeatureModelModifyTransactionBase(FeatureModel &FM) : FM(&FM) {}
 
-  Result commitImpl() {
+  Result<FTErrorCode> commitImpl() {
     //    assert(FM && "Cannot commit Modifications without a FeatureModel
     //    present.");
     if (isUncommitted() && FM) {
@@ -951,18 +954,18 @@ protected:
            Modifications) {
         if (auto E = FMM->exec(*FM); !E) {
           abortImpl();
-          return {E.getError()};
+          return Error(E.getError());
         }
       }
       if (auto E = ConsistencyCheck::isFeatureModelValid(*FM); !E) {
         abortImpl();
-        return {E.getError()};
+        return Error(E.getError());
       }
       FM = nullptr;
-      return {};
+      return Ok();
     }
     abortImpl();
-    return {ABORTED};
+    return Error(ABORTED);
   }
 
   void abortImpl() {

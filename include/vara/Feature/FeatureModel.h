@@ -5,6 +5,7 @@
 #include "vara/Feature/Error.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
+#include "vara/Feature/Result.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
@@ -473,11 +474,11 @@ namespace vara::feature {
 template <typename... Rules>
 class FeatureModelConsistencyChecker {
 public:
-  static Result isFeatureModelValid(FeatureModel &FM) {
+  static Result<FTErrorCode> isFeatureModelValid(FeatureModel &FM) {
     if (auto E = (Rules::check(FM) && ... && true); !E) {
-      return {INCONSISTENT};
+      return Error(INCONSISTENT);
     }
-    return {};
+    return Ok();
   }
 };
 
