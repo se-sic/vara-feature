@@ -112,6 +112,8 @@ public:
     return Count;
   }
 
+  bool isLeave() { return this->children().empty(); }
+
 protected:
   FeatureTreeNode(NodeKind Kind, FeatureTreeNode *Parent,
                   const llvm::SmallPtrSetImpl<FeatureTreeNode *> &Children)

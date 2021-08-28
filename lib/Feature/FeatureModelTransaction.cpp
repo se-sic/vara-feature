@@ -48,106 +48,76 @@ bool fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
                    ActualFeature = FM.getFeature(F);
                  }},
       FV);
-  return ActualFeature.isLeave();
+  return ActualFeature->isLeave();
 }
+
+/*bool hasSuccessorsAmongOthers(
+    FeatureModel &FM, detail::FeatureVariantTy &FV,
+    std::vector<detail::FeatureVariantTy>::iterator Begin,
+    std::vector<detail::FeatureVariantTy>::iterator End) {
+  Feature *ActualFeature;
+  std::visit(
+      Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
+                 [&ActualFeature, &FM](string &F) {
+                   ActualFeature = FM.getFeature(F);
+                 }},
+      FV);
+
+  if (ActualFeature->children().empty()) {
+    return false;
+  }
+
+  for (auto Child : ActualFeature->children()) {
+    if (std::find(Begin, End, Child) != End) {
+    }
+  }
+  return false;
+}*/
 
 void removeFeatures(FeatureModel &FM,
                     std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
                     bool Recursive) {
+  removeFeatures(FM, FeaturesToBeDeleted.begin(), FeaturesToBeDeleted.end(),
+                 Recursive);
+}
+
+void removeFeatures(FeatureModel &FM,
+                    std::vector<detail::FeatureVariantTy>::iterator Begin,
+                    std::vector<detail::FeatureVariantTy>::iterator End,
+                    bool Recursive) {
   // if everything was deleted
-  if (FeaturesToBeDeleted.size() == 0) {
+  if (Begin == End) {
     return;
   }
 
   // partition FeaturesToBeDeleted into others and leaves --> remove leaves and
   // recursively call this function on others
-  auto NonLeavesIt = std::partition(FeaturesToBeDeleted.begin(),
-                                    FeaturesToBeDeleted.end(), fvIsLeave);
-  auto LeavesIt = std::partition(FeaturesToBeDeleted.begin(),
-                                 FeaturesToBeDeleted.end(), !fvIsLeave);
+  auto NoDeleteIt =
+      std::partition(Begin, End, [&FM](detail::FeatureVariantTy &FV) {
+        return !fvIsLeave(FM, FV); // TODO: enhance to also delete non-leaves in
+                                   // recursive=true mode
+      });
 
-  // if we
+  // check if leaves are present --> if not and return non-deletable features
+  if (NoDeleteIt == End) {
+    // TODO: return list of non-deletable Features?
+    return;
+  }
 
+  // remove leaves
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
-  auto Leave = LeavesIt;
-  while (Leave != FeaturesToBeDeleted.end()) {
-    Trans.removeFeature(*Leave, true);
-    Leave = std::next(LeavesIt);
+  auto it = NoDeleteIt;
+  while (it != End) {
+    Trans.removeFeature(*it, true);
+    it = std::next(it);
   }
   Trans.commit();
 
-  /*
-  // Iterate over Features and deleted them iff they are leaves (don't have
-  // children).
-  // Even if we are in the recursive mode, we need to delete the children
-  among
-  // FeaturesToBeDeleted first. Otherwise, the commit gets stuck in an endless
-  // loop.
-  std::vector<detail::FeatureVariantTy> RemainingFeatures;
-  std::copy(FeaturesToBeDeleted.begin(), FeaturesToBeDeleted.end(),
-            std::back_inserter(RemainingFeatures));
-  while (!RemainingFeatures.empty()) {
-    auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
-    std::vector<detail::FeatureVariantTy> DeleteFeatures;
-    for (auto &RemainingFeature : RemainingFeatures) {
-      Feature *ActualFeature;
-      std::visit(
-          Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
-                     [&ActualFeature, &FM](string &F) {
-                       ActualFeature = FM.getFeature(F);
-                     }},
-          RemainingFeature);
-      // if Feature is not a parent it can be deleted
-      if (ActualFeature->children().empty()) {
-        Trans.removeFeature(RemainingFeature, Recursive);
-        DeleteFeatures.emplace_back(RemainingFeature);
-      }
-    }
-    // We are not in recursive mode and have only parents left with children
-    // that should not be deleted --> abort execution
-    if (DeleteFeatures.empty()) {
-      Trans.commit();
-      if (Recursive) {
-        std::sort(RemainingFeatures.begin(), RemainingFeatures.end(),
-                  [&FM](detail::FeatureVariantTy &FV1,
-                        detail::FeatureVariantTy &FV2) -> bool {
-                    Feature *ActualFeature1;
-                    std::visit(Overloaded{[&ActualFeature1, &FM](Feature *F) {
-                                            ActualFeature1 = F;
-                                          },
-                                          [&ActualFeature1, &FM](string &F) {
-                                            ActualFeature1 = FM.getFeature(F);
-                                          }},
-                               FV1);
-                    Feature *ActualFeature2;
-                    std::visit(Overloaded{[&ActualFeature2, &FM](Feature *F) {
-                                            ActualFeature2 = F;
-                                          },
-                                          [&ActualFeature2, &FM](string &F) {
-                                            ActualFeature2 = FM.getFeature(F);
-                                          }},
-                               FV2);
+  // call remove Features on non-leaves
+  removeFeatures(FM, Begin, NoDeleteIt, Recursive);
 
-                    return ActualFeature1->countNumberOfSuccessors() <
-                           ActualFeature2->countNumberOfSuccessors();
-                  });
-        removeFeaturesRecursively(FM, RemainingFeatures);
-      }*/
-  // TODO: return list of non-deletable Features?
   return;
 }
-
-/*std::sort(DeleteFeatures.begin(), DeleteFeatures.end());
-RemainingFeatures.erase(std::remove_if(RemainingFeatures.begin(),
-                                       RemainingFeatures.end(),
-                                       [&](auto X) {
-                                         return binary_search(
-                                             DeleteFeatures.begin(),
-                                             DeleteFeatures.end(), X);
-                                       }),
-                        RemainingFeatures.end());
-Trans.commit();
-}*/
 
 void removeFeaturesRecursively(
     FeatureModel &FM,
