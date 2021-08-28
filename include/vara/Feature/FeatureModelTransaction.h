@@ -1022,17 +1022,6 @@ void removeFeatures(FeatureModel &FM,
                     std::vector<detail::FeatureVariantTy>::iterator End,
                     bool Recursive);
 
-/// Removes multiple Features from the FeatureModel recursively
-///
-/// The FeaturesToBeDeleted need to be properly ordered so that not a parent is
-/// deleted first and its child afterwards.
-///
-/// \param FM
-/// \param FeaturesToBeDeleted
-void removeFeaturesRecursively(
-    FeatureModel &FM,
-    const std::vector<detail::FeatureVariantTy> &FeaturesToBeDeleted);
-
 /// Adds a Relationship to a Feature
 ///
 /// \param FM

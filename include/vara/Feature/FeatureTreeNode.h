@@ -93,25 +93,8 @@ public:
     return FS;
   }
 
-  /// Counting the number of successors of a FeatureTreeNode (all transitive
-  /// children)
-  ///
-  /// \param F
-  /// \return number of all transitive children
-  int countNumberOfSuccessors() {
-    if (this->children().empty()) {
-      return 0;
-    }
-    auto Count =
-        std::distance(this->children().begin(), this->children().end());
-
-    // count children of children
-    for (auto *Child : this->children()) {
-      Count += Child->countNumberOfSuccessors();
-    }
-    return Count;
-  }
-
+  /// Checks if a FeatureTreeNode has children or is a leave.
+  /// \return true, if the FeatureTreeNode does not have children/is a leave.
   bool isLeave() { return this->children().empty(); }
 
 protected:

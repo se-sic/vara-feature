@@ -51,6 +51,7 @@ bool fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   return ActualFeature->isLeave();
 }
 
+// TODO: delete, if other approach is used
 /*bool hasSuccessorsAmongOthers(
     FeatureModel &FM, detail::FeatureVariantTy &FV,
     std::vector<detail::FeatureVariantTy>::iterator Begin,
@@ -117,16 +118,6 @@ void removeFeatures(FeatureModel &FM,
   removeFeatures(FM, Begin, NoDeleteIt, Recursive);
 
   return;
-}
-
-void removeFeaturesRecursively(
-    FeatureModel &FM,
-    const std::vector<detail::FeatureVariantTy> &FeaturesToBeDeleted) {
-  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
-  for (detail::FeatureVariantTy FeatureVariant : FeaturesToBeDeleted) {
-    Trans.removeFeature(FeatureVariant, true);
-  }
-  Trans.commit();
 }
 
 void addRelationship(FeatureModel &FM,
