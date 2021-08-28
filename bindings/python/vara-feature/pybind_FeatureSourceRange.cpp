@@ -70,9 +70,9 @@ void init_feature_location_module(py::module &M) {
             return Self == *Other;
           },
           py::arg("Other").none(true));
-  py::enum_<vf::FeatureSourceRange::Category>(Loc, "Category")
-      .value("necessary", vf::FeatureSourceRange::Category::necessary)
-      .value("inessential", vf::FeatureSourceRange::Category::inessential);
+  py::enum_<vf::Relationship::Relationship>(Loc, "RelationshipKind")
+      .value("xor", vf::FeatureSourceRange::Category::necessary)
+      .value("or", vf::FeatureSourceRange::Category::inessential);
 
   py::class_<vf::FeatureSourceRange::FeatureSourceLocation>(M,
                                                             "LineColumnOffset")

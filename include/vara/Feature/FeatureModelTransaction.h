@@ -405,7 +405,7 @@ public:
       }
     } else {
       if (!F->getChildren<Feature>().empty()) {
-        // TODO (se-passau/VaRA#744): error, non recursive 0remove on non leaf
+        // TODO (se-passau/VaRA#744): error, non recursive remove on non leaf
         // feature
         return;
       }
@@ -414,6 +414,7 @@ public:
       }
     }
 
+    // TODO (se-passau/VaRA#790): different approches to handle constraints
     while (!F->constraints().empty()) {
       Constraint *C = *(F->constraints().begin());
       while (C->getParent()) {
