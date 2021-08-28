@@ -1,5 +1,6 @@
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelBuilder.h"
+#include "vara/Feature/FeatureModelParser.h"
 
 #include "llvm/Support/Casting.h"
 
@@ -93,6 +94,15 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() const {
   }
 
   return FMB.buildFeatureModel();
+}
+
+//===----------------------------------------------------------------------===//
+//                           FeatureModel Helpers
+//===----------------------------------------------------------------------===//
+
+std::unique_ptr<FeatureModel> loadFeatureModel(llvm::StringRef Path) {
+  // TODO (se-sic/VaRA#784): implement checking for different FM file types
+  return FeatureModelXmlParser(Path.str()).buildFeatureModel();
 }
 
 } // namespace vara::feature

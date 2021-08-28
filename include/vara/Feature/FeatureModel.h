@@ -315,6 +315,12 @@ private:
   RelationshipContainerTy Relationships;
 };
 
+//===----------------------------------------------------------------------===//
+//                           FeatureModel Helpers
+//===----------------------------------------------------------------------===//
+
+std::unique_ptr<FeatureModel> loadFeatureModel(llvm::StringRef Path);
+
 } // namespace vara::feature
 
 namespace llvm {
