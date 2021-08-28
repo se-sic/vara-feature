@@ -115,20 +115,10 @@ void init_feature_module_root_feature(py::module &M) {
            R"pbdoc(Returns the string representation of a RootFeature.)pbdoc");
 }
 
-void init_feature_module_relationship(py::module &M) {
-  py::class_<vf::Feature, vf::FeatureTreeNode>(M, "Relationship")
-      .def("__hash__", &vf::Feature::hash)
-      .def(py::init<vf::Realtionship::RelationshipKind>)
-          py::enum_<vf::FeatureSourceRange::Category>(Loc, "Category")
-      .value("necessary", vf::FeatureSourceRange::Category::necessary)
-      .value("inessential", vf::FeatureSourceRange::Category::inessential);
-}
-
 void init_feature_module(py::module &M) {
   init_feature_module_feature_tree_node(M);
   init_feature_module_feature(M);
   init_feature_module_binary_feature(M);
   init_feature_module_numeric_feature(M);
   init_feature_module_root_feature(M);
-  init_feature_module_relationship(M);
 }
