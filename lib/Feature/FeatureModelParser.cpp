@@ -1,4 +1,5 @@
 #include "vara/Feature/FeatureModelParser.h"
+#include "vara/Feature/ConstraintParser.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -14,6 +15,8 @@ using std::make_unique;
 
 namespace vara::feature {
 
+std::string trim(llvm::StringRef S) { return llvm::StringRef(S).trim().str(); }
+
 bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                      bool Num = false) {
   std::string Name{"root"};
@@ -24,8 +27,12 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   std::vector<FeatureSourceRange> SourceRanges;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
-      std::string Cnt{reinterpret_cast<char *>(
-          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get())};
+      std::string Cnt = trim(reinterpret_cast<char *>(
+          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
+      if (Cnt.empty()) {
+        continue;
+      }
+
       // The DTD enforces name to be the first element of an
       // configurationOption. This method is never called without validating
       // the input beforehand.
@@ -39,7 +46,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
-              FMB.addEdge(Name, std::string(reinterpret_cast<char *>(
+              FMB.addEdge(Name, trim(reinterpret_cast<char *>(
                                     std::unique_ptr<xmlChar, void (*)(void *)>(
                                         xmlNodeGetContent(Child), xmlFree)
                                         .get())));
@@ -55,7 +62,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                   make_unique<PrimaryFeatureConstraint>(
                       make_unique<Feature>(Name)),
                   make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
-                      reinterpret_cast<char *>(CCnt.get())))));
+                      trim(reinterpret_cast<char *>(CCnt.get()))))));
             }
           }
         }
@@ -68,7 +75,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                   make_unique<PrimaryFeatureConstraint>(
                       make_unique<Feature>(Name)),
                   make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
-                      reinterpret_cast<char *>(CCnt.get())))));
+                      trim(reinterpret_cast<char *>(CCnt.get()))))));
             }
           }
         }
@@ -138,10 +145,10 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   for (xmlNode *Child = Head->children; Child; Child = Child->next) {
     if (Child->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
-        Path = fs::path(
+        Path = fs::path(trim(
             reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
                                          xmlNodeGetContent(Child), xmlFree)
-                                         .get()));
+                                         .get())));
 
       } else if (!xmlStrcmp(Child->name, XmlConstants::START)) {
         Start = createFeatureSourceLocation(Child);
@@ -166,14 +173,18 @@ bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
   return true;
 }
 
-bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
+bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
-        std::string Cnt{reinterpret_cast<char *>(
-            UniqueXmlChar(xmlNodeGetContent(H), xmlFree).get())};
-        // TODO(se-passau/VaRA#664): Implement advanced parsing into constraint
-        //  tree
+        UniqueXmlChar Cnt(xmlNodeGetContent(H), xmlFree);
+        if (auto Constraint =
+                ConstraintParser(trim(reinterpret_cast<char *>(Cnt.get())))
+                    .buildConstraint()) {
+          FMB.addConstraint(std::move(Constraint));
+        } else {
+          return false;
+        }
       }
     }
   }
@@ -183,17 +194,17 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) { // NOLINT
 bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
     UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::NAME), xmlFree);
-    FMB.setVmName(std::string(reinterpret_cast<char *>(Cnt.get())));
+    FMB.setVmName(trim(reinterpret_cast<char *>(Cnt.get())));
   }
   {
     UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::ROOT), xmlFree);
-    FMB.setPath(Cnt ? fs::path(reinterpret_cast<char *>(Cnt.get()))
+    FMB.setPath(Cnt ? fs::path(trim(reinterpret_cast<char *>(Cnt.get())))
                     : fs::current_path());
   }
   {
     std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
         xmlGetProp(Node, XmlConstants::COMMIT), xmlFree);
-    FMB.setCommit(Cnt ? std::string(reinterpret_cast<char *>(Cnt.get())) : "");
+    FMB.setCommit(Cnt ? trim(reinterpret_cast<char *>(Cnt.get())) : "");
   }
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {

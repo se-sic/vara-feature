@@ -46,6 +46,8 @@ if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
   add_compile_options(-fPIC)
 endif ()
 
+option(VARA_FEATURE_BUILD_DOC "Generate documentation" FALSE)
+
 # Extra debug warning flags
 if (CMAKE_BUILD_TYPE EQUAL "Debug")
   add_compile_options(-Wall -Wextra -Wno-unused-parameter)
@@ -141,9 +143,14 @@ add_subdirectory(lib)
 add_subdirectory(tools)
 
 if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
+  find_package(Python COMPONENTS Interpreter Development REQUIRED)
   add_subdirectory(external/pybind11)
   add_subdirectory(bindings)
 endif ()
+
+if (${VARA_FEATURE_BUILD_DOC})
+  add_subdirectory(docs)
+endif()
 
 if (VARA_FEATURE_IN_TREE)
   # Set llvm distributed includes for gtest header

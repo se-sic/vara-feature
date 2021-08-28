@@ -7,16 +7,17 @@ macro(add_test_file file_name)
 endmacro()
 
 set(FEATURE_LIB_TEST_FILES
-  test.xml
-  test_children.xml
-  test_excludes.xml
-  test_only_children.xml
-  test_only_parents.xml
-  test_out_of_order.xml
   sxfm/sxfm_example.sxfm
   sxfm/test.sxfm
   sxfm/test_wrong_indentation.sxfm
   sxfm/test_wrong_xml_format.sxfm
+  xml/test.xml
+  xml/test_children.xml
+  xml/test_excludes.xml
+  xml/test_only_children.xml
+  xml/test_only_parents.xml
+  xml/test_out_of_order.xml
+  xml/test_with_whitespaces.xml
   )
 
 foreach(file_name ${FEATURE_LIB_TEST_FILES})

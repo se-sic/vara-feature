@@ -114,7 +114,7 @@ public:
     }
   }
 
-  void removeRelationship(detail::FeatureVariantTy &F) {
+  void removeRelationship(const detail::FeatureVariantTy &F) {
     this->removeRelationshipImpl(F);
   }
 
@@ -682,7 +682,9 @@ public:
                          Parent);
     assert(C && P);
 
-    removeEdge(*C->getParent(), *C);
+    if (C->getParent()) {
+      removeEdge(*C->getParent(), *C);
+    }
     addEdge(*P, *C);
     setParent(*C, *P);
   }
@@ -731,7 +733,7 @@ protected:
   }
 
   void removeFeatureImpl(FeatureVariantTy &F, bool Recursive = false) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     FeatureModelModification::make_modification<RemoveFeatureFromModel>(
         TranslateFeature(*std::visit(Overloaded{
@@ -760,8 +762,8 @@ protected:
                                            Parent)))(*FM);
   }
 
-  void removeRelationshipImpl(FeatureVariantTy &F) {
-    assert(FM && "");
+  void removeRelationshipImpl(const FeatureVariantTy &F) {
+    assert(FM && "Feature model is null.");
 
     return FeatureModelModification::make_modification<
         RemoveRelationshipFromModel>(TranslateFeature(*std::visit(
@@ -787,7 +789,7 @@ protected:
   }
 
   void removeLocationImpl(const FeatureVariantTy &F, FeatureSourceRange &FSR) {
-    assert(FM && "");
+    assert(FM && "FeatureModel is null.");
 
     FeatureModelModification::make_modification<RemoveLocationFromFeature>(
         TranslateFeature(*std::visit(Overloaded{
@@ -897,7 +899,7 @@ protected:
                             AddRelationshipToModel>(Kind, Parent));
   }
 
-  void removeRelationshipImpl(FeatureVariantTy &F) {
+  void removeRelationshipImpl(const FeatureVariantTy &F) {
     Modifications.push_back(FeatureModelModification::make_unique_modification<
                             RemoveRelationshipFromModel>(F));
   }
@@ -1020,6 +1022,22 @@ void removeFeaturesRecursively(
     FeatureModel &FM,
     const std::vector<detail::FeatureVariantTy> &FeaturesToBeDeleted);
 
+/// Adds a Relationship to a Feature
+///
+/// \param FM
+/// \param GroupRoot of relationship group
+/// \param Kind of relationship
+void addRelationship(FeatureModel &FM,
+                     const detail::FeatureVariantTy &GroupRoot,
+                     Relationship::RelationshipKind Kind);
+
+/// Removes the Relationship from Group
+///
+/// \param FM
+/// \param GroupRoot of Relationship
+void removeRelationship(FeatureModel &FM,
+                        const detail::FeatureVariantTy &GroupRoot);
+
 /// Set commit of a FeatureModel.
 ///
 /// \param FM
@@ -1028,15 +1046,17 @@ void setCommit(FeatureModel &FM, std::string NewCommit);
 
 /// Merges a FeatureModel into another
 ///
-/// Merging fails if both FeatureModels contain a Feature with equal name,
-/// but different properties.
+/// Strict merging fails if both FeatureModels contain a Feature with equal
+/// name, but different properties. Non-strict merging prefers properties of
+/// Feature in \p FM1.
 ///
 /// \param FM1
 /// \param FM2
+/// \param Strict mode
 ///
 /// \return New merged FeatureModel or nullptr if merging failed
 [[nodiscard]] std::unique_ptr<FeatureModel>
-mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2);
+mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict = true);
 
 } // namespace vara::feature
 

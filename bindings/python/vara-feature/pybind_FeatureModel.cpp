@@ -35,6 +35,60 @@ void init_feature_model_module(py::module &M) {
             return FM.getFeature(Name);
           },
           py::return_value_policy::reference, R"pbdoc(Returns Feature.)pbdoc")
+      .def(
+          "add_binary_feature",
+          [](vf::FeatureModel &FM, vf::Feature &Parent, std::string Name,
+             bool Opt) {
+            vf::addFeature(
+                FM, std::make_unique<vf::BinaryFeature>(std::move(Name), Opt),
+                &Parent);
+          },
+          R"pbdoc(Add binary feature with given properties to Feature model.)pbdoc")
+      .def(
+          "add_binary_feature",
+          [](vf::FeatureModel &FM, vf::Feature &Parent, std::string Name,
+             bool Opt,
+             std::vector<vara::feature::FeatureSourceRange> Locations) {
+            vf::addFeature(FM,
+                           std::make_unique<vf::BinaryFeature>(
+                               std::move(Name), Opt, std::move(Locations)),
+                           &Parent);
+          },
+          R"pbdoc(Add binary feature with given properties to Feature model.)pbdoc")
+      .def(
+          "add_numeric_feature",
+          [](vf::FeatureModel &FM, vf::Feature &Parent, std::string Name,
+             std::variant<std::pair<int, int>, std::vector<int>> Values,
+             bool Opt) {
+            vf::addFeature(FM,
+                           std::make_unique<vf::NumericFeature>(
+                               std::move(Name), std::move(Values), Opt),
+                           &Parent);
+          },
+          R"pbdoc(Add numeric feature with given properties to Feature model.)pbdoc")
+      .def(
+          "add_numeric_feature",
+          [](vf::FeatureModel &FM, vf::Feature &Parent, std::string Name,
+             std::variant<std::pair<int, int>, std::vector<int>> Values,
+             bool Opt,
+             std::vector<vara::feature::FeatureSourceRange> Locations) {
+            vf::addFeature(FM,
+                           std::make_unique<vf::NumericFeature>(
+                               std::move(Name), std::move(Values), Opt,
+                               std::move(Locations)),
+                           &Parent);
+          },
+          R"pbdoc(Add numeric feature with given properties to Feature model.)pbdoc")
+      .def(
+          "remove_feature",
+          [](vf::FeatureModel &FM, vf::Feature &OldFeature, bool Recursive) {
+            vf::removeFeature(FM, &OldFeature, Recursive);
+          },
+          py::arg(), py::arg("recursive") = false,
+          R"pbdoc(Remove Feature from model.)pbdoc")
+      .def("merge_with", &vf::mergeFeatureModels, py::arg(),
+           py::arg("strict") = true,
+           R"pbdoc(Merge with other Feature model.)pbdoc")
       .def("size", &vf::FeatureModel::size,
            R"pbdoc(Returns the amount of Features in the Model.)pbdoc")
       .def(

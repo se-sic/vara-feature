@@ -55,19 +55,28 @@ void init_feature_module_feature(py::module &M) {
                                      F.getLocationsEnd());
           },
           R"pbdoc(The mapped code locations of the feature.)pbdoc")
-      .def("addLocation",
-           [](vf::Feature &F, vf::FeatureSourceRange &Fsr) {
-             F.addLocation(Fsr);
-           })
-      .def("updateLocation",
-           [](vf::Feature &F, const vf::FeatureSourceRange &OldFsr,
-              vf::FeatureSourceRange &NewFsr) {
-             return F.updateLocation(OldFsr, NewFsr);
-           })
-      .def("removeLocation",
-           [](vf::Feature &F, const vf::FeatureSourceRange &Fsr) {
-             F.removeLocation(Fsr);
-           })
+      .def(
+          "hasLocations", &vf::Feature::hasLocations,
+          R"pbdoc(Returns True, if the feature has at least one location.)pbdoc")
+      .def(
+          "addLocation",
+          [](vf::Feature &F, vf::FeatureSourceRange &Fsr) {
+            F.addLocation(Fsr);
+          },
+          R"pbdoc(Adds given location to feature.)pbdoc")
+      .def(
+          "updateLocation",
+          [](vf::Feature &F, const vf::FeatureSourceRange &OldFsr,
+             vf::FeatureSourceRange &NewFsr) {
+            return F.updateLocation(OldFsr, NewFsr);
+          },
+          R"pbdoc(Replacees first location with second.)pbdoc")
+      .def(
+          "removeLocation",
+          [](vf::Feature &F, const vf::FeatureSourceRange &Fsr) {
+            F.removeLocation(Fsr);
+          },
+          R"pbdoc(Removes given location from feature.)pbdoc")
 
       //===----------------------------------------------------------------===//
       // Utility functions
