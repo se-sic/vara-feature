@@ -143,6 +143,7 @@ add_subdirectory(lib)
 add_subdirectory(tools)
 
 if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
+  find_package(Python COMPONENTS Interpreter Development REQUIRED)
   add_subdirectory(external/pybind11)
   add_subdirectory(bindings)
 endif ()
