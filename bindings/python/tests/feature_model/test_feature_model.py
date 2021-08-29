@@ -111,10 +111,9 @@ class TestFeatureModelStatic(unittest.TestCase):
         Merging should unify two models such each feature of both models is present in the resulting model.
         Features should have the same parents as in their source models.
         """
-        with open(TEST_INPUTS_DIR / "simple_example_feature_model_merge.xml",
-                  'r') as fm_file:
-            parser = fm_parsers.FeatureModelXmlParser(fm_file.read())
-            test_merge_fm = parser.build_feature_model()
+        test_merge_fm = FM.loadFeatureModel(
+            TEST_INPUTS_DIR / "simple_example_feature_model_merge.xml")
+
         test_merged = self.fm.merge_with(test_merge_fm)
 
         self.assertEqual(test_merged.size(), 11)
@@ -157,11 +156,9 @@ class TestFeatureModelModifications(unittest.TestCase):
     def setUp(cls):
         """Parse and load a FeatureModel for testing."""
         # TODO read model once and copy it for each test
-        with open(TEST_INPUTS_DIR / "example_feature_model.xml",
-                  'r') as fm_file:
-            parser = fm_parsers.FeatureModelXmlParser(fm_file.read())
-            cls.fm = parser.build_feature_model()
-            cls.assertEqual(cls.fm.size(), 8)
+        cls.fm = FM.loadFeatureModel(TEST_INPUTS_DIR /
+                                     "example_feature_model.xml")
+        cls.assertEqual(cls.fm.size(), 8)
 
     def test_add_binary_feature(self):
         test_feature_root = self.fm.get_root()
