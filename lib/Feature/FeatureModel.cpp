@@ -101,7 +101,8 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() const {
 //                           FeatureModel Helpers
 //===----------------------------------------------------------------------===//
 
-std::unique_ptr<FeatureModel> loadXMLFeatureModelFromBuffer(std::string FileContent) {
+std::unique_ptr<FeatureModel>
+loadXMLFeatureModelFromBuffer(std::string FileContent) {
   return FeatureModelXmlParser(std::move(FileContent)).buildFeatureModel();
 }
 
