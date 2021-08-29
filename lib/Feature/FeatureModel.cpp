@@ -105,7 +105,8 @@ std::unique_ptr<FeatureModel> loadXMLFeatureModelFromBuffer(std::string FileCont
   return FeatureModelXmlParser(std::move(FileContent)).buildFeatureModel();
 }
 
-std::unique_ptr<FeatureModel> loadFeatureModelFromBuffer(std::string FileContent) {
+std::unique_ptr<FeatureModel>
+loadFeatureModelFromBuffer(std::string FileContent) {
   // TODO (se-sic/VaRA#784): implement checking for different FM file types
   return loadXMLFeatureModelFromBuffer(std::move(FileContent));
 }
