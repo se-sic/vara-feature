@@ -7,7 +7,6 @@ from pathlib import Path
 
 import vara_feature as vf
 import vara_feature.feature_model as FM
-import vara_feature.fm_parsers as fm_parsers
 
 TEST_INPUTS_DIR = Path(
     os.path.join(Path(os.path.dirname(__file__)).parent, 'TEST_INPUTS'))
@@ -17,14 +16,11 @@ class TestFeatureModelStatic(unittest.TestCase):
     """
     Check of our generated FeatureModel bindings work correctly.
     """
-
     @classmethod
     def setUpClass(cls):
         """Parse and load a FeatureModel for testing."""
-        with open(TEST_INPUTS_DIR / "example_feature_model.xml",
-                  'r') as fm_file:
-            parser = fm_parsers.FeatureModelXmlParser(fm_file.read())
-            cls.fm = parser.build_feature_model()
+        cls.fm = FM.loadFeatureModel(TEST_INPUTS_DIR /
+                                     "example_feature_model.xml")
 
     def test_fm_name(self):
         """ Check if the name of the feature model was correctly set. """
@@ -70,10 +66,8 @@ class TestFeatureModelStatic(unittest.TestCase):
 
         self.assertFalse(test_feature_a.is_root())
         self.assertFalse(test_feature_b.is_root())
-        self.assertEqual(test_feature_root,
-                         test_feature_a.parent())
-        self.assertEqual(test_feature_a.parent(),
-                         test_feature_b.parent())
+        self.assertEqual(test_feature_root, test_feature_a.parent())
+        self.assertEqual(test_feature_a.parent(), test_feature_b.parent())
         self.assertTrue(test_feature_a.is_parent(test_feature_root))
         self.assertTrue(test_feature_b.is_parent(test_feature_root))
 
@@ -126,32 +120,40 @@ class TestFeatureModelStatic(unittest.TestCase):
         self.assertEqual(test_merged.size(), 11)
         self.assertTrue(test_merged.get_root())
         self.assertTrue(test_merged.get_feature("A"))
-        self.assertEqual(test_merged.get_feature("A").parent().name.str(), "root")
+        self.assertEqual(
+            test_merged.get_feature("A").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("AA"))
-        self.assertEqual(test_merged.get_feature("AA").parent().name.str(), "A")
+        self.assertEqual(
+            test_merged.get_feature("AA").parent().name.str(), "A")
         self.assertTrue(test_merged.get_feature("AB"))
-        self.assertEqual(test_merged.get_feature("AB").parent().name.str(), "A")
+        self.assertEqual(
+            test_merged.get_feature("AB").parent().name.str(), "A")
         self.assertTrue(test_merged.get_feature("AC"))
-        self.assertEqual(test_merged.get_feature("AC").parent().name.str(), "A")
+        self.assertEqual(
+            test_merged.get_feature("AC").parent().name.str(), "A")
         self.assertTrue(test_merged.get_feature("B"))
-        self.assertEqual(test_merged.get_feature("B").parent().name.str(), "root")
+        self.assertEqual(
+            test_merged.get_feature("B").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("C"))
-        self.assertEqual(test_merged.get_feature("C").parent().name.str(), "root")
+        self.assertEqual(
+            test_merged.get_feature("C").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("N"))
         self.assertEqual(test_merged.get_feature("N").parent().name.str(), "B")
         self.assertTrue(test_merged.get_feature("X"))
-        self.assertEqual(test_merged.get_feature("X").parent().name.str(), "root")
+        self.assertEqual(
+            test_merged.get_feature("X").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("Y"))
-        self.assertEqual(test_merged.get_feature("Y").parent().name.str(), "root")
+        self.assertEqual(
+            test_merged.get_feature("Y").parent().name.str(), "root")
         self.assertTrue(test_merged.get_feature("Z"))
-        self.assertEqual(test_merged.get_feature("Z").parent().name.str(), "root")
+        self.assertEqual(
+            test_merged.get_feature("Z").parent().name.str(), "root")
 
 
 class TestFeatureModelModifications(unittest.TestCase):
     """
     Check if our generated FeatureModel bindings work correctly.
     """
-
     def setUp(cls):
         """Parse and load a FeatureModel for testing."""
         # TODO read model once and copy it for each test
@@ -179,7 +181,8 @@ class TestFeatureModelModifications(unittest.TestCase):
 
     def test_add_numeric_with_list_feature(self):
         test_feature_root = self.fm.get_root()
-        self.fm.add_numeric_feature(test_feature_root, "New", [0, 1, 2, 3], True)
+        self.fm.add_numeric_feature(test_feature_root, "New", [0, 1, 2, 3],
+                                    True)
         test_added_feature = self.fm.get_feature("New")
         self.assertTrue(test_added_feature)
         self.assertEqual(test_added_feature.parent(), test_feature_root)

@@ -101,4 +101,18 @@ void init_feature_model_module(py::module &M) {
             return py::make_iterator(FM.begin(), FM.end());
           },
           py::keep_alive<0, 1>());
+  M.def("loadFeatureModel", &vf::loadFeatureModel, R"pbdoc(Load FeatureModel from the given file.
+
+Args:
+  path (str): to the FeatureModel file
+
+Returns: the loaded FeatureModel
+)pbdoc");
+  M.def("verifyFeatureModel", &vf::verifyFeatureModel, R"pbdoc(Verifies the FeatureModel from the given file.
+
+Args:
+  path (str): to the FeatureModel file
+
+Returns: true, if the FeatureModel is valid
+)pbdoc");
 }
