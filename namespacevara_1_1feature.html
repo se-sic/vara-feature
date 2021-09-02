@@ -217,6 +217,8 @@ Typedefs</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:ae34c88f0a2ae9fbdddf2c29bb08dd407"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#ae34c88f0a2ae9fbdddf2c29bb08dd407">loadFeatureModel</a> (llvm::StringRef Path)</td></tr>
 <tr class="separator:ae34c88f0a2ae9fbdddf2c29bb08dd407"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27f08d68bdfeefeb61f975069ce63c31"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a27f08d68bdfeefeb61f975069ce63c31">verifyFeatureModel</a> (llvm::StringRef Path)</td></tr>
+<tr class="separator:a27f08d68bdfeefeb61f975069ce63c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5eed62e98db359b3bcccaab00d4548bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a5eed62e98db359b3bcccaab00d4548bf">addFeature</a> (<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM, std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> &gt; NewFeature, <a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> *Parent=nullptr)</td></tr>
 <tr class="memdesc:a5eed62e98db359b3bcccaab00d4548bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a <a class="el" href="classvara_1_1feature_1_1Feature.html" title="Base class for components of FeatureModel.">Feature</a> to the <a class="el" href="classvara_1_1feature_1_1FeatureModel.html" title="Tree like representation of features and dependencies.">FeatureModel</a>.  <a href="namespacevara_1_1feature.html#a5eed62e98db359b3bcccaab00d4548bf">More...</a><br /></td></tr>
 <tr class="separator:a5eed62e98db359b3bcccaab00d4548bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -238,6 +240,14 @@ Functions</h2></td></tr>
 <tr class="memitem:a4dda78a9fd4c0d93131726e05880060d"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a4dda78a9fd4c0d93131726e05880060d">mergeFeatureModels</a> (<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM1, <a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM2, bool Strict=true)</td></tr>
 <tr class="memdesc:a4dda78a9fd4c0d93131726e05880060d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges a <a class="el" href="classvara_1_1feature_1_1FeatureModel.html" title="Tree like representation of features and dependencies.">FeatureModel</a> into another.  <a href="namespacevara_1_1feature.html#a4dda78a9fd4c0d93131726e05880060d">More...</a><br /></td></tr>
 <tr class="separator:a4dda78a9fd4c0d93131726e05880060d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace002507d4cb0f7f79c3003fb867bbb2"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#ace002507d4cb0f7f79c3003fb867bbb2">loadXMLFeatureModelFromBuffer</a> (std::string FileContent)</td></tr>
+<tr class="separator:ace002507d4cb0f7f79c3003fb867bbb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2ef2e0c08ae7267e8e9619e1ca4856c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#ad2ef2e0c08ae7267e8e9619e1ca4856c">loadFeatureModelFromBuffer</a> (std::string FileContent)</td></tr>
+<tr class="separator:ad2ef2e0c08ae7267e8e9619e1ca4856c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ce539ec9b72d1c7f5447dd64a07cdbe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a1ce539ec9b72d1c7f5447dd64a07cdbe">verifyXMLFeatureModelFromBuffer</a> (std::string FileContent)</td></tr>
+<tr class="separator:a1ce539ec9b72d1c7f5447dd64a07cdbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99858666e526d1d62dce928071b1c624"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a99858666e526d1d62dce928071b1c624">verifyFeatureModelFromBuffer</a> (std::string FileContent)</td></tr>
+<tr class="separator:a99858666e526d1d62dce928071b1c624"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29d38436795ec4d0c548c844ba6967df"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a> (llvm::StringRef S)</td></tr>
 <tr class="separator:a29d38436795ec4d0c548c844ba6967df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ad035e46820da0175681abdcdbcc987"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a0ad035e46820da0175681abdcdbcc987">detectExclude</a> (const <a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> *A, const <a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> *B)</td></tr>
@@ -569,9 +579,57 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00103">103</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00115">115</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00110">loadFeatureModelFromBuffer()</a>.</p>
+
+</div>
+</div>
+<a id="ad2ef2e0c08ae7267e8e9619e1ca4856c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2ef2e0c08ae7267e8e9619e1ca4856c">&#9670;&nbsp;</a></span>loadFeatureModelFromBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a>&gt; vara::feature::loadFeatureModelFromBuffer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>FileContent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00110">110</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00105">loadXMLFeatureModelFromBuffer()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00115">loadFeatureModel()</a>.</p>
+
+</div>
+</div>
+<a id="ace002507d4cb0f7f79c3003fb867bbb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace002507d4cb0f7f79c3003fb867bbb2">&#9670;&nbsp;</a></span>loadXMLFeatureModelFromBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a>&gt; vara::feature::loadXMLFeatureModelFromBuffer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>FileContent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00105">105</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00285">vara::feature::FeatureModelXmlParser::buildFeatureModel()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00110">loadFeatureModelFromBuffer()</a>.</p>
 
 </div>
 </div>
@@ -820,6 +878,76 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="a27f08d68bdfeefeb61f975069ce63c31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27f08d68bdfeefeb61f975069ce63c31">&#9670;&nbsp;</a></span>verifyFeatureModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool vara::feature::verifyFeatureModel </td>
+          <td>(</td>
+          <td class="paramtype">llvm::StringRef&#160;</td>
+          <td class="paramname"><em>Path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00135">135</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00130">verifyFeatureModelFromBuffer()</a>.</p>
+
+</div>
+</div>
+<a id="a99858666e526d1d62dce928071b1c624"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99858666e526d1d62dce928071b1c624">&#9670;&nbsp;</a></span>verifyFeatureModelFromBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool vara::feature::verifyFeatureModelFromBuffer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>FileContent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00130">130</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00125">verifyXMLFeatureModelFromBuffer()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00135">verifyFeatureModel()</a>.</p>
+
+</div>
+</div>
+<a id="a1ce539ec9b72d1c7f5447dd64a07cdbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce539ec9b72d1c7f5447dd64a07cdbe">&#9670;&nbsp;</a></span>verifyXMLFeatureModelFromBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool vara::feature::verifyXMLFeatureModelFromBuffer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>FileContent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00125">125</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00331">vara::feature::FeatureModelXmlParser::verifyFeatureModel()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00130">verifyFeatureModelFromBuffer()</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="ab36c13804f2d432699f44adc99de2657"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab36c13804f2d432699f44adc99de2657">&#9670;&nbsp;</a></span>ENCODING</h2>
@@ -874,7 +1002,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Aug 21 2021 19:13:41 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 2 2021 11:41:28 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

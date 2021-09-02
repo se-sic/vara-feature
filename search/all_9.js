@@ -9,6 +9,8 @@ var searchData=
   ['line_220',['LINE',['../classvara_1_1feature_1_1XmlConstants.html#ad57078cb9402bb2a2f67905279f77ae9',1,'vara::feature::XmlConstants']]],
   ['llvm_221',['llvm',['../namespacellvm.html',1,'']]],
   ['loadfeaturemodel_222',['loadFeatureModel',['../namespacevara_1_1feature.html#ae34c88f0a2ae9fbdddf2c29bb08dd407',1,'vara::feature']]],
-  ['locations_223',['LOCATIONS',['../classvara_1_1feature_1_1XmlConstants.html#a0abcab7975528368515466ec3660bade',1,'vara::feature::XmlConstants']]],
-  ['locations_5fiterator_224',['locations_iterator',['../classvara_1_1feature_1_1Feature.html#a40891de27d35a219b2d1cf8493de8759',1,'vara::feature::Feature']]]
+  ['loadfeaturemodelfrombuffer_223',['loadFeatureModelFromBuffer',['../namespacevara_1_1feature.html#ad2ef2e0c08ae7267e8e9619e1ca4856c',1,'vara::feature']]],
+  ['loadxmlfeaturemodelfrombuffer_224',['loadXMLFeatureModelFromBuffer',['../namespacevara_1_1feature.html#ace002507d4cb0f7f79c3003fb867bbb2',1,'vara::feature']]],
+  ['locations_225',['LOCATIONS',['../classvara_1_1feature_1_1XmlConstants.html#a0abcab7975528368515466ec3660bade',1,'vara::feature::XmlConstants']]],
+  ['locations_5fiterator_226',['locations_iterator',['../classvara_1_1feature_1_1Feature.html#a40891de27d35a219b2d1cf8493de8759',1,'vara::feature::Feature']]]
 ];
