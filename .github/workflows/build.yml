@@ -70,7 +70,7 @@ jobs:
           cmake --build . -- -j
 
       - name: Run Tests
-        if: ${{ matrix.build == Release }}
+        if: ${{ matrix.build == 'Release' }}
         shell: bash
         run: |
           cd build
@@ -78,7 +78,7 @@ jobs:
           cmake --build . --target check-vara-fm-viewer
 
       - name: Run Tests (Cov)
-        if: ${{ matrix.build == Debug }}
+        if: ${{ matrix.build == 'Debug' }}
         shell: bash
         run: |
           cd build
