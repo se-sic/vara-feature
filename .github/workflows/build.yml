@@ -65,6 +65,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=$CXX \
             -DVARA_FEATURE_SANITIZE=True \
             -DVARA_FEATURE_BUILD_PYTHON_BINDINGS=False \
+            -DVARA_FEATURE_ENABLE_COVERAGE \
             -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
@@ -74,6 +75,7 @@ jobs:
           cd build
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
+          bash <(curl -s https://codecov.io/bash)
 
       - name: Run Clang-Tidy
         shell: bash

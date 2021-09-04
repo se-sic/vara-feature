@@ -53,6 +53,13 @@ if (CMAKE_BUILD_TYPE EQUAL "Debug")
   add_compile_options(-Wall -Wextra -Wno-unused-parameter)
 endif ()
 
+# Enable coverage tracking
+option(VARA_FEATURE_ENABLE_COVERAGE "Enable code coverage tracking" FALSE)
+if (VARA_FEATURE_ENABLE_COVERAGE)
+  add_compile_options(--coverage -O0)
+  add_link_options(--coverage)
+endif()
+
 # Setup git submodules (external projects)
 find_package(Git QUIET)
 if (GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
