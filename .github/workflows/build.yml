@@ -82,7 +82,6 @@ jobs:
         if: ${{ matrix.build == 'Debug' }}
         shell: bash
         run: |
-          which llvm-cov
           which llvm-cov-10
           which llvm-cov-11
           which llvm-cov-${{ matrix.llvm-major }}
