@@ -56,7 +56,7 @@ endif ()
 # Enable coverage tracking
 option(VARA_FEATURE_ENABLE_COVERAGE "Enable code coverage tracking" FALSE)
 if (VARA_FEATURE_ENABLE_COVERAGE)
-  add_compile_options(--coverage) # -O0)
+  add_compile_options(--coverage -O0)
   add_link_options(--coverage)
 endif()
 

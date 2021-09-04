@@ -66,14 +66,23 @@ jobs:
             -DCMAKE_CXX_COMPILER=$CXX \
             -DVARA_FEATURE_SANITIZE=True \
             -DVARA_FEATURE_BUILD_PYTHON_BINDINGS=False \
-            -DVARA_FEATURE_ENABLE_COVERAGE=True \
             -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
       - name: Run Tests
+        if: ${{ matrix.build == Release }}
         shell: bash
         run: |
           cd build
+          cmake --build . --target check-vara-feature-unittests
+          cmake --build . --target check-vara-fm-viewer
+
+      - name: Run Tests (Cov)
+        if: ${{ matrix.build == Debug }}
+        shell: bash
+        run: |
+          cd build
+          cmake . -DVARA_FEATURE_ENABLE_COVERAGE=True
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
           bash <(curl -s https://codecov.io/bash)
