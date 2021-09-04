@@ -65,7 +65,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=$CXX \
             -DVARA_FEATURE_SANITIZE=True \
             -DVARA_FEATURE_BUILD_PYTHON_BINDINGS=False \
-            -DVARA_FEATURE_ENABLE_COVERAGE \
+            -DVARA_FEATURE_ENABLE_COVERAGE=True \
             -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
