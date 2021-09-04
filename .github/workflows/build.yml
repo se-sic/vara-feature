@@ -82,6 +82,10 @@ jobs:
         if: ${{ matrix.build == 'Debug' }}
         shell: bash
         run: |
+          which llvm-cov
+          which llvm-cov-10
+          which llvm-cov-11
+          which llvm-cov-${{ matrix.llvm-major }}
           cd build
           cmake . -DVARA_FEATURE_ENABLE_COVERAGE=True
           cmake --build . --target check-vara-feature-unittests
