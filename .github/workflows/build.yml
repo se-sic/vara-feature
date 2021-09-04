@@ -41,6 +41,7 @@ jobs:
           sudo apt-add-repository -y 'deb https://apt.kitware.com/ubuntu/ focal main'
           sudo apt-get update
           sudo apt-get -y install --no-install-recommends cmake libstdc++6 libxml2-dev python3-dev graphviz gcc-9 g++-9
+          pip3 install coveragepy
 
       - name: Install Strategy Dependencies
         shell: bash
@@ -85,7 +86,7 @@ jobs:
           cmake . -DVARA_FEATURE_ENABLE_COVERAGE=True
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
-          bash <(curl -s https://codecov.io/bash)
+          bash <(curl -s https://codecov.io/bash) -x llvm-cov -a gcov
 
       - name: Run Clang-Tidy
         shell: bash
