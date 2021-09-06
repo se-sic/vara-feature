@@ -85,7 +85,9 @@ jobs:
           cmake . -DVARA_FEATURE_ENABLE_COVERAGE=True
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
-          bash <(curl -s https://codecov.io/bash) -x 'llvm-cov-${{ matrix.llvm-major }} gcov'
+          ./scripts/ci_utils/upload_coverage_data.py
+          ls coverage.txt
+          bash <(curl -s https://codecov.io/bash)
 
       - name: Run Clang-Tidy
         shell: bash
