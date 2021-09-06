@@ -78,6 +78,8 @@ jobs:
           cmake --build . --target check-vara-fm-viewer
 
       - name: Run Tests (Cov)
+        env:
+          CXX: ${{ matrix.compiler }}
         if: ${{ matrix.build == 'Debug' }}
         shell: bash
         run: |
