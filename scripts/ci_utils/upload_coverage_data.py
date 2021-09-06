@@ -12,7 +12,7 @@ def merge_llvm_data():
     llvm-profdata merge --output=merged.profdata profiles/*
     """
     subprocess_cmd = [
-        "llvm-profdata",
+        "llvm-profdata-11",
         "merge",
         "--output=merged.profdata"  #, "'profiles/*'"
     ]
@@ -32,7 +32,7 @@ def upload_clang():
 
     merge_llvm_data()
 
-    subprocess_cmd = ["llvm-cov", "show", "-instr-profile=merged.profdata"]
+    subprocess_cmd = ["llvm-cov-11", "show", "-instr-profile=merged.profdata"]
 
     subprocess_cmd.extend(
         ['--object=' + str(binary) for binary in binary_paths])
