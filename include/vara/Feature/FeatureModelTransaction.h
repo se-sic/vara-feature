@@ -964,6 +964,7 @@ protected:
       FM = nullptr;
       return Ok();
     }
+
     abortImpl();
     return Error(ABORTED);
   }
