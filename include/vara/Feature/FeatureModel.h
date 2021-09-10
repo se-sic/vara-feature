@@ -314,6 +314,8 @@ private:
 
 std::unique_ptr<FeatureModel> loadFeatureModel(llvm::StringRef Path);
 
+bool verifyFeatureModel(llvm::StringRef Path);
+
 } // namespace vara::feature
 
 namespace llvm {

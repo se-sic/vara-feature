@@ -6,6 +6,7 @@
 #include "pybind11/detail/common.h"
 #include "pybind11/pybind11.h"
 
+#include <filesystem>
 #include <iostream>
 
 namespace vf = vara::feature;
@@ -101,4 +102,28 @@ void init_feature_model_module(py::module &M) {
             return py::make_iterator(FM.begin(), FM.end());
           },
           py::keep_alive<0, 1>());
+  M.def(
+      "loadFeatureModel",
+      [](const std::filesystem::path &Path) {
+        return vf::loadFeatureModel(Path.string());
+      },
+      R"pbdoc(Load FeatureModel from the given file.
+
+Args:
+  path (str): to the FeatureModel file
+
+Returns: the loaded FeatureModel
+)pbdoc");
+  M.def(
+      "verifyFeatureModel",
+      [](const std::filesystem::path &Path) -> bool {
+        return vf::verifyFeatureModel(Path.string());
+      },
+      R"pbdoc(Verifies the FeatureModel from the given file.
+
+Args:
+  path (str): to the FeatureModel file
+
+Returns: true, if the FeatureModel is valid
+)pbdoc");
 }
