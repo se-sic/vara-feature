@@ -79,37 +79,13 @@ canBeDeletedRecursively(FeatureModel &FM, detail::FeatureVariantTy &FV,
   return std::optional<bool>{Intersection.begin() == Intersection.end()};
 }
 
-// TODO: delete, if other approach is used
-/*bool hasSuccessorsAmongOthers(
-    FeatureModel &FM, detail::FeatureVariantTy &FV,
-    std::vector<detail::FeatureVariantTy>::iterator Begin,
-    std::vector<detail::FeatureVariantTy>::iterator End) {
-  Feature *ActualFeature;
-  std::visit(
-      Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
-                 [&ActualFeature, &FM](string &F) {
-                   ActualFeature = FM.getFeature(F);
-                 }},
-      FV);
-
-  if (ActualFeature->children().empty()) {
-    return false;
-  }
-
-  for (auto Child : ActualFeature->children()) {
-    if (std::find(Begin, End, Child) != End) {
-    }
-  }
-  return false;
-}*/
-
-void removeFeatures(FeatureModel &FM,
-                    std::vector<detail::FeatureVariantTy>::iterator Begin,
-                    std::vector<detail::FeatureVariantTy>::iterator End,
-                    bool Recursive) {
+std::vector<detail::FeatureVariantTy> removeFeatures(
+    FeatureModel &FM, std::vector<detail::FeatureVariantTy>::iterator Begin,
+    std::vector<detail::FeatureVariantTy>::iterator End, bool Recursive) {
   // if everything was deleted
+  std::vector<detail::FeatureVariantTy> NotDeletedFeatures;
   if (Begin == End) {
-    return;
+    return NotDeletedFeatures;
   }
 
   // Two use-cases:
@@ -139,8 +115,7 @@ void removeFeatures(FeatureModel &FM,
   // check if something can be deleted --> if not and return non-deletable
   // features
   if (DeleteIt == Begin) {
-    // TODO: return list of non-deletable Features?
-    return;
+    return std::vector(Begin, End);
   }
 
   // remove deletable features
@@ -153,9 +128,7 @@ void removeFeatures(FeatureModel &FM,
   Trans.commit();
 
   // call remove Features on non-leaves
-  removeFeatures(FM, DeleteIt, End, Recursive);
-
-  return;
+  return removeFeatures(FM, DeleteIt, End, Recursive);
 }
 
 void addRelationship(FeatureModel &FM,

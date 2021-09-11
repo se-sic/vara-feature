@@ -1008,22 +1008,23 @@ void removeFeature(FeatureModel &FM,
 /// \param Begin
 /// \param End
 /// \param Recursive
-void removeFeatures(FeatureModel &FM,
-                    std::vector<detail::FeatureVariantTy>::iterator Begin,
-                    std::vector<detail::FeatureVariantTy>::iterator End,
-                    bool Recursive = false);
+std::vector<detail::FeatureVariantTy>
+removeFeatures(FeatureModel &FM,
+               std::vector<detail::FeatureVariantTy>::iterator Begin,
+               std::vector<detail::FeatureVariantTy>::iterator End,
+               bool Recursive = false);
 
 /// Removes multiple Features from the FeatureModel
 ///
 /// \param FM
 /// \param FeaturesToBeDeleted
 /// \param Recursive
-inline void
+inline std::vector<detail::FeatureVariantTy>
 removeFeatures(FeatureModel &FM,
                std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
                bool Recursive = false) {
-  removeFeatures(FM, FeaturesToBeDeleted.begin(), FeaturesToBeDeleted.end(),
-                 Recursive);
+  return removeFeatures(FM, FeaturesToBeDeleted.begin(),
+                        FeaturesToBeDeleted.end(), Recursive);
 }
 
 /// Adds a Relationship to a Feature

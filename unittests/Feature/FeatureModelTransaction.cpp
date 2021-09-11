@@ -955,7 +955,8 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
   std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
       FM->getFeature("ac"), FM->getFeature("ad"), FM->getFeature("ae")};
 
-  vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
 
   EXPECT_EQ(FMSizeBefore - 3, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
@@ -965,6 +966,7 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
   EXPECT_FALSE(FM->getFeature("ac"));
   EXPECT_FALSE(FM->getFeature("ad"));
   EXPECT_FALSE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 0);
 }
 
 // This test tries to remove ad in non-recursive mode, but not ae, which is a
@@ -985,7 +987,8 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
   std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
       FM->getFeature("ad"), FM->getFeature("ac")};
 
-  vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
 
   EXPECT_EQ(FMSizeBefore - 1, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
@@ -993,10 +996,11 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
   EXPECT_TRUE(FM->getFeature("ab"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ac"));
-  // ad should not be removed in without recursive mode because it this has a
+  // "ad" should not be removed in without recursive mode because it this has a
   // child
   EXPECT_TRUE(FM->getFeature("ad"));
   EXPECT_TRUE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 1);
 }
 
 TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelRecursive) {
@@ -1016,7 +1020,8 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelRecursive) {
   std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
       FM->getFeature("ad"), FM->getFeature("ac"), FM->getFeature("ae")};
 
-  vara::feature::removeFeatures(*FM, FeaturesToBeDeleted, true);
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted, true);
 
   EXPECT_EQ(FMSizeBefore - 3, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
@@ -1026,6 +1031,7 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelRecursive) {
   EXPECT_FALSE(FM->getFeature("ac"));
   EXPECT_FALSE(FM->getFeature("ad"));
   EXPECT_FALSE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 0);
 }
 
 TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelParentsOnly) {
@@ -1045,7 +1051,8 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelParentsOnly) {
   std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
       FM->getFeature("ab"), FM->getFeature("ad")};
 
-  vara::feature::removeFeatures(*FM, FeaturesToBeDeleted, true);
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted, true);
 
   EXPECT_EQ(FMSizeBefore - 3, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
@@ -1056,6 +1063,7 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelParentsOnly) {
   EXPECT_FALSE(FM->getFeature("ad"));
   // should be removed in recursive mode because ae is a child of ad
   EXPECT_FALSE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 0);
 }
 
 TEST_F(FeatureModelTransactionTest,
@@ -1075,7 +1083,8 @@ TEST_F(FeatureModelTransactionTest,
   std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
       FM->getFeature("ad"), FM->getFeature("ac")};
 
-  vara::feature::removeFeatures(*FM, FeaturesToBeDeleted, true);
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted, true);
 
   EXPECT_EQ(FMSizeBefore - 3, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
@@ -1086,6 +1095,7 @@ TEST_F(FeatureModelTransactionTest,
   EXPECT_FALSE(FM->getFeature("ad"));
   // should be removed in recursive mode because ae is a child of ad
   EXPECT_FALSE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 0);
 }
 
 TEST_F(FeatureModelTransactionTest, addRelationshipToGroup) {
