@@ -39,7 +39,7 @@ void removeFeature(FeatureModel &FM,
   Trans.commit();
 }
 
-std::optional<bool> fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
+Feature *getActualFeature(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   Feature *ActualFeature = nullptr;
   std::visit(
       Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
@@ -47,11 +47,36 @@ std::optional<bool> fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
                    ActualFeature = FM.getFeature(FName);
                  }},
       FV);
+  return ActualFeature;
+}
+
+std::optional<bool> fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
+  Feature *ActualFeature = getActualFeature(FM, FV);
   // if Feature does not exist in FM
   if (ActualFeature == nullptr) {
     return std::nullopt;
   }
   return std::optional<bool>{ActualFeature->isLeave()};
+}
+
+std::optional<bool>
+canBeDeletedRecursively(FeatureModel &FM, detail::FeatureVariantTy &FV,
+                        const std::set<FeatureTreeNode *> &OtherFeatures) {
+  Feature *ActualFeature = getActualFeature(FM, FV);
+  // if Feature does not exist in FM
+  if (ActualFeature == nullptr) {
+    return std::nullopt;
+  }
+
+  std::set<FeatureTreeNode *> Intersection;
+  auto AllChildrenInSubtree = ActualFeature->getChildren();
+  std::set_intersection(
+      AllChildrenInSubtree.begin(), AllChildrenInSubtree.end(),
+      OtherFeatures.begin(), OtherFeatures.end(),
+      std::inserter(Intersection, std::next(Intersection.begin())));
+  // if the children are not matching the other features, the intersection is
+  // empty and we are good to go for deletion
+  return std::optional<bool>{Intersection.begin() == Intersection.end()};
 }
 
 // TODO: delete, if other approach is used
@@ -87,26 +112,42 @@ void removeFeatures(FeatureModel &FM,
     return;
   }
 
-  // partition FeaturesToBeDeleted into others and leaves --> remove leaves and
-  // recursively call this function on others
-  auto DeleteIt =
-      std::partition(Begin, End, [&FM](detail::FeatureVariantTy &FV) {
-        return fvIsLeave(FM, FV).value_or(
-            false); // TODO: enhance to also delete non-leaves in
-                    // recursive=true mode
+  // Two use-cases:
+  // 1. !Recursive --> partition into Leaves and non-Leaves --> delete Leaves
+  // and recursively call this function on non-Leaves again
+  // 2. partition by "youngest" feature in sub-tree --> delete those in
+  // recursive mode
+  auto DeleteIt = std::partition(
+      Begin, End, [&FM, Recursive, &Begin, &End](detail::FeatureVariantTy &FV) {
+        if (fvIsLeave(FM, FV).value_or(false)) {
+          return true;
+        }
+        if (!Recursive) {
+          return false;
+        }
+        std::set<FeatureTreeNode *> OtherFeatures;
+        std::transform(
+            Begin, End,
+            std::inserter(OtherFeatures, std::next(OtherFeatures.begin())),
+            [&FM, &OtherFeatures](detail::FeatureVariantTy &FV) {
+              return getActualFeature(FM, FV);
+            });
+        OtherFeatures.erase(nullptr);
+        return canBeDeletedRecursively(FM, FV, OtherFeatures).value_or(false);
       });
 
-  // check if leaves are present --> if not and return non-deletable features
+  // check if something can be deleted --> if not and return non-deletable
+  // features
   if (DeleteIt == Begin) {
     // TODO: return list of non-deletable Features?
     return;
   }
 
-  // remove leaves
+  // remove deletable features
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   auto it = Begin;
   while (it != DeleteIt) {
-    Trans.removeFeature(*it);
+    Trans.removeFeature(*it, Recursive);
     it = std::next(it);
   }
   Trans.commit();
