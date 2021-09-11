@@ -39,7 +39,7 @@ void removeFeature(FeatureModel &FM,
   Trans.commit();
 }
 
-bool fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
+std::optional<bool> fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   Feature *ActualFeature = nullptr;
   std::visit(
       Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
@@ -47,7 +47,11 @@ bool fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
                    ActualFeature = FM.getFeature(FName);
                  }},
       FV);
-  return ActualFeature->isLeave();
+  // if Feature does not exist in FM
+  if (ActualFeature == nullptr) {
+    return std::nullopt;
+  }
+  return std::optional<bool>{ActualFeature->isLeave()};
 }
 
 // TODO: delete, if other approach is used
@@ -85,29 +89,30 @@ void removeFeatures(FeatureModel &FM,
 
   // partition FeaturesToBeDeleted into others and leaves --> remove leaves and
   // recursively call this function on others
-  auto NoDeleteIt =
+  auto DeleteIt =
       std::partition(Begin, End, [&FM](detail::FeatureVariantTy &FV) {
-        return !fvIsLeave(FM, FV); // TODO: enhance to also delete non-leaves in
-                                   // recursive=true mode
+        return fvIsLeave(FM, FV).value_or(
+            false); // TODO: enhance to also delete non-leaves in
+                    // recursive=true mode
       });
 
   // check if leaves are present --> if not and return non-deletable features
-  if (NoDeleteIt == End) {
+  if (DeleteIt == Begin) {
     // TODO: return list of non-deletable Features?
     return;
   }
 
   // remove leaves
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
-  auto it = NoDeleteIt;
-  while (it != End) {
+  auto it = Begin;
+  while (it != DeleteIt) {
     Trans.removeFeature(*it);
     it = std::next(it);
   }
   Trans.commit();
 
   // call remove Features on non-leaves
-  removeFeatures(FM, Begin, NoDeleteIt, Recursive);
+  removeFeatures(FM, DeleteIt, End, Recursive);
 
   return;
 }
