@@ -87,7 +87,7 @@ jobs:
           cmake . -DVARA_FEATURE_ENABLE_COVERAGE=True
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
-          ./scripts/ci_utils/upload_coverage_data.py
+          ./scripts/ci_utils/prepare_coverage_data.py
           bash <(curl -s https://codecov.io/bash)
 
       - name: Run Clang-Tidy
