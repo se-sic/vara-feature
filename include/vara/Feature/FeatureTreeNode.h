@@ -95,7 +95,8 @@ public:
 
   /// Checks if a FeatureTreeNode has children or is a leave.
   ///
-  /// \return true, if the FeatureTreeNode does not have children, i.e., is a leave.
+  /// \return true, if the FeatureTreeNode does not have children, i.e., is a
+  /// leave.
   bool isLeave() { return this->children().empty(); }
 
 protected:

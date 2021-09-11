@@ -101,7 +101,7 @@ void removeFeatures(FeatureModel &FM,
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   auto it = NoDeleteIt;
   while (it != End) {
-    Trans.removeFeature(*it, true);
+    Trans.removeFeature(*it);
     it = std::next(it);
   }
   Trans.commit();
