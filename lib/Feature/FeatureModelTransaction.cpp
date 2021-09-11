@@ -88,11 +88,11 @@ std::vector<detail::FeatureVariantTy> removeFeatures(
     return NotDeletedFeatures;
   }
 
-  // Two use-cases:
-  // 1. !Recursive --> partition into Leaves and non-Leaves --> delete Leaves
-  // and recursively call this function on non-Leaves again
-  // 2. partition by "youngest" feature in sub-tree --> delete those in
-  // recursive mode
+  // 3 use-cases:
+  // If Feature is Leave --> can be deleted
+  // If Feature is not a Leave and !Recursive --> cannot be deleted
+  // If Recursive --> partition by "youngest" feature in sub-tree --> delete
+  // those in recursive mode
   auto DeleteIt = std::partition(
       Begin, End, [&FM, Recursive, &Begin, &End](detail::FeatureVariantTy &FV) {
         if (fvIsLeave(FM, FV).value_or(false)) {
