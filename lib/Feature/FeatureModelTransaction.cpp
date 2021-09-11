@@ -1,5 +1,4 @@
 #include "vara/Feature/FeatureModelTransaction.h"
-
 #include "vara/Utils/VariantUtil.h"
 
 #include <algorithm>
