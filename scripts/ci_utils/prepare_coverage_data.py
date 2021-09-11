@@ -36,7 +36,7 @@ def get_llvm_profdata_binary_name() -> str:
         if which(binary_name) is not None:
             return binary_name
 
-    raise LookupError("Could not find llvm-cov binary.")
+    raise LookupError("Could not find llvm-profdata binary.")
 
 
 def merge_llvm_data():
