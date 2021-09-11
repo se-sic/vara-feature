@@ -43,8 +43,8 @@ bool fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   Feature *ActualFeature;
   std::visit(
       Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
-                 [&ActualFeature, &FM](string &F) {
-                   ActualFeature = FM.getFeature(F);
+                 [&ActualFeature, &FM](string &FName) {
+                   ActualFeature = FM.getFeature(FName);
                  }},
       FV);
   return ActualFeature->isLeave();
