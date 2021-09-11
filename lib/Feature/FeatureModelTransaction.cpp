@@ -40,7 +40,7 @@ void removeFeature(FeatureModel &FM,
 }
 
 bool fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
-  Feature *ActualFeature;
+  Feature *ActualFeature = nullptr;
   std::visit(
       Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
                  [&ActualFeature, &FM](string &FName) {
