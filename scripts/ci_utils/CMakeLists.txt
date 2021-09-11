@@ -3,4 +3,3 @@ configure_file(
   prepare_coverage_data.py
   COPYONLY
 )
-
