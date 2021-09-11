@@ -75,13 +75,6 @@ bool fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
 }*/
 
 void removeFeatures(FeatureModel &FM,
-                    std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
-                    bool Recursive) {
-  removeFeatures(FM, FeaturesToBeDeleted.begin(), FeaturesToBeDeleted.end(),
-                 Recursive);
-}
-
-void removeFeatures(FeatureModel &FM,
                     std::vector<detail::FeatureVariantTy>::iterator Begin,
                     std::vector<detail::FeatureVariantTy>::iterator End,
                     bool Recursive) {
