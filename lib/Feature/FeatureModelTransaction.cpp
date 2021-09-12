@@ -77,10 +77,10 @@ canBeDeletedRecursively(FeatureModel &FM, detail::FeatureVariantTy &FV,
 
   std::set<FeatureTreeNode *> Intersection;
   auto AllChildrenInSubtree = ActualFeature->getChildren();
-  std::set_intersection(
-      AllChildrenInSubtree.begin(), AllChildrenInSubtree.end(),
-      OtherFeatures.begin(), OtherFeatures.end(),
-      std::inserter(Intersection, std::next(Intersection.begin())));
+  std::set_intersection(AllChildrenInSubtree.begin(),
+                        AllChildrenInSubtree.end(), OtherFeatures.begin(),
+                        OtherFeatures.end(),
+                        std::inserter(Intersection, Intersection.begin()));
   // if the children are not matching the other features, the intersection is
   // empty and we are good to go for deletion
   return std::optional<bool>{Intersection.begin() == Intersection.end()};
@@ -95,29 +95,29 @@ std::vector<detail::FeatureVariantTy> removeFeatures(
     return NotDeletedFeatures;
   }
 
+  std::set<FeatureTreeNode *> OtherFeatures;
+  std::transform(
+      Begin, End, std::inserter(OtherFeatures, OtherFeatures.begin()),
+      [&FM](detail::FeatureVariantTy &FV) { return getActualFeature(FM, FV); });
+  // Remove nullptr, in case, on of the specified Features could not be
+  // found in the FeatureModel
+  OtherFeatures.erase(nullptr);
+
   // 3 use-cases:
   // If Feature is Leave --> can be deleted
   // If Feature is not a Leave and !Recursive --> cannot be deleted
   // If Recursive --> partition by "youngest" feature in sub-tree --> delete
   // those in recursive mode
   auto DeleteIt = std::partition(
-      Begin, End, [&FM, Recursive, &Begin, &End](detail::FeatureVariantTy &FV) {
+      Begin, End,
+      [&FM, Recursive, &Begin, &End,
+       &OtherFeatures](detail::FeatureVariantTy &FV) {
         if (fvIsLeave(FM, FV).value_or(false)) {
           return true;
         }
         if (!Recursive) {
           return false;
         }
-        std::set<FeatureTreeNode *> OtherFeatures;
-        std::transform(
-            Begin, End,
-            std::inserter(OtherFeatures, std::next(OtherFeatures.begin())),
-            [&FM, &OtherFeatures](detail::FeatureVariantTy &FV) {
-              return getActualFeature(FM, FV);
-            });
-        // Remove nullptr, in case, on of the specified Features could not be
-        // found in the FeatureModel
-        OtherFeatures.erase(nullptr);
         return canBeDeletedRecursively(FM, FV, OtherFeatures).value_or(false);
       });
 
