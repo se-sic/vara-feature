@@ -124,15 +124,15 @@ std::vector<detail::FeatureVariantTy> removeFeatures(
   // check if something can be deleted --> if not and return non-deletable
   // features
   if (DeleteIt == Begin) {
-    return std::vector(Begin, End);
+    return {Begin, End};
   }
 
   // perform actual removal of deletable features
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
-  auto it = Begin;
-  while (it != DeleteIt) {
-    Trans.removeFeature(*it, Recursive);
-    it = std::next(it);
+  auto FeatureIt = Begin;
+  while (FeatureIt != DeleteIt) {
+    Trans.removeFeature(*FeatureIt, Recursive);
+    FeatureIt = std::next(FeatureIt);
   }
   Trans.commit();
 
