@@ -115,8 +115,8 @@ std::vector<detail::FeatureVariantTy> removeFeatures(
             [&FM, &OtherFeatures](detail::FeatureVariantTy &FV) {
               return getActualFeature(FM, FV);
             });
-        // Remove nullptr, in case, on of the specified Features could 
-        // not be found in the FeatureModel 
+        // Remove nullptr, in case, on of the specified Features could
+        // not be found in the FeatureModel
         OtherFeatures.erase(nullptr);
         return canBeDeletedRecursively(FM, FV, OtherFeatures).value_or(false);
       });
