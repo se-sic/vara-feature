@@ -59,11 +59,19 @@ std::optional<bool> fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   return std::optional<bool>{ActualFeature->isLeave()};
 }
 
+/// Checks if in recursive mode the provided Feature can be deleted or not.
+///
+/// \param FM
+/// \param FV
+/// \param OtherFeatures
+/// \return optional of true, if all transitive children of FV are not part of
+/// OtherFeatures; optional of false, if at least one transitive child of FV is
+/// part of OtherFeatures; nullopt, if FV is not part of FM
 std::optional<bool>
 canBeDeletedRecursively(FeatureModel &FM, detail::FeatureVariantTy &FV,
                         const std::set<FeatureTreeNode *> &OtherFeatures) {
   Feature *ActualFeature = getActualFeature(FM, FV);
-  if (ActualFeature == nullptr) {  // Feature does not exist in FM
+  if (ActualFeature == nullptr) { // Feature does not exist in FM
     return std::nullopt;
   }
 

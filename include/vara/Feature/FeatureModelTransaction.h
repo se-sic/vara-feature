@@ -1008,6 +1008,7 @@ void removeFeature(FeatureModel &FM,
 /// \param Begin
 /// \param End
 /// \param Recursive
+/// \return Vector of all FeatureVariants, that cannot be deleted
 std::vector<detail::FeatureVariantTy>
 removeFeatures(FeatureModel &FM,
                std::vector<detail::FeatureVariantTy>::iterator Begin,
@@ -1019,6 +1020,7 @@ removeFeatures(FeatureModel &FM,
 /// \param FM
 /// \param FeaturesToBeDeleted
 /// \param Recursive
+/// \return Vector of all FeatureVariants, that cannot be deleted
 inline std::vector<detail::FeatureVariantTy>
 removeFeatures(FeatureModel &FM,
                std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted,
