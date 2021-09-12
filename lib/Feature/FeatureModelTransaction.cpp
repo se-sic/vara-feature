@@ -117,7 +117,7 @@ std::vector<detail::FeatureVariantTy> removeFeatures(
     return std::vector(Begin, End);
   }
 
-  // remove deletable features
+  // perform actual removal of deletable features
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   auto it = Begin;
   while (it != DeleteIt) {
