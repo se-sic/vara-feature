@@ -940,6 +940,8 @@ TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
 }
 
 TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
+  // TODO (se-sic/VaRA#799): features should be added via addFeatures (applies
+  // to following tests as well)
   // Prepare Model with several Features
   vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
                             FM->getFeature("a"));
