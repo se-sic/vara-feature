@@ -31,6 +31,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: recursive
 
       - name: Install General Dependencies
@@ -69,11 +70,25 @@ jobs:
           cmake --build . -- -j
 
       - name: Run Tests
+        if: ${{ matrix.build == 'Release' }}
         shell: bash
         run: |
           cd build
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
+
+      - name: Run Tests (Cov)
+        env:
+          CXX: ${{ matrix.compiler }}
+        if: ${{ matrix.build == 'Debug' }}
+        shell: bash
+        run: |
+          cd build
+          cmake . -DVARA_FEATURE_ENABLE_COVERAGE=True
+          cmake --build . --target check-vara-feature-unittests
+          cmake --build . --target check-vara-fm-viewer
+          ./scripts/ci_utils/prepare_coverage_data.py
+          bash <(curl -s https://codecov.io/bash)
 
       - name: Run Clang-Tidy
         shell: bash
