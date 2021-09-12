@@ -63,8 +63,7 @@ std::optional<bool>
 canBeDeletedRecursively(FeatureModel &FM, detail::FeatureVariantTy &FV,
                         const std::set<FeatureTreeNode *> &OtherFeatures) {
   Feature *ActualFeature = getActualFeature(FM, FV);
-  // if Feature does not exist in FM
-  if (ActualFeature == nullptr) {
+  if (ActualFeature == nullptr) {  // Feature does not exist in FM
     return std::nullopt;
   }
 
