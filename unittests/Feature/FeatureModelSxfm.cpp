@@ -39,8 +39,10 @@ TEST(FeatureModelParser, detectWornglyFormattedConstraint) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(
       getTestResource("test_wrong_constraint_format.sxfm"));
   EXPECT_TRUE(FS && "Input file could not be read.");
+
   auto FM =
-      FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
+          FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
+
   EXPECT_FALSE(FM);
 }
 
