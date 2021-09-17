@@ -111,7 +111,6 @@ TEST(Result, resultErrorSame) {
   EXPECT_EQ(R.getError(), 1337);
 }
 
-
 TEST(Result, resultErrorMove) {
   auto E = Error(std::make_unique<ErrorCode>(ERROR));
 
