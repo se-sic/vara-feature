@@ -349,7 +349,6 @@ public:
         },
         GroupRoot);
     if (!F) {
-      // TODO (se-passau/VaRA#744): error, does not exist
       return Error(MISSING_FEATURE);
     }
 
@@ -461,7 +460,6 @@ public:
         },
         Parent);
     if (!P) {
-      // TODO(se-passau/VaRA#744) handle this
       return Error(MISSING_PARENT);
     }
 

@@ -10,28 +10,23 @@
 #include <type_traits>
 #include <variant>
 
-namespace result {
+//===----------------------------------------------------------------------===//
+//                                      Ok
+//===----------------------------------------------------------------------===//
 
 template <typename ValueTy>
 class Ok {
 public:
   Ok(ValueTy V) : V(std::move(V)) {}
 
-  ValueTy operator*() && { return std::move(V); }
+  template <typename... ArgsTy>
+  Ok(ArgsTy &&...Args) : V(std::forward<ArgsTy>(Args)...) {}
 
-  template <
-      typename LValueTy = ValueTy,
-      std::enable_if_t<std::is_copy_constructible_v<LValueTy>, bool> = true>
-  LValueTy operator*() & {
-    return V;
-  }
+  ValueTy operator*() & { return V; }
 
-  template <
-      typename LValueTy = ValueTy,
-      std::enable_if_t<!std::is_copy_constructible_v<LValueTy>, bool> = true>
-  LValueTy operator*() & {
-    return std::move(V);
-  }
+  ValueTy operator*() && { return extract_value(); }
+
+  ValueTy extract_value() { return std::move(V); }
 
   operator bool() const { return true; }
 
@@ -57,26 +52,23 @@ public:
   }
 };
 
+//===----------------------------------------------------------------------===//
+//                                    Error
+//===----------------------------------------------------------------------===//
+
 template <typename ErrorTy>
 class Error {
 public:
-  Error(ErrorTy V) : E(std::move(V)) {}
+  Error(ErrorTy E) : E(std::move(E)) {}
 
-  ErrorTy operator*() && { return std::move(E); }
+  template <typename... ArgsTy>
+  Error(ArgsTy &&...Args) : E(std::forward<ArgsTy>(Args)...) {}
 
-  template <
-      typename LValueTy = ErrorTy,
-      std::enable_if_t<std::is_copy_constructible_v<LValueTy>, bool> = true>
-  LValueTy operator*() & {
-    return E;
-  }
+  ErrorTy operator*() & { return E; }
 
-  template <
-      typename LValueTy = ErrorTy,
-      std::enable_if_t<!std::is_copy_constructible_v<LValueTy>, bool> = true>
-  LValueTy operator*() & {
-    return std::move(E);
-  }
+  ErrorTy operator*() && { return extract_error(); }
+
+  ErrorTy extract_error() { return std::move(E); }
 
   operator bool() const { return false; }
 
@@ -90,30 +82,59 @@ private:
   ErrorTy E;
 };
 
-} // namespace result
+//===----------------------------------------------------------------------===//
+//                                      Result
+//===----------------------------------------------------------------------===//
 
 template <typename ErrorTy, typename ValueTy = void>
 class Result {
 public:
-  Result(result::Ok<ValueTy> V)
-      : Variant(std::forward<result::Ok<ValueTy>>(V)) {}
+  Result(Ok<ValueTy> V) : Variant(std::move(V)) {}
 
-  Result(result::Error<ErrorTy> E)
-      : Variant(std::forward<result::Error<ErrorTy>>(E)) {}
+  Result(Error<ErrorTy> E) : Variant(std::move(E)) {}
+
+  template <typename... ArgsTy,
+            std::enable_if_t<std::is_constructible_v<ValueTy, ArgsTy...>,
+                             bool> = true>
+  Result(ArgsTy &&...Args)
+      : Variant(std::in_place_type<Ok<ValueTy>>,
+                std::forward<ArgsTy>(Args)...) {}
+
+  template <typename... ArgsTy,
+            std::enable_if_t<!std::is_constructible_v<ValueTy, ArgsTy...> &&
+                                 std::is_constructible_v<ErrorTy, ArgsTy...>,
+                             bool> = true>
+  Result(ArgsTy &&...Args)
+      : Variant(std::in_place_type<Error<ErrorTy>>,
+                std::forward<ArgsTy>(Args)...) {}
 
   /// Return false if there is an error.
   operator bool() const {
-    return !std::holds_alternative<result::Error<ErrorTy>>(Variant);
+    return !std::holds_alternative<Error<ErrorTy>>(Variant);
   }
 
-  [[nodiscard]] ValueTy operator*() {
-    assert(std::holds_alternative<result::Ok<ValueTy>>(Variant));
-    return *std::get<result::Ok<ValueTy>>(Variant);
+  [[nodiscard]] ValueTy operator*() & {
+    assert(std::holds_alternative<Ok<ValueTy>>(Variant));
+    return *std::get<Ok<ValueTy>>(Variant);
   }
 
-  [[nodiscard]] ErrorTy getError() {
-    assert(std::holds_alternative<result::Error<ErrorTy>>(Variant));
-    return *std::get<result::Error<ErrorTy>>(Variant);
+  ValueTy operator*() && { return extract_value(); }
+
+  ValueTy extract_value() {
+    assert(std::holds_alternative<Ok<ValueTy>>(Variant));
+    return std::get<Ok<ValueTy>>(Variant).extract_value();
+  }
+
+  [[nodiscard]] ErrorTy getError() & {
+    assert(std::holds_alternative<Error<ErrorTy>>(Variant));
+    return *std::get<Error<ErrorTy>>(Variant);
+  }
+
+  ErrorTy getError() && { return extract_error(); }
+
+  ErrorTy extract_error() {
+    assert(std::holds_alternative<Error<ErrorTy>>(Variant));
+    return std::get<Error<ErrorTy>>(Variant).extract_error();
   }
 
   friend llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
@@ -123,19 +144,7 @@ public:
   }
 
 protected:
-  std::variant<result::Ok<ValueTy>, result::Error<ErrorTy>> Variant;
+  std::variant<Ok<ValueTy>, Error<ErrorTy>> Variant;
 };
-
-template <typename ValueTy>
-result::Ok<ValueTy> Ok(ValueTy V) {
-  return result::Ok<ValueTy>(std::forward<ValueTy>(V));
-}
-
-inline result::Ok<void> Ok() { return result::Ok<void>(); }
-
-template <typename ErrorTy>
-result::Error<ErrorTy> Error(ErrorTy E) {
-  return result::Error<ErrorTy>(std::forward<ErrorTy>(E));
-}
 
 #endif // VARA_UTILS_RESULT_H

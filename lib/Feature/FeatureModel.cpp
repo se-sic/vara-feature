@@ -94,6 +94,8 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() const {
     FMB.addConstraint(C->clone());
   }
 
+  // Build clone of FM which is supposed to work, as the original FM should be
+  //  valid.
   auto FM = FMB.buildFeatureModel();
   assert(FM);
   return FM;

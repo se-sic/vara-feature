@@ -26,7 +26,7 @@ enum FTErrorCode {
 } // namespace vara::feature
 
 template <>
-class result::Error<vara::feature::FTErrorCode> {
+class Error<vara::feature::FTErrorCode> {
 public:
   Error(vara::feature::FTErrorCode E) : E(E) {}
 
