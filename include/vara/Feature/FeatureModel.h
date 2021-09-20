@@ -5,7 +5,7 @@
 #include "vara/Feature/Error.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
-#include "vara/Feature/Result.h"
+#include "vara/Utils/Result.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"

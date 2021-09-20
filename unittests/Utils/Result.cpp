@@ -61,13 +61,6 @@ TEST(Result, resultOkSimple) {
   EXPECT_EQ(*R, 42);
 }
 
-TEST(Result, resultOkSame) {
-  auto R = Result<int, int>(42);
-
-  ASSERT_TRUE(R);
-  EXPECT_EQ(*R, 42);
-}
-
 TEST(Result, resultOkMove) {
   auto O = Ok(std::make_unique<int>(42));
 
@@ -102,13 +95,6 @@ TEST(Result, resultErrorForward) {
 
   ASSERT_FALSE(R);
   EXPECT_EQ(R.getError().first, 42);
-}
-
-TEST(Result, resultErrorSame) {
-  auto R = Result<int, int>(Error(1337));
-
-  ASSERT_FALSE(R);
-  EXPECT_EQ(R.getError(), 1337);
 }
 
 TEST(Result, resultErrorMove) {

@@ -32,6 +32,8 @@ public:
 
   vara::feature::FTErrorCode operator*() { return E; }
 
+  vara::feature::FTErrorCode extract_error() { return E; }
+
   operator bool() const { return false; }
 
   friend llvm::raw_ostream &
