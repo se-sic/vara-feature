@@ -46,6 +46,9 @@ class FeatureModelXmlParser : public FeatureModelParser {
 public:
   explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
 
+  /// Check if XML is a valid feature model according to DTD.
+  ///
+  /// \return possible error if inconsistent
   Result<FTErrorCode> verifyFeatureModel() override;
 
   std::unique_ptr<FeatureModel> buildFeatureModel() override;

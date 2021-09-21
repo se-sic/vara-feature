@@ -20,7 +20,8 @@ enum FTErrorCode {
   INCONSISTENT,
   MISSING_FEATURE,
   MISSING_MODEL,
-  MISSING_PARENT
+  MISSING_PARENT,
+  NON_LEAF_NODE
 };
 
 } // namespace vara::feature
@@ -40,27 +41,29 @@ public:
   operator<<(llvm::raw_ostream &OS,
              const Error<vara::feature::FTErrorCode> &Error) {
     switch (Error.E) {
-      // TODO(s9latimm): meaningful error msg
     case vara::feature::ABORTED:
-      OS << "ABORTED";
+      OS << "Transaction aborted.";
       break;
     case vara::feature::ALREADY_PRESENT:
-      OS << "ALREADY_PRESENT";
+      OS << "Node already present.";
       break;
     case vara::feature::ERROR:
-      OS << "ERROR";
+      OS << "Error.";
       break;
     case vara::feature::INCONSISTENT:
-      OS << "INCONSISTENT";
+      OS << "Inconsistent feature model.";
       break;
     case vara::feature::MISSING_FEATURE:
-      OS << "MISSING_FEATURE";
+      OS << "Missing feature.";
       break;
     case vara::feature::MISSING_PARENT:
-      OS << "MISSING_PARENT";
+      OS << "Missing parent of node.";
       break;
     case vara::feature::MISSING_MODEL:
-      OS << "MISSING_MODEL";
+      OS << "Missing a feature model.";
+      break;
+    case vara::feature::NON_LEAF_NODE:
+      OS << "Not a leaf node.";
       break;
     }
     return OS;

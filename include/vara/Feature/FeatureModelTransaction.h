@@ -354,9 +354,9 @@ public:
 
     if (Recursive) {
       for (auto *C : F->getChildren<Feature>()) {
-        // TODO (se-passau/VaRA#744): error, if call returns error (should not
-        //  be possible)
-        RemoveFeatureFromModel(C, Recursive)(FM);
+        if (auto E = RemoveFeatureFromModel(C, Recursive)(FM); !E) {
+          return E;
+        }
       }
       for (auto *R : F->getChildren<Relationship>()) {
         removeEdge(*F, *R);
@@ -364,9 +364,7 @@ public:
       }
     } else {
       if (!F->getChildren<Feature>().empty()) {
-        // TODO (se-passau/VaRA#744): error, non recursive remove on non leaf
-        //  feature
-        return MISSING_FEATURE;
+        return NON_LEAF_NODE;
       }
       if (!F->getChildren<Relationship>().empty()) {
         removeRelationship(FM, *F->getChildren<Relationship>().begin());
@@ -945,8 +943,6 @@ protected:
   FeatureModelModifyTransactionBase(FeatureModel &FM) : FM(&FM) {}
 
   Result<FTErrorCode> commitImpl() {
-    //    assert(FM && "Cannot commit Modifications without a FeatureModel
-    //    present.");
     if (isUncommitted() && FM) {
       for (const std::unique_ptr<FeatureModelModification> &FMM :
            Modifications) {
