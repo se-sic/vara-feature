@@ -123,9 +123,9 @@ TEST(Result, resultErrorRValue) {
 
 TEST(Result, copyResultError) {
   auto R1 = Result<ErrorCode, int *>(ERROR);
-  ASSERT_FALSE(R1);
 
-  auto R2 = Result<ErrorCode, void>(R1);
+  ASSERT_FALSE(R1);
+  auto R2 = Result<ErrorCode, void>(R1.getError());
 
   ASSERT_FALSE(R2);
   EXPECT_EQ(R2.getError(), ERROR);

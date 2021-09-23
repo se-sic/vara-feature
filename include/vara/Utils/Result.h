@@ -93,10 +93,6 @@ public:
 
   Result(Error<ErrorTy> E) : Variant(std::move(E)) {}
 
-  template <typename OtherTy,
-            std::enable_if_t<!std::is_same_v<ValueTy, OtherTy>, bool> = true>
-  Result(Result<ErrorTy, OtherTy> Other) : Variant(Other.extract_error()) {}
-
   template <typename... ArgsTy,
             std::enable_if_t<std::is_constructible_v<ValueTy, ArgsTy...>,
                              bool> = true>

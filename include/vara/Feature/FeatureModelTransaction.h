@@ -297,7 +297,7 @@ class AddFeatureToModel : public FeatureModelModification {
 public:
   Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return E;
+      return E.getError();
     }
     return Ok();
   }
@@ -394,7 +394,7 @@ class AddRelationshipToModel : public FeatureModelModification {
 public:
   Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return E;
+      return E.getError();
     }
     return Ok();
   }
@@ -563,7 +563,7 @@ class AddConstraintToModel : public FeatureModelModification {
 public:
   Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return E;
+      return E.getError();
     }
     return Ok();
   }
@@ -688,14 +688,18 @@ class SetRoot : public FeatureModelModification {
 public:
   Result<FTErrorCode> exec(FeatureModel &FM) override {
     if (auto E = (*this)(FM); !E) {
-      return E;
+      return E.getError();
     }
     return Ok();
   }
 
   Result<FTErrorCode, RootFeature *> operator()(FeatureModel &FM) {
     if (FM.getRoot() && FM.getRoot()->getName() == Root->getName()) {
-      // TODO(s9latimm): swap root
+      for (auto *C : Root->children()) {
+        setParent(*C, *FM.getRoot());
+        removeEdge(*Root, *C);
+        addEdge(*FM.getRoot(), *C);
+      }
       return FM.getRoot();
     }
     if (auto *NewRoot = llvm::dyn_cast_or_null<RootFeature>(
