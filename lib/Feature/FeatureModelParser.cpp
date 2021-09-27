@@ -27,7 +27,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   std::vector<FeatureSourceRange> SourceRanges;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
-      std::string Cnt { trim(reinterpret_cast<char *>(
+      std::string Cnt{trim(reinterpret_cast<char *>(
           UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()))};
       if (Cnt.empty()) {
         continue;
@@ -46,9 +46,9 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               FMB.addEdge(Name, std::string(reinterpret_cast<char *>(
-                                                std::unique_ptr<xmlChar, void (*)(void *)>(
-                                                    xmlNodeGetContent(Child), xmlFree)
-                                                    .get())));
+                                    std::unique_ptr<xmlChar, void (*)(void *)>(
+                                        xmlNodeGetContent(Child), xmlFree)
+                                        .get())));
             }
           }
         }
@@ -178,9 +178,9 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
         UniqueXmlChar Cnt(xmlNodeGetContent(H), xmlFree);
         if (auto Constraint =
-            ConstraintParser(
-                std::string(reinterpret_cast<char *>(Cnt.get())))
-                .buildConstraint()) {
+                ConstraintParser(
+                    std::string(reinterpret_cast<char *>(Cnt.get())))
+                    .buildConstraint()) {
           FMB.addConstraint(std::move(Constraint));
         } else {
           return false;
@@ -234,10 +234,10 @@ FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
     if (Head->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(Head->name, XmlConstants::LINE)) {
         Line = atoi(reinterpret_cast<char *>(
-                        UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
+            UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
       } else if (!xmlStrcmp(Head->name, XmlConstants::COLUMN)) {
         Column = atoi(reinterpret_cast<char *>(
-                          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
+            UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
       }
     }
   }
@@ -250,13 +250,13 @@ bool detectExclude(const Feature *A, const Feature *B) {
   return std::any_of(
       A->excludes().begin(), A->excludes().end(), [A, B](const auto *E) {
         if (const auto *LHS =
-            llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand())) {
+                llvm::dyn_cast<PrimaryFeatureConstraint>(E->getLeftOperand())) {
           if (const auto *RHS = llvm::dyn_cast<PrimaryFeatureConstraint>(
-              E->getRightOperand())) {
+                  E->getRightOperand())) {
             return (LHS->getFeature() &&
-                LHS->getFeature()->getName() == A->getName() &&
-                RHS->getFeature() &&
-                RHS->getFeature()->getName() == B->getName());
+                    LHS->getFeature()->getName() == A->getName() &&
+                    RHS->getFeature() &&
+                    RHS->getFeature()->getName() == B->getName());
           }
         }
         return false;
@@ -265,15 +265,15 @@ bool detectExclude(const Feature *A, const Feature *B) {
 
 bool FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
   auto Transactions = FeatureModelModifyTransaction::openTransaction(FM);
-  for (auto *F: FM) {
+  for (auto *F : FM) {
     auto Children = F->getChildren<Feature>();
     if (Children.size() > 1 &&
         std::all_of(Children.begin(), Children.end(), [Children](auto *F) {
           return !F->isOptional() &&
-              std::all_of(Children.begin(), Children.end(), [F](auto *C) {
-                return F == C ||
-                    (detectExclude(F, C) && detectExclude(C, F));
-              });
+                 std::all_of(Children.begin(), Children.end(), [F](auto *C) {
+                   return F == C ||
+                          (detectExclude(F, C) && detectExclude(C, F));
+                 });
         })) {
       Transactions.addRelationship(
           Relationship::RelationshipKind::RK_ALTERNATIVE, F);
@@ -424,7 +424,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
   // Split the lines of the feature tree by new lines
   {
     std::stringstream Ss(reinterpret_cast<const char *>(
-                             UniqueXmlChar(xmlNodeGetContent(FeatureTree), xmlFree).get()));
+        UniqueXmlChar(xmlNodeGetContent(FeatureTree), xmlFree).get()));
     std::string To;
     std::string Name;
     bool Opt;
@@ -487,31 +487,33 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       std::optional<std::tuple<int, int>> Cardinalities;
 
       switch (To.at(Pos - 1)) {
-        case 'r':IsRoot = true;
-          break;
-        case 'm':break;
-        case 'o':
-          // Code for optional
-          Opt = true;
-          break;
-        case 'g':
-          // Code for an or group with different cardinalities
-          Opt = false;
-          // Extract the cardinality
-          Cardinalities = extractCardinality(To);
-          if (!Cardinalities.has_value()) {
-            return false;
-          }
-          break;
-        case ' ':
-          // Code for alternative child
-          Pos--;
-          break;
-        default:
-          llvm::errs()
-              << "Wrong indentation or unsupported type of configuration option:'"
-              << To << "'\n";
+      case 'r':
+        IsRoot = true;
+        break;
+      case 'm':
+        break;
+      case 'o':
+        // Code for optional
+        Opt = true;
+        break;
+      case 'g':
+        // Code for an or group with different cardinalities
+        Opt = false;
+        // Extract the cardinality
+        Cardinalities = extractCardinality(To);
+        if (!Cardinalities.has_value()) {
           return false;
+        }
+        break;
+      case ' ':
+        // Code for alternative child
+        Pos--;
+        break;
+      default:
+        llvm::errs()
+            << "Wrong indentation or unsupported type of configuration option:'"
+            << To << "'\n";
+        return false;
       }
       // Extract the name
       Name =
@@ -607,7 +609,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
     }
 
     // Add the remaining or groups
-    for (auto &OrGroup: OrGroupMapping) {
+    for (auto &OrGroup : OrGroupMapping) {
       FMB.emplaceRelationship(std::get<1>(OrGroup.second),
                               std::get<0>(OrGroup.second));
     }
@@ -630,11 +632,9 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
   // Prepare the identifiers for later replacement
   std::vector<std::string> Keys;
   Keys.reserve(IdentifierMap.size());
-  std::for_each(IdentifierMap.begin(), IdentifierMap.end(), [&Keys](const auto &Entry) {
-    Keys.push_back(Entry.first);
-  });
-  std::sort(Keys.begin(), Keys.end(),
-            std::greater<std::string>{});
+  std::for_each(IdentifierMap.begin(), IdentifierMap.end(),
+                [&Keys](const auto &Entry) { Keys.push_back(Entry.first); });
+  std::sort(Keys.begin(), Keys.end(), std::greater<std::string>{});
 
   while (std::getline(Ss, To)) {
     // Ignore if a line is empty
@@ -657,12 +657,14 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
     ToStringRef = ToStringRef.substr(Pos + 1, ToStringRef.size() - Pos - 1);
     std::string CnfFormula = ToStringRef.str();
 
-    // In the following lines, we replace all identifiers by the real feature name
-    for (auto &Key: Keys) {
+    // In the following lines, we replace all identifiers by the real feature
+    // name
+    for (auto &Key : Keys) {
       std::string Value = IdentifierMap[Key];
       auto FoundPos = CnfFormula.find(Key);
       while (FoundPos != std::string::npos) {
-        CnfFormula = CnfFormula.replace(FoundPos, FoundPos + Key.length(), Value);
+        CnfFormula =
+            CnfFormula.replace(FoundPos, FoundPos + Key.length(), Value);
         FoundPos = CnfFormula.find(Key);
       }
     }
@@ -704,7 +706,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
 
   if (MinCardinality.value() != 1 ||
       (MaxCardinality.value() != 1 &&
-          MaxCardinality.value() != SxfmConstants::WILDCARD)) {
+       MaxCardinality.value() != SxfmConstants::WILDCARD)) {
     llvm::errs() << "Cardinality unsupported. We support cardinalities [1,1] "
                     "(alternative) or [1, *] (or group).\n";
     return std::optional<std::tuple<int, int>>();
