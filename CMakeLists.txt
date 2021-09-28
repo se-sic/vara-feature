@@ -53,6 +53,23 @@ if (CMAKE_BUILD_TYPE EQUAL "Debug")
   add_compile_options(-Wall -Wextra -Wno-unused-parameter)
 endif ()
 
+# Enable coverage tracking
+option(VARA_FEATURE_ENABLE_COVERAGE "Enable code coverage tracking" FALSE)
+if (VARA_FEATURE_ENABLE_COVERAGE)
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    add_compile_options(--coverage -O0)
+    add_link_options(--coverage)
+  elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    file(TO_NATIVE_PATH "${CMAKE_BINARY_DIR}/profiles" VARA_FEAUTRE_PROFILE_DATA_DIR)
+    set(VARA_FEATURE_PROFILE_PATTERN
+        "${VARA_FEAUTRE_PROFILE_DATA_DIR}/profile-%p.profraw"
+    )
+
+    add_compile_options(-fprofile-instr-generate=${VARA_FEATURE_PROFILE_PATTERN} -fcoverage-mapping)
+    add_link_options(-fprofile-instr-generate=${VARA_FEATURE_PROFILE_PATTERN})
+  endif()
+endif()
+
 # Setup git submodules (external projects)
 find_package(Git QUIET)
 if (GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
@@ -143,6 +160,7 @@ add_subdirectory(lib)
 add_subdirectory(tools)
 
 if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
+  find_package(Python COMPONENTS Interpreter Development REQUIRED)
   add_subdirectory(external/pybind11)
   add_subdirectory(bindings)
 endif ()
@@ -164,3 +182,4 @@ else ()
 endif ()
 
 add_subdirectory(unittests)
+add_subdirectory(scripts)

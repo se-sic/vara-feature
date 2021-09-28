@@ -21,6 +21,17 @@ public:
         ModelBuilder(FeatureModelModifyTransaction::openTransaction(*FM)),
         RelationBuilder(FeatureModelModifyTransaction::openTransaction(*FM)) {}
 
+  FeatureModelBuilder(const FeatureModelBuilder &) = delete;
+  FeatureModelBuilder &operator=(const FeatureModelBuilder &) = delete;
+  FeatureModelBuilder(FeatureModelBuilder &&) noexcept = delete;
+  FeatureModelBuilder &operator=(FeatureModelBuilder &&) noexcept = delete;
+
+  ~FeatureModelBuilder() {
+    FeatureBuilder.abort();
+    ModelBuilder.abort();
+    RelationBuilder.abort();
+  }
+
   /// Try to create a new \a Feature.
   ///
   /// \param[in] FeatureName name of the \a Feature

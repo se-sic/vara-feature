@@ -242,7 +242,7 @@ protected:
   }
 
   // Dummy method to fulfill the FeatureModelModification interface
-  void exec(FeatureModel &_) override{};
+  Result<FTErrorCode> exec(FeatureModel &_) override { return {ERROR}; }
 
   std::unique_ptr<FeatureModel> FM;
 };
