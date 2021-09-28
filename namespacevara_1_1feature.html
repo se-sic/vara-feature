@@ -76,6 +76,7 @@ $(function() {
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -213,6 +214,22 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a0c0dd0e2797b07df78a448f2fbb8230a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a0c0dd0e2797b07df78a448f2fbb8230a">FeatureModelModifyTransaction</a> = <a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html">FeatureModelTransaction</a>&lt; <a class="el" href="classvara_1_1feature_1_1detail_1_1ModifyTransactionMode.html">detail::ModifyTransactionMode</a> &gt;</td></tr>
 <tr class="separator:a0c0dd0e2797b07df78a448f2fbb8230a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:aa872ca7d15a64455c6b1d5cfa2e81b25"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25">FTErrorCode</a> { <br />
+&#160;&#160;<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a5e67a0da8dd31be90e63e25c0775dd50">ABORTED</a>, 
+<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25ad3c6f9b834528eb9e844826d09f9c270">ALREADY_PRESENT</a>, 
+<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>, 
+<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25ae38c0dcbdc69cba65579bf8216a816e3">INCONSISTENT</a>, 
+<br />
+&#160;&#160;<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25aa85a96d6454c7bf82bc8a8a353741fad">MISSING_FEATURE</a>, 
+<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a99cb21c9134e7e2df78d10f7a363befb">MISSING_MODEL</a>, 
+<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a96319bd00dd462adacfdf90f7cb26219">MISSING_PARENT</a>, 
+<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a8f87e93b5ad1ab65ca5f176f401e9707">NON_LEAF_NODE</a>
+<br />
+ }</td></tr>
+<tr class="separator:aa872ca7d15a64455c6b1d5cfa2e81b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ae34c88f0a2ae9fbdddf2c29bb08dd407"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#ae34c88f0a2ae9fbdddf2c29bb08dd407">loadFeatureModel</a> (llvm::StringRef Path)</td></tr>
@@ -282,7 +299,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00172">172</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00171">171</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
 </div>
 </div>
@@ -298,7 +315,34 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00174">174</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00173">173</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="aa872ca7d15a64455c6b1d5cfa2e81b25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa872ca7d15a64455c6b1d5cfa2e81b25">&#9670;&nbsp;</a></span>FTErrorCode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25">vara::feature::FTErrorCode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a5e67a0da8dd31be90e63e25c0775dd50"></a>ABORTED&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25ad3c6f9b834528eb9e844826d09f9c270"></a>ALREADY_PRESENT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3"></a>ERROR&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25ae38c0dcbdc69cba65579bf8216a816e3"></a>INCONSISTENT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25aa85a96d6454c7bf82bc8a8a353741fad"></a>MISSING_FEATURE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a99cb21c9134e7e2df78d10f7a363befb"></a>MISSING_MODEL&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a96319bd00dd462adacfdf90f7cb26219"></a>MISSING_PARENT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a8f87e93b5ad1ab65ca5f176f401e9707"></a>NON_LEAF_NODE&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="Error_8h_source.html#l00016">16</a> of file <a class="el" href="Error_8h_source.html">Error.h</a>.</p>
 
 </div>
 </div>
@@ -348,9 +392,9 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00014">14</a> of file <a class="el" href="FeatureModelTransaction_8cpp_source.html">FeatureModelTransaction.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00048">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00050">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModel_8h_source.html#l00038">vara::feature::FeatureModel::FeatureModel()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8h_source.html#l00040">vara::feature::FeatureModel::FeatureModel()</a>.</p>
 
 </div>
 </div>
@@ -392,7 +436,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00021">21</a> of file <a class="el" href="FeatureModelTransaction_8cpp_source.html">FeatureModelTransaction.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00048">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00050">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
 
 </div>
 </div>
@@ -440,7 +484,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00039">39</a> of file <a class="el" href="FeatureModelTransaction_8cpp_source.html">FeatureModelTransaction.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00048">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00050">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
 
 </div>
 </div>
@@ -533,7 +577,7 @@ Variables</h2></td></tr>
 <p>Decide whether feature A excludes B. </p>
 <p>Beware that this method only detects very simple trees with binary excludes. </p>
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8cpp_source.html#l00249">249</a> of file <a class="el" href="FeatureModelParser_8cpp_source.html">FeatureModelParser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8cpp_source.html#l00251">251</a> of file <a class="el" href="FeatureModelParser_8cpp_source.html">FeatureModelParser.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="Feature_8h_source.html#l00148">vara::feature::Feature::excludes()</a>.</p>
 
@@ -579,9 +623,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00115">115</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00119">119</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00110">loadFeatureModelFromBuffer()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00114">loadFeatureModelFromBuffer()</a>.</p>
 
 </div>
 </div>
@@ -601,11 +645,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00110">110</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00114">114</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00105">loadXMLFeatureModelFromBuffer()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00109">loadXMLFeatureModelFromBuffer()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00115">loadFeatureModel()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00119">loadFeatureModel()</a>.</p>
 
 </div>
 </div>
@@ -625,11 +669,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00105">105</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00109">109</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00285">vara::feature::FeatureModelXmlParser::buildFeatureModel()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00288">vara::feature::FeatureModelXmlParser::buildFeatureModel()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00110">loadFeatureModelFromBuffer()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00114">loadFeatureModelFromBuffer()</a>.</p>
 
 </div>
 </div>
@@ -679,7 +723,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00061">61</a> of file <a class="el" href="FeatureModelTransaction_8cpp_source.html">FeatureModelTransaction.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModel_8h_source.html#l00055">vara::feature::FeatureModel::getRoot()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00070">mergeSubtree()</a>, and <a class="el" href="FeatureModelTransaction_8h_source.html#l00048">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModel_8h_source.html#l00057">vara::feature::FeatureModel::getRoot()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00070">mergeSubtree()</a>, and <a class="el" href="FeatureModelTransaction_8h_source.html#l00050">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
 
 </div>
 </div>
@@ -723,7 +767,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00070">70</a> of file <a class="el" href="FeatureModelTransaction_8cpp_source.html">FeatureModelTransaction.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00094">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::addFeature()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00121">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::addLocation()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00125">CompareProperties()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00103">FeatureCopy()</a>, <a class="el" href="FeatureTreeNode_8h_source.html#l00090">vara::feature::FeatureTreeNode::getChildren()</a>, <a class="el" href="FeatureModel_8h_source.html#l00247">vara::feature::FeatureModel::getFeature()</a>, <a class="el" href="Feature_8h_source.html#l00121">vara::feature::Feature::getLocations()</a>, <a class="el" href="Feature_8h_source.html#l00057">vara::feature::Feature::getName()</a>, and <a class="el" href="Feature_8h_source.html#l00063">vara::feature::Feature::getParentFeature()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00093">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::addFeature()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00120">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::addLocation()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00125">CompareProperties()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00103">FeatureCopy()</a>, <a class="el" href="FeatureTreeNode_8h_source.html#l00090">vara::feature::FeatureTreeNode::getChildren()</a>, <a class="el" href="FeatureModel_8h_source.html#l00249">vara::feature::FeatureModel::getFeature()</a>, <a class="el" href="Feature_8h_source.html#l00121">vara::feature::Feature::getLocations()</a>, <a class="el" href="Feature_8h_source.html#l00057">vara::feature::Feature::getName()</a>, and <a class="el" href="Feature_8h_source.html#l00063">vara::feature::Feature::getParentFeature()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00061">mergeFeatureModels()</a>.</p>
 
@@ -772,7 +816,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00031">31</a> of file <a class="el" href="FeatureModelTransaction_8cpp_source.html">FeatureModelTransaction.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00048">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00050">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
 
 </div>
 </div>
@@ -813,7 +857,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00047">47</a> of file <a class="el" href="FeatureModelTransaction_8cpp_source.html">FeatureModelTransaction.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00048">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00050">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
 
 </div>
 </div>
@@ -854,7 +898,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00054">54</a> of file <a class="el" href="FeatureModelTransaction_8cpp_source.html">FeatureModelTransaction.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00048">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelTransaction_8h_source.html#l00050">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
 
 </div>
 </div>
@@ -894,9 +938,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00135">135</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00139">139</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00130">verifyFeatureModelFromBuffer()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00134">verifyFeatureModelFromBuffer()</a>.</p>
 
 </div>
 </div>
@@ -916,11 +960,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00130">130</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00134">134</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00125">verifyXMLFeatureModelFromBuffer()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModel_8cpp_source.html#l00129">verifyXMLFeatureModelFromBuffer()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00135">verifyFeatureModel()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00139">verifyFeatureModel()</a>.</p>
 
 </div>
 </div>
@@ -940,11 +984,11 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00125">125</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00129">129</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00331">vara::feature::FeatureModelXmlParser::verifyFeatureModel()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00334">vara::feature::FeatureModelXmlParser::verifyFeatureModel()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00130">verifyFeatureModelFromBuffer()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00134">verifyFeatureModelFromBuffer()</a>.</p>
 
 </div>
 </div>
@@ -1002,7 +1046,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 12 2021 17:26:43 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 28 2021 08:03:59 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

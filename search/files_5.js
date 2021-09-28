@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['sxfmconstants_2eh_488',['SxfmConstants.h',['../SxfmConstants_8h.html',1,'']]]
+  ['relationship_2eh_513',['Relationship.h',['../Relationship_8h.html',1,'']]],
+  ['result_2eh_514',['Result.h',['../Result_8h.html',1,'']]]
 ];

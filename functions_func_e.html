@@ -97,6 +97,10 @@ $(function() {
 <li>EquivalenceConstraint()
 : <a class="el" href="classvara_1_1feature_1_1EquivalenceConstraint.html#a6dc7a80b14838e4e7e7c19646a66132a">vara::feature::EquivalenceConstraint</a>
 </li>
+<li>Error()
+: <a class="el" href="classError.html#ab75ce4a60c121b95ca10ef2b2c08222b">Error&lt; ErrorTy &gt;</a>
+, <a class="el" href="classError_3_01vara_1_1feature_1_1FTErrorCode_01_4.html#af792b98372169d10949d8f1b35b48a2a">Error&lt; vara::feature::FTErrorCode &gt;</a>
+</li>
 <li>excludes()
 : <a class="el" href="classvara_1_1feature_1_1Feature.html#a7d184eba97ba34cf60fcab5d095f31d9">vara::feature::Feature</a>
 </li>
@@ -104,25 +108,34 @@ $(function() {
 : <a class="el" href="classvara_1_1feature_1_1ExcludesConstraint.html#a59b663d89cd5459afbf4084d803451d8">vara::feature::ExcludesConstraint</a>
 </li>
 <li>exec()
-: <a class="el" href="classvara_1_1feature_1_1detail_1_1AddChild.html#afbf9dd27df6374b287e6e209a5ecf19c">vara::feature::detail::AddChild</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1AddConstraintToModel.html#a0ad5ae039e2ecac22182ae4675bc2e19">vara::feature::detail::AddConstraintToModel</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1AddFeatureToModel.html#ac2bc7aa6e44fb195ca34a3cdf0409e22">vara::feature::detail::AddFeatureToModel</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1AddLocationToFeature.html#ade4ca5704bc2852b17bc2d8a6d52df72">vara::feature::detail::AddLocationToFeature</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1AddRelationshipToModel.html#aa9a452a0e1e6ab2b4f8429d0bf6bb951">vara::feature::detail::AddRelationshipToModel</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1FeatureModelModification.html#afe336eacb67b0605a239f6d08b1f8c08">vara::feature::detail::FeatureModelModification</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1RemoveFeatureFromModel.html#ae8bb76d0e53aecb9d78398ecb41f377c">vara::feature::detail::RemoveFeatureFromModel</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1RemoveLocationFromFeature.html#ad684dc4f4b49f39439284ce10a874d39">vara::feature::detail::RemoveLocationFromFeature</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1RemoveRelationshipFromModel.html#acbad11f5f1c4bfc33661776d3f5dcefd">vara::feature::detail::RemoveRelationshipFromModel</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1SetCommit.html#ae2d2755cd006a6b73cac02014f494cbc">vara::feature::detail::SetCommit</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1SetName.html#a30bbfd5c01acd6c99131b85de4e4a693">vara::feature::detail::SetName</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1SetPath.html#a85fa5cc6911c95f4e4216e37c2aca816">vara::feature::detail::SetPath</a>
-, <a class="el" href="classvara_1_1feature_1_1detail_1_1SetRoot.html#a449bd9bd09064378b666027d477baffd">vara::feature::detail::SetRoot</a>
+: <a class="el" href="classvara_1_1feature_1_1detail_1_1AddChild.html#a4689c2639044cd88e7e453926eb96b3d">vara::feature::detail::AddChild</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1AddConstraintToModel.html#ab7c9341e197068e9da1feea1ce438a88">vara::feature::detail::AddConstraintToModel</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1AddFeatureToModel.html#acae63e098195358c9d73f1430b53b013">vara::feature::detail::AddFeatureToModel</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1AddLocationToFeature.html#af0a7bf272b240fb00f6ef849603e7834">vara::feature::detail::AddLocationToFeature</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1AddRelationshipToModel.html#ae76f7a57c994318965afe93c9ce5ee9b">vara::feature::detail::AddRelationshipToModel</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1FeatureModelModification.html#a7fc932d653b33a8eb47c5fd411a75377">vara::feature::detail::FeatureModelModification</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1RemoveFeatureFromModel.html#a06067698261183a10ac742a46bd46a70">vara::feature::detail::RemoveFeatureFromModel</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1RemoveLocationFromFeature.html#a8f58e9e3b5462ec8f2180d48a511b50b">vara::feature::detail::RemoveLocationFromFeature</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1RemoveRelationshipFromModel.html#a85869f7bf57357f62b98b57cd04af6bb">vara::feature::detail::RemoveRelationshipFromModel</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1SetCommit.html#a148f3fe011c5a804ccb6bc0b9b393f53">vara::feature::detail::SetCommit</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1SetName.html#a6795d03fc47462060950800b6c8df080">vara::feature::detail::SetName</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1SetPath.html#a0e407bd454625588f87f3bd83f6b26c1">vara::feature::detail::SetPath</a>
+, <a class="el" href="classvara_1_1feature_1_1detail_1_1SetRoot.html#a38a70b7b2d91baa12dd913d7f67ad148">vara::feature::detail::SetRoot</a>
+</li>
+<li>extract_error()
+: <a class="el" href="classError.html#ab980b479974d91bd917dde936b6ac1c6">Error&lt; ErrorTy &gt;</a>
+, <a class="el" href="classError_3_01vara_1_1feature_1_1FTErrorCode_01_4.html#ae8341290c23d91cef5dd21fe001322e7">Error&lt; vara::feature::FTErrorCode &gt;</a>
+, <a class="el" href="classResult.html#aff257a08c9cf7462e4f13ff56d267c2b">Result&lt; ErrorTy, ValueTy &gt;</a>
+</li>
+<li>extract_value()
+: <a class="el" href="classOk.html#ad3504f1e9ff50d1b54769663d6251a9c">Ok&lt; ValueTy &gt;</a>
+, <a class="el" href="classResult.html#abd45f5a1cebfa48433bc7d2856edc4ed">Result&lt; ErrorTy, ValueTy &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 12 2021 17:26:43 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 28 2021 08:04:00 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

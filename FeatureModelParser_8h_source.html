@@ -104,15 +104,15 @@ $(function() {
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#ae8142b8bf41f96d95eab4e09ff729bd7">~FeatureModelParser</a>() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">  /// Build \a FeatureModel after parsing. May return null if parsing or</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">  /// building failed.</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">  /// \returns an instance of \a FeatureModel or \a nullptr</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"></span>  <span class="keyword">virtual</span> std::unique_ptr&lt;FeatureModel&gt; <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#af76e483c3aeb1068fe329bca9babf39e">buildFeatureModel</a>() = 0;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">  /// Checks whether input is a valid feature model as acyclic graph with unique</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">  /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment"></span>  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#ac669b85cc52c17ae02af1455dc247227">verifyFeatureModel</a>() = 0;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">  /// Checks whether input is a valid feature model as acyclic graph with unique</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">  /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment"></span>  <span class="keyword">virtual</span> <a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a19e0d47054b00eb6588e29554c4bc0ca">verifyFeatureModel</a>() = 0;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">  /// Build \a FeatureModel after parsing. May return null if parsing or</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">  /// building failed.</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">  /// \returns an instance of \a FeatureModel or \a nullptr</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment"></span>  <span class="keyword">virtual</span> std::unique_ptr&lt;FeatureModel&gt; <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#af76e483c3aeb1068fe329bca9babf39e">buildFeatureModel</a>() = 0;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;};</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
@@ -123,218 +123,230 @@ $(function() {
 <div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelXmlParser.html">   45</a></span>&#160;<span class="comment"></span><span class="keyword">class </span><a class="code" href="classvara_1_1feature_1_1FeatureModelXmlParser.html">FeatureModelXmlParser</a> : <span class="keyword">public</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html">FeatureModelParser</a> {</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a7bd375ff196955b389af403a43274c77">   47</a></span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a7bd375ff196955b389af403a43274c77">FeatureModelXmlParser</a>(std::string Xml) : Xml(std::move(Xml)) {}</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  std::unique_ptr&lt;FeatureModel&gt; <a class="code" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#af7772abf3803ed9c7904cc480f3778bf">buildFeatureModel</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#ad47de33cd05174e391d6f5f77c723465">verifyFeatureModel</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">  /// This method is solely relevant for parsing XML, as alternatives are</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">  /// represented als mutual excluded but non-optional features (which requires</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">  /// additional processing).</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a450283e74c15f5b3c1cc2482c59d9367">detectXMLAlternatives</a>(<a class="code" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  std::string Xml;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> FMB;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">bool</span> parseConfigurationOption(xmlNode *Node, <span class="keywordtype">bool</span> Num);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">bool</span> parseOptions(xmlNode *Node, <span class="keywordtype">bool</span> Num);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">bool</span> parseConstraints(xmlNode *Node);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordtype">bool</span> parseVm(xmlNode *Node);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">static</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation.html">FeatureSourceRange::FeatureSourceLocation</a></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  createFeatureSourceLocation(xmlNode *Node);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keyword">static</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> createFeatureSourceRange(xmlNode *Head);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a24e7368fb47466534f8c7259baa48673">UniqueXmlDoc</a> parseDoc();</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keyword">static</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a6e3f21d20e40a296ed8b450a52072795">UniqueXmlDtd</a> createDtd();</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">//                         FeatureModelSxfmParser Class</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">/// \brief Parsers for feature models in SXFM.</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">/// \section SXFM</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">/// SXFM stands for Simple XML Feature Model and represents a format that is</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">/// used to store feature models. In general, feature models consist of a</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">/// feature model in a tree-like format and cross-tree constraints (i.e.,</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">/// constraints that would violate the tree-like feature). The SXFM format also</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">/// distinguishes between a feature tree and cross-tree-constraints. The feature</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">/// tree is embeded as a tabulator indented text in an XML tag called</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment">/// \c `feature_tree` whereas the cross-tree-constraints are embeded in XML xml</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment">/// tag called \c `constraint`. A brief example and description of the SXFM</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">/// format can be found at SPLOT (go to `Edit an existing model` -&gt; `SXFM</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">/// format`). However, they have not given a formal description of the syntax in</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment">/// form of a syntax diagram. Note that the SXFM format does only support binary</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">/// features.</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment">/// \subsection FeatureTree</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">/// In the following, we show the syntax diagram for the syntax of feature</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">/// trees.</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">  /// Check if XML is a valid feature model according to DTD.</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">  /// \return possible error if inconsistent</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"></span>  <a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> <a class="code" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a58b20bf2853e52cb2cc3486b572d0224">verifyFeatureModel</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  std::unique_ptr&lt;FeatureModel&gt; <a class="code" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#af7772abf3803ed9c7904cc480f3778bf">buildFeatureModel</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">  /// This method is solely relevant for parsing XML, as alternatives are</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">  /// represented als mutual excluded but non-optional features (which requires</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">  /// additional processing).</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> <a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> <a class="code" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a09d1d4fc6872bc76ebe8a8dc90f6da44">detectXMLAlternatives</a>(<a class="code" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  std::string Xml;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> FMB;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> parseConfigurationOption(xmlNode *Node, <span class="keywordtype">bool</span> Num);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> parseOptions(xmlNode *Node, <span class="keywordtype">bool</span> Num);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> parseConstraints(xmlNode *Node);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> parseVm(xmlNode *Node);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">static</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation.html">FeatureSourceRange::FeatureSourceLocation</a></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  createFeatureSourceLocation(xmlNode *Node);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keyword">static</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> createFeatureSourceRange(xmlNode *Head);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a24e7368fb47466534f8c7259baa48673">UniqueXmlDoc</a> parseDoc();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keyword">static</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a6e3f21d20e40a296ed8b450a52072795">UniqueXmlDtd</a> createDtd();</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment">//                         FeatureModelSxfmParser Class</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">/// \brief Parsers for feature models in SXFM.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">/// \section SXFM</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">/// SXFM stands for Simple XML Feature Model and represents a format that is</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">/// used to store feature models. In general, feature models consist of a</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">/// feature model in a tree-like format and cross-tree constraints (i.e.,</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment">/// constraints that would violate the tree-like feature). The SXFM format also</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment">/// distinguishes between a feature tree and cross-tree-constraints. The feature</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">/// tree is embeded as a tabulator indented text in an XML tag called</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">/// \c `feature_tree` whereas the cross-tree-constraints are embeded in XML xml</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment">/// tag called \c `constraint`. A brief example and description of the SXFM</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">/// format can be found at SPLOT (go to `Edit an existing model` -&gt; `SXFM</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment">/// format`). However, they have not given a formal description of the syntax in</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment">/// form of a syntax diagram. Note that the SXFM format does only support binary</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">/// features.</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">/// \subsection FeatureTree</span></div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">/// \image html feature_tree.png</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">/// The item \c `tabulator` stands for the tabulator symbol.</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment">/// By using the sequence diagram generator, the syntax diagrams can be</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment">/// generated when using the following rules:</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">/// In the following, we show the syntax diagram for the syntax of feature</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment">/// trees.</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment">/// \image html feature_tree.png</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment">/// The item \c `tabulator` stands for the tabulator symbol.</span></div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment">/// \code{unparsed}</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment">/// macro_rules! sxfm_feature_tree {</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="comment">///    (:r $name:expr $id:ident) =&gt; { ... };</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="comment">///    (:r $name:expr) =&gt; { ... };</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :o $name:expr $id:ident ) =&gt; { ...</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="comment">///    };</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :o $name:expr ) =&gt; { ... };</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :m $name:expr $id:ident) =&gt; { ... };</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :m $name:expr ) =&gt; { ... };</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :g [1..*] ) =&gt; { ... };</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :g [1..1] ) =&gt; { ... };</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* : $name:expr ) =&gt; { ... };</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* : $name:expr $id:ident ) =&gt; { ... };</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="comment">///}</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment">/// \endcode</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment">/// Note that the tabulators indicate the level of the feature. Only the root</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">/// feature is on level 0 (all other features have a higher indentation). There</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment">/// are different kind of features:</span></div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="comment">/// \li \c `:r` the root feature</span></div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="comment">/// \li \c `:o` the optional feature</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="comment">/// \li \c `:m` the mandatory feature</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="comment">/// \li \c `:g` the parent node of an or group</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="comment">/// \li \c `:` child of an or group</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="comment">/// Note that the or-group features (\c &#39;:g&#39; ) have no name.</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="comment">/// \subsection Constraints</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment">/// \image html constraints.png</span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="comment">/// or alternatively:</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="comment">/// \code{unparsed}</span></div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="comment">/// macro_rules! sxfm_constraints {</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<span class="comment">///     (:$name:ident $cnf_formula:tt) =&gt; {...};</span></div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="comment">/// }</span></div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="comment">/// \endcode</span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="comment">/// The constraints have to be provided in CNF format.</span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="comment">/// Therebey, \c `~` stands for negation, \c `or` for a disjunction.</span></div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment">/// Each constraint is written in a separate XML tag \c `constraints`.</span></div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment">///</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment">/// @see[SPLOT](http://www.splot-research.org/sxfm.html)</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="comment">/// @see[SequenceDiagramGenerator](https://lukaslueg.github.io/macro_railroad_wasm_demo/)</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html">  153</a></span>&#160;<span class="comment"></span><span class="keyword">class </span><a class="code" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html">FeatureModelSxfmParser</a> : <span class="keyword">public</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html">FeatureModelParser</a> {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00155"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a81391bfc777ccaeb3d55c71a521b72b8">  155</a></span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a81391bfc777ccaeb3d55c71a521b72b8">FeatureModelSxfmParser</a>(std::string Sxfm) : Sxfm(std::move(Sxfm)) {}</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="comment">  /// This method checks if the given feature model is valid</span></div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="comment">  /// \returns true iff the feature model is valid</span></div>
-<div class="line"><a name="l00160"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#aa30c4875e5db847347b3a0e3ed7e8e6b">  160</a></span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#aa30c4875e5db847347b3a0e3ed7e8e6b">verifyFeatureModel</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> parseDoc().get(); }</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="comment">  /// Reads in and returns the feature model in the sxfm format</span></div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="comment">  /// \returns the feature model that was read in</span></div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="comment"></span>  std::unique_ptr&lt;FeatureModel&gt; <a class="code" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a894d7ba3e19186d8ecff982281b99dcc">buildFeatureModel</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160; </div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="keyword">private</span>:<span class="comment"></span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="comment">  /// Returns a pointer to the dtd representation of the xml file, which</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment">  /// is needed to verify the structure of the xml file.</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment">  /// \returns a pointer to the dtd representation</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a6e3f21d20e40a296ed8b450a52072795">UniqueXmlDtd</a> createDtd();</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="comment">  /// Parses the given xml file by using libxml2 and returns a pointer to</span></div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="comment">  /// the xml document.</span></div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment">  /// \returns a pointer to the xml document</span></div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="comment"></span>  <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a24e7368fb47466534f8c7259baa48673">UniqueXmlDoc</a> parseDoc();</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="comment">  /// Processes the xml tags and its contents.</span></div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment">  /// \param Node the pointer to the root node</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment">  /// \returns true iff parsing the contents of the xml tags was successful</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> parseVm(xmlNode *Node);</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">  /// Processes the feature tree embedded in the xml file.</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment">  /// \param FeatureTree the pointer to the node containing the feature tree</span></div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment">  /// string.</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment">/// By using the sequence diagram generator, the syntax diagrams can be</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment">/// generated when using the following rules:</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="comment">/// \code{unparsed}</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="comment">/// macro_rules! sxfm_feature_tree {</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="comment">///    (:r $name:expr $id:ident) =&gt; { ... };</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment">///    (:r $name:expr) =&gt; { ... };</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :o $name:expr $id:ident ) =&gt; { ...</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment">///    };</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :o $name:expr ) =&gt; { ... };</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :m $name:expr $id:ident) =&gt; { ... };</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :m $name:expr ) =&gt; { ... };</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :g [1..*] ) =&gt; { ... };</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* :g [1..1] ) =&gt; { ... };</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* : $name:expr ) =&gt; { ... };</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">///    ($tabulator:item $($tabulator:item)* : $name:expr $id:ident ) =&gt; { ... };</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment">///}</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">/// \endcode</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="comment">/// Note that the tabulators indicate the level of the feature. Only the root</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="comment">/// feature is on level 0 (all other features have a higher indentation). There</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="comment">/// are different kind of features:</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="comment">/// \li \c `:r` the root feature</span></div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="comment">/// \li \c `:o` the optional feature</span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="comment">/// \li \c `:m` the mandatory feature</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="comment">/// \li \c `:g` the parent node of an or group</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="comment">/// \li \c `:` child of an or group</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="comment">/// Note that the or-group features (\c &#39;:g&#39; ) have no name.</span></div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment">/// \subsection Constraints</span></div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="comment">/// \image html constraints.png</span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<span class="comment">/// or alternatively:</span></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="comment">/// \code{unparsed}</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="comment">/// macro_rules! sxfm_constraints {</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="comment">///     (:$name:ident $cnf_formula:tt) =&gt; {...};</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="comment">/// }</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="comment">/// \endcode</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment">/// The constraints have to be provided in CNF format.</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment">/// Therebey, \c `~` stands for negation, \c `or` for a disjunction.</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="comment">/// Each constraint is written in a separate XML tag \c `constraints`.</span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="comment">///</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="comment">/// @see[SPLOT](http://www.splot-research.org/sxfm.html)</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="comment">/// @see[SequenceDiagramGenerator](https://lukaslueg.github.io/macro_railroad_wasm_demo/)</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html">  156</a></span>&#160;<span class="comment"></span><span class="keyword">class </span><a class="code" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html">FeatureModelSxfmParser</a> : <span class="keyword">public</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html">FeatureModelParser</a> {</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00158"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a81391bfc777ccaeb3d55c71a521b72b8">  158</a></span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a81391bfc777ccaeb3d55c71a521b72b8">FeatureModelSxfmParser</a>(std::string Sxfm) : Sxfm(std::move(Sxfm)) {}</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="comment">  /// This method checks if the given feature model is valid</span></div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="comment">  /// \returns true iff the feature model is valid</span></div>
+<div class="line"><a name="l00163"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#abfde151e22d35f86ed1d811ccb6a1c1c">  163</a></span>&#160;<span class="comment"></span>  <a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> <a class="code" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#abfde151e22d35f86ed1d811ccb6a1c1c">verifyFeatureModel</a>()<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">if</span> (!parseDoc().get()) {</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="classError.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    }</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  }</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment">  /// Reads in and returns the feature model in the sxfm format</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment">  /// \returns the feature model that was read in</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment"></span>  std::unique_ptr&lt;FeatureModel&gt; <a class="code" href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a894d7ba3e19186d8ecff982281b99dcc">buildFeatureModel</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160; </div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="keyword">private</span>:<span class="comment"></span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="comment">  /// Returns a pointer to the dtd representation of the xml file, which</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment">  /// is needed to verify the structure of the xml file.</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="comment">  /// \returns a pointer to the dtd representation</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a6e3f21d20e40a296ed8b450a52072795">UniqueXmlDtd</a> createDtd();</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment">  /// Parses the given xml file by using libxml2 and returns a pointer to</span></div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment">  /// the xml document.</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment">  /// \returns a pointer to the xml document</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment"></span>  <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a24e7368fb47466534f8c7259baa48673">UniqueXmlDoc</a> parseDoc();</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment">  /// Processes the xml tags and its contents.</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment">  /// \param Node the pointer to the root node</span></div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="comment">  /// \returns true iff parsing and processing the whole feature tree was</span></div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="comment">  /// successful</span></div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> parseFeatureTree(xmlNode *FeatureTree);</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="comment">  /// Processes the constraints (i.e., cross-tree constraints) embedded in the</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="comment">  /// xml file.</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="comment">  /// \param Constraints the node containing the constraint string</span></div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="comment">  /// \returns true iff parsing and processing the constraints was successful</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> parseConstraints(xmlNode *Constraints);</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="comment">  /// \returns true iff parsing the contents of the xml tags was successful</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> parseVm(xmlNode *Node);</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="comment">  /// Processes the feature tree embedded in the xml file.</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="comment">  /// \param FeatureTree the pointer to the node containing the feature tree</span></div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="comment">  /// string.</span></div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="comment">  /// \returns true iff parsing and processing the whole feature tree was</span></div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="comment">  /// successful</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> parseFeatureTree(xmlNode *FeatureTree);</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="comment">  /// This method extracts the cardinality from the given line.</span></div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="comment">  /// The cardinality is wrapped in square brackets (e.g., [1,1])</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="comment">  /// Processes the constraints (i.e., cross-tree constraints) embedded in the</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="comment">  /// xml file.</span></div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="comment">  /// \param StringToExtractFrom the string to extract the cardinality from</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="comment">  /// \param Constraints the node containing the constraint string</span></div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="comment">  /// \returns the cardinality of the given string and is empty if the</span></div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="comment">  /// format of the string is wrong</span></div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  extractCardinality(llvm::StringRef StringToExtractFrom);</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="comment">  /// This method parses the given cardinality and returns an optional.</span></div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="comment">  /// If the optional is empty, the process failed; otherwise the result</span></div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="comment">  /// contains either UINT_MAX for the wildcard or the cardinality number as</span></div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="comment">  /// integer.</span></div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment">  /// \param CardinalityString the cardinality to parse</span></div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="comment">  ///</span></div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="comment">  /// \returns an optional that contains no integer in case of failure or</span></div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="comment">  /// UINT_MAX for wildcard, or the number itself.</span></div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> std::optional&lt;int&gt; parseCardinality(llvm::StringRef CardinalityString);</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160; </div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  std::string Sxfm;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> FMB;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  std::string Indentation = <span class="stringliteral">&quot;\t&quot;</span>;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;};</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160; </div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160; </div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="preprocessor">#endif // VARA_FEATURE_FEATUREMODELPARSER_H</span></div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="comment">  /// \returns true iff parsing and processing the constraints was successful</span></div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> parseConstraints(xmlNode *Constraints);</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="comment">  /// This method extracts the cardinality from the given line.</span></div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="comment">  /// The cardinality is wrapped in square brackets (e.g., [1,1])</span></div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="comment">  /// \param StringToExtractFrom the string to extract the cardinality from</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="comment">  /// \returns the cardinality of the given string and is empty if the</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment">  /// format of the string is wrong</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  extractCardinality(llvm::StringRef StringToExtractFrom);</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="comment">  /// This method parses the given cardinality and returns an optional.</span></div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="comment">  /// If the optional is empty, the process failed; otherwise the result</span></div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="comment">  /// contains either UINT_MAX for the wildcard or the cardinality number as</span></div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="comment">  /// integer.</span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment">  /// \param CardinalityString the cardinality to parse</span></div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment">  ///</span></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment">  /// \returns an optional that contains no integer in case of failure or</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment">  /// UINT_MAX for wildcard, or the number itself.</span></div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> std::optional&lt;int&gt; parseCardinality(llvm::StringRef CardinalityString);</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160; </div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  std::string Sxfm;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> FMB;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  std::string Indentation = <span class="stringliteral">&quot;\t&quot;</span>;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;};</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160; </div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="preprocessor">#endif // VARA_FEATURE_FEATUREMODELPARSER_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="aclassOk_html"><div class="ttname"><a href="classOk.html">Ok</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00018">Result.h:18</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation.html">vara::feature::FeatureSourceRange::FeatureSourceLocation</a></div><div class="ttdef"><b>Definition:</b> <a href="FeatureSourceRange_8h_source.html#l00030">FeatureSourceRange.h:30</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_ab0e06b1fc74dd6592534b3232855f2a1"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#ab0e06b1fc74dd6592534b3232855f2a1">vara::feature::FeatureModelParser::FeatureModelParser</a></div><div class="ttdeci">FeatureModelParser()=default</div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html_a450283e74c15f5b3c1cc2482c59d9367"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a450283e74c15f5b3c1cc2482c59d9367">vara::feature::FeatureModelXmlParser::detectXMLAlternatives</a></div><div class="ttdeci">static bool detectXMLAlternatives(FeatureModel &amp;FM)</div><div class="ttdoc">This method is solely relevant for parsing XML, as alternatives are represented als mutual excluded b...</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8cpp_source.html#l00266">FeatureModelParser.cpp:266</a></div></div>
 <div class="ttc" id="anamespacevara_1_1feature_html"><div class="ttname"><a href="namespacevara_1_1feature.html">vara::feature</a></div><div class="ttdef"><b>Definition:</b> <a href="Constraint_8h_source.html#l00014">Constraint.h:14</a></div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html_af7772abf3803ed9c7904cc480f3778bf"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html#af7772abf3803ed9c7904cc480f3778bf">vara::feature::FeatureModelXmlParser::buildFeatureModel</a></div><div class="ttdeci">std::unique_ptr&lt; FeatureModel &gt; buildFeatureModel() override</div><div class="ttdoc">Build FeatureModel after parsing.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8cpp_source.html#l00285">FeatureModelParser.cpp:285</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html_af7772abf3803ed9c7904cc480f3778bf"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html#af7772abf3803ed9c7904cc480f3778bf">vara::feature::FeatureModelXmlParser::buildFeatureModel</a></div><div class="ttdeci">std::unique_ptr&lt; FeatureModel &gt; buildFeatureModel() override</div><div class="ttdoc">Build FeatureModel after parsing.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8cpp_source.html#l00288">FeatureModelParser.cpp:288</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_a6e3f21d20e40a296ed8b450a52072795"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#a6e3f21d20e40a296ed8b450a52072795">vara::feature::FeatureModelParser::UniqueXmlDtd</a></div><div class="ttdeci">std::unique_ptr&lt; xmlDtd, void(*)(xmlDtdPtr)&gt; UniqueXmlDtd</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00024">FeatureModelParser.h:24</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_ae8142b8bf41f96d95eab4e09ff729bd7"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#ae8142b8bf41f96d95eab4e09ff729bd7">vara::feature::FeatureModelParser::~FeatureModelParser</a></div><div class="ttdeci">virtual ~FeatureModelParser()=default</div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html_a81391bfc777ccaeb3d55c71a521b72b8"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a81391bfc777ccaeb3d55c71a521b72b8">vara::feature::FeatureModelSxfmParser::FeatureModelSxfmParser</a></div><div class="ttdeci">FeatureModelSxfmParser(std::string Sxfm)</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00155">FeatureModelParser.h:155</a></div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html_a894d7ba3e19186d8ecff982281b99dcc"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a894d7ba3e19186d8ecff982281b99dcc">vara::feature::FeatureModelSxfmParser::buildFeatureModel</a></div><div class="ttdeci">std::unique_ptr&lt; FeatureModel &gt; buildFeatureModel() override</div><div class="ttdoc">Reads in and returns the feature model in the sxfm format.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8cpp_source.html#l00337">FeatureModelParser.cpp:337</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html_a81391bfc777ccaeb3d55c71a521b72b8"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a81391bfc777ccaeb3d55c71a521b72b8">vara::feature::FeatureModelSxfmParser::FeatureModelSxfmParser</a></div><div class="ttdeci">FeatureModelSxfmParser(std::string Sxfm)</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00158">FeatureModelParser.h:158</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html_a894d7ba3e19186d8ecff982281b99dcc"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#a894d7ba3e19186d8ecff982281b99dcc">vara::feature::FeatureModelSxfmParser::buildFeatureModel</a></div><div class="ttdeci">std::unique_ptr&lt; FeatureModel &gt; buildFeatureModel() override</div><div class="ttdoc">Reads in and returns the feature model in the sxfm format.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8cpp_source.html#l00345">FeatureModelParser.cpp:345</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelBuilder_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelBuilder.html">vara::feature::FeatureModelBuilder</a></div><div class="ttdoc">Builder for FeatureModel which can be used while parsing.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelBuilder_8h_source.html#l00016">FeatureModelBuilder.h:16</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html_a7bd375ff196955b389af403a43274c77"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a7bd375ff196955b389af403a43274c77">vara::feature::FeatureModelXmlParser::FeatureModelXmlParser</a></div><div class="ttdeci">FeatureModelXmlParser(std::string Xml)</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00047">FeatureModelParser.h:47</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html">vara::feature::FeatureModelParser</a></div><div class="ttdoc">Base class for parsers with different input formats.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00018">FeatureModelParser.h:18</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_a276e2a7b18383a0eb3aa1cf165e70d88"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">vara::feature::FeatureModelParser::UniqueXmlChar</a></div><div class="ttdeci">std::unique_ptr&lt; xmlChar, void(*)(void *)&gt; UniqueXmlChar</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00025">FeatureModelParser.h:25</a></div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_ac669b85cc52c17ae02af1455dc247227"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#ac669b85cc52c17ae02af1455dc247227">vara::feature::FeatureModelParser::verifyFeatureModel</a></div><div class="ttdeci">virtual bool verifyFeatureModel()=0</div><div class="ttdoc">Checks whether input is a valid feature model as acyclic graph with unique nodes and tree like struct...</div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModel_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModel.html">vara::feature::FeatureModel</a></div><div class="ttdoc">Tree like representation of features and dependencies.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModel_8h_source.html#l00027">FeatureModel.h:27</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModel_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModel.html">vara::feature::FeatureModel</a></div><div class="ttdoc">Tree like representation of features and dependencies.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModel_8h_source.html#l00029">FeatureModel.h:29</a></div></div>
+<div class="ttc" id="aclassResult_html"><div class="ttname"><a href="classResult.html">Result</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00090">Result.h:90</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_af76e483c3aeb1068fe329bca9babf39e"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#af76e483c3aeb1068fe329bca9babf39e">vara::feature::FeatureModelParser::buildFeatureModel</a></div><div class="ttdeci">virtual std::unique_ptr&lt; FeatureModel &gt; buildFeatureModel()=0</div><div class="ttdoc">Build FeatureModel after parsing.</div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html_aa30c4875e5db847347b3a0e3ed7e8e6b"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#aa30c4875e5db847347b3a0e3ed7e8e6b">vara::feature::FeatureModelSxfmParser::verifyFeatureModel</a></div><div class="ttdeci">bool verifyFeatureModel() override</div><div class="ttdoc">This method checks if the given feature model is valid.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00160">FeatureModelParser.h:160</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html_a58b20bf2853e52cb2cc3486b572d0224"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a58b20bf2853e52cb2cc3486b572d0224">vara::feature::FeatureModelXmlParser::verifyFeatureModel</a></div><div class="ttdeci">Result&lt; FTErrorCode &gt; verifyFeatureModel() override</div><div class="ttdoc">Check if XML is a valid feature model according to DTD.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8cpp_source.html#l00334">FeatureModelParser.cpp:334</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html_a09d1d4fc6872bc76ebe8a8dc90f6da44"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a09d1d4fc6872bc76ebe8a8dc90f6da44">vara::feature::FeatureModelXmlParser::detectXMLAlternatives</a></div><div class="ttdeci">static Result&lt; FTErrorCode &gt; detectXMLAlternatives(FeatureModel &amp;FM)</div><div class="ttdoc">This method is solely relevant for parsing XML, as alternatives are represented als mutual excluded b...</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8cpp_source.html#l00269">FeatureModelParser.cpp:269</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_a19e0d47054b00eb6588e29554c4bc0ca"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#a19e0d47054b00eb6588e29554c4bc0ca">vara::feature::FeatureModelParser::verifyFeatureModel</a></div><div class="ttdeci">virtual Result&lt; FTErrorCode &gt; verifyFeatureModel()=0</div><div class="ttdoc">Checks whether input is a valid feature model as acyclic graph with unique nodes and tree like struct...</div></div>
+<div class="ttc" id="aclassError_html"><div class="ttname"><a href="classError.html">Error</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00060">Result.h:60</a></div></div>
+<div class="ttc" id="anamespacevara_1_1feature_html_aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3"><div class="ttname"><a href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">vara::feature::ERROR</a></div><div class="ttdeci">@ ERROR</div><div class="ttdef"><b>Definition:</b> <a href="Error_8h_source.html#l00019">Error.h:19</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_a24e7368fb47466534f8c7259baa48673"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#a24e7368fb47466534f8c7259baa48673">vara::feature::FeatureModelParser::UniqueXmlDoc</a></div><div class="ttdeci">std::unique_ptr&lt; xmlDoc, void(*)(xmlDocPtr)&gt; UniqueXmlDoc</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00023">FeatureModelParser.h:23</a></div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html">vara::feature::FeatureModelSxfmParser</a></div><div class="ttdoc">Parsers for feature models in SXFM.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00153">FeatureModelParser.h:153</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html">vara::feature::FeatureModelSxfmParser</a></div><div class="ttdoc">Parsers for feature models in SXFM.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00156">FeatureModelParser.h:156</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange.html">vara::feature::FeatureSourceRange</a></div><div class="ttdef"><b>Definition:</b> <a href="FeatureSourceRange_8h_source.html#l00026">FeatureSourceRange.h:26</a></div></div>
 <div class="ttc" id="aFeatureModelBuilder_8h_html"><div class="ttname"><a href="FeatureModelBuilder_8h.html">FeatureModelBuilder.h</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html">vara::feature::FeatureModelXmlParser</a></div><div class="ttdoc">Parsers for feature models in XML.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00045">FeatureModelParser.h:45</a></div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html_ad47de33cd05174e391d6f5f77c723465"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html#ad47de33cd05174e391d6f5f77c723465">vara::feature::FeatureModelXmlParser::verifyFeatureModel</a></div><div class="ttdeci">bool verifyFeatureModel() override</div><div class="ttdoc">Checks whether input is a valid feature model as acyclic graph with unique nodes and tree like struct...</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8cpp_source.html#l00331">FeatureModelParser.cpp:331</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html_abfde151e22d35f86ed1d811ccb6a1c1c"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#abfde151e22d35f86ed1d811ccb6a1c1c">vara::feature::FeatureModelSxfmParser::verifyFeatureModel</a></div><div class="ttdeci">Result&lt; FTErrorCode &gt; verifyFeatureModel() override</div><div class="ttdoc">This method checks if the given feature model is valid.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00163">FeatureModelParser.h:163</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 12 2021 17:26:43 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 28 2021 08:03:59 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
