@@ -563,9 +563,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
         Identifier = Identifier.substr(1, Identifier.size() - 2);
         IdentifierMap[Identifier] = Name;
         if (Identifier != Name && Name.find(Identifier) != std::string::npos) {
-          llvm::errs()
-              << "Name must not contain ID:'"
-              << Name << "'\n";
+          llvm::errs() << "Name must not contain ID:'" << Name << "'\n";
           return false;
         }
       }
