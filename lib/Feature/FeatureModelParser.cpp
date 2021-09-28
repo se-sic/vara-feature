@@ -663,7 +663,7 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
 
     auto Pos = ToStringRef.find(':');
     ToStringRef = ToStringRef.substr(Pos + 1, ToStringRef.size() - Pos - 1);
-    std::string CnfFormula = ToStringRef.str();
+    std::string CnfFormula = trim(ToStringRef);
 
     // In the following lines, we replace all identifiers by the real feature
     // name
@@ -671,9 +671,21 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
       std::string Value = IdentifierMap[Key];
       auto FoundPos = CnfFormula.find(Key);
       while (FoundPos != std::string::npos) {
-        CnfFormula =
-            CnfFormula.replace(FoundPos, FoundPos + Key.length(), Value);
+        CnfFormula = CnfFormula.replace(FoundPos, Key.length(), Value);
         FoundPos = CnfFormula.find(Key);
+      }
+    }
+
+    // Replace 'or' by '|' and 'and' by '&'
+    std::unordered_map<std::string, std::string> SpecialKeys;
+    SpecialKeys[" or "] = " | ";
+    SpecialKeys[" and "] = " & ";
+    for (auto &Key : SpecialKeys) {
+      auto FoundPos = CnfFormula.find(Key.first);
+      while (FoundPos != std::string::npos) {
+        CnfFormula =
+            CnfFormula.replace(FoundPos, Key.first.length(), Key.second);
+        FoundPos = CnfFormula.find(Key.first);
       }
     }
 
