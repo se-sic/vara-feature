@@ -547,6 +547,12 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
         }
       }
 
+      // Note that we ignore the ID and use the name of the feature
+      // as unique identifier.
+      if (Name.find_first_of('(') != std::string::npos) {
+        Name = Name.substr(0, Name.find('(', 0));
+      }
+
       // Search for identifier
       std::regex Regex(R"(\([a-zA-Z\d_]*\))");
       std::string CurrentLine = ToStringRef.str();
@@ -555,13 +561,13 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
            Match != std::sregex_iterator(); Match++) {
         std::string Identifier = (*Match).str();
         Identifier = Identifier.substr(1, Identifier.size() - 2);
-        IdentifierMap[Identifier] = std::move(Name);
-      }
-
-      // Note that we ignore the ID and use the name of the feature
-      // as unique identifier.
-      if (Name.find_first_of('(') != std::string::npos) {
-        Name = Name.substr(0, Name.find('(', 0));
+        IdentifierMap[Identifier] = Name;
+        if (Identifier != Name && Name.find(Identifier) != std::string::npos) {
+          llvm::errs()
+              << "Name must not contain ID:'"
+              << Name << "'\n";
+          return false;
+        }
       }
 
       // If there is no name, provide an artificial one
@@ -669,6 +675,9 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
     // name
     for (auto &Key : Keys) {
       std::string Value = IdentifierMap[Key];
+      if (Value == Key) {
+        continue;
+      }
       auto FoundPos = CnfFormula.find(Key);
       while (FoundPos != std::string::npos) {
         CnfFormula = CnfFormula.replace(FoundPos, Key.length(), Value);

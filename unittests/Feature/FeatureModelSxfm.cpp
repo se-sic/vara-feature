@@ -55,14 +55,13 @@ TEST(SxfmParser, parsing) {
   auto FM =
       FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
   ASSERT_TRUE(FM);
-  EXPECT_EQ(FM->size(), 38);
+  EXPECT_EQ(FM->size(), 37);
   EXPECT_EQ(FM->getName(), "apache");
 
   // Check features
   EXPECT_TRUE(FM->getFeature("root"));
   EXPECT_TRUE(FM->getFeature("threadCount"));
   EXPECT_TRUE(FM->getFeature("threadCount_64"));
-  EXPECT_TRUE(FM->getFeature("Group_0"));
   EXPECT_TRUE(FM->getFeature("tlsMoreBits"));
   EXPECT_TRUE(FM->getFeature("ecdsaCertificate"));
   EXPECT_TRUE(FM->getFeature("tls"));
