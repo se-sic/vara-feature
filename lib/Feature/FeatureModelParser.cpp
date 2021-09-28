@@ -17,8 +17,9 @@ namespace vara::feature {
 
 std::string trim(llvm::StringRef S) { return llvm::StringRef(S).trim().str(); }
 
-bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
-                                                     bool Num = false) {
+Result<FTErrorCode>
+FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
+                                                bool Num = false) {
   std::string Name{"root"};
   bool Opt = false;
   int MinValue = 0;
@@ -107,18 +108,18 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   // XML has those names specified as root nodes
   if (Name == "root" || Name == "base") {
     FMB.makeRoot(Name);
-    return FMB.makeFeature<RootFeature>(Name);
-  }
-  if (Num) {
+  } else if (Num) {
     if (Values.empty()) {
-      return FMB.makeFeature<NumericFeature>(Name,
-                                             std::make_pair(MinValue, MaxValue),
-                                             Opt, std::move(SourceRanges));
+      FMB.makeFeature<NumericFeature>(Name, std::make_pair(MinValue, MaxValue),
+                                      Opt, std::move(SourceRanges));
+    } else {
+      FMB.makeFeature<NumericFeature>(Name, Values, Opt,
+                                      std::move(SourceRanges));
     }
-    return FMB.makeFeature<NumericFeature>(Name, Values, Opt,
-                                           std::move(SourceRanges));
+  } else {
+    FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges));
   }
-  return FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges));
+  return Ok();
 }
 
 FeatureSourceRange
@@ -160,20 +161,21 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   return FeatureSourceRange(Path, Start, End, Category);
 }
 
-bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
+Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
+                                                        bool Num = false) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONFIGURATIONOPTION)) {
         if (!parseConfigurationOption(H, Num)) {
-          return false;
+          return Error(ERROR);
         }
       }
     }
   }
-  return true;
+  return Ok();
 }
 
-bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
+Result<FTErrorCode> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
@@ -183,15 +185,15 @@ bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
                     .buildConstraint()) {
           FMB.addConstraint(std::move(Constraint));
         } else {
-          return false;
+          return Error(ERROR);
         }
       }
     }
   }
-  return true;
+  return Ok();
 }
 
-bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
+Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
     UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::NAME), xmlFree);
     FMB.setVmName(trim(reinterpret_cast<char *>(Cnt.get())));
@@ -210,20 +212,20 @@ bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::BINARYOPTIONS)) {
         if (!parseOptions(H)) {
-          return false;
+          return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::NUMERICOPTIONS)) {
         if (!parseOptions(H, true)) {
-          return false;
+          return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::BOOLEANCONSTRAINTS)) {
         if (!parseConstraints(H)) {
-          return false;
+          return Error(ERROR);
         }
       }
     }
   }
-  return true;
+  return Ok();
 }
 
 FeatureSourceRange::FeatureSourceLocation
@@ -263,7 +265,8 @@ bool detectExclude(const Feature *A, const Feature *B) {
       });
 }
 
-bool FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
+Result<FTErrorCode>
+FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
   auto Transactions = FeatureModelModifyTransaction::openTransaction(FM);
   for (auto *F : FM) {
     auto Children = F->getChildren<Feature>();
@@ -328,7 +331,12 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   return UniqueXmlDoc(nullptr, nullptr);
 }
 
-bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
+Result<FTErrorCode> FeatureModelXmlParser::verifyFeatureModel() {
+  if (!parseDoc().get()) {
+    return Error(ERROR);
+  }
+  return Ok();
+}
 
 //===----------------------------------------------------------------------===//
 //                        FeatureModelSxfmParser Class
@@ -336,11 +344,10 @@ bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
   UniqueXmlDoc Doc = parseDoc();
-  if (!Doc) {
+  if (!Doc || !parseVm(xmlDocGetRootElement(Doc.get()))) {
     return nullptr;
   }
-  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
-                                                  : nullptr;
+  return FMB.buildFeatureModel();
 }
 
 FeatureModelSxfmParser::UniqueXmlDtd FeatureModelSxfmParser::createDtd() {
@@ -554,7 +561,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
 
       // Create the feature
       if (IsRoot) {
-        FMB.makeFeature<RootFeature>(Name);
+        FMB.makeRoot(Name);
       } else {
         FMB.makeFeature<BinaryFeature>(Name, Opt);
       }
