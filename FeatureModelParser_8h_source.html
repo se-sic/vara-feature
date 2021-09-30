@@ -221,7 +221,7 @@ $(function() {
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<span class="comment">/// or alternatively:</span></div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="comment">/// \code{unparsed}</span></div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="comment">/// macro_rules! sxfm_constraints {</span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="comment">///     (:$name:ident $cnf_formula:tt) =&gt; {...};</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="comment">///     ($name:ident : $cnf_formula:tt) =&gt; {...};</span></div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="comment">/// }</span></div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="comment">/// \endcode</span></div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment">///</span></div>
@@ -285,7 +285,7 @@ $(function() {
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="comment">  /// \param Constraints the node containing the constraint string</span></div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;<span class="comment">  ///</span></div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="comment">  /// \returns true iff parsing and processing the constraints was successful</span></div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> parseConstraints(xmlNode *Constraints);</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="comment"></span>  <span class="keywordtype">bool</span> parseConstraints(xmlNode *Constraints);</div>
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="comment">  /// This method extracts the cardinality from the given line.</span></div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="comment">  /// The cardinality is wrapped in square brackets (e.g., [1,1])</span></div>
@@ -311,11 +311,12 @@ $(function() {
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  std::string Sxfm;</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> FMB;</div>
 <div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  std::string Indentation = <span class="stringliteral">&quot;\t&quot;</span>;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;};</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160; </div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="preprocessor">#endif // VARA_FEATURE_FEATUREMODELPARSER_H</span></div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  std::map&lt;std::string, std::string&gt; IdentifierMap;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;};</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160; </div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="preprocessor">#endif // VARA_FEATURE_FEATUREMODELPARSER_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassOk_html"><div class="ttname"><a href="classOk.html">Ok</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00018">Result.h:18</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation.html">vara::feature::FeatureSourceRange::FeatureSourceLocation</a></div><div class="ttdef"><b>Definition:</b> <a href="FeatureSourceRange_8h_source.html#l00030">FeatureSourceRange.h:30</a></div></div>
@@ -346,7 +347,7 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html_abfde151e22d35f86ed1d811ccb6a1c1c"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#abfde151e22d35f86ed1d811ccb6a1c1c">vara::feature::FeatureModelSxfmParser::verifyFeatureModel</a></div><div class="ttdeci">Result&lt; FTErrorCode &gt; verifyFeatureModel() override</div><div class="ttdoc">This method checks if the given feature model is valid.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00163">FeatureModelParser.h:163</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 28 2021 08:03:59 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 30 2021 09:09:35 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

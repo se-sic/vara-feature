@@ -106,160 +106,160 @@ $(function() {
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  std::vector&lt;FeatureSourceRange&gt; SourceRanges;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordflow">for</span> (xmlNode *Head = Node-&gt;children; Head; Head = Head-&gt;next) {</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordflow">if</span> (Head-&gt;type == XML_ELEMENT_NODE) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      std::string Cnt = <a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;          <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">UniqueXmlChar</a>(xmlNodeGetContent(Head), xmlFree).get()));</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      std::string Cnt{<a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;          <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">UniqueXmlChar</a>(xmlNodeGetContent(Head), xmlFree).get()))};</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      <span class="keywordflow">if</span> (Cnt.empty()) {</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordflow">continue</span>;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      }</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      <span class="comment">// The DTD enforces name to be the first element of an</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="comment">// configurationOption. This method is never called without validating</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      <span class="comment">// the input beforehand.</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aaf2d54f1d085fb22b01e35f8a281aa72">XmlConstants::NAME</a>)) {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        Name = Cnt;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a6526295f7c3f9585641fd916d7f89928">XmlConstants::OPTIONAL</a>)) {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        Opt = Cnt == <span class="stringliteral">&quot;True&quot;</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#acefac1a63655f3bd63b1f447be9e5061">XmlConstants::PARENT</a>)) {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#a274a42949d223cbf83fa39c74c8a4277">addEdge</a>(Cnt, Name);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a65aa6a90c36ba19ce6b29c1e61cd2954">XmlConstants::CHILDREN</a>)) {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;          <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>)) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;              FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#a274a42949d223cbf83fa39c74c8a4277">addEdge</a>(Name, <a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                    std::unique_ptr&lt;xmlChar, <span class="keywordtype">void</span> (*)(<span class="keywordtype">void</span> *)&gt;(</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                                        xmlNodeGetContent(Child), xmlFree)</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                        .get())));</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;          }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        }</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a06bc5c25f5bd26089852cba37fe7593a">XmlConstants::EXCLUDEDOPTIONS</a>)) {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;          <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>)) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;              <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">UniqueXmlChar</a> CCnt(xmlNodeGetContent(Child), xmlFree);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;              FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ab1b297901cc8c7134565203fbe3283d6">addConstraint</a>(make_unique&lt;ExcludesConstraint&gt;(</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                  make_unique&lt;PrimaryFeatureConstraint&gt;(</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                      make_unique&lt;Feature&gt;(Name)),</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                  make_unique&lt;PrimaryFeatureConstraint&gt;(make_unique&lt;Feature&gt;(</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                      <a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(CCnt.get()))))));</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            }</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;          }</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        }</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a1052cb3c3e60860251acd85ace9fd619">XmlConstants::IMPLIEDOPTIONS</a>)) {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;          <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>)) {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;              <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">UniqueXmlChar</a> CCnt(xmlNodeGetContent(Child), xmlFree);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;              FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ab1b297901cc8c7134565203fbe3283d6">addConstraint</a>(make_unique&lt;ImpliesConstraint&gt;(</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                  make_unique&lt;PrimaryFeatureConstraint&gt;(</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                      make_unique&lt;Feature&gt;(Name)),</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                  make_unique&lt;PrimaryFeatureConstraint&gt;(make_unique&lt;Feature&gt;(</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                      <a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(CCnt.get()))))));</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            }</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;          }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        }</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a0abcab7975528368515466ec3660bade">XmlConstants::LOCATIONS</a>)) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;          <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;            <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a49bef00c08565bef1478992f97d5d907">XmlConstants::SOURCERANGE</a>)) {</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;              SourceRanges.push_back(createFeatureSourceRange(Child));</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;            }</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;          }</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        }</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (Num) {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ade45033f3268fad93c0d909d09ef5a8c">XmlConstants::MINVALUE</a>)) {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;          MinValue = std::stoi(Cnt);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac65c431d8234048c457a505c3ca398b4">XmlConstants::MAXVALUE</a>)) {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;          MaxValue = std::stoi(Cnt);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a1f418c4eeaea09dd29ee42583526d13c">XmlConstants::VALUES</a>)) {</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;          <span class="keyword">const</span> std::regex Regex(R<span class="stringliteral">&quot;(\d+)&quot;);</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="stringliteral">          std::smatch Matches;</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="stringliteral">          </span><span class="keywordflow">for</span> (std::string Suffix = Cnt; regex_search(Suffix, Matches, Regex);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;               Suffix = Matches.suffix()) {</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            Values.emplace_back(std::stoi(Matches.str()));</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;          }</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        }</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      }</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    }</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">// XML has those names specified as root nodes</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span> (Name == <span class="stringliteral">&quot;root&quot;</span> || Name == <span class="stringliteral">&quot;base&quot;</span>) {</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#af61469b84e5b448b3d517ae83f321e03">makeRoot</a>(Name);</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (Num) {</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">if</span> (Values.empty()) {</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ae4d2d8c0d4f9a4ebf391acb4c91f9bb8">makeFeature</a>&lt;NumericFeature&gt;(Name, std::make_pair(MinValue, MaxValue),</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                                      Opt, std::move(SourceRanges));</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ae4d2d8c0d4f9a4ebf391acb4c91f9bb8">makeFeature</a>&lt;NumericFeature&gt;(Name, Values, Opt,</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                                      std::move(SourceRanges));</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    }</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ae4d2d8c0d4f9a4ebf391acb4c91f9bb8">makeFeature</a>&lt;BinaryFeature&gt;(Name, Opt, std::move(SourceRanges));</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  }</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;FeatureSourceRange</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  fs::path Path;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  std::optional&lt;FeatureSourceRange::FeatureSourceLocation&gt; Start;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  std::optional&lt;FeatureSourceRange::FeatureSourceLocation&gt; End;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keyword">enum</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2">FeatureSourceRange::Category</a> Category;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160; </div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  std::unique_ptr&lt;xmlChar, void (*)(<span class="keywordtype">void</span> *)&gt; Tmp(</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      xmlGetProp(Head, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8f755e1423176d59938deee823e719f9">XmlConstants::CATEGORY</a>), xmlFree);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keywordflow">if</span> (Tmp) {</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <span class="keywordflow">if</span> (xmlStrcmp(Tmp.get(), <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a248e1138ce6a3d9dc039e74787342f77">XmlConstants::NECESSARY</a>) == 0) {</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      Category = <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aec94c63d602e631f9e7bcc0e6a29160a">FeatureSourceRange::Category::necessary</a>;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (xmlStrcmp(Tmp.get(), <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac684f8d10ed49cb3fe83440c337bc1bc">XmlConstants::INESSENTIAL</a>) == 0) {</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;      Category = <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aa1e918278d1a5f5966ee6db0d750f635">FeatureSourceRange::Category::inessential</a>;</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;      llvm_unreachable(<span class="stringliteral">&quot;DTD check should have rejected this file or this code &quot;</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;                       <span class="stringliteral">&quot;was not updated to handle new values.&quot;</span>);</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    }</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    Category = <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aec94c63d602e631f9e7bcc0e6a29160a">FeatureSourceRange::Category::necessary</a>;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  }</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac000d875eefd82d7eea19284c57e13f1">XmlConstants::PATH</a>)) {</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        Path = fs::path(<a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;            <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(std::unique_ptr&lt;xmlChar, <span class="keywordtype">void</span> (*)(<span class="keywordtype">void</span> *)&gt;(</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                                         xmlNodeGetContent(Child), xmlFree)</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                                         .get())));</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a482244015ae83d8d5e17439cd9286cdf">XmlConstants::START</a>)) {</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        Start = createFeatureSourceLocation(Child);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aa63a52fab7ec49d904238153eb145299">XmlConstants::END</a>)) {</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        End = createFeatureSourceLocation(Child);</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      }</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    }</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  }</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keywordflow">return</span> FeatureSourceRange(Path, Start, End, Category);</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;}</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> FeatureModelXmlParser::parseOptions(xmlNode *Node,</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;                                                        <span class="keywordtype">bool</span> Num = <span class="keyword">false</span>) {</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="keywordflow">for</span> (xmlNode *H = Node-&gt;children; H; H = H-&gt;next) {</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordflow">if</span> (H-&gt;type == XML_ELEMENT_NODE) {</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(H-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8655164f5b246ac12262853f9d161d53">XmlConstants::CONFIGURATIONOPTION</a>)) {</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        <span class="keywordflow">if</span> (!parseConfigurationOption(H, Num)) {</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;          <span class="keywordflow">return</span> <a class="code" href="classError.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        }</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;      }</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    }</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  }</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;}</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  <span class="keywordflow">for</span> (xmlNode *H = Node-&gt;children; H; H = H-&gt;next) {</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    <span class="keywordflow">if</span> (H-&gt;type == XML_ELEMENT_NODE) {</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(H-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a267413639029e8252fa9ce2e4f090ed9">XmlConstants::CONSTRAINT</a>)) {</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">UniqueXmlChar</a> Cnt(xmlNodeGetContent(H), xmlFree);</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        <span class="keywordflow">if</span> (<span class="keyword">auto</span> Constraint =</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                ConstraintParser(<a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(Cnt.get())))</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="comment">// The DTD enforces name to be the first element of an</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      <span class="comment">// configurationOption. This method is never called without validating</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="comment">// the input beforehand.</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aaf2d54f1d085fb22b01e35f8a281aa72">XmlConstants::NAME</a>)) {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        Name = Cnt;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a6526295f7c3f9585641fd916d7f89928">XmlConstants::OPTIONAL</a>)) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        Opt = Cnt == <span class="stringliteral">&quot;True&quot;</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#acefac1a63655f3bd63b1f447be9e5061">XmlConstants::PARENT</a>)) {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#a274a42949d223cbf83fa39c74c8a4277">addEdge</a>(Cnt, Name);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a65aa6a90c36ba19ce6b29c1e61cd2954">XmlConstants::CHILDREN</a>)) {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;          <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>)) {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;              FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#a274a42949d223cbf83fa39c74c8a4277">addEdge</a>(Name, std::string(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                                    std::unique_ptr&lt;xmlChar, <span class="keywordtype">void</span> (*)(<span class="keywordtype">void</span> *)&gt;(</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                        xmlNodeGetContent(Child), xmlFree)</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                                        .get())));</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            }</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;          }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        }</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a06bc5c25f5bd26089852cba37fe7593a">XmlConstants::EXCLUDEDOPTIONS</a>)) {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;          <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>)) {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;              <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">UniqueXmlChar</a> CCnt(xmlNodeGetContent(Child), xmlFree);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;              FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ab1b297901cc8c7134565203fbe3283d6">addConstraint</a>(make_unique&lt;ExcludesConstraint&gt;(</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                  make_unique&lt;PrimaryFeatureConstraint&gt;(</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                      make_unique&lt;Feature&gt;(Name)),</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                  make_unique&lt;PrimaryFeatureConstraint&gt;(make_unique&lt;Feature&gt;(</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                      <a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(CCnt.get()))))));</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;            }</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;          }</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a1052cb3c3e60860251acd85ace9fd619">XmlConstants::IMPLIEDOPTIONS</a>)) {</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;          <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ab23567596f740ddca3bd45d5d4d715f4">XmlConstants::OPTIONS</a>)) {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;              <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">UniqueXmlChar</a> CCnt(xmlNodeGetContent(Child), xmlFree);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;              FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ab1b297901cc8c7134565203fbe3283d6">addConstraint</a>(make_unique&lt;ImpliesConstraint&gt;(</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                  make_unique&lt;PrimaryFeatureConstraint&gt;(</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                      make_unique&lt;Feature&gt;(Name)),</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                  make_unique&lt;PrimaryFeatureConstraint&gt;(make_unique&lt;Feature&gt;(</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                      <a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(CCnt.get()))))));</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            }</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;          }</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        }</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a0abcab7975528368515466ec3660bade">XmlConstants::LOCATIONS</a>)) {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;          <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a49bef00c08565bef1478992f97d5d907">XmlConstants::SOURCERANGE</a>)) {</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;              SourceRanges.push_back(createFeatureSourceRange(Child));</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;            }</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;          }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        }</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (Num) {</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ade45033f3268fad93c0d909d09ef5a8c">XmlConstants::MINVALUE</a>)) {</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;          MinValue = std::stoi(Cnt);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac65c431d8234048c457a505c3ca398b4">XmlConstants::MAXVALUE</a>)) {</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;          MaxValue = std::stoi(Cnt);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Head-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a1f418c4eeaea09dd29ee42583526d13c">XmlConstants::VALUES</a>)) {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;          <span class="keyword">const</span> std::regex Regex(R<span class="stringliteral">&quot;(\d+)&quot;);</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="stringliteral">          std::smatch Matches;</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="stringliteral">          </span><span class="keywordflow">for</span> (std::string Suffix = Cnt; regex_search(Suffix, Matches, Regex);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;               Suffix = Matches.suffix()) {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            Values.emplace_back(std::stoi(Matches.str()));</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;          }</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        }</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      }</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  }</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// XML has those names specified as root nodes</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordflow">if</span> (Name == <span class="stringliteral">&quot;root&quot;</span> || Name == <span class="stringliteral">&quot;base&quot;</span>) {</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#af61469b84e5b448b3d517ae83f321e03">makeRoot</a>(Name);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (Num) {</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">if</span> (Values.empty()) {</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;      FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ae4d2d8c0d4f9a4ebf391acb4c91f9bb8">makeFeature</a>&lt;NumericFeature&gt;(Name, std::make_pair(MinValue, MaxValue),</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                                      Opt, std::move(SourceRanges));</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;      FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ae4d2d8c0d4f9a4ebf391acb4c91f9bb8">makeFeature</a>&lt;NumericFeature&gt;(Name, Values, Opt,</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                                      std::move(SourceRanges));</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    }</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ae4d2d8c0d4f9a4ebf391acb4c91f9bb8">makeFeature</a>&lt;BinaryFeature&gt;(Name, Opt, std::move(SourceRanges));</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  }</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;FeatureSourceRange</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  fs::path Path;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  std::optional&lt;FeatureSourceRange::FeatureSourceLocation&gt; Start;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  std::optional&lt;FeatureSourceRange::FeatureSourceLocation&gt; End;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keyword">enum</span> <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2">FeatureSourceRange::Category</a> Category;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  std::unique_ptr&lt;xmlChar, void (*)(<span class="keywordtype">void</span> *)&gt; Tmp(</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      xmlGetProp(Head, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8f755e1423176d59938deee823e719f9">XmlConstants::CATEGORY</a>), xmlFree);</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordflow">if</span> (Tmp) {</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="keywordflow">if</span> (xmlStrcmp(Tmp.get(), <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a248e1138ce6a3d9dc039e74787342f77">XmlConstants::NECESSARY</a>) == 0) {</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      Category = <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aec94c63d602e631f9e7bcc0e6a29160a">FeatureSourceRange::Category::necessary</a>;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (xmlStrcmp(Tmp.get(), <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac684f8d10ed49cb3fe83440c337bc1bc">XmlConstants::INESSENTIAL</a>) == 0) {</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;      Category = <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aa1e918278d1a5f5966ee6db0d750f635">FeatureSourceRange::Category::inessential</a>;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;      llvm_unreachable(<span class="stringliteral">&quot;DTD check should have rejected this file or this code &quot;</span></div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                       <span class="stringliteral">&quot;was not updated to handle new values.&quot;</span>);</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    }</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    Category = <a class="code" href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aec94c63d602e631f9e7bcc0e6a29160a">FeatureSourceRange::Category::necessary</a>;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  }</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="keywordflow">for</span> (xmlNode *Child = Head-&gt;children; Child; Child = Child-&gt;next) {</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keywordflow">if</span> (Child-&gt;type == XML_ELEMENT_NODE) {</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ac000d875eefd82d7eea19284c57e13f1">XmlConstants::PATH</a>)) {</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        Path = fs::path(<a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;            <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(std::unique_ptr&lt;xmlChar, <span class="keywordtype">void</span> (*)(<span class="keywordtype">void</span> *)&gt;(</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                                         xmlNodeGetContent(Child), xmlFree)</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                                         .get())));</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a482244015ae83d8d5e17439cd9286cdf">XmlConstants::START</a>)) {</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        Start = createFeatureSourceLocation(Child);</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(Child-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aa63a52fab7ec49d904238153eb145299">XmlConstants::END</a>)) {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        End = createFeatureSourceLocation(Child);</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      }</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    }</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  }</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <span class="keywordflow">return</span> FeatureSourceRange(Path, Start, End, Category);</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;}</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160; </div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> FeatureModelXmlParser::parseOptions(xmlNode *Node,</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                                                        <span class="keywordtype">bool</span> Num = <span class="keyword">false</span>) {</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <span class="keywordflow">for</span> (xmlNode *H = Node-&gt;children; H; H = H-&gt;next) {</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keywordflow">if</span> (H-&gt;type == XML_ELEMENT_NODE) {</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(H-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8655164f5b246ac12262853f9d161d53">XmlConstants::CONFIGURATIONOPTION</a>)) {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">if</span> (!parseConfigurationOption(H, Num)) {</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;          <span class="keywordflow">return</span> <a class="code" href="classError.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        }</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      }</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    }</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  }</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;}</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160; </div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  <span class="keywordflow">for</span> (xmlNode *H = Node-&gt;children; H; H = H-&gt;next) {</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    <span class="keywordflow">if</span> (H-&gt;type == XML_ELEMENT_NODE) {</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(H-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a267413639029e8252fa9ce2e4f090ed9">XmlConstants::CONSTRAINT</a>)) {</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">UniqueXmlChar</a> Cnt(xmlNodeGetContent(H), xmlFree);</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        <span class="keywordflow">if</span> (<span class="keyword">auto</span> Constraint =</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;                ConstraintParser(</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                    std::string(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(Cnt.get())))</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                    .buildConstraint()) {</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;          FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ab1b297901cc8c7134565203fbe3283d6">addConstraint</a>(std::move(Constraint));</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        } <span class="keywordflow">else</span> {</div>
@@ -631,135 +631,218 @@ $(function() {
 <div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;        Name = Name.substr(0, Name.find(<span class="charliteral">&#39;(&#39;</span>, 0));</div>
 <div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;      }</div>
 <div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160; </div>
-<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;      <span class="comment">// If there is no name, provide an artificial one</span></div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;      <span class="keywordflow">if</span> (Name.empty()) {</div>
-<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;        OrGroupCounter++;</div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;        Name = <span class="stringliteral">&quot;group_&quot;</span> + std::to_string(OrGroupCounter);</div>
-<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;      }</div>
-<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160; </div>
-<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;      <span class="comment">// Create the feature</span></div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;      <span class="keywordflow">if</span> (IsRoot) {</div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;        FMB.makeRoot(Name);</div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;      } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;        FMB.makeFeature&lt;BinaryFeature&gt;(Name, Opt);</div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;      }</div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;      IndentationToParentMapping[CurrentIndentationLevel] = Name;</div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160; </div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;      <span class="comment">// Add parent from the upper indentation level if there is one</span></div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;      <span class="keywordflow">if</span> (LastIndentationLevel != -1 &amp;&amp;</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;          CurrentIndentationLevel == RootIndentation) {</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;        llvm::errs() &lt;&lt; <span class="stringliteral">&quot;Only one feature can be root and have the same &quot;</span></div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;                        <span class="stringliteral">&quot;indentation as root.\n&quot;</span>;</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;      }</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160; </div>
-<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;      <span class="keywordflow">if</span> (LastIndentationLevel != -1) {</div>
-<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;        <span class="keyword">auto</span> Parent =</div>
-<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;            IndentationToParentMapping.find(CurrentIndentationLevel - 1);</div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;        assert(Parent != IndentationToParentMapping.end());</div>
-<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;        FMB.addEdge(Parent-&gt;second, Name);</div>
-<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;      }</div>
+<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;      <span class="comment">// Search for identifier</span></div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;      std::regex Regex(R<span class="stringliteral">&quot;(\([a-zA-Z\d_]*\))&quot;);</span></div>
+<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;<span class="stringliteral">      std::string CurrentLine = ToStringRef.str();</span></div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;<span class="stringliteral">      </span><span class="keywordflow">for</span> (std::sregex_iterator Match = std::sregex_iterator(</div>
+<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;               CurrentLine.begin(), CurrentLine.end(), Regex);</div>
+<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;           Match != std::sregex_iterator(); Match++) {</div>
+<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;        std::string Identifier = (*Match).str();</div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;        Identifier = Identifier.substr(1, Identifier.size() - 2);</div>
+<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;        IdentifierMap[Identifier] = Name;</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;        <span class="keywordflow">if</span> (Identifier != Name &amp;&amp; Name.find(Identifier) != std::string::npos) {</div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;          llvm::errs() &lt;&lt; <span class="stringliteral">&quot;Name must not contain ID:&#39;&quot;</span> &lt;&lt; Name &lt;&lt; <span class="stringliteral">&quot;&#39;\n&quot;</span>;</div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;        }</div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;      }</div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160; </div>
+<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;      <span class="comment">// If there is no name, provide an artificial one</span></div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;      <span class="keywordflow">if</span> (Name.empty()) {</div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;        OrGroupCounter++;</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;        Name = <span class="stringliteral">&quot;group_&quot;</span> + std::to_string(OrGroupCounter);</div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;      }</div>
+<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160; </div>
+<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;      <span class="comment">// Create the feature</span></div>
+<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;      <span class="keywordflow">if</span> (IsRoot) {</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;        FMB.makeRoot(Name);</div>
+<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;      } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;        FMB.makeFeature&lt;BinaryFeature&gt;(Name, Opt);</div>
+<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;      }</div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;      IndentationToParentMapping[CurrentIndentationLevel] = Name;</div>
 <div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160; </div>
-<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;      <span class="comment">// Add the or group to the feature model if it is completely parsed</span></div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;      <span class="keyword">auto</span> OrGroup = OrGroupMapping.find(CurrentIndentationLevel);</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;      <span class="keywordflow">if</span> (OrGroup != OrGroupMapping.end()) {</div>
-<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;        FMB.emplaceRelationship(std::get&lt;1&gt;(OrGroup-&gt;second),</div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;                                std::get&lt;0&gt;(OrGroup-&gt;second));</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;        OrGroupMapping.erase(CurrentIndentationLevel);</div>
+<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;      <span class="comment">// Add parent from the upper indentation level if there is one</span></div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;      <span class="keywordflow">if</span> (LastIndentationLevel != -1 &amp;&amp;</div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;          CurrentIndentationLevel == RootIndentation) {</div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;        llvm::errs() &lt;&lt; <span class="stringliteral">&quot;Only one feature can be root and have the same &quot;</span></div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;                        <span class="stringliteral">&quot;indentation as root.\n&quot;</span>;</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;      }</div>
 <div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160; </div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;      <span class="comment">// Remember the new or group parent if there is one</span></div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;      <span class="keywordflow">if</span> (Cardinalities.has_value()) {</div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;        Relationship::RelationshipKind GroupKind =</div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;            Relationship::RelationshipKind::RK_ALTERNATIVE;</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;        <span class="keywordflow">if</span> (std::get&lt;1&gt;(Cardinalities.value()) == SxfmConstants::WILDCARD) {</div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;          GroupKind = Relationship::RelationshipKind::RK_OR;</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;        }</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;        OrGroupMapping[CurrentIndentationLevel] =</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;            std::tuple&lt;std::string, Relationship::RelationshipKind&gt;(Name,</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;                                                                    GroupKind);</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;      }</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160; </div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;      LastIndentationLevel = CurrentIndentationLevel;</div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;    }</div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;      <span class="keywordflow">if</span> (LastIndentationLevel != -1) {</div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;        <span class="keyword">auto</span> Parent =</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;            IndentationToParentMapping.find(CurrentIndentationLevel - 1);</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;        assert(Parent != IndentationToParentMapping.end());</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;        FMB.addEdge(Parent-&gt;second, Name);</div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;      }</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160; </div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;      <span class="comment">// Add the or group to the feature model if it is completely parsed</span></div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;      <span class="keyword">auto</span> OrGroup = OrGroupMapping.find(CurrentIndentationLevel);</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;      <span class="keywordflow">if</span> (OrGroup != OrGroupMapping.end()) {</div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;        FMB.emplaceRelationship(std::get&lt;1&gt;(OrGroup-&gt;second),</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;                                std::get&lt;0&gt;(OrGroup-&gt;second));</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;        OrGroupMapping.erase(CurrentIndentationLevel);</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;      }</div>
 <div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160; </div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;    <span class="comment">// Add the remaining or groups</span></div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;OrGroup : OrGroupMapping) {</div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;      FMB.emplaceRelationship(std::get&lt;1&gt;(OrGroup.second),</div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;                              std::get&lt;0&gt;(OrGroup.second));</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;    }</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;  }</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160; </div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;}</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160; </div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;<span class="keywordtype">bool</span> FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;  <span class="comment">// TODO (se-passau/VaRA#702): This has to wait until the constraint part is</span></div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;  <span class="comment">// implemented</span></div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;}</div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160; </div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;std::optional&lt;std::tuple&lt;int, int&gt;&gt; FeatureModelSxfmParser::extractCardinality(</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;    llvm::StringRef StringToExtractFrom) {</div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;  std::optional&lt;int&gt; MinCardinality;</div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;  std::optional&lt;int&gt; MaxCardinality;</div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160; </div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;  <span class="comment">// Search for the first occurrence of &#39;[&#39;; then read in the min cardinality</span></div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;  <span class="comment">// until the comma. Afterwards, read in the max cardinality until &#39;]&#39;</span></div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;  std::string::size_type Pos = StringToExtractFrom.find_first_of(<span class="charliteral">&#39;[&#39;</span>);</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;  <span class="keywordflow">if</span> (Pos == std::string::npos) {</div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;    llvm::errs() &lt;&lt; <span class="stringliteral">&quot;No cardinality given in or group!\n&quot;</span>;</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;    <span class="keywordflow">return</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;();</div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;  }</div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;  llvm::StringRef CardinalityString(StringToExtractFrom);</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;  <span class="keywordtype">size_t</span> CommaPos = CardinalityString.find(<span class="charliteral">&#39;,&#39;</span>, Pos + 1);</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;  MinCardinality = parseCardinality(</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;      CardinalityString.substr(Pos + 1, CommaPos - Pos - 1).str());</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;  Pos = CommaPos;</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;  MaxCardinality = parseCardinality(</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;      CardinalityString</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;          .substr(Pos + 1, CardinalityString.find(<span class="charliteral">&#39;]&#39;</span>, Pos + 1) - Pos - 1)</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;          .str());</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160; </div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;  <span class="keywordflow">if</span> (!MinCardinality.has_value() || !MaxCardinality.has_value()) {</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;    llvm::errs() &lt;&lt; <span class="stringliteral">&quot;No parsable cardinality!\n&quot;</span>;</div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    <span class="keywordflow">return</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;();</div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;  }</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;      <span class="comment">// Remember the new or group parent if there is one</span></div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;      <span class="keywordflow">if</span> (Cardinalities.has_value()) {</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;        Relationship::RelationshipKind GroupKind =</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;            Relationship::RelationshipKind::RK_ALTERNATIVE;</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;        <span class="keywordflow">if</span> (std::get&lt;1&gt;(Cardinalities.value()) == SxfmConstants::WILDCARD) {</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;          GroupKind = Relationship::RelationshipKind::RK_OR;</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;        }</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;        OrGroupMapping[CurrentIndentationLevel] =</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;            std::tuple&lt;std::string, Relationship::RelationshipKind&gt;(Name,</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;                                                                    GroupKind);</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;      }</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160; </div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;      LastIndentationLevel = CurrentIndentationLevel;</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;    }</div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160; </div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;    <span class="comment">// Add the remaining or groups</span></div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;OrGroup : OrGroupMapping) {</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;      FMB.emplaceRelationship(std::get&lt;1&gt;(OrGroup.second),</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;                              std::get&lt;0&gt;(OrGroup.second));</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;    }</div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;  }</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160; </div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;}</div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160; </div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;<span class="keywordtype">bool</span> FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {</div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;  <span class="keywordflow">if</span> (Constraints == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;    llvm::errs()</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Failed to read in constraints. Is the constraint field empty?\n&quot;</span>;</div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;  }</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160; </div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;  std::stringstream Ss(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;      UniqueXmlChar(xmlNodeGetContent(Constraints), xmlFree).get()));</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;  std::string To;</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160; </div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;  <span class="comment">// Prepare the identifiers for later replacement</span></div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;  std::vector&lt;std::string&gt; Keys;</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;  Keys.reserve(IdentifierMap.size());</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;  std::for_each(IdentifierMap.begin(), IdentifierMap.end(),</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;                [&amp;Keys](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;Entry) { Keys.push_back(Entry.first); });</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;  std::sort(Keys.begin(), Keys.end(), std::greater&lt;std::string&gt;{});</div>
 <div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160; </div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;  <span class="keywordflow">if</span> (MinCardinality.value() != 1 ||</div>
-<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;      (MaxCardinality.value() != 1 &amp;&amp;</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;       MaxCardinality.value() != SxfmConstants::WILDCARD)) {</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;    llvm::errs() &lt;&lt; <span class="stringliteral">&quot;Cardinality unsupported. We support cardinalities [1,1] &quot;</span></div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;                    <span class="stringliteral">&quot;(alternative) or [1, *] (or group).\n&quot;</span>;</div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;    <span class="keywordflow">return</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;();</div>
-<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;  }</div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160; </div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;  <span class="keywordflow">return</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;(</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;      std::tuple&lt;int, int&gt;{MinCardinality.value(), MaxCardinality.value()});</div>
-<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;}</div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160; </div>
-<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;std::optional&lt;int&gt;</div>
-<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {</div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;  std::optional&lt;int&gt; <a class="code" href="classResult.html">Result</a> = std::optional&lt;int&gt;();</div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;  <span class="keywordflow">if</span> (CardinalityString == <span class="stringliteral">&quot;*&quot;</span>) {</div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;    <span class="comment">// We use -1 as our magic integer to indicate that the cardinality is a</span></div>
-<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    <span class="comment">// wildcard.</span></div>
-<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    <a class="code" href="classResult.html">Result</a> = SxfmConstants::WILDCARD;</div>
-<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;    <span class="comment">// Convert the string into an integer in a safe way</span></div>
-<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;    <span class="keywordtype">long</span> LongNumber;</div>
-<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;    <span class="keywordflow">if</span> (!llvm::to_integer(CardinalityString, LongNumber, 10)) {</div>
-<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;      llvm::errs() &lt;&lt; llvm::formatv(</div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;          <span class="stringliteral">&quot;The cardinality: &#39;{0}&#39; was not an integer.\n&quot;</span>, CardinalityString);</div>
-<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;      <a class="code" href="classResult.html">Result</a> = LongNumber;</div>
-<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    }</div>
-<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;  }</div>
-<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160; </div>
-<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classResult.html">Result</a>;</div>
-<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;}</div>
-<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160; </div>
-<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;  <span class="keywordflow">while</span> (std::getline(Ss, To)) {</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;    <span class="comment">// Ignore if a line is empty</span></div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;    <span class="keywordflow">if</span> (To.empty() || std::all_of(To.begin(), To.end(), isspace)) {</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;    }</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160; </div>
+<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;    <span class="comment">// We ignore the indentation in the beginning of each line since the format</span></div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;    <span class="comment">// does not force it</span></div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;    llvm::StringRef ToStringRef(To);</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160; </div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;    <span class="keywordflow">if</span> (!ToStringRef.contains(<span class="charliteral">&#39;:&#39;</span>)) {</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;      llvm::errs() &lt;&lt; <span class="stringliteral">&quot;Failed to read in a constraint since it does not &quot;</span></div>
+<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;                      <span class="stringliteral">&quot;contain a colon.&quot;</span>;</div>
+<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;      llvm::errs() &lt;&lt; <span class="stringliteral">&quot;This violates the SXFM format.&quot;</span>;</div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;    }</div>
+<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160; </div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    <span class="keyword">auto</span> Pos = ToStringRef.find(<span class="charliteral">&#39;:&#39;</span>);</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    ToStringRef = ToStringRef.substr(Pos + 1, ToStringRef.size() - Pos - 1);</div>
+<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    std::string CnfFormula = <a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(ToStringRef);</div>
+<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160; </div>
+<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;    <span class="comment">// In the following lines, we replace all identifiers by the real feature</span></div>
+<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;    <span class="comment">// name</span></div>
+<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;Key : Keys) {</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;      std::string Value = IdentifierMap[Key];</div>
+<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;      <span class="keywordflow">if</span> (Value == Key) {</div>
+<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;      }</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;      <span class="keyword">auto</span> FoundPos = CnfFormula.find(Key);</div>
+<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;      <span class="keywordflow">while</span> (FoundPos != std::string::npos) {</div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;        CnfFormula = CnfFormula.replace(FoundPos, Key.length(), Value);</div>
+<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;        FoundPos = CnfFormula.find(Key);</div>
+<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;      }</div>
+<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;    }</div>
+<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160; </div>
+<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;    <span class="comment">// Replace &#39;or&#39; by &#39;|&#39; and &#39;and&#39; by &#39;&amp;&#39;</span></div>
+<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;    std::unordered_map&lt;std::string, std::string&gt; SpecialKeys;</div>
+<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;    SpecialKeys[<span class="stringliteral">&quot; or &quot;</span>] = <span class="stringliteral">&quot; | &quot;</span>;</div>
+<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;    SpecialKeys[<span class="stringliteral">&quot; and &quot;</span>] = <span class="stringliteral">&quot; &amp; &quot;</span>;</div>
+<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;Key : SpecialKeys) {</div>
+<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;      <span class="keyword">auto</span> FoundPos = CnfFormula.find(Key.first);</div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;      <span class="keywordflow">while</span> (FoundPos != std::string::npos) {</div>
+<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;        CnfFormula =</div>
+<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;            CnfFormula.replace(FoundPos, Key.first.length(), Key.second);</div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;        FoundPos = CnfFormula.find(Key.first);</div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;      }</div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;    }</div>
+<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160; </div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">auto</span> Constraint = ConstraintParser(CnfFormula).buildConstraint()) {</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;      FMB.addConstraint(std::move(Constraint));</div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;    }</div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;  }</div>
+<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160; </div>
+<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;}</div>
+<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160; </div>
+<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;std::optional&lt;std::tuple&lt;int, int&gt;&gt; FeatureModelSxfmParser::extractCardinality(</div>
+<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;    llvm::StringRef StringToExtractFrom) {</div>
+<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;  std::optional&lt;int&gt; MinCardinality;</div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;  std::optional&lt;int&gt; MaxCardinality;</div>
+<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160; </div>
+<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;  <span class="comment">// Search for the first occurrence of &#39;[&#39;; then read in the min cardinality</span></div>
+<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;  <span class="comment">// until the comma. Afterwards, read in the max cardinality until &#39;]&#39;</span></div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;  std::string::size_type Pos = StringToExtractFrom.find_first_of(<span class="charliteral">&#39;[&#39;</span>);</div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;  <span class="keywordflow">if</span> (Pos == std::string::npos) {</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    llvm::errs() &lt;&lt; <span class="stringliteral">&quot;No cardinality given in or group!\n&quot;</span>;</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;    <span class="keywordflow">return</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;();</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;  }</div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;  llvm::StringRef CardinalityString(StringToExtractFrom);</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;  <span class="keywordtype">size_t</span> CommaPos = CardinalityString.find(<span class="charliteral">&#39;,&#39;</span>, Pos + 1);</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;  MinCardinality = parseCardinality(</div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;      CardinalityString.substr(Pos + 1, CommaPos - Pos - 1).str());</div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;  Pos = CommaPos;</div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;  MaxCardinality = parseCardinality(</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;      CardinalityString</div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;          .substr(Pos + 1, CardinalityString.find(<span class="charliteral">&#39;]&#39;</span>, Pos + 1) - Pos - 1)</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;          .str());</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160; </div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;  <span class="keywordflow">if</span> (!MinCardinality.has_value() || !MaxCardinality.has_value()) {</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;    llvm::errs() &lt;&lt; <span class="stringliteral">&quot;No parsable cardinality!\n&quot;</span>;</div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;    <span class="keywordflow">return</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;();</div>
+<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;  }</div>
+<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160; </div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;  <span class="keywordflow">if</span> (MinCardinality.value() != 1 ||</div>
+<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;      (MaxCardinality.value() != 1 &amp;&amp;</div>
+<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;       MaxCardinality.value() != SxfmConstants::WILDCARD)) {</div>
+<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;    llvm::errs() &lt;&lt; <span class="stringliteral">&quot;Cardinality unsupported. We support cardinalities [1,1] &quot;</span></div>
+<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;                    <span class="stringliteral">&quot;(alternative) or [1, *] (or group).\n&quot;</span>;</div>
+<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;    <span class="keywordflow">return</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;();</div>
+<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;  }</div>
+<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160; </div>
+<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;  <span class="keywordflow">return</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;(</div>
+<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;      std::tuple&lt;int, int&gt;{MinCardinality.value(), MaxCardinality.value()});</div>
+<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;}</div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160; </div>
+<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;std::optional&lt;int&gt;</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {</div>
+<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;  std::optional&lt;int&gt; <a class="code" href="classResult.html">Result</a> = std::optional&lt;int&gt;();</div>
+<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;  <span class="keywordflow">if</span> (CardinalityString == <span class="stringliteral">&quot;*&quot;</span>) {</div>
+<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;    <span class="comment">// We use -1 as our magic integer to indicate that the cardinality is a</span></div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;    <span class="comment">// wildcard.</span></div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;    <a class="code" href="classResult.html">Result</a> = SxfmConstants::WILDCARD;</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;    <span class="comment">// Convert the string into an integer in a safe way</span></div>
+<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;    <span class="keywordtype">long</span> LongNumber;</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;    <span class="keywordflow">if</span> (!llvm::to_integer(CardinalityString, LongNumber, 10)) {</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;      llvm::errs() &lt;&lt; llvm::formatv(</div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;          <span class="stringliteral">&quot;The cardinality: &#39;{0}&#39; was not an integer.\n&quot;</span>, CardinalityString);</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;      <a class="code" href="classResult.html">Result</a> = LongNumber;</div>
+<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;    }</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;  }</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160; </div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classResult.html">Result</a>;</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;}</div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160; </div>
+<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassOk_html"><div class="ttname"><a href="classOk.html">Ok</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00018">Result.h:18</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelBuilder_html_ade65bb80ef9e7d79e8c41727360a12e8"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelBuilder.html#ade65bb80ef9e7d79e8c41727360a12e8">vara::feature::FeatureModelBuilder::setPath</a></div><div class="ttdeci">FeatureModelBuilder * setPath(const fs::path &amp;Path)</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelBuilder_8h_source.html#l00075">FeatureModelBuilder.h:75</a></div></div>
@@ -818,7 +901,7 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_aaf2d54f1d085fb22b01e35f8a281aa72"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#aaf2d54f1d085fb22b01e35f8a281aa72">vara::feature::XmlConstants::NAME</a></div><div class="ttdeci">static constexpr xmlChar NAME[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00018">XmlConstants.h:18</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 28 2021 08:03:59 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 30 2021 09:09:35 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

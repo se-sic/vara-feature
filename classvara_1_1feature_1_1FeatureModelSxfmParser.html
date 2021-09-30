@@ -171,7 +171,7 @@ Constraints</h2>
 <img src="constraints.png" alt=""/>
 </div>
 <p>or alternatively: </p><div class="fragment"><div class="line">macro_rules! sxfm_constraints {</div>
-<div class="line">    (:$name:ident $cnf_formula:tt) =&gt; {...};</div>
+<div class="line">    ($name:ident : $cnf_formula:tt) =&gt; {...};</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The constraints have to be provided in CNF format. Therebey, <code><code>~</code></code> stands for negation, <code><code>or</code></code> for a disjunction. Each constraint is written in a separate XML tag <code><code>constraints</code></code>.</p>
 <dl class="section see"><dt>See also</dt><dd><a href="http://www.splot-research.org/sxfm.html">SPLOT</a> </dd>
@@ -282,7 +282,7 @@ Constraints</h2>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 28 2021 08:03:59 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 30 2021 09:09:35 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
