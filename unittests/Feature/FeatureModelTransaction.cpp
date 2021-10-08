@@ -895,7 +895,7 @@ TEST_F(FeatureModelTransactionTest, addFeatureToModel) {
   EXPECT_EQ(FMSizeBefore, FM->size() - 1);
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ab"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
 }
 
@@ -914,15 +914,13 @@ TEST_F(FeatureModelTransactionTest, addFeaturesToModel) {
   EXPECT_EQ(FMSizeBefore, FM->size() - 2);
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ab"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
-  EXPECT_TRUE(FM->getFeature("ac")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ac"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
 }
 
 TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
-  size_t FMSizeBefore = FM->size();
-
   // Prepare Model with two Features
   std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
   NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
@@ -931,15 +929,177 @@ TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
                                           FM->getFeature("a")));
   vara::feature::addFeatures(*FM,
                              std::move(NewFeatures)); // committed automatically
+  size_t FMSizeBefore = FM->size();
 
   vara::feature::removeFeature(*FM, FM->getFeature("ab"));
 
-  EXPECT_EQ(FMSizeBefore, FM->size() - 1);
+  EXPECT_EQ(FMSizeBefore - 1, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
   EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
-  EXPECT_TRUE(FM->getFeature("ac")); // Change should be visible
+  EXPECT_TRUE(FM->getFeature("ac"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
   EXPECT_FALSE(FM->getFeature("ab"));
+}
+
+TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
+  // TODO (se-sic/VaRA#799): features should be added via addFeatures (applies
+  // to following tests as well)
+  // Prepare Model with several Features
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
+                            FM->getFeature("ab"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
+                            FM->getFeature("ad"));
+  size_t FMSizeBefore = FM->size();
+
+  // Prepare Features for deletion
+  std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
+      FM->getFeature("ac"), FM->getFeature("ad"), FM->getFeature("ae")};
+
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
+
+  EXPECT_EQ(FMSizeBefore - 3, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ab"));
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
+  EXPECT_FALSE(FM->getFeature("ac"));
+  EXPECT_FALSE(FM->getFeature("ad"));
+  EXPECT_FALSE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 0);
+}
+
+// This test tries to remove ad in non-recursive mode, but not ae, which is a
+// child of ad --> deletion of ad is not possible.
+TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
+  // Prepare Model with several Features
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
+                            FM->getFeature("ab"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
+                            FM->getFeature("ad"));
+  size_t FMSizeBefore = FM->size();
+
+  // Prepare Features for deletion
+  std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
+      FM->getFeature("ad"), FM->getFeature("ac")};
+
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted);
+
+  EXPECT_EQ(FMSizeBefore - 1, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ab"));
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
+  EXPECT_FALSE(FM->getFeature("ac"));
+  // "ad" should not be removed in without recursive mode because it this has a
+  // child
+  EXPECT_TRUE(FM->getFeature("ad"));
+  EXPECT_TRUE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 1);
+}
+
+TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelRecursive) {
+  // Prepare Model with several Features
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
+                            FM->getFeature("ab"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
+                            FM->getFeature("ad"));
+  size_t FMSizeBefore = FM->size();
+
+  // Prepare Features for deletion --> ensuring ordering does not matter in
+  // recursive mode
+  std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
+      FM->getFeature("ad"), FM->getFeature("ac"), FM->getFeature("ae")};
+
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted, true);
+
+  EXPECT_EQ(FMSizeBefore - 3, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ab"));
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
+  EXPECT_FALSE(FM->getFeature("ac"));
+  EXPECT_FALSE(FM->getFeature("ad"));
+  EXPECT_FALSE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 0);
+}
+
+TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelParentsOnly) {
+  // Prepare Model with several Features
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
+                            FM->getFeature("ab"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
+                            FM->getFeature("ad"));
+  size_t FMSizeBefore = FM->size();
+
+  // Prepare Features for deletion --> ensuring ordering does not matter in
+  // recursive mode
+  std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
+      FM->getFeature("ab"), FM->getFeature("ad")};
+
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted, true);
+
+  EXPECT_EQ(FMSizeBefore - 3, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ac"));
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
+  EXPECT_FALSE(FM->getFeature("ab"));
+  EXPECT_FALSE(FM->getFeature("ad"));
+  // should be removed in recursive mode because ae is a child of ad
+  EXPECT_FALSE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 0);
+}
+
+TEST_F(FeatureModelTransactionTest,
+       removeFeaturesFromModelRecursiveOnlyPossible) {
+  // Prepare Model with several Features
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
+                            FM->getFeature("a"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
+                            FM->getFeature("ab"));
+  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
+                            FM->getFeature("ad"));
+  size_t FMSizeBefore = FM->size();
+
+  // Prepare Features for deletion
+  std::vector<detail::FeatureVariantTy> FeaturesToBeDeleted{
+      FM->getFeature("ad"), FM->getFeature("ac")};
+
+  auto RemainingFeatures =
+      vara::feature::removeFeatures(*FM, FeaturesToBeDeleted, true);
+
+  EXPECT_EQ(FMSizeBefore - 3, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ab"));
+  EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
+  EXPECT_FALSE(FM->getFeature("ac"));
+  EXPECT_FALSE(FM->getFeature("ad"));
+  // should be removed in recursive mode because ae is a child of ad
+  EXPECT_FALSE(FM->getFeature("ae"));
+  EXPECT_EQ(RemainingFeatures.size(), 0);
 }
 
 TEST_F(FeatureModelTransactionTest, addRelationshipToGroup) {

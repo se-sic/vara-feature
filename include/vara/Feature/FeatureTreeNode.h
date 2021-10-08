@@ -93,6 +93,12 @@ public:
     return FS;
   }
 
+  /// Checks if a FeatureTreeNode has children or is a leaf.
+  ///
+  /// \return true, if the FeatureTreeNode does not have children, i.e., is a
+  /// leaf.
+  bool isLeaf() { return this->children().empty(); }
+
 protected:
   FeatureTreeNode(NodeKind Kind, FeatureTreeNode *Parent,
                   const llvm::SmallPtrSetImpl<FeatureTreeNode *> &Children)
