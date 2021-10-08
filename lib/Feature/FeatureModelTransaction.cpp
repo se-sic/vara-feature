@@ -50,13 +50,13 @@ Feature *getActualFeature(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   return ActualFeature;
 }
 
-std::optional<bool> fvIsLeave(FeatureModel &FM, detail::FeatureVariantTy &FV) {
+std::optional<bool> fvIsLeaf(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   Feature *ActualFeature = getActualFeature(FM, FV);
   // if Feature does not exist in FM
   if (ActualFeature == nullptr) {
     return std::nullopt;
   }
-  return std::optional<bool>{ActualFeature->isLeave()};
+  return std::optional<bool>{ActualFeature->isLeaf()};
 }
 
 /// Checks if in recursive mode the provided Feature can be deleted or not.
@@ -112,7 +112,7 @@ std::vector<detail::FeatureVariantTy> removeFeatures(
       Begin, End,
       [&FM, Recursive, &Begin, &End,
        &OtherFeatures](detail::FeatureVariantTy &FV) {
-        if (fvIsLeave(FM, FV).value_or(false)) {
+        if (fvIsLeaf(FM, FV).value_or(false)) {
           return true;
         }
         if (!Recursive) {
