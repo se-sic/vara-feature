@@ -155,6 +155,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aab96af5ef11a4066cbab4631041d222d"><td class="memTemplItemLeft" align="right" valign="top">llvm::SmallSet&lt; T *, 3 &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#aab96af5ef11a4066cbab4631041d222d">getChildren</a> (int Depth=-1)</td></tr>
 <tr class="memdesc:aab96af5ef11a4066cbab4631041d222d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search first (possibly transitive) children of given type in tree structure.  <a href="classvara_1_1feature_1_1FeatureTreeNode.html#aab96af5ef11a4066cbab4631041d222d">More...</a><br /></td></tr>
 <tr class="separator:aab96af5ef11a4066cbab4631041d222d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a822492d97c312779b08d2e109e6307f9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#a822492d97c312779b08d2e109e6307f9">isLeaf</a> ()</td></tr>
+<tr class="memdesc:a822492d97c312779b08d2e109e6307f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> has children or is a leaf.  <a href="classvara_1_1feature_1_1FeatureTreeNode.html#a822492d97c312779b08d2e109e6307f9">More...</a><br /></td></tr>
+<tr class="separator:a822492d97c312779b08d2e109e6307f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -367,7 +370,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureTreeNode_8h_source.html#l00097">97</a> of file <a class="el" href="FeatureTreeNode_8h_source.html">FeatureTreeNode.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureTreeNode_8h_source.html#l00103">103</a> of file <a class="el" href="FeatureTreeNode_8h_source.html">FeatureTreeNode.h</a>.</p>
 
 </div>
 </div>
@@ -411,7 +414,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureTreeNode_8h_source.html#l00103">103</a> of file <a class="el" href="FeatureTreeNode_8h_source.html">FeatureTreeNode.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureTreeNode_8h_source.html#l00109">109</a> of file <a class="el" href="FeatureTreeNode_8h_source.html">FeatureTreeNode.h</a>.</p>
 
 </div>
 </div>
@@ -499,7 +502,7 @@ Friends</h2></td></tr>
 
 <p class="reference">References <a class="el" href="FeatureTreeNode_8h_source.html#l00062">begin()</a>, and <a class="el" href="FeatureTreeNode_8h_source.html#l00065">end()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8h_source.html#l00696">vara::feature::detail::SetRoot::operator()()</a>, and <a class="el" href="Feature_8cpp_source.html#l00007">vara::feature::Feature::toString()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureTreeNode_8h_source.html#l00100">isLeaf()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00696">vara::feature::detail::SetRoot::operator()()</a>, and <a class="el" href="Feature_8cpp_source.html#l00007">vara::feature::Feature::toString()</a>.</p>
 
 </div>
 </div>
@@ -624,7 +627,7 @@ template&lt;typename T  = FeatureTreeNode&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="FeatureTreeNode_8h_source.html#l00090">90</a> of file <a class="el" href="FeatureTreeNode_8h_source.html">FeatureTreeNode.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00070">vara::feature::mergeSubtree()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00071">vara::feature::canBeDeletedRecursively()</a>, and <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00174">vara::feature::mergeSubtree()</a>.</p>
 
 </div>
 </div>
@@ -653,7 +656,7 @@ template&lt;typename T  = FeatureTreeNode&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="FeatureTreeNode_8h_source.html#l00048">48</a> of file <a class="el" href="FeatureTreeNode_8h_source.html">FeatureTreeNode.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="Relationship_8h_source.html#l00034">vara::feature::Relationship::classof()</a>, <a class="el" href="Feature_8h_source.html#l00179">vara::feature::Feature::classof()</a>, and <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00125">vara::feature::CompareProperties()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="Relationship_8h_source.html#l00034">vara::feature::Relationship::classof()</a>, <a class="el" href="Feature_8h_source.html#l00179">vara::feature::Feature::classof()</a>, and <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00229">vara::feature::CompareProperties()</a>.</p>
 
 </div>
 </div>
@@ -682,7 +685,7 @@ template&lt;typename T  = FeatureTreeNode&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="FeatureTreeNode_8h_source.html#l00053">53</a> of file <a class="el" href="FeatureTreeNode_8h_source.html">FeatureTreeNode.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00125">vara::feature::CompareProperties()</a>, and <a class="el" href="Feature_8h_source.html#l00063">vara::feature::Feature::getParentFeature()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00229">vara::feature::CompareProperties()</a>, and <a class="el" href="Feature_8h_source.html#l00063">vara::feature::Feature::getParentFeature()</a>.</p>
 
 </div>
 </div>
@@ -741,6 +744,40 @@ template&lt;typename T  = FeatureTreeNode&gt; </div>
 <p class="definition">Definition at line <a class="el" href="FeatureTreeNode_8h_source.html#l00075">75</a> of file <a class="el" href="FeatureTreeNode_8h_source.html">FeatureTreeNode.h</a>.</p>
 
 <p class="reference">References <a class="el" href="FeatureTreeNode_8h_source.html#l00062">begin()</a>, and <a class="el" href="FeatureTreeNode_8h_source.html#l00065">end()</a>.</p>
+
+</div>
+</div>
+<a id="a822492d97c312779b08d2e109e6307f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a822492d97c312779b08d2e109e6307f9">&#9670;&nbsp;</a></span>isLeaf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool vara::feature::FeatureTreeNode::isLeaf </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if a <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> has children or is a leaf. </p>
+<dl class="section return"><dt>Returns</dt><dd>true, if the <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> does not have children, i.e., is a leaf. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="FeatureTreeNode_8h_source.html#l00100">100</a> of file <a class="el" href="FeatureTreeNode_8h_source.html">FeatureTreeNode.h</a>.</p>
+
+<p class="reference">References <a class="el" href="FeatureTreeNode_8h_source.html#l00068">children()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00053">vara::feature::fvIsLeaf()</a>.</p>
 
 </div>
 </div>
@@ -875,7 +912,7 @@ template&lt;typename T  = FeatureTreeNode&gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Sep 30 2021 09:09:35 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 8 2021 20:41:33 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
