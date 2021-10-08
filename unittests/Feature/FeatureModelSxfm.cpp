@@ -20,7 +20,7 @@ TEST(SxfmParser, validation) {
   EXPECT_TRUE(FS && "Input file could not be read.");
   auto FM =
       FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
-  EXPECT_TRUE(FM);
+  ASSERT_TRUE(FM);
   EXPECT_EQ(FM->size(), 17);
   EXPECT_EQ(FM->getName(), "My feature model");
 
@@ -34,6 +34,18 @@ TEST(SxfmParser, validation) {
             Feature::FeatureKind::FK_BINARY);
 }
 
+/// Here, we check whether a wrongly formatted sxfm file would be parsed
+TEST(FeatureModelParser, detectWornglyFormattedConstraint) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_wrong_constraint_format.sxfm"));
+  EXPECT_TRUE(FS && "Input file could not be read.");
+
+  auto FM =
+          FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
+
+  EXPECT_FALSE(FM);
+}
+
 /// Here, the check of the features is performed using a real feature model.
 /// Note that also the format of the sxfm file differs a bit from the previous
 /// test in that we use default indentation with tabulators.
@@ -42,7 +54,7 @@ TEST(SxfmParser, parsing) {
   EXPECT_TRUE(FS && "Input file could not be read.");
   auto FM =
       FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
-  EXPECT_TRUE(FM);
+  ASSERT_TRUE(FM);
   EXPECT_EQ(FM->size(), 37);
   EXPECT_EQ(FM->getName(), "apache");
 
@@ -50,7 +62,6 @@ TEST(SxfmParser, parsing) {
   EXPECT_TRUE(FM->getFeature("root"));
   EXPECT_TRUE(FM->getFeature("threadCount"));
   EXPECT_TRUE(FM->getFeature("threadCount_64"));
-  EXPECT_TRUE(FM->getFeature("Group_0"));
   EXPECT_TRUE(FM->getFeature("tlsMoreBits"));
   EXPECT_TRUE(FM->getFeature("ecdsaCertificate"));
   EXPECT_TRUE(FM->getFeature("tls"));

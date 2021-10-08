@@ -14,7 +14,7 @@
 			: a3 (RSA)
 		:g [1,1] alt4(symmetric)
 			: a4 (AES)
-			: a5 (DES)
+			: a4 (DES)
 	:g [1,1] compressionLevel(compressionLevel)
 		: compressionLevel_9(compressionLevel_9)
 		: compressionLevel_5(compressionLevel_5)
@@ -29,8 +29,9 @@
 		: event(event)
 	:o tls(tls)
 	:o aesTls(aesTls)
-	:m tlsMoreBits(tlsMoreBits)
-		:m ecdsaCertificate(ecdsaCertificate)
+	:g [1,1] Group_0(Group_0)
+		: tlsMoreBits(tlsMoreBits)
+			:m ecdsaCertificate(ecdsaCertificate)
 	:o basicAuth(basicAuth)
 	:o keepalive(keepalive)
 	:o serverCache(serverCache)
@@ -39,16 +40,7 @@
 	:o sendfile(sendfile)
 </feature_tree>
 <constraints>
-Constraint_0:~compression or ~keepalive
-Constraint_1:compression or noCompression
-Constraint_2:~compression or ~noCompression
-Constraint_3:~event or ~keepalive
-Constraint_4:~processCount_8 or ~threadCount_16
-Constraint_5:~processCount_8 or ~threadCount_32
-Constraint_6:~processCount_8 or ~threadCount_64
-Constraint_7:~processCount_16 or ~threadCount_16
-Constraint_8:~processCount_16 or ~threadCount_32
-Constraint_9:~processCount_32 or ~threadCount_16
-Constraint_10:~noCompression or ~compressionLevel_1 or ~compressionLevel_5 or ~compressionLevel_9
+~compression or ~keepalive
+compression or noCompression
 </constraints>
 </feature_model>
