@@ -21,12 +21,25 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
   Trans.commit();
 }
 
+Feature *getActualFeature(FeatureModel &FM, detail::FeatureVariantTy &FV) {
+  Feature *ActualFeature = nullptr;
+  std::visit(
+      Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
+                 [&ActualFeature, &FM](string &FName) {
+                   ActualFeature = FM.getFeature(FName);
+                 }},
+      FV);
+  return ActualFeature;
+}
+
 void addFeatures(
     FeatureModel &FM,
-    std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures) {
+    std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+        NewFeatures) {
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   for (auto &NewFeature : NewFeatures) {
-    Trans.addFeature(std::move(NewFeature.first), NewFeature.second);
+    Feature *ParentFeature = getActualFeature(FM, NewFeature.second);
+    Trans.addFeature(std::move(NewFeature.first), ParentFeature);
   }
   Trans.commit();
 }
@@ -37,17 +50,6 @@ void removeFeature(FeatureModel &FM,
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   Trans.removeFeature(FeatureToBeDeleted, Recursive);
   Trans.commit();
-}
-
-Feature *getActualFeature(FeatureModel &FM, detail::FeatureVariantTy &FV) {
-  Feature *ActualFeature = nullptr;
-  std::visit(
-      Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
-                 [&ActualFeature, &FM](string &FName) {
-                   ActualFeature = FM.getFeature(FName);
-                 }},
-      FV);
-  return ActualFeature;
 }
 
 std::optional<bool> fvIsLeaf(FeatureModel &FM, detail::FeatureVariantTy &FV) {

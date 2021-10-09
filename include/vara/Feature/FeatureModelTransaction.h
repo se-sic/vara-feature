@@ -1092,7 +1092,8 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
 /// \param NewFeatures
 void addFeatures(
     FeatureModel &FM,
-    std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures);
+    std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+        NewFeatures);
 
 /// Removes a Feature from the FeatureModel
 ///

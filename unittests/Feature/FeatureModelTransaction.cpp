@@ -902,7 +902,8 @@ TEST_F(FeatureModelTransactionTest, addFeatureToModel) {
 TEST_F(FeatureModelTransactionTest, addFeaturesToModel) {
   size_t FMSizeBefore = FM->size();
 
-  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+      NewFeatures;
   NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
                                           FM->getFeature("a")));
   NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ac"),
@@ -922,7 +923,8 @@ TEST_F(FeatureModelTransactionTest, addFeaturesToModel) {
 
 TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
   // Prepare Model with two Features
-  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+      NewFeatures;
   NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
                                           FM->getFeature("a")));
   NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ac"),
@@ -977,14 +979,17 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModel) {
 // child of ad --> deletion of ad is not possible.
 TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
   // Prepare Model with several Features
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
-                            FM->getFeature("a"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
-                            FM->getFeature("a"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
-                            FM->getFeature("ab"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
-                            FM->getFeature("ad"));
+  std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+      NewFeatures;
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ab"), "a"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ac"), "a"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ad"), "ab"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ae"), "ad"));
+  vara::feature::addFeatures(*FM, std::move(NewFeatures));
   size_t FMSizeBefore = FM->size();
 
   // Prepare Features for deletion
@@ -1009,14 +1014,18 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelNotPossible) {
 
 TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelRecursive) {
   // Prepare Model with several Features
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
-                            FM->getFeature("a"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
-                            FM->getFeature("a"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
-                            FM->getFeature("ab"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
-                            FM->getFeature("ad"));
+  std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+      NewFeatures;
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ab"), "a"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ac"), "a"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ad"), "ab"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ae"), "ad"));
+  vara::feature::addFeatures(*FM, std::move(NewFeatures));
+
   size_t FMSizeBefore = FM->size();
 
   // Prepare Features for deletion --> ensuring ordering does not matter in
@@ -1040,14 +1049,17 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelRecursive) {
 
 TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelParentsOnly) {
   // Prepare Model with several Features
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
-                            FM->getFeature("a"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
-                            FM->getFeature("a"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
-                            FM->getFeature("ab"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
-                            FM->getFeature("ad"));
+  std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+      NewFeatures;
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ab"), "a"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ac"), "a"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ad"), "ab"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ae"), "ad"));
+  vara::feature::addFeatures(*FM, std::move(NewFeatures));
   size_t FMSizeBefore = FM->size();
 
   // Prepare Features for deletion --> ensuring ordering does not matter in
@@ -1073,14 +1085,17 @@ TEST_F(FeatureModelTransactionTest, removeFeaturesFromModelParentsOnly) {
 TEST_F(FeatureModelTransactionTest,
        removeFeaturesFromModelRecursiveOnlyPossible) {
   // Prepare Model with several Features
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ab"),
-                            FM->getFeature("a"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ac"),
-                            FM->getFeature("a"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ad"),
-                            FM->getFeature("ab"));
-  vara::feature::addFeature(*FM, std::make_unique<BinaryFeature>("ae"),
-                            FM->getFeature("ad"));
+  std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+      NewFeatures;
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ab"), "a"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ac"), "a"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ad"), "ab"));
+  NewFeatures.emplace_back(
+      std::make_pair(std::make_unique<BinaryFeature>("ae"), "ad"));
+  vara::feature::addFeatures(*FM, std::move(NewFeatures));
   size_t FMSizeBefore = FM->size();
 
   // Prepare Features for deletion
@@ -1105,7 +1120,8 @@ TEST_F(FeatureModelTransactionTest,
 TEST_F(FeatureModelTransactionTest, addRelationshipToGroup) {
   size_t FMSizeBefore = FM->size();
 
-  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+      NewFeatures;
   NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("aa"),
                                           FM->getFeature("a")));
   NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
@@ -1125,7 +1141,8 @@ TEST_F(FeatureModelTransactionTest, addRelationshipToGroup) {
 TEST_F(FeatureModelTransactionTest, removeRelationshipFromGroup) {
   size_t FMSizeBefore = FM->size();
 
-  std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures;
+  std::vector<std::pair<std::unique_ptr<Feature>, detail::FeatureVariantTy>>
+      NewFeatures;
   NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("aa"),
                                           FM->getFeature("a")));
   NewFeatures.emplace_back(std::make_pair(std::make_unique<BinaryFeature>("ab"),
