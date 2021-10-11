@@ -481,7 +481,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       llvm::StringRef ToStringRef(To);
       llvm::StringRef IndentationString =
           ToStringRef.substr(0, ToStringRef.find(':'));
-      int CurrentIndentationLevel = IndentationString.count(Indentation);
+      int CurrentIndentationLevel =
+          checkedNarrowingSignConversion(IndentationString.count(Indentation));
       int Diff = CurrentIndentationLevel - LastIndentationLevel;
 
       // Remember the root indentation for later checks
