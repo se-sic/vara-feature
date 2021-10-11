@@ -8,6 +8,7 @@
 
 #include "SxfmConstants.h"
 #include "XmlConstants.h"
+#include "vara/Utils/VariantUtil.h"
 
 #include <iostream>
 #include <regex>
@@ -301,13 +302,14 @@ std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
 }
 
 FeatureModelParser::UniqueXmlDtd FeatureModelXmlParser::createDtd() {
-  UniqueXmlDtd Dtd(
-      xmlIOParseDTD(nullptr,
-                    xmlParserInputBufferCreateMem(XmlConstants::DtdRaw.c_str(),
-                                                  XmlConstants::DtdRaw.length(),
-                                                  XML_CHAR_ENCODING_UTF8),
-                    XML_CHAR_ENCODING_UTF8),
-      xmlFreeDtd);
+  UniqueXmlDtd Dtd(xmlIOParseDTD(nullptr,
+                                 xmlParserInputBufferCreateMem(
+                                     XmlConstants::DtdRaw.c_str(),
+                                     checkedNarrowingSignConversion(
+                                         XmlConstants::DtdRaw.length()),
+                                     XML_CHAR_ENCODING_UTF8),
+                                 XML_CHAR_ENCODING_UTF8),
+                   xmlFreeDtd);
   xmlCleanupParser();
   assert(Dtd && "Failed to parse DTD.");
   return Dtd;
@@ -316,9 +318,11 @@ FeatureModelParser::UniqueXmlDtd FeatureModelXmlParser::createDtd() {
 FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
-  UniqueXmlDoc Doc(xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(), Xml.length(),
-                                     nullptr, nullptr, XML_PARSE_NOBLANKS),
-                   xmlFreeDoc);
+  UniqueXmlDoc Doc(
+      xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(),
+                        checkedNarrowingSignConversion(Xml.length()), nullptr,
+                        nullptr, XML_PARSE_NOBLANKS),
+      xmlFreeDoc);
   xmlCleanupParser();
   if (Doc && Ctxt->valid) {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
@@ -352,13 +356,14 @@ std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
 }
 
 FeatureModelSxfmParser::UniqueXmlDtd FeatureModelSxfmParser::createDtd() {
-  UniqueXmlDtd Dtd(
-      xmlIOParseDTD(nullptr,
-                    xmlParserInputBufferCreateMem(
-                        SxfmConstants::DtdRaw.c_str(),
-                        SxfmConstants::DtdRaw.length(), XML_CHAR_ENCODING_UTF8),
-                    XML_CHAR_ENCODING_UTF8),
-      xmlFreeDtd);
+  UniqueXmlDtd Dtd(xmlIOParseDTD(nullptr,
+                                 xmlParserInputBufferCreateMem(
+                                     SxfmConstants::DtdRaw.c_str(),
+                                     checkedNarrowingSignConversion(
+                                         SxfmConstants::DtdRaw.length()),
+                                     XML_CHAR_ENCODING_UTF8),
+                                 XML_CHAR_ENCODING_UTF8),
+                   xmlFreeDtd);
   xmlCleanupParser();
   assert(Dtd && "Failed to parse DTD.");
   return Dtd;
@@ -369,9 +374,11 @@ FeatureModelSxfmParser::UniqueXmlDoc FeatureModelSxfmParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
   // Parse the given model by libxml2
-  UniqueXmlDoc Doc(xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(), Sxfm.length(),
-                                     nullptr, nullptr, XML_PARSE_NOBLANKS),
-                   xmlFreeDoc);
+  UniqueXmlDoc Doc(
+      xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(),
+                        checkedNarrowingSignConversion(Sxfm.length()), nullptr,
+                        nullptr, XML_PARSE_NOBLANKS),
+      xmlFreeDoc);
   xmlCleanupParser();
 
   // In the following, the document is validated.
