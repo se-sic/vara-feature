@@ -17,7 +17,7 @@ TEST(Result, okExtract) {
   auto O = Ok(std::make_unique<int>(42));
 
   ASSERT_TRUE(O);
-  EXPECT_EQ(*O.extract_value(), 42);
+  EXPECT_EQ(*O.extractValue(), 42);
 }
 
 TEST(Result, okInline) { EXPECT_EQ(**Ok(std::make_unique<int>(42)), 42); }
@@ -40,7 +40,7 @@ TEST(Result, errorExtract) {
   auto E = Error(std::make_unique<ErrorCode>(ERROR));
 
   ASSERT_FALSE(E);
-  EXPECT_EQ(*E.extract_error(), ERROR);
+  EXPECT_EQ(*E.extractError(), ERROR);
 }
 
 TEST(Result, errorInline) {
@@ -67,7 +67,7 @@ TEST(Result, resultOkMove) {
   auto R = Result<ErrorCode, std::unique_ptr<int>>(std::move(O));
 
   ASSERT_TRUE(R);
-  EXPECT_EQ(*R.extract_value(), 42);
+  EXPECT_EQ(*R.extractValue(), 42);
 }
 
 TEST(Result, resultOkInline) {
@@ -103,7 +103,7 @@ TEST(Result, resultErrorMove) {
   auto R = Result<std::unique_ptr<ErrorCode>>(std::move(E));
 
   ASSERT_FALSE(R);
-  EXPECT_EQ(*R.extract_error(), ERROR);
+  EXPECT_EQ(*R.extractError(), ERROR);
 }
 
 TEST(Result, resultErrorInline) {
@@ -115,10 +115,10 @@ TEST(Result, resultErrorInline) {
 
 TEST(Result, resultErrorRValue) {
   auto R = Result<std::unique_ptr<ErrorCode>>(
-      Error(std::make_unique<ErrorCode>(ERROR)).extract_error());
+      Error(std::make_unique<ErrorCode>(ERROR)).extractError());
 
   ASSERT_FALSE(R);
-  EXPECT_EQ(*R.extract_error(), ERROR);
+  EXPECT_EQ(*R.extractError(), ERROR);
 }
 
 TEST(Result, copyResultError) {

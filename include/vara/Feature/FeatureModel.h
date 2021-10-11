@@ -214,12 +214,12 @@ public:
   using unordered_feature_iterator = FeatureMapIterator;
   using const_unordered_feature_iterator = FeatureMapIterator;
 
-  llvm::iterator_range<unordered_feature_iterator> unordered_features() {
+  llvm::iterator_range<unordered_feature_iterator> unorderedFeatures() {
     return llvm::make_range(FeatureMapIterator(Features.begin()),
                             FeatureMapIterator(Features.end()));
   }
   [[nodiscard]] llvm::iterator_range<const_unordered_feature_iterator>
-  unordered_features() const {
+  unorderedFeatures() const {
     return llvm::make_range(FeatureMapIterator(Features.begin()),
                             FeatureMapIterator(Features.end()));
   }
@@ -490,8 +490,8 @@ public:
 
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
-    if (std::all_of(FM.unordered_features().begin(),
-                    FM.unordered_features().end(), [](Feature *F) {
+    if (std::all_of(FM.unorderedFeatures().begin(),
+                    FM.unorderedFeatures().end(), [](Feature *F) {
                       return llvm::isa<RootFeature>(F) || F->getParentFeature();
                     })) {
       return true;
@@ -504,7 +504,7 @@ struct EveryFeatureRequiresParent {
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
     if (std::all_of(
-            FM.unordered_features().begin(), FM.unordered_features().end(),
+            FM.unorderedFeatures().begin(), FM.unorderedFeatures().end(),
             [](Feature *F) {
               return llvm::isa<RootFeature>(F) ||
                      // Every parent of a Feature needs to have it as a child.
@@ -523,8 +523,8 @@ struct CheckFeatureParentChildRelationShip {
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
     if (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
-        1 == std::accumulate(FM.unordered_features().begin(),
-                             FM.unordered_features().end(), 0,
+        1 == std::accumulate(FM.unorderedFeatures().begin(),
+                             FM.unorderedFeatures().end(), 0,
                              [](int Sum, Feature *F) {
                                return Sum + llvm::isa<RootFeature>(F);
                              })) {
