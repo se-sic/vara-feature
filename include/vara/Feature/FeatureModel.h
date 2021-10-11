@@ -145,16 +145,14 @@ public:
   using ordered_feature_iterator = DFSIterator;
   using const_ordered_feature_iterator = DFSIterator;
 
-  ordered_feature_iterator begin() { return DFSIterator(Root); }
-  [[nodiscard]] const_ordered_feature_iterator begin() const {
-    return DFSIterator(Root);
-  }
+  ordered_feature_iterator begin() { return {Root}; }
+  [[nodiscard]] const_ordered_feature_iterator begin() const { return {Root}; }
 
   ordered_feature_iterator end() {
-    return DFSIterator(Root ? Root->getParentFeature() : nullptr);
+    return {Root ? Root->getParentFeature() : nullptr};
   }
   [[nodiscard]] const_ordered_feature_iterator end() const {
-    return DFSIterator(Root ? Root->getParentFeature() : nullptr);
+    return {Root ? Root->getParentFeature() : nullptr};
   }
 
   llvm::iterator_range<ordered_feature_iterator> features() {

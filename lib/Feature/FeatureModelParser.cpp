@@ -1,5 +1,6 @@
 #include "vara/Feature/FeatureModelParser.h"
 #include "vara/Feature/ConstraintParser.h"
+#include "vara/Feature/Feature.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -157,7 +158,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
       }
     }
   }
-  return FeatureSourceRange(Path, Start, End, Category);
+  return {Path, Start, End, Category};
 }
 
 Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
@@ -230,8 +231,8 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
 
 FeatureSourceRange::FeatureSourceLocation
 FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
-  int Line = 0;
-  int Column = 0;
+  unsigned Line = 0;
+  unsigned Column = 0;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(Head->name, XmlConstants::LINE)) {
@@ -243,7 +244,7 @@ FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
       }
     }
   }
-  return FeatureSourceRange::FeatureSourceLocation(Line, Column);
+  return {Line, Column};
 }
 
 /// Decide whether feature A excludes B. Beware that this method only detects
@@ -328,7 +329,7 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   } else {
     llvm::errs() << "Failed to parse / validate XML.\n";
   }
-  return UniqueXmlDoc(nullptr, nullptr);
+  return {nullptr, nullptr};
 }
 
 Result<FTErrorCode> FeatureModelXmlParser::verifyFeatureModel() {
@@ -387,7 +388,7 @@ FeatureModelSxfmParser::UniqueXmlDoc FeatureModelSxfmParser::parseDoc() {
   }
   llvm::errs() << "Failed to parse / validate XML.\n";
 
-  return UniqueXmlDoc(nullptr, nullptr);
+  return {nullptr, nullptr};
 }
 
 bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
@@ -714,7 +715,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
   std::string::size_type Pos = StringToExtractFrom.find_first_of('[');
   if (Pos == std::string::npos) {
     llvm::errs() << "No cardinality given in or group!\n";
-    return std::optional<std::tuple<int, int>>();
+    return {};
   }
   llvm::StringRef CardinalityString(StringToExtractFrom);
   size_t CommaPos = CardinalityString.find(',', Pos + 1);
@@ -728,7 +729,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
 
   if (!MinCardinality.has_value() || !MaxCardinality.has_value()) {
     llvm::errs() << "No parsable cardinality!\n";
-    return std::optional<std::tuple<int, int>>();
+    return {};
   }
 
   if (MinCardinality.value() != 1 ||
@@ -736,11 +737,10 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
        MaxCardinality.value() != SxfmConstants::WILDCARD)) {
     llvm::errs() << "Cardinality unsupported. We support cardinalities [1,1] "
                     "(alternative) or [1, *] (or group).\n";
-    return std::optional<std::tuple<int, int>>();
+    return {};
   }
 
-  return std::optional<std::tuple<int, int>>(
-      std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()});
+  return {std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()}};
 }
 
 std::optional<int>

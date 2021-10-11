@@ -30,18 +30,19 @@ public:
   class FeatureSourceLocation {
 
   public:
-    FeatureSourceLocation(int Line, int Column) : Line(Line), Column(Column) {}
+    FeatureSourceLocation(unsigned Line, unsigned Column)
+        : Line(Line), Column(Column) {}
     FeatureSourceLocation(const FeatureSourceLocation &L) = default;
     FeatureSourceLocation &operator=(const FeatureSourceLocation &) = default;
     FeatureSourceLocation(FeatureSourceLocation &&) = default;
     FeatureSourceLocation &operator=(FeatureSourceLocation &&) = default;
     virtual ~FeatureSourceLocation() = default;
 
-    void setLineNumber(int LineNumber) { this->Line = LineNumber; }
-    [[nodiscard]] int getLineNumber() const { return this->Line; }
+    void setLineNumber(unsigned LineNumber) { this->Line = LineNumber; }
+    [[nodiscard]] unsigned getLineNumber() const { return this->Line; }
 
-    void setColumnOffset(int ColumnOffset) { this->Column = ColumnOffset; }
-    [[nodiscard]] int getColumnOffset() const { return this->Column; }
+    void setColumnOffset(unsigned ColumnOffset) { this->Column = ColumnOffset; }
+    [[nodiscard]] unsigned getColumnOffset() const { return this->Column; }
 
     [[nodiscard]] std::string toString() const {
       return llvm::formatv("{0}:{1}", getLineNumber(), getColumnOffset());
@@ -63,8 +64,8 @@ public:
     }
 
   private:
-    int Line;
-    int Column;
+    unsigned Line;
+    unsigned Column;
   };
 
   FeatureSourceRange(fs::path Path,
