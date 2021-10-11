@@ -19,7 +19,7 @@ jobs:
           - llvm-major: 10
             llvm-minor: 0
           - llvm-major: 11
-            llvm-minor: 1
+            llvm-minor: 0
         exclude:
           - llvm-major: 10
             compiler: clang++-12
