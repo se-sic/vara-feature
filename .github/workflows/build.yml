@@ -17,9 +17,9 @@ jobs:
         compiler: [ clang++-11, clang++-12, g++-9 ]
         include:
           - llvm-major: 10
-            llvm-minor: 1
-          - llvm-major: 11
             llvm-minor: 0
+          - llvm-major: 11
+            llvm-minor: 1
         exclude:
           - llvm-major: 10
             compiler: clang++-12
