@@ -41,12 +41,11 @@ void removeFeature(FeatureModel &FM,
 
 Feature *getActualFeature(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   Feature *ActualFeature = nullptr;
-  std::visit(
-      Overloaded{[&ActualFeature, &FM](Feature *F) { ActualFeature = F; },
-                 [&ActualFeature, &FM](string &FName) {
-                   ActualFeature = FM.getFeature(FName);
-                 }},
-      FV);
+  std::visit(Overloaded{[&ActualFeature](Feature *F) { ActualFeature = F; },
+                        [&ActualFeature, &FM](string &FName) {
+                          ActualFeature = FM.getFeature(FName);
+                        }},
+             FV);
   return ActualFeature;
 }
 
@@ -110,8 +109,7 @@ std::vector<detail::FeatureVariantTy> removeFeatures(
   // those in recursive mode
   auto DeleteIt = std::partition(
       Begin, End,
-      [&FM, Recursive, &Begin, &End,
-       &OtherFeatures](detail::FeatureVariantTy &FV) {
+      [&FM, Recursive, &OtherFeatures](detail::FeatureVariantTy &FV) {
         if (fvIsLeaf(FM, FV).value_or(false)) {
           return true;
         }

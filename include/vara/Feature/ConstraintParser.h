@@ -128,7 +128,15 @@ public:
 private:
   using ResultTy = std::pair<ConstraintToken, int>;
 
-  static ResultTy munch(const llvm::StringRef &Str) {
+  static ResultTy munch(const llvm::StringRef Str) {
+    if (('a' <= Str.front() && Str.front() <= 'z') ||
+        ('A' <= Str.front() && Str.front() <= 'Z')) {
+      return munchIdentifier(Str);
+    }
+    if ('0' <= Str.front() && Str.front() <= '9') {
+      return munchNumber(Str);
+    }
+
     switch (Str.front()) {
     case EOF:
     case '\0':
@@ -160,11 +168,6 @@ private:
     case '>':
     case '<':
       return munchOperator(Str);
-    case '0' ... '9':
-      return munchNumber(Str);
-    case 'a' ... 'z':
-    case 'A' ... 'Z':
-      return munchIdentifier(Str);
     default:
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::ERROR,
                               Str.take_front().str()),

@@ -49,8 +49,9 @@ endif ()
 option(VARA_FEATURE_BUILD_DOC "Generate documentation" FALSE)
 
 # Extra debug warning flags
-if (CMAKE_BUILD_TYPE EQUAL "Debug")
-  add_compile_options(-Wall -Wextra -Wno-unused-parameter)
+string(TOUPPER ${CMAKE_BUILD_TYPE} build_type)
+if (build_type MATCHES "^(DEBUG)")
+  add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
 endif ()
 
 # Enable coverage tracking
