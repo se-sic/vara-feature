@@ -1,10 +1,11 @@
 <map id="include/vara/Feature/Error.h" name="include/vara/Feature/Error.h">
-<area shape="rect" id="node1" title=" " alt="" coords="401,5,556,47"/>
-<area shape="rect" id="node2" href="$Result_8h.html" title=" " alt="" coords="407,95,550,121"/>
+<area shape="rect" id="node1" title=" " alt="" coords="484,5,639,47"/>
+<area shape="rect" id="node2" href="$Result_8h.html" title=" " alt="" coords="381,95,523,121"/>
 <area shape="rect" id="node3" href="$VariantUtil_8h.html" title=" " alt="" coords="5,169,176,196"/>
-<area shape="rect" id="node4" title=" " alt="" coords="201,169,407,196"/>
-<area shape="rect" id="node5" title=" " alt="" coords="432,169,501,196"/>
-<area shape="rect" id="node6" title=" " alt="" coords="525,169,605,196"/>
-<area shape="rect" id="node7" title=" " alt="" coords="630,169,722,196"/>
-<area shape="rect" id="node8" title=" " alt="" coords="746,169,814,196"/>
+<area shape="rect" id="node4" title=" " alt="" coords="411,244,480,271"/>
+<area shape="rect" id="node6" title=" " alt="" coords="201,169,407,196"/>
+<area shape="rect" id="node7" title=" " alt="" coords="483,169,563,196"/>
+<area shape="rect" id="node8" title=" " alt="" coords="587,169,679,196"/>
+<area shape="rect" id="node9" title=" " alt="" coords="703,169,771,196"/>
+<area shape="rect" id="node5" title=" " alt="" coords="61,244,120,271"/>
 </map>

@@ -79,24 +79,36 @@ $(function() {
 <div class="title">VariantUtil.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><div class="dynheader">
+<div class="textblock"><code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for VariantUtil.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="VariantUtil_8h__incl.png" border="0" usemap="#include_2vara_2Utils_2VariantUtil_8h" alt=""/></div>
+<map name="include_2vara_2Utils_2VariantUtil_8h" id="include_2vara_2Utils_2VariantUtil_8h">
+<area shape="rect" title=" " alt="" coords="16,5,152,47"/>
+<area shape="rect" title=" " alt="" coords="5,95,75,121"/>
+<area shape="rect" title=" " alt="" coords="99,95,157,121"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="VariantUtil_8h__dep__incl.png" border="0" usemap="#include_2vara_2Utils_2VariantUtil_8hdep" alt=""/></div>
 <map name="include_2vara_2Utils_2VariantUtil_8hdep" id="include_2vara_2Utils_2VariantUtil_8hdep">
-<area shape="rect" title=" " alt="" coords="486,5,622,47"/>
-<area shape="rect" href="Error_8h.html" title=" " alt="" coords="391,184,546,225"/>
-<area shape="rect" href="FeatureModelTransaction_8h.html" title=" " alt="" coords="364,363,565,404"/>
-<area shape="rect" href="FeatureModelTransaction_8cpp.html" title=" " alt="" coords="542,452,726,493"/>
-<area shape="rect" href="Result_8h.html" title=" " alt="" coords="319,95,455,136"/>
-<area shape="rect" href="FeatureModel_8h.html" title=" " alt="" coords="178,273,333,315"/>
-<area shape="rect" href="FeatureModelBuilder_8h.html" title=" " alt="" coords="345,452,517,493"/>
-<area shape="rect" href="FeatureModel_8cpp.html" title=" " alt="" coords="363,638,574,665"/>
-<area shape="rect" href="FeatureModelWriter_8h.html" title=" " alt="" coords="5,363,172,404"/>
-<area shape="rect" href="FeatureModelWriter_8cpp.html" title=" " alt="" coords="18,452,202,493"/>
-<area shape="rect" href="FeatureModelParser_8h.html" title=" " alt="" coords="557,541,724,583"/>
-<area shape="rect" href="FeatureModelBuilder_8cpp.html" title=" " alt="" coords="298,541,482,583"/>
-<area shape="rect" href="FeatureModelParser_8cpp.html" title=" " alt="" coords="598,631,782,672"/>
+<area shape="rect" title=" " alt="" coords="494,5,630,47"/>
+<area shape="rect" href="Error_8h.html" title=" " alt="" coords="370,184,524,225"/>
+<area shape="rect" href="FeatureModelParser_8cpp.html" title=" " alt="" coords="456,631,640,672"/>
+<area shape="rect" href="FeatureModelTransaction_8h.html" title=" " alt="" coords="344,363,545,404"/>
+<area shape="rect" href="FeatureModelTransaction_8cpp.html" title=" " alt="" coords="443,452,627,493"/>
+<area shape="rect" href="Result_8h.html" title=" " alt="" coords="283,95,419,136"/>
+<area shape="rect" href="FeatureModel_8h.html" title=" " alt="" coords="155,273,310,315"/>
+<area shape="rect" href="FeatureModelBuilder_8h.html" title=" " alt="" coords="246,452,418,493"/>
+<area shape="rect" href="FeatureModel_8cpp.html" title=" " alt="" coords="106,638,316,665"/>
+<area shape="rect" href="FeatureModelWriter_8h.html" title=" " alt="" coords="42,363,209,404"/>
+<area shape="rect" href="FeatureModelWriter_8cpp.html" title=" " alt="" coords="38,452,222,493"/>
+<area shape="rect" href="FeatureModelParser_8h.html" title=" " alt="" coords="249,541,416,583"/>
+<area shape="rect" href="FeatureModelBuilder_8cpp.html" title=" " alt="" coords="440,541,624,583"/>
 </map>
 </div>
 </div>
@@ -113,8 +125,41 @@ Functions</h2></td></tr>
 <tr class="memitem:a210e41a5c31edb45b12dd3d31f4a9a9e"><td class="memTemplParams" colspan="2">template&lt;class... Ts&gt; </td></tr>
 <tr class="memitem:a210e41a5c31edb45b12dd3d31f4a9a9e"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="VariantUtil_8h.html#a210e41a5c31edb45b12dd3d31f4a9a9e">Overloaded</a> (Ts...) -&gt; <a class="el" href="structOverloaded.html">Overloaded</a>&lt; Ts... &gt;</td></tr>
 <tr class="separator:a210e41a5c31edb45b12dd3d31f4a9a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72fcd383bddeff6be02a64c16421af2b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="VariantUtil_8h.html#a72fcd383bddeff6be02a64c16421af2b">checkedNarrowingSignConversion</a> (unsigned Val)</td></tr>
+<tr class="memdesc:a72fcd383bddeff6be02a64c16421af2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an unsigned value to an signed value.  <a href="VariantUtil_8h.html#a72fcd383bddeff6be02a64c16421af2b">More...</a><br /></td></tr>
+<tr class="separator:a72fcd383bddeff6be02a64c16421af2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a72fcd383bddeff6be02a64c16421af2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72fcd383bddeff6be02a64c16421af2b">&#9670;&nbsp;</a></span>checkedNarrowingSignConversion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int checkedNarrowingSignConversion </td>
+          <td>(</td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>Val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert an unsigned value to an signed value. </p>
+
+<p class="definition">Definition at line <a class="el" href="VariantUtil_8h_source.html#l00022">22</a> of file <a class="el" href="VariantUtil_8h_source.html">VariantUtil.h</a>.</p>
+
+</div>
+</div>
 <a id="a210e41a5c31edb45b12dd3d31f4a9a9e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a210e41a5c31edb45b12dd3d31f4a9a9e">&#9670;&nbsp;</a></span>Overloaded()</h2>
 
@@ -138,7 +183,7 @@ template&lt;class... Ts&gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 8 2021 20:41:33 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 21 2021 13:40:38 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

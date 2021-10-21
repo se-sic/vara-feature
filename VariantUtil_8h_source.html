@@ -79,24 +79,42 @@ $(function() {
 <a href="VariantUtil_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef VARA_UTILS_VARIANTUTIL_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define VARA_UTILS_VARIANTUTIL_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">//                               Overloaded Class</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">/// \brief Overloaded to combine different classes call operators into one</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">/// overloaded call operator. This is helpfull when working with std::variant</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">/// and std::visit.</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="structOverloaded.html">   11</a></span>&#160;<span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">class</span>... <a class="code" href="classTs.html">Ts</a>&gt; <span class="keyword">struct </span><a class="code" href="structOverloaded.html">Overloaded</a> : <a class="code" href="classTs.html">Ts</a>... { <span class="keyword">using</span> Ts::operator()...; };</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span>... <a class="code" href="classTs.html">Ts</a>&gt; <a class="code" href="VariantUtil_8h.html#a210e41a5c31edb45b12dd3d31f4a9a9e">Overloaded</a>(<a class="code" href="classTs.html">Ts</a>...)-&gt;Overloaded&lt;<a class="code" href="classTs.html">Ts</a>...&gt;;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#endif // VARA_UTILS_VARIANTUTIL_H</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;cassert&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">//                               Overloaded Class</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">/// \brief Overloaded to combine different classes call operators into one</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">/// overloaded call operator. This is helpfull when working with std::variant</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">/// and std::visit.</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">class</span>... <a class="code" href="classTs.html">Ts</a>&gt;</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="structOverloaded.html">   15</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structOverloaded.html">Overloaded</a> : <a class="code" href="classTs.html">Ts</a>... {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keyword">using</span> Ts::operator()...;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;};</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span>... <a class="code" href="classTs.html">Ts</a>&gt;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<a class="code" href="VariantUtil_8h.html#a210e41a5c31edb45b12dd3d31f4a9a9e">Overloaded</a>(<a class="code" href="classTs.html">Ts</a>...) -&gt; <a class="code" href="structOverloaded.html">Overloaded</a>&lt;<a class="code" href="classTs.html">Ts</a>...&gt;;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">/// \brief Convert an unsigned value to an signed value.</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="VariantUtil_8h.html#a72fcd383bddeff6be02a64c16421af2b">   22</a></span>&#160;<span class="comment"></span>[[nodiscard]] <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code" href="VariantUtil_8h.html#a72fcd383bddeff6be02a64c16421af2b">checkedNarrowingSignConversion</a>(<span class="keywordtype">unsigned</span> Val) {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  assert(Val &lt;= std::numeric_limits&lt;int&gt;::max() &amp;&amp;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;         <span class="stringliteral">&quot;Error: value to be narrowed was to large.&quot;</span>);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (Val &gt; std::numeric_limits&lt;int&gt;::max()) {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">return</span> std::numeric_limits&lt;int&gt;::max();</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  }</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(Val);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#endif // VARA_UTILS_VARIANTUTIL_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aVariantUtil_8h_html_a210e41a5c31edb45b12dd3d31f4a9a9e"><div class="ttname"><a href="VariantUtil_8h.html#a210e41a5c31edb45b12dd3d31f4a9a9e">Overloaded</a></div><div class="ttdeci">Overloaded(Ts...) -&gt; Overloaded&lt; Ts... &gt;</div></div>
+<div class="ttc" id="aVariantUtil_8h_html_a72fcd383bddeff6be02a64c16421af2b"><div class="ttname"><a href="VariantUtil_8h.html#a72fcd383bddeff6be02a64c16421af2b">checkedNarrowingSignConversion</a></div><div class="ttdeci">int checkedNarrowingSignConversion(unsigned Val)</div><div class="ttdoc">Convert an unsigned value to an signed value.</div><div class="ttdef"><b>Definition:</b> <a href="VariantUtil_8h_source.html#l00022">VariantUtil.h:22</a></div></div>
 <div class="ttc" id="aclassTs_html"><div class="ttname"><a href="classTs.html">Ts</a></div></div>
-<div class="ttc" id="astructOverloaded_html"><div class="ttname"><a href="structOverloaded.html">Overloaded</a></div><div class="ttdoc">Overloaded to combine different classes call operators into one overloaded call operator.</div><div class="ttdef"><b>Definition:</b> <a href="VariantUtil_8h_source.html#l00011">VariantUtil.h:11</a></div></div>
+<div class="ttc" id="astructOverloaded_html"><div class="ttname"><a href="structOverloaded.html">Overloaded</a></div><div class="ttdoc">Overloaded to combine different classes call operators into one overloaded call operator.</div><div class="ttdef"><b>Definition:</b> <a href="VariantUtil_8h_source.html#l00015">VariantUtil.h:15</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 8 2021 20:41:33 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 21 2021 13:40:38 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
