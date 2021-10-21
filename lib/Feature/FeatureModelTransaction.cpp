@@ -216,6 +216,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
           std::vector<FeatureSourceRange>(F.getLocationsBegin(),
                                           F.getLocationsEnd()));
     }
+    break;
   case Feature::FeatureKind::FK_ROOT:
     return std::make_unique<RootFeature>(F.getName().str());
   default:
