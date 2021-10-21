@@ -277,12 +277,12 @@ protected:
   }
 
   template <typename ModTy, typename... ArgTys>
-  static ModTy make_modification(ArgTys &&...Args) {
+  static ModTy makeModification(ArgTys &&...Args) {
     return ModTy(std::forward<ArgTys>(Args)...);
   }
 
   template <typename ModTy, typename... ArgTys>
-  static std::unique_ptr<ModTy> make_unique_modification(ArgTys &&...Args) {
+  static std::unique_ptr<ModTy> makeUniqueModification(ArgTys &&...Args) {
     return std::unique_ptr<ModTy>(new ModTy(std::forward<ArgTys>(Args)...));
   }
 };
@@ -809,19 +809,19 @@ protected:
     if (Parent) {
       // To correctly add a parent, we need to translate it to a Feature in
       // our copied FeatureModel
-      return FeatureModelModification::make_modification<AddFeatureToModel>(
-          std::move(NewFeature), TranslateFeature(*Parent))(*FM);
+      return FeatureModelModification::makeModification<AddFeatureToModel>(
+          std::move(NewFeature), translateFeature(*Parent))(*FM);
     }
 
-    return FeatureModelModification::make_modification<AddFeatureToModel>(
+    return FeatureModelModification::makeModification<AddFeatureToModel>(
         std::move(NewFeature))(*FM);
   }
 
   void removeFeatureImpl(FeatureVariantTy &F, bool Recursive = false) {
     assert(FM && "FeatureModel is null.");
 
-    FeatureModelModification::make_modification<RemoveFeatureFromModel>(
-        TranslateFeature(*std::visit(Overloaded{
+    FeatureModelModification::makeModification<RemoveFeatureFromModel>(
+        translateFeature(*std::visit(Overloaded{
                                          [this](const std::string &Name) {
                                            return FM->getFeature(Name);
                                          },
@@ -838,8 +838,8 @@ protected:
       return ERROR;
     }
 
-    return FeatureModelModification::make_modification<AddRelationshipToModel>(
-        Kind, TranslateFeature(*std::visit(Overloaded{
+    return FeatureModelModification::makeModification<AddRelationshipToModel>(
+        Kind, translateFeature(*std::visit(Overloaded{
                                                [this](const std::string &Name) {
                                                  return FM->getFeature(Name);
                                                },
@@ -851,8 +851,8 @@ protected:
   void removeRelationshipImpl(const FeatureVariantTy &F) {
     assert(FM && "Feature model is null.");
 
-    FeatureModelModification::make_modification<RemoveRelationshipFromModel>(
-        TranslateFeature(*std::visit(Overloaded{
+    FeatureModelModification::makeModification<RemoveRelationshipFromModel>(
+        translateFeature(*std::visit(Overloaded{
                                          [this](const std::string &Name) {
                                            return FM->getFeature(Name);
                                          },
@@ -864,8 +864,8 @@ protected:
   void addLocationImpl(const FeatureVariantTy &F, FeatureSourceRange FSR) {
     assert(FM && "FeatureModel is null.");
 
-    FeatureModelModification::make_modification<AddLocationToFeature>(
-        TranslateFeature(*std::visit(Overloaded{
+    FeatureModelModification::makeModification<AddLocationToFeature>(
+        translateFeature(*std::visit(Overloaded{
                                          [this](const std::string &Name) {
                                            return FM->getFeature(Name);
                                          },
@@ -878,8 +878,8 @@ protected:
   void removeLocationImpl(const FeatureVariantTy &F, FeatureSourceRange &FSR) {
     assert(FM && "FeatureModel is null.");
 
-    FeatureModelModification::make_modification<RemoveLocationFromFeature>(
-        TranslateFeature(*std::visit(Overloaded{
+    FeatureModelModification::makeModification<RemoveLocationFromFeature>(
+        translateFeature(*std::visit(Overloaded{
                                          [this](const std::string &Name) {
                                            return FM->getFeature(Name);
                                          },
@@ -895,27 +895,27 @@ protected:
       return ERROR;
     }
 
-    return FeatureModelModification::make_modification<AddConstraintToModel>(
+    return FeatureModelModification::makeModification<AddConstraintToModel>(
         std::move(NewConstraint))(*FM);
   }
 
   void setNameImpl(std::string Name) {
     assert(FM && "FeatureModel is null.");
 
-    FeatureModelModification::make_modification<SetName>(std::move(Name))(*FM);
+    FeatureModelModification::makeModification<SetName>(std::move(Name))(*FM);
   }
 
   void setCommitImpl(std::string Commit) {
     assert(FM && "FeatureModel is null.");
 
-    FeatureModelModification::make_modification<SetCommit>(std::move(Commit))(
+    FeatureModelModification::makeModification<SetCommit>(std::move(Commit))(
         *FM);
   }
 
   void setPathImpl(fs::path Path) {
     assert(FM && "FeatureModel is null.");
 
-    FeatureModelModification::make_modification<SetPath>(std::move(Path))(*FM);
+    FeatureModelModification::makeModification<SetPath>(std::move(Path))(*FM);
   }
 
   Result<FTErrorCode, RootFeature *>
@@ -924,18 +924,18 @@ protected:
       return ERROR;
     }
 
-    return FeatureModelModification::make_modification<SetRoot>(
-        std::move(Root))(*FM);
+    return FeatureModelModification::makeModification<SetRoot>(std::move(Root))(
+        *FM);
   }
 
   static void addChildImpl(const FeatureTreeNodeVariantTy &Parent,
                            const FeatureTreeNodeVariantTy &Child) {
-    FeatureModelModification::make_modification<AddChild>(Parent, Child);
+    FeatureModelModification::makeModification<AddChild>(Parent, Child);
   }
 
 private:
   bool Continue{true};
-  [[nodiscard]] Feature *TranslateFeature(Feature &F) {
+  [[nodiscard]] Feature *translateFeature(Feature &F) {
     return FM->getFeature(F.getName());
   }
 
@@ -983,46 +983,48 @@ protected:
     assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
-        FeatureModelModification::make_unique_modification<AddFeatureToModel>(
+        FeatureModelModification::makeUniqueModification<AddFeatureToModel>(
             std::move(NewFeature), Parent));
   }
 
   void removeFeatureImpl(FeatureVariantTy &F, bool Recursive = false) {
-    Modifications.push_back(FeatureModelModification::make_unique_modification<
+    Modifications.push_back(FeatureModelModification::makeUniqueModification<
                             RemoveFeatureFromModel>(F, Recursive));
   }
 
   void addRelationshipImpl(Relationship::RelationshipKind Kind,
                            const FeatureVariantTy &Parent) {
-    Modifications.push_back(FeatureModelModification::make_unique_modification<
+    Modifications.push_back(FeatureModelModification::makeUniqueModification<
                             AddRelationshipToModel>(Kind, Parent));
   }
 
   void removeRelationshipImpl(const FeatureVariantTy &F) {
-    Modifications.push_back(FeatureModelModification::make_unique_modification<
+    Modifications.push_back(FeatureModelModification::makeUniqueModification<
                             RemoveRelationshipFromModel>(F));
   }
 
   void addLocationImpl(const FeatureVariantTy &F, FeatureSourceRange FSR) {
-    Modifications.push_back(FeatureModelModification::make_unique_modification<
-                            AddLocationToFeature>(F, std::move(FSR)));
+    Modifications.push_back(
+        FeatureModelModification::makeUniqueModification<AddLocationToFeature>(
+            F, std::move(FSR)));
   }
 
   void removeLocationImpl(const FeatureVariantTy &F, FeatureSourceRange &FSR) {
-    Modifications.push_back(FeatureModelModification::make_unique_modification<
+    Modifications.push_back(FeatureModelModification::makeUniqueModification<
                             RemoveLocationFromFeature>(F, FSR));
   }
 
   void addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
-    Modifications.push_back(FeatureModelModification::make_unique_modification<
-                            AddConstraintToModel>(std::move(NewConstraint)));
+    Modifications.push_back(
+        FeatureModelModification::makeUniqueModification<AddConstraintToModel>(
+            std::move(NewConstraint)));
   }
 
   void setNameImpl(std::string Name) {
     assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
-        FeatureModelModification::make_unique_modification<SetName>(
+        FeatureModelModification::makeUniqueModification<SetName>(
             std::move(Name)));
   }
 
@@ -1030,7 +1032,7 @@ protected:
     assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
-        FeatureModelModification::make_unique_modification<SetCommit>(
+        FeatureModelModification::makeUniqueModification<SetCommit>(
             std::move(Commit)));
   }
 
@@ -1038,7 +1040,7 @@ protected:
     assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
-        FeatureModelModification::make_unique_modification<SetPath>(
+        FeatureModelModification::makeUniqueModification<SetPath>(
             std::move(Path)));
   }
 
@@ -1046,7 +1048,7 @@ protected:
     assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
-        FeatureModelModification::make_unique_modification<SetRoot>(
+        FeatureModelModification::makeUniqueModification<SetRoot>(
             std::move(Root)));
   }
 
@@ -1055,8 +1057,8 @@ protected:
     assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
-        FeatureModelModification::make_unique_modification<AddChild>(Parent,
-                                                                     Child));
+        FeatureModelModification::makeUniqueModification<AddChild>(Parent,
+                                                                   Child));
   }
 
 private:

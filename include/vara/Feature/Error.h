@@ -33,7 +33,7 @@ public:
 
   vara::feature::FTErrorCode operator*() { return E; }
 
-  vara::feature::FTErrorCode extract_error() { return E; }
+  vara::feature::FTErrorCode extractError() { return E; }
 
   operator bool() const { return false; }
 

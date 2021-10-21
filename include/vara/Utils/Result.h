@@ -24,9 +24,9 @@ public:
 
   ValueTy operator*() & { return V; }
 
-  ValueTy operator*() && { return extract_value(); }
+  ValueTy operator*() && { return extractValue(); }
 
-  ValueTy extract_value() { return std::move(V); }
+  ValueTy extractValue() { return std::move(V); }
 
   operator bool() const { return true; }
 
@@ -66,9 +66,9 @@ public:
 
   ErrorTy operator*() & { return E; }
 
-  ErrorTy operator*() && { return extract_error(); }
+  ErrorTy operator*() && { return extractError(); }
 
-  ErrorTy extract_error() { return std::move(E); }
+  ErrorTy extractError() { return std::move(E); }
 
   operator bool() const { return false; }
 
@@ -117,11 +117,11 @@ public:
     return *std::get<Ok<ValueTy>>(Variant);
   }
 
-  ValueTy operator*() && { return extract_value(); }
+  ValueTy operator*() && { return extractValue(); }
 
-  ValueTy extract_value() {
+  ValueTy extractValue() {
     assert(std::holds_alternative<Ok<ValueTy>>(Variant));
-    return std::get<Ok<ValueTy>>(Variant).extract_value();
+    return std::get<Ok<ValueTy>>(Variant).extractValue();
   }
 
   [[nodiscard]] ErrorTy getError() & {
@@ -129,11 +129,11 @@ public:
     return *std::get<Error<ErrorTy>>(Variant);
   }
 
-  ErrorTy getError() && { return extract_error(); }
+  ErrorTy getError() && { return extractError(); }
 
-  ErrorTy extract_error() {
+  ErrorTy extractError() {
     assert(std::holds_alternative<Error<ErrorTy>>(Variant));
-    return std::get<Error<ErrorTy>>(Variant).extract_error();
+    return std::get<Error<ErrorTy>>(Variant).extractError();
   }
 
   friend llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,

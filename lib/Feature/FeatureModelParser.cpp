@@ -1,5 +1,6 @@
 #include "vara/Feature/FeatureModelParser.h"
 #include "vara/Feature/ConstraintParser.h"
+#include "vara/Feature/Feature.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -7,6 +8,7 @@
 
 #include "SxfmConstants.h"
 #include "XmlConstants.h"
+#include "vara/Utils/VariantUtil.h"
 
 #include <iostream>
 #include <regex>
@@ -157,7 +159,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
       }
     }
   }
-  return FeatureSourceRange(Path, Start, End, Category);
+  return {Path, Start, End, Category};
 }
 
 Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
@@ -230,8 +232,8 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
 
 FeatureSourceRange::FeatureSourceLocation
 FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
-  int Line = 0;
-  int Column = 0;
+  unsigned Line = 0;
+  unsigned Column = 0;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(Head->name, XmlConstants::LINE)) {
@@ -243,7 +245,7 @@ FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
       }
     }
   }
-  return FeatureSourceRange::FeatureSourceLocation(Line, Column);
+  return {Line, Column};
 }
 
 /// Decide whether feature A excludes B. Beware that this method only detects
@@ -300,13 +302,14 @@ std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
 }
 
 FeatureModelParser::UniqueXmlDtd FeatureModelXmlParser::createDtd() {
-  UniqueXmlDtd Dtd(
-      xmlIOParseDTD(nullptr,
-                    xmlParserInputBufferCreateMem(XmlConstants::DtdRaw.c_str(),
-                                                  XmlConstants::DtdRaw.length(),
-                                                  XML_CHAR_ENCODING_UTF8),
-                    XML_CHAR_ENCODING_UTF8),
-      xmlFreeDtd);
+  UniqueXmlDtd Dtd(xmlIOParseDTD(nullptr,
+                                 xmlParserInputBufferCreateMem(
+                                     XmlConstants::DtdRaw.c_str(),
+                                     checkedNarrowingSignConversion(
+                                         XmlConstants::DtdRaw.length()),
+                                     XML_CHAR_ENCODING_UTF8),
+                                 XML_CHAR_ENCODING_UTF8),
+                   xmlFreeDtd);
   xmlCleanupParser();
   assert(Dtd && "Failed to parse DTD.");
   return Dtd;
@@ -315,9 +318,11 @@ FeatureModelParser::UniqueXmlDtd FeatureModelXmlParser::createDtd() {
 FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
-  UniqueXmlDoc Doc(xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(), Xml.length(),
-                                     nullptr, nullptr, XML_PARSE_NOBLANKS),
-                   xmlFreeDoc);
+  UniqueXmlDoc Doc(
+      xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(),
+                        checkedNarrowingSignConversion(Xml.length()), nullptr,
+                        nullptr, XML_PARSE_NOBLANKS),
+      xmlFreeDoc);
   xmlCleanupParser();
   if (Doc && Ctxt->valid) {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
@@ -328,7 +333,7 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   } else {
     llvm::errs() << "Failed to parse / validate XML.\n";
   }
-  return UniqueXmlDoc(nullptr, nullptr);
+  return {nullptr, nullptr};
 }
 
 Result<FTErrorCode> FeatureModelXmlParser::verifyFeatureModel() {
@@ -351,13 +356,14 @@ std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
 }
 
 FeatureModelSxfmParser::UniqueXmlDtd FeatureModelSxfmParser::createDtd() {
-  UniqueXmlDtd Dtd(
-      xmlIOParseDTD(nullptr,
-                    xmlParserInputBufferCreateMem(
-                        SxfmConstants::DtdRaw.c_str(),
-                        SxfmConstants::DtdRaw.length(), XML_CHAR_ENCODING_UTF8),
-                    XML_CHAR_ENCODING_UTF8),
-      xmlFreeDtd);
+  UniqueXmlDtd Dtd(xmlIOParseDTD(nullptr,
+                                 xmlParserInputBufferCreateMem(
+                                     SxfmConstants::DtdRaw.c_str(),
+                                     checkedNarrowingSignConversion(
+                                         SxfmConstants::DtdRaw.length()),
+                                     XML_CHAR_ENCODING_UTF8),
+                                 XML_CHAR_ENCODING_UTF8),
+                   xmlFreeDtd);
   xmlCleanupParser();
   assert(Dtd && "Failed to parse DTD.");
   return Dtd;
@@ -368,9 +374,11 @@ FeatureModelSxfmParser::UniqueXmlDoc FeatureModelSxfmParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
   // Parse the given model by libxml2
-  UniqueXmlDoc Doc(xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(), Sxfm.length(),
-                                     nullptr, nullptr, XML_PARSE_NOBLANKS),
-                   xmlFreeDoc);
+  UniqueXmlDoc Doc(
+      xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(),
+                        checkedNarrowingSignConversion(Sxfm.length()), nullptr,
+                        nullptr, XML_PARSE_NOBLANKS),
+      xmlFreeDoc);
   xmlCleanupParser();
 
   // In the following, the document is validated.
@@ -387,7 +395,7 @@ FeatureModelSxfmParser::UniqueXmlDoc FeatureModelSxfmParser::parseDoc() {
   }
   llvm::errs() << "Failed to parse / validate XML.\n";
 
-  return UniqueXmlDoc(nullptr, nullptr);
+  return {nullptr, nullptr};
 }
 
 bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
@@ -473,7 +481,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       llvm::StringRef ToStringRef(To);
       llvm::StringRef IndentationString =
           ToStringRef.substr(0, ToStringRef.find(':'));
-      int CurrentIndentationLevel = IndentationString.count(Indentation);
+      int CurrentIndentationLevel =
+          checkedNarrowingSignConversion(IndentationString.count(Indentation));
       int Diff = CurrentIndentationLevel - LastIndentationLevel;
 
       // Remember the root indentation for later checks
@@ -714,7 +723,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
   std::string::size_type Pos = StringToExtractFrom.find_first_of('[');
   if (Pos == std::string::npos) {
     llvm::errs() << "No cardinality given in or group!\n";
-    return std::optional<std::tuple<int, int>>();
+    return {};
   }
   llvm::StringRef CardinalityString(StringToExtractFrom);
   size_t CommaPos = CardinalityString.find(',', Pos + 1);
@@ -728,7 +737,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
 
   if (!MinCardinality.has_value() || !MaxCardinality.has_value()) {
     llvm::errs() << "No parsable cardinality!\n";
-    return std::optional<std::tuple<int, int>>();
+    return {};
   }
 
   if (MinCardinality.value() != 1 ||
@@ -736,11 +745,10 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
        MaxCardinality.value() != SxfmConstants::WILDCARD)) {
     llvm::errs() << "Cardinality unsupported. We support cardinalities [1,1] "
                     "(alternative) or [1, *] (or group).\n";
-    return std::optional<std::tuple<int, int>>();
+    return {};
   }
 
-  return std::optional<std::tuple<int, int>>(
-      std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()});
+  return {std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()}};
 }
 
 std::optional<int>

@@ -10,9 +10,9 @@ namespace vara::feature {
 bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel const &FM,
                   Feature &F, bool Strict);
 
-std::unique_ptr<Feature> FeatureCopy(Feature &F);
+std::unique_ptr<Feature> featureCopy(Feature &F);
 
-bool CompareProperties(const Feature &F1, const Feature &F2, bool Strict);
+bool compareProperties(const Feature &F1, const Feature &F2, bool Strict);
 
 void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
                 Feature *Parent) {
@@ -176,7 +176,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
                                 bool Strict) {
   // Is there a similar Feature in the original FM
   if (Feature *CMP = FM.getFeature(F.getName())) {
-    if (CompareProperties(*CMP, F, Strict)) {
+    if (compareProperties(*CMP, F, Strict)) {
       // similar feature, maybe merge locations
       for (FeatureSourceRange const &FSR : F.getLocations()) {
         if (std::find(CMP->getLocationsBegin(), CMP->getLocationsEnd(), FSR) ==
@@ -188,7 +188,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
       return false;
     }
   } else {
-    std::unique_ptr<Feature> Copy = FeatureCopy(F);
+    std::unique_ptr<Feature> Copy = featureCopy(F);
     if (!Copy) {
       return false;
     }
@@ -204,7 +204,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
   return true;
 }
 
-[[nodiscard]] std::unique_ptr<Feature> FeatureCopy(Feature &F) {
+[[nodiscard]] std::unique_ptr<Feature> featureCopy(Feature &F) {
   switch (F.getKind()) {
   case Feature::FeatureKind::FK_BINARY:
     return std::make_unique<BinaryFeature>(
@@ -226,7 +226,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
   return nullptr;
 }
 
-[[nodiscard]] bool CompareProperties(const Feature &F1, const Feature &F2,
+[[nodiscard]] bool compareProperties(const Feature &F1, const Feature &F2,
                                      bool Strict) {
   if (F1.getName() != F2.getName()) {
     return false;

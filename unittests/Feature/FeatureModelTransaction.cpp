@@ -29,7 +29,7 @@ protected:
 
 TEST_F(FeatureModelModificationTest, addFeatureToModel_simpleAdd) {
   size_t FMSizeBefore = FM->size();
-  auto AddMod = FeatureModelModification::make_modification<AddFeatureToModel>(
+  auto AddMod = FeatureModelModification::makeModification<AddFeatureToModel>(
       std::make_unique<BinaryFeature>("aa"), FM->getFeature("a"));
 
   EXPECT_EQ(FMSizeBefore, FM->size());
@@ -46,7 +46,7 @@ TEST_F(FeatureModelModificationTest, addFeatureToModel_simpleAdd) {
 
 TEST_F(FeatureModelModificationTest, addFeatureToModel_alreadyPresent) {
   size_t FMSizeBefore = FM->size();
-  auto AddMod = FeatureModelModification::make_modification<AddFeatureToModel>(
+  auto AddMod = FeatureModelModification::makeModification<AddFeatureToModel>(
       std::make_unique<BinaryFeature>("a"), FM->getFeature("a"));
 
   EXPECT_FALSE(AddMod(*FM));
@@ -56,9 +56,9 @@ TEST_F(FeatureModelModificationTest, addFeatureToModel_alreadyPresent) {
 
 TEST_F(FeatureModelModificationTest, addFeatureToModel_twoSuccessivley) {
   size_t FMSizeBefore = FM->size();
-  auto AddModA = FeatureModelModification::make_modification<AddFeatureToModel>(
+  auto AddModA = FeatureModelModification::makeModification<AddFeatureToModel>(
       std::make_unique<BinaryFeature>("aa"), FM->getFeature("a"));
-  auto AddModB = FeatureModelModification::make_modification<AddFeatureToModel>(
+  auto AddModB = FeatureModelModification::makeModification<AddFeatureToModel>(
       std::make_unique<BinaryFeature>("ab"), FM->getFeature("a"));
 
   EXPECT_TRUE(AddModA(*FM));

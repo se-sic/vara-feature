@@ -12,6 +12,8 @@ Checks: '-*,
            -readability-static-definition-in-anonymous-namespace,
            -readability-implicit-bool-conversion,
            -readability-magic-numbers,
+           -readability-identifier-length,
+           -readability-function-cognitive-complexity,
          cppcoreguidelines-*,
            -cppcoreguidelines-avoid-non-const-global-variables,
            -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
@@ -25,6 +27,7 @@ Checks: '-*,
            -cppcoreguidelines-macro-usage,
          bugprone-*,
            -bugprone-reserved-identifier,
+           -bugprone-easily-swappable-parameters,
          modernize-*,
            -modernize-avoid-c-arrays,
            -modernize-use-trailing-return-type,
@@ -38,7 +41,7 @@ CheckOptions:
   - key:             readability-identifier-naming.EnumCase
     value:           CamelCase
   - key:             readability-identifier-naming.FunctionCase
-    value:           camelBack, lower_case
+    value:           camelBack
   - key:             readability-identifier-naming.MemberCase
     value:           CamelCase
   - key:             readability-identifier-naming.ParameterCase
