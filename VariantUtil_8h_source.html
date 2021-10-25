@@ -98,9 +98,9 @@ $(function() {
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">/// \brief Convert an unsigned value to an signed value.</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="VariantUtil_8h.html#a72fcd383bddeff6be02a64c16421af2b">   22</a></span>&#160;<span class="comment"></span>[[nodiscard]] <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code" href="VariantUtil_8h.html#a72fcd383bddeff6be02a64c16421af2b">checkedNarrowingSignConversion</a>(<span class="keywordtype">unsigned</span> Val) {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  assert(Val &lt;= std::numeric_limits&lt;int&gt;::max() &amp;&amp;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  assert(Val &lt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(std::numeric_limits&lt;int&gt;::max()) &amp;&amp;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;         <span class="stringliteral">&quot;Error: value to be narrowed was to large.&quot;</span>);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (Val &gt; std::numeric_limits&lt;int&gt;::max()) {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (Val &gt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span><span class="keyword">&gt;</span>(std::numeric_limits&lt;int&gt;::max())) {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">return</span> std::numeric_limits&lt;int&gt;::max();</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  }</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(Val);</div>
@@ -114,7 +114,7 @@ $(function() {
 <div class="ttc" id="astructOverloaded_html"><div class="ttname"><a href="structOverloaded.html">Overloaded</a></div><div class="ttdoc">Overloaded to combine different classes call operators into one overloaded call operator.</div><div class="ttdef"><b>Definition:</b> <a href="VariantUtil_8h_source.html#l00015">VariantUtil.h:15</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 21 2021 13:40:38 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 25 2021 21:43:13 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
