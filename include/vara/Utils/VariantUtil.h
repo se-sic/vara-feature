@@ -20,9 +20,9 @@ Overloaded(Ts...) -> Overloaded<Ts...>;
 
 /// \brief Convert an unsigned value to an signed value.
 [[nodiscard]] inline int checkedNarrowingSignConversion(unsigned Val) {
-  assert(Val <= std::numeric_limits<int>::max() &&
+  assert(Val <= static_cast<unsigned>(std::numeric_limits<int>::max()) &&
          "Error: value to be narrowed was to large.");
-  if (Val > std::numeric_limits<int>::max()) {
+  if (Val > static_cast<unsigned>(std::numeric_limits<int>::max())) {
     return std::numeric_limits<int>::max();
   }
   return static_cast<int>(Val);

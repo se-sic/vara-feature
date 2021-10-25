@@ -41,13 +41,13 @@ TEST(TestNarrowingConversion, NarrowToLargeValue) {
 #else
   EXPECT_DEATH( // NOLINT
       {
-        int V = checkedNarrowingSignConversion(
+        [[maybe_unused]] int _ = checkedNarrowingSignConversion(
             std::numeric_limits<unsigned>::max() - 42);
       },
       "Error: value to be narrowed was to large.");
   EXPECT_DEATH( // NOLINT
       {
-        int V = checkedNarrowingSignConversion(
+        [[maybe_unused]] int _ = checkedNarrowingSignConversion(
             std::numeric_limits<unsigned>::max());
       },
       "Error: value to be narrowed was to large.");
