@@ -71,15 +71,18 @@ public:
   FeatureSourceRange(fs::path Path,
                      std::optional<FeatureSourceLocation> Start = std::nullopt,
                      std::optional<FeatureSourceLocation> End = std::nullopt,
+                     std::optional<std::string> MemberOffset = std::nullopt,
                      Category CategoryKind = Category::necessary)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
-        CategoryKind(CategoryKind) {}
+        MemberOffset(std::move(MemberOffset)) CategoryKind(CategoryKind) {}
 
   FeatureSourceRange(fs::path Path, FeatureSourceLocation Start,
-                     FeatureSourceLocation End,
+                     FeatureSourceLocation End, std::string MemberOffset,
                      Category CategoryKind = Category::necessary)
       : FeatureSourceRange(std::move(Path), std::optional(std::move(Start)),
-                           std::optional(std::move(End)), CategoryKind) {}
+                           std::optional(std::move(End)),
+                           std::optional(std::move(MemberOffset)),
+                           CategoryKind) {}
 
   FeatureSourceRange(const FeatureSourceRange &L) = default;
   FeatureSourceRange &operator=(const FeatureSourceRange &) = default;
@@ -106,6 +109,13 @@ public:
     return End.has_value() ? &End.value() : nullptr;
   }
 
+  [[nodiscard]] bool hasMemberOffset() const {
+    return MemberOffset.has_value();
+  }
+  [[nodiscard]] FeatureSourceLocation *getMemberOffset() {
+    return MemberOffset.has_value() ? &MemberOffset.value() : nullptr;
+  }
+
   [[nodiscard]] std::string toString() const {
     std::stringstream StrS;
     StrS << Path.string();
@@ -115,12 +125,16 @@ public:
     if (End) {
       StrS << "-" << End->toString();
     }
+    if (MemberOffset) {
+      StrS << " MemberOffset: " << MemberOffset->toString();
+    }
     return StrS.str();
   }
 
   inline bool operator==(const FeatureSourceRange &Other) const {
     return CategoryKind == Other.CategoryKind and Path == Other.Path and
-           Start == Other.Start and End == Other.End;
+           Start == Other.Start and End == Other.End and
+           MemberOffset == Other.MemberOffset;
   }
 
   inline bool operator!=(const FeatureSourceRange &Other) const {
@@ -131,6 +145,7 @@ private:
   fs::path Path;
   std::optional<FeatureSourceLocation> Start;
   std::optional<FeatureSourceLocation> End;
+  std::optional<std::string> MemberOffset;
   Category CategoryKind;
 };
 } // namespace vara::feature
