@@ -112,7 +112,7 @@ public:
   [[nodiscard]] bool hasMemberOffset() const {
     return MemberOffset.has_value();
   }
-  [[nodiscard]] FeatureSourceLocation *getMemberOffset() {
+  [[nodiscard]] std::string *getMemberOffset() {
     return MemberOffset.has_value() ? &MemberOffset.value() : nullptr;
   }
 
