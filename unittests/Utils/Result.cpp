@@ -4,7 +4,9 @@
 
 namespace test {
 
+using vara::Error;
 using vara::Ok;
+using vara::Result;
 using vara::Error;
 using vara::Result;
 
