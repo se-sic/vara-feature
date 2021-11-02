@@ -6,7 +6,6 @@ namespace test {
 
 using vara::Ok;
 using vara::Error;
-using vara::Ok;
 using vara::Result;
 
 enum ErrorCode { ERROR };
