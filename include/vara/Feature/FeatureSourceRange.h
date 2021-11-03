@@ -74,7 +74,7 @@ public:
                      std::optional<std::string> MemberOffset = std::nullopt,
                      Category CategoryKind = Category::necessary)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
-        MemberOffset(std::move(MemberOffset)) CategoryKind(CategoryKind) {}
+        MemberOffset(std::move(MemberOffset)), CategoryKind(CategoryKind) {}
 
   FeatureSourceRange(fs::path Path, FeatureSourceLocation Start,
                      FeatureSourceLocation End, std::string MemberOffset,
