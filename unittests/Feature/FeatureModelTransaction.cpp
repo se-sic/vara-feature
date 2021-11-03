@@ -701,8 +701,8 @@ protected:
 };
 
 TEST_F(FeatureModelLocationsTransactionTest, CopyTransactionAddLocation) {
-  FeatureSourceRange FSRA("path", {2, 4}, {2, 10});
-  FeatureSourceRange FSRB("path", {5, 4}, {5, 10});
+  FeatureSourceRange FSRA("path", {2, 4}, {2, 10}, nullptr);
+  FeatureSourceRange FSRB("path", {5, 4}, {5, 10}, nullptr);
 
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
   auto VA = detail::FeatureVariantTy(FM->getFeature("a"));
@@ -741,8 +741,8 @@ TEST_F(FeatureModelLocationsTransactionTest, CopyTransactionRemoveLocation) {
 }
 
 TEST_F(FeatureModelLocationsTransactionTest, ModifyTransactionAddLocation) {
-  FeatureSourceRange FSRA("path", {2, 4}, {2, 10});
-  FeatureSourceRange FSRB("path", {5, 4}, {5, 10});
+  FeatureSourceRange FSRA("path", {2, 4}, {2, 10}, nullptr);
+  FeatureSourceRange FSRB("path", {5, 4}, {5, 10}, nullptr);
 
   auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
   auto VA = detail::FeatureVariantTy(FM->getFeature("a"));

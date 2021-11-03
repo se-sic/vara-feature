@@ -77,8 +77,7 @@ public:
         MemberOffset(std::move(MemberOffset)), CategoryKind(CategoryKind) {}
 
   FeatureSourceRange(fs::path Path, FeatureSourceLocation Start,
-                     FeatureSourceLocation End,
-                     std::string MemberOffset = std::nullopt,
+                     FeatureSourceLocation End, std::string MemberOffset,
                      Category CategoryKind = Category::necessary)
       : FeatureSourceRange(std::move(Path), std::optional(std::move(Start)),
                            std::optional(std::move(End)),
