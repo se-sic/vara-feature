@@ -126,7 +126,7 @@ public:
       StrS << "-" << End->toString();
     }
     if (MemberOffset) {
-      StrS << " MemberOffset: " << MemberOffset;
+      StrS << " MemberOffset: " << getMemberOffset();
     }
     return StrS.str();
   }
