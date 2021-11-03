@@ -11,7 +11,8 @@
 #include <type_traits>
 #include <variant>
 
-namespace vara::feature {
+namespace vara {
+namespace feature {
 
 enum FTErrorCode {
   ABORTED,
@@ -24,7 +25,7 @@ enum FTErrorCode {
   NON_LEAF_NODE
 };
 
-} // namespace vara::feature
+} // namespace feature
 
 template <>
 class Error<vara::feature::FTErrorCode> {
@@ -72,5 +73,7 @@ public:
 private:
   vara::feature::FTErrorCode E;
 };
+
+} // namespace vara
 
 #endif // VARA_FEATURE_ERROR_H
