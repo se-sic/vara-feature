@@ -270,13 +270,13 @@ TEST_F(FeatureModelMergeTransactionTest, Idempotence) {
 }
 
 TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
-  FeatureSourceRange FSR1("path", {2, 4}, {2, 30});
+  FeatureSourceRange FSR1("path", {2, 4}, {2, 30}, nullptr);
   FM->getFeature("a")->addLocation(FSR1);
 
-  FeatureSourceRange FSR2("path", {10, 4}, {10, 30});
+  FeatureSourceRange FSR2("path", {10, 4}, {10, 30}, nullptr);
   FM->getFeature("a")->addLocation(FSR2);
 
-  FeatureSourceRange FSR3("path", {12, 4}, {12, 30});
+  FeatureSourceRange FSR3("path", {12, 4}, {12, 30}, nullptr);
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a", true,
                                std::vector<FeatureSourceRange>{FSR1, FSR3});
@@ -696,7 +696,7 @@ protected:
     B->addLocation(FSRInitial);
   }
 
-  FeatureSourceRange FSRInitial{"path", {2, 4}, {2, 10}};
+  FeatureSourceRange FSRInitial{"path", {2, 4}, {2, 10}, nullptr};
   std::unique_ptr<FeatureModel> FM;
 };
 
