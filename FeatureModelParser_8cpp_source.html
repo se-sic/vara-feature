@@ -97,7 +97,7 @@ $(function() {
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
 <div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">   20</a></span>&#160;std::string <a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(llvm::StringRef S) { <span class="keywordflow">return</span> llvm::StringRef(S).trim().str(); }</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<a class="code" href="classvara_1_1Result.html">Result&lt;FTErrorCode&gt;</a></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                                <span class="keywordtype">bool</span> Num = <span class="keyword">false</span>) {</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  std::string Name{<span class="stringliteral">&quot;root&quot;</span>};</div>
@@ -198,7 +198,7 @@ $(function() {
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ae4d2d8c0d4f9a4ebf391acb4c91f9bb8">makeFeature</a>&lt;BinaryFeature&gt;(Name, Opt, std::move(SourceRanges));</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  }</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordflow">return</span> Ok();</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;}</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;FeatureSourceRange</div>
@@ -240,21 +240,21 @@ $(function() {
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="keywordflow">return</span> {Path, Start, End, Category};</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;}</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160; </div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> FeatureModelXmlParser::parseOptions(xmlNode *Node,</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;Result&lt;FTErrorCode&gt; FeatureModelXmlParser::parseOptions(xmlNode *Node,</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;                                                        <span class="keywordtype">bool</span> Num = <span class="keyword">false</span>) {</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="keywordflow">for</span> (xmlNode *H = Node-&gt;children; H; H = H-&gt;next) {</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <span class="keywordflow">if</span> (H-&gt;type == XML_ELEMENT_NODE) {</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(H-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a8655164f5b246ac12262853f9d161d53">XmlConstants::CONFIGURATIONOPTION</a>)) {</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">if</span> (!parseConfigurationOption(H, Num)) {</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;          <span class="keywordflow">return</span> <a class="code" href="classError.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;          <span class="keywordflow">return</span> Error(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        }</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;      }</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    }</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  }</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="keywordflow">return</span> Ok();</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;}</div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160; </div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;Result&lt;FTErrorCode&gt; FeatureModelXmlParser::parseConstraints(xmlNode *Node) {</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keywordflow">for</span> (xmlNode *H = Node-&gt;children; H; H = H-&gt;next) {</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keywordflow">if</span> (H-&gt;type == XML_ELEMENT_NODE) {</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(H-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a267413639029e8252fa9ce2e4f090ed9">XmlConstants::CONSTRAINT</a>)) {</div>
@@ -265,15 +265,15 @@ $(function() {
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                    .buildConstraint()) {</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;          FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ab1b297901cc8c7134565203fbe3283d6">addConstraint</a>(std::move(Constraint));</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;          <span class="keywordflow">return</span> <a class="code" href="classError.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;          <span class="keywordflow">return</span> Error(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        }</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;      }</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    }</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  }</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordflow">return</span> Ok();</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;}</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> FeatureModelXmlParser::parseVm(xmlNode *Node) {</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;Result&lt;FTErrorCode&gt; FeatureModelXmlParser::parseVm(xmlNode *Node) {</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  {</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <a class="code" href="classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88">UniqueXmlChar</a> Cnt(xmlGetProp(Node, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aaf2d54f1d085fb22b01e35f8a281aa72">XmlConstants::NAME</a>), xmlFree);</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    FMB.<a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#aa4afba52e780dd6d550250defd38f763">setVmName</a>(<a class="code" href="namespacevara_1_1feature.html#a29d38436795ec4d0c548c844ba6967df">trim</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(Cnt.get())));</div>
@@ -292,20 +292,20 @@ $(function() {
 <div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    <span class="keywordflow">if</span> (H-&gt;type == XML_ELEMENT_NODE) {</div>
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;      <span class="keywordflow">if</span> (!xmlStrcmp(H-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a6c6b3244e07205ba8b0d4b44d8f109f6">XmlConstants::BINARYOPTIONS</a>)) {</div>
 <div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;        <span class="keywordflow">if</span> (!parseOptions(H)) {</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;          <span class="keywordflow">return</span> <a class="code" href="classError.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;          <span class="keywordflow">return</span> Error(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        }</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(H-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#aeea782a6a9535f8a734aebf3a35c7cd1">XmlConstants::NUMERICOPTIONS</a>)) {</div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        <span class="keywordflow">if</span> (!parseOptions(H, <span class="keyword">true</span>)) {</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;          <span class="keywordflow">return</span> <a class="code" href="classError.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;          <span class="keywordflow">return</span> Error(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        }</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!xmlStrcmp(H-&gt;name, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#a50a1eae782165698f9cabee65ad058be">XmlConstants::BOOLEANCONSTRAINTS</a>)) {</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        <span class="keywordflow">if</span> (!parseConstraints(H)) {</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;          <span class="keywordflow">return</span> <a class="code" href="classError.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;          <span class="keywordflow">return</span> Error(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        }</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;      }</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    }</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  }</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <span class="keywordflow">return</span> Ok();</div>
 <div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;}</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160; </div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;FeatureSourceRange::FeatureSourceLocation</div>
@@ -345,7 +345,7 @@ $(function() {
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;      });</div>
 <div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;}</div>
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160; </div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;Result&lt;FTErrorCode&gt;</div>
 <div class="line"><a name="l00271"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a09d1d4fc6872bc76ebe8a8dc90f6da44">  271</a></span>&#160;FeatureModelXmlParser::detectXMLAlternatives(<a class="code" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM) {</div>
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="keyword">auto</span> Transactions = FeatureModelModifyTransaction::openTransaction(FM);</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> *F : FM) {</div>
@@ -414,11 +414,11 @@ $(function() {
 <div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  <span class="keywordflow">return</span> {<span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>};</div>
 <div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;}</div>
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160; </div>
-<div class="line"><a name="l00339"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a58b20bf2853e52cb2cc3486b572d0224">  339</a></span>&#160;<a class="code" href="classResult.html">Result&lt;FTErrorCode&gt;</a> <a class="code" href="namespacevara_1_1feature.html#a27f08d68bdfeefeb61f975069ce63c31">FeatureModelXmlParser::verifyFeatureModel</a>() {</div>
+<div class="line"><a name="l00339"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelXmlParser.html#a58b20bf2853e52cb2cc3486b572d0224">  339</a></span>&#160;<a class="code" href="classvara_1_1Result.html">Result&lt;FTErrorCode&gt;</a> <a class="code" href="namespacevara_1_1feature.html#a27f08d68bdfeefeb61f975069ce63c31">FeatureModelXmlParser::verifyFeatureModel</a>() {</div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  <span class="keywordflow">if</span> (!parseDoc().get()) {</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classError.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classvara_1_1Error.html">Error</a>(<a class="code" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">ERROR</a>);</div>
 <div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  }</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classOk.html">Ok</a>();</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classvara_1_1Ok.html">Ok</a>();</div>
 <div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;}</div>
 <div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160; </div>
 <div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="comment">//===----------------------------------------------------------------------===//</span></div>
@@ -831,11 +831,11 @@ $(function() {
 <div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160; </div>
 <div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;std::optional&lt;int&gt;</div>
 <div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {</div>
-<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;  std::optional&lt;int&gt; <a class="code" href="classResult.html">Result</a> = std::optional&lt;int&gt;();</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;  std::optional&lt;int&gt; Result = std::optional&lt;int&gt;();</div>
 <div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;  <span class="keywordflow">if</span> (CardinalityString == <span class="stringliteral">&quot;*&quot;</span>) {</div>
 <div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;    <span class="comment">// We use -1 as our magic integer to indicate that the cardinality is a</span></div>
 <div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;    <span class="comment">// wildcard.</span></div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    <a class="code" href="classResult.html">Result</a> = SxfmConstants::WILDCARD;</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    Result = SxfmConstants::WILDCARD;</div>
 <div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    <span class="comment">// Convert the string into an integer in a safe way</span></div>
 <div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    <span class="keywordtype">long</span> LongNumber;</div>
@@ -843,16 +843,16 @@ $(function() {
 <div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;      llvm::errs() &lt;&lt; llvm::formatv(</div>
 <div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;          <span class="stringliteral">&quot;The cardinality: &#39;{0}&#39; was not an integer.\n&quot;</span>, CardinalityString);</div>
 <div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;      <a class="code" href="classResult.html">Result</a> = LongNumber;</div>
+<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;      Result = LongNumber;</div>
 <div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;    }</div>
 <div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;  }</div>
 <div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160; </div>
-<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="classResult.html">Result</a>;</div>
+<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;  <span class="keywordflow">return</span> Result;</div>
 <div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;}</div>
 <div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160; </div>
 <div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassOk_html"><div class="ttname"><a href="classOk.html">Ok</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00018">Result.h:18</a></div></div>
+<div class="ttc" id="aclassvara_1_1Error_html"><div class="ttname"><a href="classvara_1_1Error.html">vara::Error</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00062">Result.h:62</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelBuilder_html_ade65bb80ef9e7d79e8c41727360a12e8"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelBuilder.html#ade65bb80ef9e7d79e8c41727360a12e8">vara::feature::FeatureModelBuilder::setPath</a></div><div class="ttdeci">FeatureModelBuilder * setPath(const fs::path &amp;Path)</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelBuilder_8h_source.html#l00075">FeatureModelBuilder.h:75</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a39f248bdf20a86244233c0a7430cf408"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a39f248bdf20a86244233c0a7430cf408">vara::feature::XmlConstants::ROOT</a></div><div class="ttdeci">static constexpr xmlChar ROOT[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00040">XmlConstants.h:40</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1Feature_html"><div class="ttname"><a href="classvara_1_1feature_1_1Feature.html">vara::feature::Feature</a></div><div class="ttdoc">Base class for components of FeatureModel.</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00034">Feature.h:34</a></div></div>
@@ -878,8 +878,9 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelBuilder_html_af61469b84e5b448b3d517ae83f321e03"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelBuilder.html#af61469b84e5b448b3d517ae83f321e03">vara::feature::FeatureModelBuilder::makeRoot</a></div><div class="ttdeci">FeatureModelBuilder * makeRoot(const std::string &amp;Name)</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelBuilder_8h_source.html#l00085">FeatureModelBuilder.h:85</a></div></div>
 <div class="ttc" id="aSxfmConstants_8h_html"><div class="ttname"><a href="SxfmConstants_8h.html">SxfmConstants.h</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelBuilder_html_aa4afba52e780dd6d550250defd38f763"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelBuilder.html#aa4afba52e780dd6d550250defd38f763">vara::feature::FeatureModelBuilder::setVmName</a></div><div class="ttdeci">FeatureModelBuilder * setVmName(std::string Name)</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelBuilder_8h_source.html#l00070">FeatureModelBuilder.h:70</a></div></div>
+<div class="ttc" id="aclassvara_1_1Ok_html"><div class="ttname"><a href="classvara_1_1Ok.html">vara::Ok</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00020">Result.h:20</a></div></div>
+<div class="ttc" id="aclassvara_1_1Result_html"><div class="ttname"><a href="classvara_1_1Result.html">vara::Result</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00092">Result.h:92</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModel_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModel.html">vara::feature::FeatureModel</a></div><div class="ttdoc">Tree like representation of features and dependencies.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModel_8h_source.html#l00029">FeatureModel.h:29</a></div></div>
-<div class="ttc" id="aclassResult_html"><div class="ttname"><a href="classResult.html">Result</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00090">Result.h:90</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a1052cb3c3e60860251acd85ace9fd619"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a1052cb3c3e60860251acd85ace9fd619">vara::feature::XmlConstants::IMPLIEDOPTIONS</a></div><div class="ttdeci">static constexpr xmlChar IMPLIEDOPTIONS[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00023">XmlConstants.h:23</a></div></div>
 <div class="ttc" id="anamespacevara_1_1feature_html_a27f08d68bdfeefeb61f975069ce63c31"><div class="ttname"><a href="namespacevara_1_1feature.html#a27f08d68bdfeefeb61f975069ce63c31">vara::feature::verifyFeatureModel</a></div><div class="ttdeci">bool verifyFeatureModel(llvm::StringRef Path)</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModel_8cpp_source.html#l00139">FeatureModel.cpp:139</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_html_a1fa2512235786db9fc20b9644a9911d2"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2">vara::feature::FeatureSourceRange::Category</a></div><div class="ttdeci">Category</div><div class="ttdef"><b>Definition:</b> <a href="FeatureSourceRange_8h_source.html#l00028">FeatureSourceRange.h:28</a></div></div>
@@ -890,14 +891,13 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_ac3be8a4e0c9c5e35e2740cdba526ae8a"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#ac3be8a4e0c9c5e35e2740cdba526ae8a">vara::feature::XmlConstants::COLUMN</a></div><div class="ttdeci">static constexpr xmlChar COLUMN[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00047">XmlConstants.h:47</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_html_a1fa2512235786db9fc20b9644a9911d2aec94c63d602e631f9e7bcc0e6a29160a"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aec94c63d602e631f9e7bcc0e6a29160a">vara::feature::FeatureSourceRange::Category::necessary</a></div><div class="ttdeci">@ necessary</div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_html_a1fa2512235786db9fc20b9644a9911d2aa1e918278d1a5f5966ee6db0d750f635"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2aa1e918278d1a5f5966ee6db0d750f635">vara::feature::FeatureSourceRange::Category::inessential</a></div><div class="ttdeci">@ inessential</div></div>
-<div class="ttc" id="aclassError_html"><div class="ttname"><a href="classError.html">Error</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00060">Result.h:60</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a482244015ae83d8d5e17439cd9286cdf"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a482244015ae83d8d5e17439cd9286cdf">vara::feature::XmlConstants::START</a></div><div class="ttdeci">static constexpr xmlChar START[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00029">XmlConstants.h:29</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_a49bef00c08565bef1478992f97d5d907"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#a49bef00c08565bef1478992f97d5d907">vara::feature::XmlConstants::SOURCERANGE</a></div><div class="ttdeci">static constexpr xmlChar SOURCERANGE[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00027">XmlConstants.h:27</a></div></div>
 <div class="ttc" id="aFeatureModelParser_8h_html"><div class="ttname"><a href="FeatureModelParser_8h.html">FeatureModelParser.h</a></div></div>
 <div class="ttc" id="aConstraintParser_8h_html"><div class="ttname"><a href="ConstraintParser_8h.html">ConstraintParser.h</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_ac000d875eefd82d7eea19284c57e13f1"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#ac000d875eefd82d7eea19284c57e13f1">vara::feature::XmlConstants::PATH</a></div><div class="ttdeci">static constexpr xmlChar PATH[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00028">XmlConstants.h:28</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_ac87fdae5ae82af3e27a10cb523d9919d"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#ac87fdae5ae82af3e27a10cb523d9919d">vara::feature::XmlConstants::COMMIT</a></div><div class="ttdeci">static constexpr xmlChar COMMIT[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00019">XmlConstants.h:19</a></div></div>
-<div class="ttc" id="anamespacevara_1_1feature_html_aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3"><div class="ttname"><a href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">vara::feature::ERROR</a></div><div class="ttdeci">@ ERROR</div><div class="ttdef"><b>Definition:</b> <a href="Error_8h_source.html#l00019">Error.h:19</a></div></div>
+<div class="ttc" id="anamespacevara_1_1feature_html_aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3"><div class="ttname"><a href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">vara::feature::ERROR</a></div><div class="ttdeci">@ ERROR</div><div class="ttdef"><b>Definition:</b> <a href="Error_8h_source.html#l00020">Error.h:20</a></div></div>
 <div class="ttc" id="aVariantUtil_8h_html"><div class="ttname"><a href="VariantUtil_8h.html">VariantUtil.h</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_a24e7368fb47466534f8c7259baa48673"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#a24e7368fb47466534f8c7259baa48673">vara::feature::FeatureModelParser::UniqueXmlDoc</a></div><div class="ttdeci">std::unique_ptr&lt; xmlDoc, void(*)(xmlDocPtr)&gt; UniqueXmlDoc</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00023">FeatureModelParser.h:23</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1Feature_html_a7d184eba97ba34cf60fcab5d095f31d9"><div class="ttname"><a href="classvara_1_1feature_1_1Feature.html#a7d184eba97ba34cf60fcab5d095f31d9">vara::feature::Feature::excludes</a></div><div class="ttdeci">llvm::iterator_range&lt; excludes_iterator &gt; excludes()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00148">Feature.h:148</a></div></div>
@@ -912,7 +912,7 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1XmlConstants_html_aaf2d54f1d085fb22b01e35f8a281aa72"><div class="ttname"><a href="classvara_1_1feature_1_1XmlConstants.html#aaf2d54f1d085fb22b01e35f8a281aa72">vara::feature::XmlConstants::NAME</a></div><div class="ttdeci">static constexpr xmlChar NAME[]</div><div class="ttdef"><b>Definition:</b> <a href="XmlConstants_8h_source.html#l00018">XmlConstants.h:18</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 25 2021 21:43:13 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 3 2021 11:25:55 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

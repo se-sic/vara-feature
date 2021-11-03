@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structvara_1_1feature_1_1EveryFeatureRequiresParent.html" title=" " alt="" coords="5,5,205,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,46,76,73"/>
+<area shape="rect" id="node2" href="$classvara_1_1feature_1_1FeatureModel_1_1DFSIterator.html" title=" " alt="" coords="124,5,327,47"/>
+<area shape="rect" id="node3" href="$classvara_1_1feature_1_1FeatureModel_1_1FeatureMapIterator.html" title=" " alt="" coords="124,71,327,112"/>
 </map>

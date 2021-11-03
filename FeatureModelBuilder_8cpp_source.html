@@ -87,20 +87,20 @@ $(function() {
 <div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1FeatureModelBuilder.html#aa9229b683c29aa2680e00af76d933938">    9</a></span>&#160;std::unique_ptr&lt;FeatureModel&gt; <a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html#aa9229b683c29aa2680e00af76d933938">FeatureModelBuilder::buildFeatureModel</a>() {</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  assert(FM-&gt;getRoot() &amp;&amp; <span class="stringliteral">&quot;FeatureModel has no root.&quot;</span>);</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keywordflow">if</span> (<a class="code" href="classResult.html">Result</a> E = FeatureBuilder.commit(); !E) {</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keywordflow">if</span> (<a class="code" href="classvara_1_1Result.html">Result</a> E = FeatureBuilder.commit(); !E) {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    llvm::errs() &lt;&lt; <span class="stringliteral">&quot;Building features failed with error: &quot;</span> &lt;&lt; E &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    ModelBuilder.abort();</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    RelationBuilder.abort();</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  }</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordflow">if</span> (<a class="code" href="classResult.html">Result</a> E = ModelBuilder.commit(); !E) {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordflow">if</span> (<a class="code" href="classvara_1_1Result.html">Result</a> E = ModelBuilder.commit(); !E) {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    llvm::errs() &lt;&lt; <span class="stringliteral">&quot;Building feature tree failed with error: &quot;</span> &lt;&lt; E &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    RelationBuilder.abort();</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  }</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (<a class="code" href="classResult.html">Result</a> E = RelationBuilder.commit(); !E) {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (<a class="code" href="classvara_1_1Result.html">Result</a> E = RelationBuilder.commit(); !E) {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    llvm::errs() &lt;&lt; <span class="stringliteral">&quot;Building feature relations failed with error: &quot;</span> &lt;&lt; E</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                 &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
@@ -112,12 +112,12 @@ $(function() {
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacevara_1_1feature_html"><div class="ttname"><a href="namespacevara_1_1feature.html">vara::feature</a></div><div class="ttdef"><b>Definition:</b> <a href="Constraint_8h_source.html#l00014">Constraint.h:14</a></div></div>
-<div class="ttc" id="aclassResult_html"><div class="ttname"><a href="classResult.html">Result</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00090">Result.h:90</a></div></div>
+<div class="ttc" id="aclassvara_1_1Result_html"><div class="ttname"><a href="classvara_1_1Result.html">vara::Result</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00092">Result.h:92</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelBuilder_html_aa9229b683c29aa2680e00af76d933938"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelBuilder.html#aa9229b683c29aa2680e00af76d933938">vara::feature::FeatureModelBuilder::buildFeatureModel</a></div><div class="ttdeci">std::unique_ptr&lt; FeatureModel &gt; buildFeatureModel()</div><div class="ttdoc">Build FeatureModel.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelBuilder_8cpp_source.html#l00009">FeatureModelBuilder.cpp:9</a></div></div>
 <div class="ttc" id="aFeatureModelBuilder_8h_html"><div class="ttname"><a href="FeatureModelBuilder_8h.html">FeatureModelBuilder.h</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 25 2021 21:43:13 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 3 2021 11:25:55 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

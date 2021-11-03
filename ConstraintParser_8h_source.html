@@ -182,14 +182,14 @@ $(function() {
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <a class="code" href="classvara_1_1feature_1_1ConstraintLexer.html#a7b5fa92aba207bec46ea6785e05902fd">TokenListTy</a> TokenList;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordflow">for</span> (llvm::StringRef Str = Cnt; !Str.empty();) {</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      <span class="keyword">auto</span> <a class="code" href="classResult.html">Result</a> = munch(Str);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      TokenList.push_back(<a class="code" href="classResult.html">Result</a>.first);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      <span class="keywordflow">if</span> (<span class="keyword">auto</span> Kind = <a class="code" href="classResult.html">Result</a>.first.getKind();</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      <span class="keyword">auto</span> <a class="code" href="classvara_1_1Result.html">Result</a> = munch(Str);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      TokenList.push_back(<a class="code" href="classvara_1_1Result.html">Result</a>.first);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      <span class="keywordflow">if</span> (<span class="keyword">auto</span> Kind = <a class="code" href="classvara_1_1Result.html">Result</a>.first.getKind();</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;          Kind == <a class="code" href="classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74a581953f6b20ad7f993b64b1dc632032e">ConstraintToken::ConstraintTokenKind::END_OF_FILE</a> ||</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;          Kind == <a class="code" href="classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74abb1ca97ec761fc37101737ba0aa2e7c5">ConstraintToken::ConstraintTokenKind::ERROR</a>) {</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      }</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      Str = Str.drop_front(<a class="code" href="classResult.html">Result</a>.second);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      Str = Str.drop_front(<a class="code" href="classvara_1_1Result.html">Result</a>.second);</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    }</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="comment">// ensure last token is always either EOF or an error</span></div>
@@ -601,7 +601,7 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1ConstraintToken_html_a4fc8d285432b0b9fd4adc0aa610eba74ad8aa4e58ae3435def72c52dcbdcf3087"><div class="ttname"><a href="classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74ad8aa4e58ae3435def72c52dcbdcf3087">vara::feature::ConstraintToken::ConstraintTokenKind::L_PAR</a></div><div class="ttdeci">@ L_PAR</div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1ConstraintToken_html_a4fc8d285432b0b9fd4adc0aa610eba74a558ffc8f5770d8e4f95f51d822685532"><div class="ttname"><a href="classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74a558ffc8f5770d8e4f95f51d822685532">vara::feature::ConstraintToken::ConstraintTokenKind::AND</a></div><div class="ttdeci">@ AND</div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1ConstraintToken_html_a4fc8d285432b0b9fd4adc0aa610eba74acd1908d025919ff975513ff143c3e34c"><div class="ttname"><a href="classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74acd1908d025919ff975513ff143c3e34c">vara::feature::ConstraintToken::ConstraintTokenKind::EQUIVALENT</a></div><div class="ttdeci">@ EQUIVALENT</div></div>
-<div class="ttc" id="aclassResult_html"><div class="ttname"><a href="classResult.html">Result</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00090">Result.h:90</a></div></div>
+<div class="ttc" id="aclassvara_1_1Result_html"><div class="ttname"><a href="classvara_1_1Result.html">vara::Result</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00092">Result.h:92</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1ConstraintToken_html_a4fc8d285432b0b9fd4adc0aa610eba74"><div class="ttname"><a href="classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74">vara::feature::ConstraintToken::ConstraintTokenKind</a></div><div class="ttdeci">ConstraintTokenKind</div><div class="ttdef"><b>Definition:</b> <a href="ConstraintParser_8h_source.html#l00024">ConstraintParser.h:24</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1ConstraintToken_html_a9029c82ed180004226cd4f78fea2ccd7"><div class="ttname"><a href="classvara_1_1feature_1_1ConstraintToken.html#a9029c82ed180004226cd4f78fea2ccd7">vara::feature::ConstraintToken::ConstraintToken</a></div><div class="ttdeci">ConstraintToken(ConstraintTokenKind Kind, std::string Value)</div><div class="ttdef"><b>Definition:</b> <a href="ConstraintParser_8h_source.html#l00050">ConstraintParser.h:50</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1ConstraintToken_html_a4fc8d285432b0b9fd4adc0aa610eba74a34f55eca38e0605a84f169ff61a2a396"><div class="ttname"><a href="classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74a34f55eca38e0605a84f169ff61a2a396">vara::feature::ConstraintToken::ConstraintTokenKind::NUMBER</a></div><div class="ttdeci">@ NUMBER</div></div>
@@ -628,7 +628,7 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1ConstraintToken_html_a4fc8d285432b0b9fd4adc0aa610eba74affc0d9b54a1fe677c4c9e6b050e67c81"><div class="ttname"><a href="classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74affc0d9b54a1fe677c4c9e6b050e67c81">vara::feature::ConstraintToken::ConstraintTokenKind::MINUS</a></div><div class="ttdeci">@ MINUS</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 25 2021 21:43:13 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 3 2021 11:25:55 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
