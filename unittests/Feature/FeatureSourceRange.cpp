@@ -92,7 +92,7 @@ TEST(FeatureSourceRange, equality) {
 TEST(FeatureSourceRange, clone) {
   auto FSR = std::make_unique<FeatureSourceRange>(
       "path", FeatureSourceRange::FeatureSourceLocation(1, 2),
-      FeatureSourceRange::FeatureSourceLocation(3, 4),
+      FeatureSourceRange::FeatureSourceLocation(3, 4), nullptr,
       FeatureSourceRange::Category::inessential);
 
   auto Clone = FeatureSourceRange(*FSR);

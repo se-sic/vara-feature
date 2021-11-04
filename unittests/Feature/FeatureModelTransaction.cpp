@@ -270,13 +270,13 @@ TEST_F(FeatureModelMergeTransactionTest, Idempotence) {
 }
 
 TEST_F(FeatureModelMergeTransactionTest, DifferentLocations) {
-  FeatureSourceRange FSR1("path", {2, 4}, {2, 30}, nullptr);
+  FeatureSourceRange FSR1("path", {2, 4}, {2, 30});
   FM->getFeature("a")->addLocation(FSR1);
 
-  FeatureSourceRange FSR2("path", {10, 4}, {10, 30}, nullptr);
+  FeatureSourceRange FSR2("path", {10, 4}, {10, 30});
   FM->getFeature("a")->addLocation(FSR2);
 
-  FeatureSourceRange FSR3("path", {12, 4}, {12, 30}, nullptr);
+  FeatureSourceRange FSR3("path", {12, 4}, {12, 30});
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a", true,
                                std::vector<FeatureSourceRange>{FSR1, FSR3});
@@ -696,13 +696,13 @@ protected:
     B->addLocation(FSRInitial);
   }
 
-  FeatureSourceRange FSRInitial{"path", {2, 4}, {2, 10}, nullptr};
+  FeatureSourceRange FSRInitial{"path", {2, 4}, {2, 10}};
   std::unique_ptr<FeatureModel> FM;
 };
 
 TEST_F(FeatureModelLocationsTransactionTest, CopyTransactionAddLocation) {
-  FeatureSourceRange FSRA("path", {2, 4}, {2, 10}, nullptr);
-  FeatureSourceRange FSRB("path", {5, 4}, {5, 10}, nullptr);
+  FeatureSourceRange FSRA("path", {2, 4}, {2, 10});
+  FeatureSourceRange FSRB("path", {5, 4}, {5, 10});
 
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
   auto VA = detail::FeatureVariantTy(FM->getFeature("a"));
@@ -741,8 +741,8 @@ TEST_F(FeatureModelLocationsTransactionTest, CopyTransactionRemoveLocation) {
 }
 
 TEST_F(FeatureModelLocationsTransactionTest, ModifyTransactionAddLocation) {
-  FeatureSourceRange FSRA("path", {2, 4}, {2, 10}, nullptr);
-  FeatureSourceRange FSRB("path", {5, 4}, {5, 10}, nullptr);
+  FeatureSourceRange FSRA("path", {2, 4}, {2, 10});
+  FeatureSourceRange FSRB("path", {5, 4}, {5, 10});
 
   auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
   auto VA = detail::FeatureVariantTy(FM->getFeature("a"));
