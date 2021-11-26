@@ -71,19 +71,18 @@ public:
   FeatureSourceRange(fs::path Path,
                      std::optional<FeatureSourceLocation> Start = std::nullopt,
                      std::optional<FeatureSourceLocation> End = std::nullopt,
-                     std::optional<std::string> MemberOffset = std::nullopt,
-                     Category CategoryKind = Category::necessary)
+                     Category CategoryKind = Category::necessary,
+                     std::optional<std::string> MemberOffset = std::nullopt)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
-        MemberOffset(std::move(MemberOffset)), CategoryKind(CategoryKind) {}
+        CategoryKind(CategoryKind), MemberOffset(std::move(MemberOffset)) {}
 
   FeatureSourceRange(fs::path Path, FeatureSourceLocation Start,
                      FeatureSourceLocation End,
-                     std::string MemberOffset = std::nullopt,
-                     Category CategoryKind = Category::necessary)
+                     Category CategoryKind = Category::necessary,
+                     std::string MemberOffset = "")
       : FeatureSourceRange(std::move(Path), std::optional(std::move(Start)),
-                           std::optional(std::move(End)),
-                           std::optional(std::move(MemberOffset)),
-                           CategoryKind) {}
+                           std::optional(std::move(End)), CategoryKind,
+                           std::optional(std::move(MemberOffset))) {}
 
   FeatureSourceRange(const FeatureSourceRange &L) = default;
   FeatureSourceRange &operator=(const FeatureSourceRange &) = default;
@@ -146,8 +145,8 @@ private:
   fs::path Path;
   std::optional<FeatureSourceLocation> Start;
   std::optional<FeatureSourceLocation> End;
-  std::optional<std::string> MemberOffset;
   Category CategoryKind;
+  std::optional<std::string> MemberOffset;
 };
 } // namespace vara::feature
 
