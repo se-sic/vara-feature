@@ -1,4 +1,4 @@
-set(FEATURE_LIB_SRC
+set(CONFIGURATION_LIB_SRC
   Configuration.cpp
   )
 
@@ -9,12 +9,7 @@ set(LLVM_LINK_COMPONENTS
   )
 
 add_vara_library(VaRAConfiguration
-  ${FEATURE_LIB_SRC}
-  )
-
-target_link_libraries(VaRAConfiguration
-  LINK_PUBLIC
-  ${LIBXML2_LIBRARIES}
+  ${CONFIGURATION_LIB_SRC}
   )
 
 if (HAS_STD_EXPERIMENTAL_FILESYSTEM OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
