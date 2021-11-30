@@ -6,10 +6,9 @@
 
 namespace vara::feature {
 
-std::shared_ptr<Configuration>
-Configuration::createConfigurationFromString(const std::string& ConfigurationString) {
-  std::shared_ptr<Configuration> Conf =
-      std::make_unique<Configuration>();
+std::shared_ptr<Configuration> Configuration::createConfigurationFromString(
+    const std::string &ConfigurationString) {
+  std::shared_ptr<Configuration> Conf = std::make_unique<Configuration>();
   // Read in the string using the json library
   llvm::Expected<llvm::json::Value> ParsedConfiguration =
       llvm::json::parse(llvm::StringRef(ConfigurationString));
@@ -47,14 +46,15 @@ void Configuration::addConfigurationOption(
   this->OptionMapping[Option->getName()] = std::move(Option);
 }
 
-void Configuration::setConfigurationOption(const std::string& Name,
-                                           const std::string& Value) {
+void Configuration::setConfigurationOption(const std::string &Name,
+                                           const std::string &Value) {
   std::shared_ptr<ConfigurationOption> Option =
       std::make_unique<ConfigurationOption>(Name, Value);
   addConfigurationOption(std::move(Option));
 }
 
-std::string Configuration::getConfigurationOptionValue(const std::string& Name) {
+std::string
+Configuration::getConfigurationOptionValue(const std::string &Name) {
   auto Iterator = this->OptionMapping.find(Name);
   if (Iterator == this->OptionMapping.end()) {
     llvm::errs() << "The configuration option " << Name << " does not exist.\n";

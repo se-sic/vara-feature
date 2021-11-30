@@ -15,18 +15,20 @@ public:
 
   /// This method creates a configuration from the provided json string.
   [[nodiscard]] static std::shared_ptr<Configuration>
-  createConfigurationFromString(const std::string& ConfigurationString);
+  createConfigurationFromString(const std::string &ConfigurationString);
 
   /// This method adds a configuration option to the current configuration.
   void addConfigurationOption(std::shared_ptr<ConfigurationOption> Option);
 
   /// This method sets a configuration option by using the provided name and
   /// value.
-  void setConfigurationOption(const std::string& Name, const std::string& Value);
+  void setConfigurationOption(const std::string &Name,
+                              const std::string &Value);
 
   /// This method returns the value of the configuration option.
   /// \returns the value of the configuration option as a string
-  [[nodiscard]] std::string getConfigurationOptionValue(const std::string& Name);
+  [[nodiscard]] std::string
+  getConfigurationOptionValue(const std::string &Name);
 
   /// This method returns all configuration options.
   /// \returns all configuration options in a vector
