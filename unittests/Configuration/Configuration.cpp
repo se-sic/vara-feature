@@ -15,6 +15,10 @@ TEST(Configuration, basicAccessors) {
             config->dumpToString());
   EXPECT_EQ("2", config->getConfigurationOptionValue("foo_baz"));
   EXPECT_EQ("", config->getConfigurationOptionValue("a"));
+  auto configs = config->getConfigurationOptions();
+  EXPECT_EQ(3, configs.size());
+  EXPECT_EQ(R"({"baz":"1","foo":"true","foo_baz":"2"})",
+            config->dumpToString());
 }
 
 TEST(Configuration, negativeTest) {

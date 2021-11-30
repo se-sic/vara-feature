@@ -14,11 +14,11 @@ public:
   virtual ~Configuration() = default;
 
   /// This method creates a configuration from the provided json string.
-  [[nodiscard]] static std::unique_ptr<Configuration>
+  [[nodiscard]] static std::shared_ptr<Configuration>
   createConfigurationFromString(std::string ConfigurationString);
 
   /// This method adds a configuration option to the current configuration.
-  void addConfigurationOption(std::unique_ptr<ConfigurationOption> Option);
+  void addConfigurationOption(std::shared_ptr<ConfigurationOption> Option);
 
   /// This method sets a configuration option by using the provided name and
   /// value.
@@ -30,7 +30,7 @@ public:
 
   /// This method returns all configuration options.
   /// \returns all configuration options in a vector
-  [[nodiscard]] std::vector<std::unique_ptr<ConfigurationOption>>
+  [[nodiscard]] std::vector<std::shared_ptr<ConfigurationOption>>
   getConfigurationOptions();
 
   /// This method dumps the current configuration to a json string.
@@ -40,7 +40,7 @@ public:
 private:
   /// This represents a mapping from the name of the option to the option
   /// object.
-  std::map<std::string, std::unique_ptr<ConfigurationOption>> OptionMapping;
+  std::map<std::string, std::shared_ptr<ConfigurationOption>> OptionMapping;
 };
 
 } // namespace vara::feature

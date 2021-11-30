@@ -6,9 +6,9 @@
 
 namespace vara::feature {
 
-std::unique_ptr<Configuration>
+std::shared_ptr<Configuration>
 Configuration::createConfigurationFromString(std::string ConfigurationString) {
-  std::unique_ptr<Configuration> configuration =
+  std::shared_ptr<Configuration> configuration =
       std::make_unique<Configuration>();
   // Read in the string using the json library
   llvm::Expected<llvm::json::Value> parsedConfiguration =
@@ -35,7 +35,7 @@ Configuration::createConfigurationFromString(std::string ConfigurationString) {
       return nullptr;
     }
     std::string second = iterator->getSecond().getAsString()->str();
-    std::unique_ptr<ConfigurationOption> option =
+    std::shared_ptr<ConfigurationOption> option =
         std::make_unique<ConfigurationOption>(first, second);
     configuration->addConfigurationOption(std::move(option));
   }
@@ -43,13 +43,13 @@ Configuration::createConfigurationFromString(std::string ConfigurationString) {
 }
 
 void Configuration::addConfigurationOption(
-    std::unique_ptr<ConfigurationOption> Option) {
+    std::shared_ptr<ConfigurationOption> Option) {
   this->OptionMapping[Option->getName()] = std::move(Option);
 }
 
 void Configuration::setConfigurationOption(std::string Name,
                                            std::string Value) {
-  std::unique_ptr<ConfigurationOption> option =
+  std::shared_ptr<ConfigurationOption> option =
       std::make_unique<ConfigurationOption>(Name, Value);
   addConfigurationOption(std::move(option));
 }
@@ -63,11 +63,11 @@ std::string Configuration::getConfigurationOptionValue(std::string Name) {
   return iterator->second->getValue();
 }
 
-std::vector<std::unique_ptr<ConfigurationOption>>
+std::vector<std::shared_ptr<ConfigurationOption>>
 Configuration::getConfigurationOptions() {
-  std::vector<std::unique_ptr<ConfigurationOption>> options{};
+  std::vector<std::shared_ptr<ConfigurationOption>> options{};
   for (auto &iterator : this->OptionMapping) {
-    options.insert(options.begin(), std::move(iterator.second));
+    options.insert(options.begin(), iterator.second);
   }
   return options;
 }
