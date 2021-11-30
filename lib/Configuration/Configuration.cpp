@@ -7,39 +7,39 @@
 namespace vara::feature {
 
 std::shared_ptr<Configuration>
-Configuration::createConfigurationFromString(std::string ConfigurationString) {
-  std::shared_ptr<Configuration> configuration =
+Configuration::createConfigurationFromString(const std::string& ConfigurationString) {
+  std::shared_ptr<Configuration> Conf =
       std::make_unique<Configuration>();
   // Read in the string using the json library
-  llvm::Expected<llvm::json::Value> parsedConfiguration =
+  llvm::Expected<llvm::json::Value> ParsedConfiguration =
       llvm::json::parse(llvm::StringRef(ConfigurationString));
 
   // If there was an error while parsing...
-  if (!parsedConfiguration) {
+  if (!ParsedConfiguration) {
     llvm::errs() << "The given configuration is not in the json format.\n";
     return nullptr;
   }
-  llvm::json::Value value = parsedConfiguration.get();
-  llvm::json::Value::Kind kind = value.kind();
-  if (kind != llvm::json::Value::Kind::Object) {
+  llvm::json::Value Value = ParsedConfiguration.get();
+  llvm::json::Value::Kind Kind = Value.kind();
+  if (Kind != llvm::json::Value::Kind::Object) {
     llvm::errs() << "The provided json has to be a map from the name to the "
                     "value (as string).\n";
     return nullptr;
   }
-  llvm::json::Object *obj = value.getAsObject();
-  for (auto iterator = obj->begin(); iterator != obj->end(); iterator++) {
-    std::string first = iterator->getFirst().str();
-    if (iterator->getSecond().kind() != llvm::json::Value::Kind::String) {
+  llvm::json::Object *Obj = Value.getAsObject();
+  for (auto Iterator = Obj->begin(); Iterator != Obj->end(); Iterator++) {
+    std::string First = Iterator->getFirst().str();
+    if (Iterator->getSecond().kind() != llvm::json::Value::Kind::String) {
       llvm::errs() << "The values of the provided json string have to be "
                       "simple strings.\n";
       return nullptr;
     }
-    std::string second = iterator->getSecond().getAsString()->str();
-    std::shared_ptr<ConfigurationOption> option =
-        std::make_unique<ConfigurationOption>(first, second);
-    configuration->addConfigurationOption(std::move(option));
+    std::string Second = Iterator->getSecond().getAsString()->str();
+    std::shared_ptr<ConfigurationOption> Option =
+        std::make_unique<ConfigurationOption>(First, Second);
+    Conf->addConfigurationOption(std::move(Option));
   }
-  return configuration;
+  return Conf;
 }
 
 void Configuration::addConfigurationOption(
@@ -47,42 +47,42 @@ void Configuration::addConfigurationOption(
   this->OptionMapping[Option->getName()] = std::move(Option);
 }
 
-void Configuration::setConfigurationOption(std::string Name,
-                                           std::string Value) {
-  std::shared_ptr<ConfigurationOption> option =
+void Configuration::setConfigurationOption(const std::string& Name,
+                                           const std::string& Value) {
+  std::shared_ptr<ConfigurationOption> Option =
       std::make_unique<ConfigurationOption>(Name, Value);
-  addConfigurationOption(std::move(option));
+  addConfigurationOption(std::move(Option));
 }
 
-std::string Configuration::getConfigurationOptionValue(std::string Name) {
-  auto iterator = this->OptionMapping.find(Name);
-  if (iterator == this->OptionMapping.end()) {
+std::string Configuration::getConfigurationOptionValue(const std::string& Name) {
+  auto Iterator = this->OptionMapping.find(Name);
+  if (Iterator == this->OptionMapping.end()) {
     llvm::errs() << "The configuration option " << Name << " does not exist.\n";
     return "";
   }
-  return iterator->second->getValue();
+  return Iterator->second->getValue();
 }
 
 std::vector<std::shared_ptr<ConfigurationOption>>
 Configuration::getConfigurationOptions() {
-  std::vector<std::shared_ptr<ConfigurationOption>> options{};
-  for (auto &iterator : this->OptionMapping) {
-    options.insert(options.begin(), iterator.second);
+  std::vector<std::shared_ptr<ConfigurationOption>> Options{};
+  for (auto &Iterator : this->OptionMapping) {
+    Options.insert(Options.begin(), Iterator.second);
   }
-  return options;
+  return Options;
 }
 
 std::string Configuration::dumpToString() {
-  llvm::json::Object obj{};
-  for (auto &iterator : this->OptionMapping) {
-    obj[iterator.first] = iterator.second->getValue();
+  llvm::json::Object Obj{};
+  for (auto &Iterator : this->OptionMapping) {
+    Obj[Iterator.first] = Iterator.second->getValue();
   }
-  llvm::json::Value value(std::move(obj));
-  std::string dumped_string;
-  llvm::raw_string_ostream rs(dumped_string);
-  rs << value;
-  rs.flush();
-  return dumped_string;
+  llvm::json::Value Value(std::move(Obj));
+  std::string DumpedString;
+  llvm::raw_string_ostream Rs(DumpedString);
+  Rs << Value;
+  Rs.flush();
+  return DumpedString;
 }
 
 } // namespace vara::feature
