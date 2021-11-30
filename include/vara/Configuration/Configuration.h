@@ -14,7 +14,8 @@ public:
   virtual ~Configuration() = default;
 
   /// This method creates a configuration from the provided json string.
-  [[nodiscard]] static std::unique_ptr<Configuration> createConfigurationFromString(std::string ConfigurationString);
+  [[nodiscard]] static std::unique_ptr<Configuration>
+  createConfigurationFromString(std::string ConfigurationString);
 
   /// This method adds a configuration option to the current configuration.
   void addConfigurationOption(std::unique_ptr<ConfigurationOption> Option);
@@ -29,14 +30,16 @@ public:
 
   /// This method returns all configuration options.
   /// \returns all configuration options in a vector
-  [[nodiscard]] std::vector<std::unique_ptr<ConfigurationOption>> getConfigurationOptions();
+  [[nodiscard]] std::vector<std::unique_ptr<ConfigurationOption>>
+  getConfigurationOptions();
 
   /// This method dumps the current configuration to a json string.
   /// \returns the current configuration as a json-formatted string
   [[nodiscard]] std::string dumpToString();
 
 private:
-  /// This represents a mapping from the name of the option to the option object.
+  /// This represents a mapping from the name of the option to the option
+  /// object.
   std::map<std::string, std::unique_ptr<ConfigurationOption>> OptionMapping;
 };
 

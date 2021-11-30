@@ -14,4 +14,4 @@ TEST(ConfigurationOption, basicAccessors) {
   EXPECT_EQ("1", option2.getValue());
   EXPECT_EQ("baz: 1", option2.toString());
 }
-}
+} // namespace vara::feature
