@@ -13,18 +13,22 @@ std::unique_ptr<Configuration> Configuration::createConfigurationFromString(std:
 
   // If there was an error while parsing...
   if (!parsedConfiguration) {
-    llvm::errs() << "Failed to read in the given configuration.\n";
+    llvm::errs() << "The given configuration is not in the json format.\n";
     return nullptr;
   }
   llvm::json::Value value = parsedConfiguration.get();
   llvm::json::Value::Kind kind = value.kind();
   if (kind != llvm::json::Value::Kind::Object) {
-    llvm::errs() << "The provided json is not in the right format.\n";
+    llvm::errs() << "The provided json has to be a map from the name to the value (as string).\n";
     return nullptr;
   }
   llvm::json::Object* obj = value.getAsObject();
   for (auto iterator = obj->begin(); iterator != obj->end(); iterator++) {
     std::string first = iterator->getFirst().str();
+    if (iterator->getSecond().kind() != llvm::json::Value::Kind::String) {
+      llvm::errs() << "The values of the provided json string have to be simple strings.\n";
+      return nullptr;
+    }
     std::string second = iterator->getSecond().getAsString()->str();
     std::unique_ptr<ConfigurationOption> option = std::make_unique<ConfigurationOption>(first, second);
     configuration->addConfigurationOption(std::move(option));
