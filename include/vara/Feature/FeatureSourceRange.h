@@ -79,7 +79,7 @@ public:
   FeatureSourceRange(fs::path Path, FeatureSourceLocation Start,
                      FeatureSourceLocation End,
                      Category CategoryKind = Category::necessary,
-                     std::string MemberOffset = "")
+                     std::string MemberOffset = std::nullopt)
       : FeatureSourceRange(std::move(Path), std::optional(std::move(Start)),
                            std::optional(std::move(End)), CategoryKind,
                            std::optional(std::move(MemberOffset))) {}
@@ -115,6 +115,7 @@ public:
   [[nodiscard]] std::string *getMemberOffset() {
     return MemberOffset.has_value() ? &MemberOffset.value() : nullptr;
   }
+  void setMemberOffset(const std::string &Value) { this->MemberOffset = Value; }
 
   [[nodiscard]] std::string toString() const {
     std::stringstream StrS;
