@@ -1,4 +1,4 @@
-#include "vara/Configuration/ConfigurationOption.h"
+#include "vara/Configuration/Configuration.h"
 
 #include "gtest/gtest.h"
 

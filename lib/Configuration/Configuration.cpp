@@ -7,11 +7,11 @@
 namespace vara::feature {
 
 std::shared_ptr<Configuration> Configuration::createConfigurationFromString(
-    const std::string &ConfigurationString) {
+    const llvm::StringRef ConfigurationString) {
   std::shared_ptr<Configuration> Conf = std::make_unique<Configuration>();
   // Read in the string using the json library
   llvm::Expected<llvm::json::Value> ParsedConfiguration =
-      llvm::json::parse(llvm::StringRef(ConfigurationString));
+      llvm::json::parse(ConfigurationString);
 
   // If there was an error while parsing...
   if (!ParsedConfiguration) {
@@ -43,7 +43,7 @@ std::shared_ptr<Configuration> Configuration::createConfigurationFromString(
 
 void Configuration::addConfigurationOption(
     std::shared_ptr<ConfigurationOption> Option) {
-  this->OptionMapping[Option->getName()] = std::move(Option);
+  this->OptionMappings[Option->getName()] = std::move(Option);
 }
 
 void Configuration::setConfigurationOption(const std::string &Name,
@@ -53,29 +53,29 @@ void Configuration::setConfigurationOption(const std::string &Name,
   addConfigurationOption(std::move(Option));
 }
 
-std::string
+std::string_view
 Configuration::getConfigurationOptionValue(const std::string &Name) {
-  auto Iterator = this->OptionMapping.find(Name);
-  if (Iterator == this->OptionMapping.end()) {
+  auto Search = this->OptionMappings.find(Name);
+  if (Search == this->OptionMappings.end()) {
     llvm::errs() << "The configuration option " << Name << " does not exist.\n";
     return "";
   }
-  return Iterator->second->getValue();
+  return Search->second->getValue();
 }
 
 std::vector<std::shared_ptr<ConfigurationOption>>
 Configuration::getConfigurationOptions() {
   std::vector<std::shared_ptr<ConfigurationOption>> Options{};
-  for (auto &Iterator : this->OptionMapping) {
-    Options.insert(Options.begin(), Iterator.second);
+  for (auto &OptionMapping : this->OptionMappings) {
+    Options.insert(Options.begin(), OptionMapping.second);
   }
   return Options;
 }
 
 std::string Configuration::dumpToString() {
   llvm::json::Object Obj{};
-  for (auto &Iterator : this->OptionMapping) {
-    Obj[Iterator.first] = Iterator.second->getValue();
+  for (auto &Iterator : this->OptionMappings) {
+    Obj[std::string(Iterator.first)] = std::string(Iterator.second->getValue());
   }
   llvm::json::Value Value(std::move(Obj));
   std::string DumpedString;
