@@ -7,7 +7,7 @@
 namespace vara::feature {
 
 std::shared_ptr<Configuration> Configuration::createConfigurationFromString(
-    const llvm::StringRef ConfigurationString) {
+    llvm::StringRef ConfigurationString) {
   std::shared_ptr<Configuration> Conf = std::make_unique<Configuration>();
   // Read in the string using the json library
   llvm::Expected<llvm::json::Value> ParsedConfiguration =

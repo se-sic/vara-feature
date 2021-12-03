@@ -1,5 +1,5 @@
-#ifndef VARA_CONFIGURATION_H
-#define VARA_CONFIGURATION_H
+#ifndef VARA_CONFIGURATION_CONFIGURATION_H
+#define VARA_CONFIGURATION_CONFIGURATION_H
 
 #include <llvm/Support/FormatVariadic.h>
 #include <map>
@@ -53,7 +53,7 @@ public:
 
   /// This method creates a configuration from the provided json string.
   [[nodiscard]] static std::shared_ptr<Configuration>
-  createConfigurationFromString(const llvm::StringRef ConfigurationString);
+  createConfigurationFromString(llvm::StringRef ConfigurationString);
 
   /// This method adds a configuration option to the current configuration.
   void addConfigurationOption(std::shared_ptr<ConfigurationOption> Option);
@@ -86,4 +86,4 @@ private:
 
 } // namespace vara::feature
 
-#endif // VARA_CONFIGURATION_H
+#endif // VARA_CONFIGURATION_CONFIGURATION_H
