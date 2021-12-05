@@ -52,11 +52,11 @@ public:
   virtual ~Configuration() = default;
 
   /// This method creates a configuration from the provided json string.
-  [[nodiscard]] static std::shared_ptr<Configuration>
+  [[nodiscard]] static std::unique_ptr<Configuration>
   createConfigurationFromString(llvm::StringRef ConfigurationString);
 
   /// This method adds a configuration option to the current configuration.
-  void addConfigurationOption(std::shared_ptr<ConfigurationOption> Option);
+  void addConfigurationOption(std::unique_ptr<ConfigurationOption> Option);
 
   /// This method sets a configuration option by using the provided name and
   /// value.
@@ -68,11 +68,6 @@ public:
   [[nodiscard]] std::string_view
   getConfigurationOptionValue(const std::string &Name);
 
-  /// This method returns all configuration options.
-  /// \returns all configuration options in a vector
-  [[nodiscard]] std::vector<std::shared_ptr<ConfigurationOption>>
-  getConfigurationOptions();
-
   /// This method dumps the current configuration to a json string.
   /// \returns the current configuration as a json-formatted string
   [[nodiscard]] std::string dumpToString();
@@ -80,7 +75,7 @@ public:
 private:
   /// This represents a mapping from the name of the option to the option
   /// object.
-  std::map<std::string_view, std::shared_ptr<ConfigurationOption>>
+  std::map<std::string_view, std::unique_ptr<ConfigurationOption>>
       OptionMappings;
 };
 

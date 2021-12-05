@@ -6,9 +6,9 @@
 
 namespace vara::feature {
 
-std::shared_ptr<Configuration> Configuration::createConfigurationFromString(
+std::unique_ptr<Configuration> Configuration::createConfigurationFromString(
     llvm::StringRef ConfigurationString) {
-  std::shared_ptr<Configuration> Conf = std::make_unique<Configuration>();
+  std::unique_ptr<Configuration> Conf = std::make_unique<Configuration>();
   // Read in the string using the json library
   llvm::Expected<llvm::json::Value> ParsedConfiguration =
       llvm::json::parse(ConfigurationString);
@@ -26,15 +26,15 @@ std::shared_ptr<Configuration> Configuration::createConfigurationFromString(
     return nullptr;
   }
   llvm::json::Object *Obj = Value.getAsObject();
-  for (auto Iterator = Obj->begin(); Iterator != Obj->end(); Iterator++) {
-    std::string First = Iterator->getFirst().str();
-    if (Iterator->getSecond().kind() != llvm::json::Value::Kind::String) {
+  for (auto Iterator : *Obj) {
+    std::string First = Iterator.getFirst().str();
+    if (Iterator.getSecond().kind() != llvm::json::Value::Kind::String) {
       llvm::errs() << "The values of the provided json string have to be "
                       "simple strings.\n";
       return nullptr;
     }
-    std::string Second = Iterator->getSecond().getAsString()->str();
-    std::shared_ptr<ConfigurationOption> Option =
+    std::string Second = Iterator.getSecond().getAsString()->str();
+    std::unique_ptr<ConfigurationOption> Option =
         std::make_unique<ConfigurationOption>(First, Second);
     Conf->addConfigurationOption(std::move(Option));
   }
@@ -42,13 +42,13 @@ std::shared_ptr<Configuration> Configuration::createConfigurationFromString(
 }
 
 void Configuration::addConfigurationOption(
-    std::shared_ptr<ConfigurationOption> Option) {
+    std::unique_ptr<ConfigurationOption> Option) {
   this->OptionMappings[Option->getName()] = std::move(Option);
 }
 
 void Configuration::setConfigurationOption(const std::string &Name,
                                            const std::string &Value) {
-  std::shared_ptr<ConfigurationOption> Option =
+  std::unique_ptr<ConfigurationOption> Option =
       std::make_unique<ConfigurationOption>(Name, Value);
   addConfigurationOption(std::move(Option));
 }
@@ -61,15 +61,6 @@ Configuration::getConfigurationOptionValue(const std::string &Name) {
     return "";
   }
   return Search->second->getValue();
-}
-
-std::vector<std::shared_ptr<ConfigurationOption>>
-Configuration::getConfigurationOptions() {
-  std::vector<std::shared_ptr<ConfigurationOption>> Options{};
-  for (auto &OptionMapping : this->OptionMappings) {
-    Options.insert(Options.begin(), OptionMapping.second);
-  }
-  return Options;
 }
 
 std::string Configuration::dumpToString() {

@@ -38,8 +38,6 @@ TEST(Configuration, dumpTest) {
   EXPECT_EQ(R"({"baz":"1","foo":"true","foo_baz":"2"})", Config.dumpToString());
   EXPECT_EQ("2", Config.getConfigurationOptionValue("foo_baz"));
   EXPECT_EQ("", Config.getConfigurationOptionValue("a"));
-  auto Configs = Config.getConfigurationOptions();
-  EXPECT_EQ(3, Configs.size());
   EXPECT_EQ(R"({"baz":"1","foo":"true","foo_baz":"2"})", Config.dumpToString());
 }
 } // namespace vara::feature
