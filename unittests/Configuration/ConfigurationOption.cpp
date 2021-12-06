@@ -4,6 +4,15 @@
 
 namespace vara::feature {
 TEST(ConfigurationOption, basicAccessors) {
+  ConfigurationOption FalseOption("foo", "true");
+  EXPECT_EQ("foo", FalseOption.name());
+  EXPECT_TRUE(FalseOption.isBool());
+  EXPECT_FALSE(FalseOption.isInt());
+  EXPECT_FALSE(FalseOption.isString());
+  EXPECT_FALSE(FalseOption.boolValue().getValue());
+  EXPECT_EQ("false", FalseOption.asString());
+  EXPECT_EQ("foo: false", FalseOption.toString());
+
   ConfigurationOption Option("foo", "true");
   EXPECT_EQ("foo", Option.name());
   EXPECT_TRUE(Option.isBool());
