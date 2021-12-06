@@ -1,8 +1,10 @@
 set(VARA_FEATURE_TEST_UNITS
   VaRAFeatureUnitTests
+  VaRAConfigurationUnitTests
 )
 set(VARA_FEATURE_LIBS
   VaRAFeature
+  VaRAConfiguration
 )
 
 foreach(TEST_UNIT ${VARA_FEATURE_TEST_UNITS})
@@ -65,6 +67,7 @@ include_directories(
   .
 )
 
+add_subdirectory(Configuration)
 add_subdirectory(Feature)
 add_subdirectory(Utils)
 add_subdirectory(resources)
