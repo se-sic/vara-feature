@@ -52,13 +52,13 @@ TEST(Configuration, iteratorTest) {
   Configuration Config{};
   Config.setConfigurationOption("foo", "1");
   Config.setConfigurationOption("baz", "true");
-  auto iterator = Config.begin();
-  EXPECT_EQ("foo", iterator->first());
-  EXPECT_EQ("1", iterator->second->asString());
-  iterator++;
-  EXPECT_EQ("baz", iterator->first());
-  EXPECT_EQ("true", iterator->second->asString());
-  iterator++;
-  EXPECT_EQ(Config.end(), iterator);
+  auto Iterator = Config.begin();
+  EXPECT_EQ("foo", Iterator->first());
+  EXPECT_EQ("1", Iterator->second->asString());
+  Iterator++;
+  EXPECT_EQ("baz", Iterator->first());
+  EXPECT_EQ("true", Iterator->second->asString());
+  Iterator++;
+  EXPECT_EQ(Config.end(), Iterator);
 }
 } // namespace vara::feature
