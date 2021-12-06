@@ -10,6 +10,7 @@ TEST(ConfigurationOption, basicAccessors) {
   EXPECT_FALSE(Option.isInt());
   EXPECT_FALSE(Option.isString());
   EXPECT_TRUE(Option.boolValue().getValue());
+  EXPECT_EQ("true", Option.asString());
   EXPECT_EQ("foo: true", Option.toString());
 
   ConfigurationOption Option2("baz", "1");
@@ -18,6 +19,7 @@ TEST(ConfigurationOption, basicAccessors) {
   EXPECT_FALSE(Option2.isString());
   EXPECT_FALSE(Option2.isBool());
   EXPECT_EQ(1, Option2.intValue().getValue());
+  EXPECT_EQ("1", Option.asString());
   EXPECT_EQ("baz: 1", Option2.toString());
 
   ConfigurationOption UnparseableOption("foobar", "test");
@@ -26,6 +28,7 @@ TEST(ConfigurationOption, basicAccessors) {
   EXPECT_FALSE(UnparseableOption.isBool());
   EXPECT_FALSE(UnparseableOption.isInt());
   EXPECT_EQ("test", UnparseableOption.stringValue().getValue());
+  EXPECT_EQ("test", Option.asString());
   EXPECT_EQ("foobar: test", UnparseableOption.toString());
 }
 
