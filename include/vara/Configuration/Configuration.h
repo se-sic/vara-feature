@@ -126,6 +126,26 @@ public:
   Configuration() = default;
   virtual ~Configuration() = default;
 
+  [[nodiscard]] llvm::StringMapIterator<std::unique_ptr<ConfigurationOption>>
+  begin() {
+    return OptionMappings.begin();
+  }
+  [[nodiscard]] llvm::StringMapConstIterator<
+      std::unique_ptr<ConfigurationOption>>
+  begin() const {
+    return OptionMappings.end();
+  }
+
+  [[nodiscard]] llvm::StringMapIterator<std::unique_ptr<ConfigurationOption>>
+  end() {
+    return OptionMappings.end();
+  }
+  [[nodiscard]] llvm::StringMapConstIterator<
+      std::unique_ptr<ConfigurationOption>>
+  end() const {
+    return OptionMappings.end();
+  }
+
   /// This method creates a configuration from the provided json string.
   [[nodiscard]] static std::unique_ptr<Configuration>
   createConfigurationFromString(llvm::StringRef ConfigurationString);
