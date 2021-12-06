@@ -53,20 +53,21 @@ void Configuration::setConfigurationOption(const std::string &Name,
   addConfigurationOption(std::move(Option));
 }
 
-std::string_view
+std::string
 Configuration::getConfigurationOptionValue(const std::string &Name) {
   auto Search = this->OptionMappings.find(Name);
   if (Search == this->OptionMappings.end()) {
     llvm::errs() << "The configuration option " << Name << " does not exist.\n";
     return "";
   }
-  return Search->second->getValue();
+  return Search->second->getValueAsString();
 }
 
 std::string Configuration::dumpToString() {
   llvm::json::Object Obj{};
   for (auto &Iterator : this->OptionMappings) {
-    Obj[std::string(Iterator.first)] = std::string(Iterator.second->getValue());
+    Obj[std::string(Iterator.first)] =
+        std::string(Iterator.second->getValueAsString());
   }
   llvm::json::Value Value(std::move(Obj));
   std::string DumpedString;
