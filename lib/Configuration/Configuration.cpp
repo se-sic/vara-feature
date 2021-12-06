@@ -66,7 +66,7 @@ Configuration::getConfigurationOptionValue(const std::string &Name) {
 std::string Configuration::dumpToString() {
   llvm::json::Object Obj{};
   for (auto &Iterator : this->OptionMappings) {
-    Obj[std::string(Iterator.first)] =
+    Obj[std::string(Iterator.first())] =
         std::string(Iterator.second->getValueAsString());
   }
   llvm::json::Value Value(std::move(Obj));

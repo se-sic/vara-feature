@@ -1,6 +1,7 @@
 #ifndef VARA_CONFIGURATION_CONFIGURATION_H
 #define VARA_CONFIGURATION_CONFIGURATION_H
 
+#include <llvm/ADT/StringMap.h>
 #include <llvm/Support/FormatVariadic.h>
 #include <map>
 #include <memory>
@@ -149,8 +150,7 @@ public:
 private:
   /// This represents a mapping from the name of the option to the option
   /// object.
-  std::map<llvm::StringRef, std::unique_ptr<ConfigurationOption>>
-      OptionMappings;
+  llvm::StringMap<std::unique_ptr<ConfigurationOption>> OptionMappings;
 };
 
 } // namespace vara::feature
