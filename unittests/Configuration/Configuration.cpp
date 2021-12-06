@@ -40,4 +40,25 @@ TEST(Configuration, dumpTest) {
   EXPECT_FALSE(Config.configurationOptionValue("a").hasValue());
   EXPECT_EQ(R"({"baz":"1","foo":"true","foo_baz":"2"})", Config.dumpToString());
 }
+
+TEST(Configuration, addConfigurationMultipleTimes) {
+  Configuration Config{};
+  Config.setConfigurationOption("foo", "1");
+  Config.setConfigurationOption("foo", "true");
+  EXPECT_EQ("true", Config.configurationOptionValue("foo").getValue());
+}
+
+TEST(Configuration, iteratorTest) {
+  Configuration Config{};
+  Config.setConfigurationOption("foo", "1");
+  Config.setConfigurationOption("baz", "true");
+  auto iterator = Config.begin();
+  EXPECT_EQ("foo", iterator->first());
+  EXPECT_EQ("1", iterator->second->asString());
+  iterator++;
+  EXPECT_EQ("baz", iterator->first());
+  EXPECT_EQ("true", iterator->second->asString());
+  iterator++;
+  EXPECT_EQ(Config.end(), iterator);
+}
 } // namespace vara::feature
