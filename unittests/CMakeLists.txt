@@ -1,6 +1,9 @@
 set(VARA_FEATURE_TEST_UNITS
   VaRAFeatureUnitTests
 )
+set(VARA_FEATURE_LIBS
+  VaRAFeature
+)
 
 foreach(TEST_UNIT ${VARA_FEATURE_TEST_UNITS})
   message(STATUS "Setting: ${TEST_UNIT}")
@@ -54,7 +57,7 @@ function(add_vara_unittest test_name)
     )
     set(CTEST_OUTPUT_ON_FAILURE 1)
   endif()
-  target_link_libraries(${test_name} PRIVATE VaRAFeature)
+  target_link_libraries(${test_name} PRIVATE ${VARA_FEATURE_LIBS})
 endfunction()
 
 # Adds helper headers
