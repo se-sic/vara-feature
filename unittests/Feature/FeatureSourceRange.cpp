@@ -12,10 +12,11 @@ TEST(FeatureSourceRange, comparison) {
 }
 
 TEST(FeatureSourceRange, full) {
+  const auto MemberOffset = "memberOffset";
   auto L = FeatureSourceRange(
       fs::current_path(), FeatureSourceRange::FeatureSourceLocation(1, 4),
       FeatureSourceRange::FeatureSourceLocation(3, 5),
-      FeatureSourceRange::Category::inessential, "memberOffset");
+      FeatureSourceRange::Category::inessential, MemberOffset);
 
   EXPECT_EQ(L.getPath(), fs::current_path());
   EXPECT_EQ(L.getStart()->getLineNumber(), 1);
@@ -23,7 +24,7 @@ TEST(FeatureSourceRange, full) {
   EXPECT_EQ(L.getEnd()->getLineNumber(), 3);
   EXPECT_EQ(L.getEnd()->getColumnOffset(), 5);
   EXPECT_EQ(L.getCategory(), FeatureSourceRange::Category::inessential);
-  EXPECT_EQ(L.getMemberOffset(), "memberOffset");
+  EXPECT_EQ(L.getMemberOffset(), MemberOffset);
 }
 
 TEST(FeatureSourceLocation, basicAccessors) {
