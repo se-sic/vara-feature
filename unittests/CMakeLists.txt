@@ -54,7 +54,7 @@ function(add_vara_unittest test_name)
     )
     set(CTEST_OUTPUT_ON_FAILURE 1)
   endif()
-  target_link_libraries(${test_name} PRIVATE VaRAFeature VaRAConfiguration)
+  target_link_libraries(${test_name} PRIVATE VaRAFeature)
 endfunction()
 
 # Adds helper headers
