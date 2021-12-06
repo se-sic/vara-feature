@@ -36,8 +36,8 @@ TEST(Configuration, dumpTest) {
   EXPECT_EQ(ConfigurationString, Dump);
   Config.setConfigurationOption("foo_baz", "2");
   EXPECT_EQ(R"({"baz":"1","foo":"true","foo_baz":"2"})", Config.dumpToString());
-  EXPECT_EQ("2", Config.getConfigurationOptionValue("foo_baz"));
-  EXPECT_EQ("", Config.getConfigurationOptionValue("a"));
+  EXPECT_EQ("2", Config.configurationOptionValue("foo_baz").getValue());
+  EXPECT_FALSE(Config.configurationOptionValue("a").hasValue());
   EXPECT_EQ(R"({"baz":"1","foo":"true","foo_baz":"2"})", Config.dumpToString());
 }
 } // namespace vara::feature

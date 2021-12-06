@@ -43,31 +43,30 @@ std::unique_ptr<Configuration> Configuration::createConfigurationFromString(
 
 void Configuration::addConfigurationOption(
     std::unique_ptr<ConfigurationOption> Option) {
-  this->OptionMappings[Option->getName()] = std::move(Option);
+  this->OptionMappings[Option->name()] = std::move(Option);
 }
 
-void Configuration::setConfigurationOption(const std::string &Name,
-                                           const std::string &Value) {
+void Configuration::setConfigurationOption(llvm::StringRef Name,
+                                           llvm::StringRef Value) {
   std::unique_ptr<ConfigurationOption> Option =
       std::make_unique<ConfigurationOption>(Name, Value);
   addConfigurationOption(std::move(Option));
 }
 
-std::string
-Configuration::getConfigurationOptionValue(const std::string &Name) {
+llvm::Optional<std::string>
+Configuration::configurationOptionValue(llvm::StringRef Name) {
   auto Search = this->OptionMappings.find(Name);
   if (Search == this->OptionMappings.end()) {
-    llvm::errs() << "The configuration option " << Name << " does not exist.\n";
-    return "";
+    return llvm::Optional<std::string>{};
   }
-  return Search->second->getValueAsString();
+  return llvm::Optional<std::string>{Search->second->asString()};
 }
 
 std::string Configuration::dumpToString() {
   llvm::json::Object Obj{};
   for (auto &Iterator : this->OptionMappings) {
     Obj[std::string(Iterator.first())] =
-        std::string(Iterator.second->getValueAsString());
+        std::string(Iterator.second->asString());
   }
   llvm::json::Value Value(std::move(Obj));
   std::string DumpedString;

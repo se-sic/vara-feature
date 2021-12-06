@@ -3,6 +3,7 @@
 
 #include <llvm/ADT/StringMap.h>
 #include <llvm/Support/FormatVariadic.h>
+
 #include <map>
 #include <memory>
 #include <sstream>
@@ -19,55 +20,53 @@ class ConfigurationOption {
 public:
   virtual ~ConfigurationOption() = default;
 
+  /// The constructor of a configuration options takes the name and the value
+  /// as an argument. The name and the value do not change over time.
   ConfigurationOption(llvm::StringRef Name, llvm::StringRef Value)
-      : Name(Name), Value(convert(Value)){};
+      : Name(Name.str()), Value(convert(Value)){};
 
   /// This method returns the name of the configuration option.
   /// \returns the name of the configuration option as a string
-  [[nodiscard]] llvm::StringRef getName() { return this->Name; }
+  [[nodiscard]] llvm::StringRef name() const { return this->Name; }
 
   /// This method returns the string value of the configuration option.
   /// \returns the string value of the configuration option as a string
-  [[nodiscard]] llvm::StringRef getStringValue() {
+  [[nodiscard]] llvm::Optional<llvm::StringRef> stringValue() const {
     if (isString()) {
-      return std::get<llvm::StringRef>(this->Value);
+      return llvm::Optional<llvm::StringRef>{
+          std::get<std::string>(this->Value)};
     }
-    llvm::errs() << "The value is not a string!\n";
-    return "";
+    return llvm::Optional<llvm::StringRef>{};
   }
 
   /// This method returns the boolean value of the configuration option.
   /// \returns the boolean value of the configuration option as a bool
-  [[nodiscard]] bool getBoolValue() {
+  [[nodiscard]] llvm::Optional<bool> boolValue() const {
     if (isBool()) {
-      return std::get<bool>(this->Value);
+      return llvm::Optional<bool>{std::get<bool>(this->Value)};
     }
-    llvm::errs() << "The value is not a boolean!\n";
-    return false;
+    return llvm::Optional<bool>{};
   }
 
   /// This method returns the integer value of the configuration option.
   /// \returns the integer value of the configuration option as an int64_t
-  [[nodiscard]] int64_t getIntValue() {
+  [[nodiscard]] llvm::Optional<int64_t> intValue() const {
     if (isInt()) {
-      return std::get<int64_t>(this->Value);
+      return llvm::Optional<int64_t>{std::get<int64_t>(this->Value)};
     }
-    llvm::errs() << "The value is not an integer!\n";
-    return -1;
+    return llvm::Optional<int64_t>{};
   }
 
   /// This method returns the value as string no matter what the real type is.
   /// \returns the value as string
-  [[nodiscard]] std::string getValueAsString() {
+  [[nodiscard]] std::string asString() const {
     std::string ConvertedValue;
     if (isString()) {
-      ConvertedValue = getStringValue();
+      ConvertedValue = stringValue().getValue();
     } else if (isBool()) {
-      ConvertedValue = std::get<bool>(this->Value) ? "true" : "false";
+      ConvertedValue = boolValue().getValue() ? "true" : "false";
     } else {
-      std::ostringstream O;
-      O << std::get<int64_t>(this->Value);
-      ConvertedValue = O.str();
+      ConvertedValue = std::to_string(intValue().getValue());
     }
     return ConvertedValue;
   }
@@ -76,34 +75,32 @@ public:
   /// option.
   /// \returns the string representation in the format: <code>name:
   /// value</code>
-  [[nodiscard]] std::string toString() {
-    return llvm::formatv("{0}: {1}", this->Name, getValueAsString());
+  [[nodiscard]] std::string toString() const {
+    return llvm::formatv("{0}: {1}", this->Name, asString());
   }
 
   /// This method returns \c `true` if the value is a boolean value
   /// \returns whether the value of the configuration option is a boolean value
-  [[nodiscard]] bool isBool() { return std::holds_alternative<bool>(Value); }
+  [[nodiscard]] bool isBool() const {
+    return std::holds_alternative<bool>(Value);
+  }
 
   /// This method returns \c `true` if the value is a string
   /// \returns whether the value of the configuration option is a string
-  [[nodiscard]] bool isString() {
-    return std::holds_alternative<llvm::StringRef>(Value);
+  [[nodiscard]] bool isString() const {
+    return std::holds_alternative<std::string>(Value);
   }
 
   /// This method returns \c `true` if the value is an integer
   /// \returns whether the value of the configuration option is an integer
-  [[nodiscard]] bool isInt() { return std::holds_alternative<int64_t>(Value); }
+  [[nodiscard]] bool isInt() const {
+    return std::holds_alternative<int64_t>(Value);
+  }
 
 private:
-  /// The name of the configuration option
-  const llvm::StringRef Name;
-
-  /// The value of the configuration option
-  std::variant<bool, int64_t, llvm::StringRef> Value;
-
   /// This method parses the given string and tries to convert it.
   /// \returns a variant of the most specific type (int64_t, bool, or StringRef)
-  [[nodiscard]] static std::variant<bool, int64_t, llvm::StringRef>
+  [[nodiscard]] static std::variant<bool, int64_t, std::string>
   convert(llvm::StringRef ValueToConvert) {
     // Parse the value
     if (ValueToConvert.lower() == "true" || ValueToConvert.lower() == "false") {
@@ -113,8 +110,14 @@ private:
     if (!ValueToConvert.getAsInteger(0, IntegerValue)) {
       return IntegerValue;
     }
-    return ValueToConvert;
+    return ValueToConvert.str();
   }
+
+  /// The name of the configuration option
+  const std::string Name;
+
+  /// The value of the configuration option
+  const std::variant<bool, int64_t, std::string> Value;
 };
 
 /// \brief This class represents a configuration.
@@ -155,13 +158,12 @@ public:
 
   /// This method sets a configuration option by using the provided name and
   /// value.
-  void setConfigurationOption(const std::string &Name,
-                              const std::string &Value);
+  void setConfigurationOption(llvm::StringRef Name, llvm::StringRef Value);
 
   /// This method returns the value of the configuration option.
   /// \returns the value of the configuration option as a string
-  [[nodiscard]] std::string
-  getConfigurationOptionValue(const std::string &Name);
+  [[nodiscard]] llvm::Optional<std::string>
+  configurationOptionValue(llvm::StringRef Name);
 
   /// This method dumps the current configuration to a json string.
   /// \returns the current configuration as a json-formatted string
