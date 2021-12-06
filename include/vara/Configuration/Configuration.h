@@ -64,7 +64,11 @@ public:
     if (isString()) {
       ConvertedValue = stringValue().getValue();
     } else if (isBool()) {
-      ConvertedValue = boolValue().getValue() ? "true" : "false";
+      if (boolValue().getValue()) {
+        ConvertedValue = "true";
+      } else {
+        ConvertedValue = "false";
+      }
     } else {
       ConvertedValue = std::to_string(intValue().getValue());
     }
