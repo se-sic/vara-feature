@@ -36,7 +36,7 @@ public:
       return llvm::Optional<llvm::StringRef>{
           std::get<std::string>(this->Value)};
     }
-    return llvm::Optional<llvm::StringRef>{};
+    return llvm::Optional<llvm::StringRef>{llvm::None};
   }
 
   /// This method returns the boolean value of the configuration option.
@@ -45,7 +45,7 @@ public:
     if (isBool()) {
       return llvm::Optional<bool>{std::get<bool>(this->Value)};
     }
-    return llvm::Optional<bool>{};
+    return llvm::Optional<bool>{llvm::None};
   }
 
   /// This method returns the integer value of the configuration option.
@@ -54,7 +54,7 @@ public:
     if (isInt()) {
       return llvm::Optional<int64_t>{std::get<int64_t>(this->Value)};
     }
-    return llvm::Optional<int64_t>{};
+    return llvm::Optional<int64_t>{llvm::None};
   }
 
   /// This method returns the value as string no matter what the real type is.
@@ -64,11 +64,7 @@ public:
     if (isString()) {
       ConvertedValue = stringValue().getValue();
     } else if (isBool()) {
-      if (boolValue().getValue()) {
-        ConvertedValue = "true";
-      } else {
-        ConvertedValue = "false";
-      }
+      ConvertedValue = boolValue().getValue() ? "true" : "false";
     } else {
       ConvertedValue = std::to_string(intValue().getValue());
     }
