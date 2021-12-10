@@ -15,6 +15,16 @@ TEST(FeatureModelBuilder, addBinaryFeature) {
   EXPECT_EQ(FM->getFeature("a")->getKind(), Feature::FeatureKind::FK_BINARY);
 }
 
+TEST(FeatureModelBuilder, duplicateFeature) {
+  FeatureModelBuilder B;
+
+  B.makeFeature<BinaryFeature>("a");
+  B.makeFeature<BinaryFeature>("a");
+  auto FM = B.buildFeatureModel();
+
+  EXPECT_FALSE(FM);
+}
+
 TEST(FeatureModelBuilder, addNumericFeature) {
   FeatureModelBuilder B;
 

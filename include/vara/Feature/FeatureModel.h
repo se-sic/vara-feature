@@ -2,8 +2,10 @@
 #define VARA_FEATURE_FEATUREMODEL_H
 
 #include "vara/Feature/Constraint.h"
+#include "vara/Feature/Error.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
+#include "vara/Utils/Result.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/Support/GraphWriter.h"
@@ -143,16 +145,14 @@ public:
   using ordered_feature_iterator = DFSIterator;
   using const_ordered_feature_iterator = DFSIterator;
 
-  ordered_feature_iterator begin() { return DFSIterator(Root); }
-  [[nodiscard]] const_ordered_feature_iterator begin() const {
-    return DFSIterator(Root);
-  }
+  ordered_feature_iterator begin() { return {Root}; }
+  [[nodiscard]] const_ordered_feature_iterator begin() const { return {Root}; }
 
   ordered_feature_iterator end() {
-    return DFSIterator(Root ? Root->getParentFeature() : nullptr);
+    return {Root ? Root->getParentFeature() : nullptr};
   }
   [[nodiscard]] const_ordered_feature_iterator end() const {
-    return DFSIterator(Root ? Root->getParentFeature() : nullptr);
+    return {Root ? Root->getParentFeature() : nullptr};
   }
 
   llvm::iterator_range<ordered_feature_iterator> features() {
@@ -214,12 +214,12 @@ public:
   using unordered_feature_iterator = FeatureMapIterator;
   using const_unordered_feature_iterator = FeatureMapIterator;
 
-  llvm::iterator_range<unordered_feature_iterator> unordered_features() {
+  llvm::iterator_range<unordered_feature_iterator> unorderedFeatures() {
     return llvm::make_range(FeatureMapIterator(Features.begin()),
                             FeatureMapIterator(Features.end()));
   }
   [[nodiscard]] llvm::iterator_range<const_unordered_feature_iterator>
-  unordered_features() const {
+  unorderedFeatures() const {
     return llvm::make_range(FeatureMapIterator(Features.begin()),
                             FeatureMapIterator(Features.end()));
   }
@@ -306,6 +306,14 @@ private:
   RelationshipContainerTy Relationships;
 };
 
+//===----------------------------------------------------------------------===//
+//                           FeatureModel Helpers
+//===----------------------------------------------------------------------===//
+
+std::unique_ptr<FeatureModel> loadFeatureModel(llvm::StringRef Path);
+
+bool verifyFeatureModel(llvm::StringRef Path);
+
 } // namespace vara::feature
 
 namespace llvm {
@@ -314,7 +322,8 @@ namespace llvm {
 //                     GraphWriter for FeatureModel
 //===----------------------------------------------------------------------===//
 
-template <> struct GraphWriter<vara::feature::FeatureModel *> {
+template <>
+struct GraphWriter<vara::feature::FeatureModel *> {
   using GraphType = typename vara::feature::FeatureModel *;
 
   raw_ostream &O;
@@ -468,17 +477,21 @@ namespace vara::feature {
 //                        FeatureModelConsistencyRules
 //===----------------------------------------------------------------------===//
 
-template <typename... Rules> class FeatureModelConsistencyChecker {
+template <typename... Rules>
+class FeatureModelConsistencyChecker {
 public:
-  static bool isFeatureModelValid(FeatureModel &FM) {
-    return (Rules::check(FM) && ... && true);
+  static Result<FTErrorCode> isFeatureModelValid(FeatureModel &FM) {
+    if (auto E = (Rules::check(FM) && ... && true); !E) {
+      return Error(INCONSISTENT);
+    }
+    return Ok();
   }
 };
 
 struct EveryFeatureRequiresParent {
   static bool check(FeatureModel &FM) {
-    if (std::all_of(FM.unordered_features().begin(),
-                    FM.unordered_features().end(), [](Feature *F) {
+    if (std::all_of(FM.unorderedFeatures().begin(),
+                    FM.unorderedFeatures().end(), [](Feature *F) {
                       return llvm::isa<RootFeature>(F) || F->getParentFeature();
                     })) {
       return true;
@@ -491,7 +504,7 @@ struct EveryFeatureRequiresParent {
 struct CheckFeatureParentChildRelationShip {
   static bool check(FeatureModel &FM) {
     if (std::all_of(
-            FM.unordered_features().begin(), FM.unordered_features().end(),
+            FM.unorderedFeatures().begin(), FM.unorderedFeatures().end(),
             [](Feature *F) {
               return llvm::isa<RootFeature>(F) ||
                      // Every parent of a Feature needs to have it as a child.
@@ -510,8 +523,8 @@ struct CheckFeatureParentChildRelationShip {
 struct ExactlyOneRootNode {
   static bool check(FeatureModel &FM) {
     if (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
-        1 == std::accumulate(FM.unordered_features().begin(),
-                             FM.unordered_features().end(), 0,
+        1 == std::accumulate(FM.unorderedFeatures().begin(),
+                             FM.unorderedFeatures().end(), 0,
                              [](int Sum, Feature *F) {
                                return Sum + llvm::isa<RootFeature>(F);
                              })) {

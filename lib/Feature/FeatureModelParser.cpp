@@ -1,5 +1,6 @@
 #include "vara/Feature/FeatureModelParser.h"
 #include "vara/Feature/ConstraintParser.h"
+#include "vara/Feature/Feature.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -7,6 +8,7 @@
 
 #include "SxfmConstants.h"
 #include "XmlConstants.h"
+#include "vara/Utils/VariantUtil.h"
 
 #include <iostream>
 #include <regex>
@@ -17,8 +19,9 @@ namespace vara::feature {
 
 std::string trim(llvm::StringRef S) { return llvm::StringRef(S).trim().str(); }
 
-bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
-                                                     bool Num = false) {
+Result<FTErrorCode>
+FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
+                                                bool Num = false) {
   std::string Name{"root"};
   bool Opt = false;
   long MinValue = 0;
@@ -27,12 +30,11 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   std::vector<FeatureSourceRange> SourceRanges;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
-      std::string Cnt = trim(reinterpret_cast<char *>(
-          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()));
+      std::string Cnt{trim(reinterpret_cast<char *>(
+          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()))};
       if (Cnt.empty()) {
         continue;
       }
-
       // The DTD enforces name to be the first element of an
       // configurationOption. This method is never called without validating
       // the input beforehand.
@@ -46,7 +48,7 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
-              FMB.addEdge(Name, trim(reinterpret_cast<char *>(
+              FMB.addEdge(Name, std::string(reinterpret_cast<char *>(
                                     std::unique_ptr<xmlChar, void (*)(void *)>(
                                         xmlNodeGetContent(Child), xmlFree)
                                         .get())));
@@ -107,18 +109,18 @@ bool FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   // XML has those names specified as root nodes
   if (Name == "root" || Name == "base") {
     FMB.makeRoot(Name);
-    return FMB.makeFeature<RootFeature>(Name);
-  }
-  if (Num) {
+  } else if (Num) {
     if (Values.empty()) {
-      return FMB.makeFeature<NumericFeature>(Name,
-                                             std::make_pair(MinValue, MaxValue),
-                                             Opt, std::move(SourceRanges));
+      FMB.makeFeature<NumericFeature>(Name, std::make_pair(MinValue, MaxValue),
+                                      Opt, std::move(SourceRanges));
+    } else {
+      FMB.makeFeature<NumericFeature>(Name, Values, Opt,
+                                      std::move(SourceRanges));
     }
-    return FMB.makeFeature<NumericFeature>(Name, Values, Opt,
-                                           std::move(SourceRanges));
+  } else {
+    FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges));
   }
-  return FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges));
+  return Ok();
 }
 
 long FeatureModelXmlParser::parseNumber(llvm::StringRef Str) {
@@ -183,41 +185,43 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
       }
     }
   }
-  return FeatureSourceRange(Path, Start, End, Category);
+  return {Path, Start, End, Category};
 }
 
-bool FeatureModelXmlParser::parseOptions(xmlNode *Node, bool Num = false) {
+Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
+                                                        bool Num = false) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONFIGURATIONOPTION)) {
         if (!parseConfigurationOption(H, Num)) {
-          return false;
+          return Error(ERROR);
         }
       }
     }
   }
-  return true;
+  return Ok();
 }
 
-bool FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
+Result<FTErrorCode> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
         UniqueXmlChar Cnt(xmlNodeGetContent(H), xmlFree);
         if (auto Constraint =
-                ConstraintParser(trim(reinterpret_cast<char *>(Cnt.get())))
+                ConstraintParser(
+                    std::string(reinterpret_cast<char *>(Cnt.get())))
                     .buildConstraint()) {
           FMB.addConstraint(std::move(Constraint));
         } else {
-          return false;
+          return Error(ERROR);
         }
       }
     }
   }
-  return true;
+  return Ok();
 }
 
-bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
+Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
   {
     UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::NAME), xmlFree);
     FMB.setVmName(trim(reinterpret_cast<char *>(Cnt.get())));
@@ -236,26 +240,26 @@ bool FeatureModelXmlParser::parseVm(xmlNode *Node) {
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::BINARYOPTIONS)) {
         if (!parseOptions(H)) {
-          return false;
+          return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::NUMERICOPTIONS)) {
         if (!parseOptions(H, true)) {
-          return false;
+          return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::BOOLEANCONSTRAINTS)) {
         if (!parseConstraints(H)) {
-          return false;
+          return Error(ERROR);
         }
       }
     }
   }
-  return true;
+  return Ok();
 }
 
 FeatureSourceRange::FeatureSourceLocation
 FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
-  int Line = 0;
-  int Column = 0;
+  unsigned Line = 0;
+  unsigned Column = 0;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(Head->name, XmlConstants::LINE)) {
@@ -267,7 +271,7 @@ FeatureModelXmlParser::createFeatureSourceLocation(xmlNode *Node) {
       }
     }
   }
-  return FeatureSourceRange::FeatureSourceLocation(Line, Column);
+  return {Line, Column};
 }
 
 /// Decide whether feature A excludes B. Beware that this method only detects
@@ -289,7 +293,8 @@ bool detectExclude(const Feature *A, const Feature *B) {
       });
 }
 
-bool FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
+Result<FTErrorCode>
+FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
   auto Transactions = FeatureModelModifyTransaction::openTransaction(FM);
   for (auto *F : FM) {
     auto Children = F->getChildren<Feature>();
@@ -323,13 +328,14 @@ std::unique_ptr<FeatureModel> FeatureModelXmlParser::buildFeatureModel() {
 }
 
 FeatureModelParser::UniqueXmlDtd FeatureModelXmlParser::createDtd() {
-  UniqueXmlDtd Dtd(
-      xmlIOParseDTD(nullptr,
-                    xmlParserInputBufferCreateMem(XmlConstants::DtdRaw.c_str(),
-                                                  XmlConstants::DtdRaw.length(),
-                                                  XML_CHAR_ENCODING_UTF8),
-                    XML_CHAR_ENCODING_UTF8),
-      xmlFreeDtd);
+  UniqueXmlDtd Dtd(xmlIOParseDTD(nullptr,
+                                 xmlParserInputBufferCreateMem(
+                                     XmlConstants::DtdRaw.c_str(),
+                                     checkedNarrowingSignConversion(
+                                         XmlConstants::DtdRaw.length()),
+                                     XML_CHAR_ENCODING_UTF8),
+                                 XML_CHAR_ENCODING_UTF8),
+                   xmlFreeDtd);
   xmlCleanupParser();
   assert(Dtd && "Failed to parse DTD.");
   return Dtd;
@@ -338,9 +344,11 @@ FeatureModelParser::UniqueXmlDtd FeatureModelXmlParser::createDtd() {
 FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
-  UniqueXmlDoc Doc(xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(), Xml.length(),
-                                     nullptr, nullptr, XML_PARSE_NOBLANKS),
-                   xmlFreeDoc);
+  UniqueXmlDoc Doc(
+      xmlCtxtReadMemory(Ctxt.get(), Xml.c_str(),
+                        checkedNarrowingSignConversion(Xml.length()), nullptr,
+                        nullptr, XML_PARSE_NOBLANKS),
+      xmlFreeDoc);
   xmlCleanupParser();
   if (Doc && Ctxt->valid) {
     xmlValidateDtd(&Ctxt->vctxt, Doc.get(), createDtd().get());
@@ -351,10 +359,15 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
   } else {
     llvm::errs() << "Failed to parse / validate XML.\n";
   }
-  return UniqueXmlDoc(nullptr, nullptr);
+  return {nullptr, nullptr};
 }
 
-bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
+Result<FTErrorCode> FeatureModelXmlParser::verifyFeatureModel() {
+  if (!parseDoc().get()) {
+    return Error(ERROR);
+  }
+  return Ok();
+}
 
 //===----------------------------------------------------------------------===//
 //                        FeatureModelSxfmParser Class
@@ -362,21 +375,21 @@ bool FeatureModelXmlParser::verifyFeatureModel() { return parseDoc().get(); }
 
 std::unique_ptr<FeatureModel> FeatureModelSxfmParser::buildFeatureModel() {
   UniqueXmlDoc Doc = parseDoc();
-  if (!Doc) {
+  if (!Doc || !parseVm(xmlDocGetRootElement(Doc.get()))) {
     return nullptr;
   }
-  return parseVm(xmlDocGetRootElement(Doc.get())) ? FMB.buildFeatureModel()
-                                                  : nullptr;
+  return FMB.buildFeatureModel();
 }
 
 FeatureModelSxfmParser::UniqueXmlDtd FeatureModelSxfmParser::createDtd() {
-  UniqueXmlDtd Dtd(
-      xmlIOParseDTD(nullptr,
-                    xmlParserInputBufferCreateMem(
-                        SxfmConstants::DtdRaw.c_str(),
-                        SxfmConstants::DtdRaw.length(), XML_CHAR_ENCODING_UTF8),
-                    XML_CHAR_ENCODING_UTF8),
-      xmlFreeDtd);
+  UniqueXmlDtd Dtd(xmlIOParseDTD(nullptr,
+                                 xmlParserInputBufferCreateMem(
+                                     SxfmConstants::DtdRaw.c_str(),
+                                     checkedNarrowingSignConversion(
+                                         SxfmConstants::DtdRaw.length()),
+                                     XML_CHAR_ENCODING_UTF8),
+                                 XML_CHAR_ENCODING_UTF8),
+                   xmlFreeDtd);
   xmlCleanupParser();
   assert(Dtd && "Failed to parse DTD.");
   return Dtd;
@@ -387,9 +400,11 @@ FeatureModelSxfmParser::UniqueXmlDoc FeatureModelSxfmParser::parseDoc() {
   std::unique_ptr<xmlParserCtxt, void (*)(xmlParserCtxtPtr)> Ctxt(
       xmlNewParserCtxt(), xmlFreeParserCtxt);
   // Parse the given model by libxml2
-  UniqueXmlDoc Doc(xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(), Sxfm.length(),
-                                     nullptr, nullptr, XML_PARSE_NOBLANKS),
-                   xmlFreeDoc);
+  UniqueXmlDoc Doc(
+      xmlCtxtReadMemory(Ctxt.get(), Sxfm.c_str(),
+                        checkedNarrowingSignConversion(Sxfm.length()), nullptr,
+                        nullptr, XML_PARSE_NOBLANKS),
+      xmlFreeDoc);
   xmlCleanupParser();
 
   // In the following, the document is validated.
@@ -406,7 +421,7 @@ FeatureModelSxfmParser::UniqueXmlDoc FeatureModelSxfmParser::parseDoc() {
   }
   llvm::errs() << "Failed to parse / validate XML.\n";
 
-  return UniqueXmlDoc(nullptr, nullptr);
+  return {nullptr, nullptr};
 }
 
 bool FeatureModelSxfmParser::parseVm(xmlNode *Node) {
@@ -492,7 +507,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       llvm::StringRef ToStringRef(To);
       llvm::StringRef IndentationString =
           ToStringRef.substr(0, ToStringRef.find(':'));
-      int CurrentIndentationLevel = IndentationString.count(Indentation);
+      int CurrentIndentationLevel =
+          checkedNarrowingSignConversion(IndentationString.count(Indentation));
       int Diff = CurrentIndentationLevel - LastIndentationLevel;
 
       // Remember the root indentation for later checks
@@ -572,6 +588,21 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
         Name = Name.substr(0, Name.find('(', 0));
       }
 
+      // Search for identifier
+      std::regex Regex(R"(\([a-zA-Z\d_]*\))");
+      std::string CurrentLine = ToStringRef.str();
+      for (std::sregex_iterator Match = std::sregex_iterator(
+               CurrentLine.begin(), CurrentLine.end(), Regex);
+           Match != std::sregex_iterator(); Match++) {
+        std::string Identifier = (*Match).str();
+        Identifier = Identifier.substr(1, Identifier.size() - 2);
+        IdentifierMap[Identifier] = Name;
+        if (Identifier != Name && Name.find(Identifier) != std::string::npos) {
+          llvm::errs() << "Name must not contain ID:'" << Name << "'\n";
+          return false;
+        }
+      }
+
       // If there is no name, provide an artificial one
       if (Name.empty()) {
         OrGroupCounter++;
@@ -580,7 +611,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
 
       // Create the feature
       if (IsRoot) {
-        FMB.makeFeature<RootFeature>(Name);
+        FMB.makeRoot(Name);
       } else {
         FMB.makeFeature<BinaryFeature>(Name, Opt);
       }
@@ -635,8 +666,76 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
 }
 
 bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
-  // TODO (se-passau/VaRA#702): This has to wait until the constraint part is
-  // implemented
+  if (Constraints == nullptr) {
+    llvm::errs()
+        << "Failed to read in constraints. Is the constraint field empty?\n";
+    return false;
+  }
+
+  std::stringstream Ss(reinterpret_cast<const char *>(
+      UniqueXmlChar(xmlNodeGetContent(Constraints), xmlFree).get()));
+  std::string To;
+
+  // Prepare the identifiers for later replacement
+  std::vector<std::string> Keys;
+  Keys.reserve(IdentifierMap.size());
+  std::for_each(IdentifierMap.begin(), IdentifierMap.end(),
+                [&Keys](const auto &Entry) { Keys.push_back(Entry.first); });
+  std::sort(Keys.begin(), Keys.end(), std::greater<std::string>{});
+
+  while (std::getline(Ss, To)) {
+    // Ignore if a line is empty
+    if (To.empty() || std::all_of(To.begin(), To.end(), isspace)) {
+      continue;
+    }
+
+    // We ignore the indentation in the beginning of each line since the format
+    // does not force it
+    llvm::StringRef ToStringRef(To);
+
+    if (!ToStringRef.contains(':')) {
+      llvm::errs() << "Failed to read in a constraint since it does not "
+                      "contain a colon.";
+      llvm::errs() << "This violates the SXFM format.";
+      return false;
+    }
+
+    auto Pos = ToStringRef.find(':');
+    ToStringRef = ToStringRef.substr(Pos + 1, ToStringRef.size() - Pos - 1);
+    std::string CnfFormula = trim(ToStringRef);
+
+    // In the following lines, we replace all identifiers by the real feature
+    // name
+    for (auto &Key : Keys) {
+      std::string Value = IdentifierMap[Key];
+      if (Value == Key) {
+        continue;
+      }
+      auto FoundPos = CnfFormula.find(Key);
+      while (FoundPos != std::string::npos) {
+        CnfFormula = CnfFormula.replace(FoundPos, Key.length(), Value);
+        FoundPos = CnfFormula.find(Key);
+      }
+    }
+
+    // Replace 'or' by '|' and 'and' by '&'
+    std::unordered_map<std::string, std::string> SpecialKeys;
+    SpecialKeys[" or "] = " | ";
+    SpecialKeys[" and "] = " & ";
+    for (auto &Key : SpecialKeys) {
+      auto FoundPos = CnfFormula.find(Key.first);
+      while (FoundPos != std::string::npos) {
+        CnfFormula =
+            CnfFormula.replace(FoundPos, Key.first.length(), Key.second);
+        FoundPos = CnfFormula.find(Key.first);
+      }
+    }
+
+    if (auto Constraint = ConstraintParser(CnfFormula).buildConstraint()) {
+      FMB.addConstraint(std::move(Constraint));
+    }
+  }
+
   return true;
 }
 
@@ -650,7 +749,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
   std::string::size_type Pos = StringToExtractFrom.find_first_of('[');
   if (Pos == std::string::npos) {
     llvm::errs() << "No cardinality given in or group!\n";
-    return std::optional<std::tuple<int, int>>();
+    return {};
   }
   llvm::StringRef CardinalityString(StringToExtractFrom);
   size_t CommaPos = CardinalityString.find(',', Pos + 1);
@@ -664,7 +763,7 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
 
   if (!MinCardinality.has_value() || !MaxCardinality.has_value()) {
     llvm::errs() << "No parsable cardinality!\n";
-    return std::optional<std::tuple<int, int>>();
+    return {};
   }
 
   if (MinCardinality.value() != 1 ||
@@ -672,11 +771,10 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
        MaxCardinality.value() != SxfmConstants::WILDCARD)) {
     llvm::errs() << "Cardinality unsupported. We support cardinalities [1,1] "
                     "(alternative) or [1, *] (or group).\n";
-    return std::optional<std::tuple<int, int>>();
+    return {};
   }
 
-  return std::optional<std::tuple<int, int>>(
-      std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()});
+  return {std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()}};
 }
 
 std::optional<int>

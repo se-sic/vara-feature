@@ -1,7 +1,9 @@
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelBuilder.h"
+#include "vara/Feature/FeatureModelParser.h"
 
 #include "llvm/Support/Casting.h"
+#include "llvm/Support/MemoryBuffer.h"
 
 #include <algorithm>
 
@@ -92,7 +94,56 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() const {
     FMB.addConstraint(C->clone());
   }
 
-  return FMB.buildFeatureModel();
+  // Build clone of FM which is supposed to work, as the original FM should be
+  //  valid.
+  auto FM = FMB.buildFeatureModel();
+  assert(FM);
+  return FM;
+}
+
+//===----------------------------------------------------------------------===//
+//                           FeatureModel Helpers
+//===----------------------------------------------------------------------===//
+
+std::unique_ptr<FeatureModel>
+loadXMLFeatureModelFromBuffer(std::string FileContent) {
+  return FeatureModelXmlParser(std::move(FileContent)).buildFeatureModel();
+}
+
+std::unique_ptr<FeatureModel>
+loadFeatureModelFromBuffer(std::string FileContent) {
+  // TODO (se-sic/VaRA#784): implement checking for different FM file types
+  return loadXMLFeatureModelFromBuffer(std::move(FileContent));
+}
+
+std::unique_ptr<FeatureModel> loadFeatureModel(llvm::StringRef Path) {
+  auto FStream = llvm::MemoryBuffer::getFileAsStream(Path);
+  if (std::error_code EC = FStream.getError()) {
+    llvm::errs() << EC.message() << '\n';
+    return {};
+  }
+
+  return loadFeatureModelFromBuffer(FStream.get()->getBuffer().str());
+}
+
+bool verifyXMLFeatureModelFromBuffer(std::string FileContent) {
+  return vara::feature::FeatureModelXmlParser(std::move(FileContent))
+      .verifyFeatureModel();
+}
+
+bool verifyFeatureModelFromBuffer(std::string FileContent) {
+  // TODO (se-sic/VaRA#784): implement checking for different FM file types
+  return verifyXMLFeatureModelFromBuffer(std::move(FileContent));
+}
+
+bool verifyFeatureModel(llvm::StringRef Path) {
+  auto FStream = llvm::MemoryBuffer::getFileAsStream(Path);
+  if (std::error_code EC = FStream.getError()) {
+    llvm::errs() << EC.message() << '\n';
+    return {};
+  }
+
+  return verifyFeatureModelFromBuffer(FStream.get()->getBuffer().str());
 }
 
 } // namespace vara::feature

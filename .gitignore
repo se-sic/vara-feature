@@ -11,3 +11,8 @@ dist/
 venv/
 CMakeLists.txt.user
 .cache/
+
+# Ignore sourcetrail files
+*.srctrlbm
+*.srctrldb
+*.srctrlprj

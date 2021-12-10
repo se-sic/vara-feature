@@ -1,4 +1,4 @@
-#include "vara/Feature/FeatureModelParser.h"
+#include "vara/Feature/FeatureModel.h"
 
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Errc.h"
@@ -50,28 +50,13 @@ int main(int Argc, char **Argv) {
     return 1;
   }
 
-  auto FS = llvm::MemoryBuffer::getFileAsStream(FileNames[0]);
-  if (std::error_code EC = FS.getError()) {
-    llvm::errs() << EC.message() << '\n';
-    return 1;
-  }
-
-  if (Verify &&
-      !vara::feature::FeatureModelXmlParser(std::string(FS.get()->getBuffer()))
-           .verifyFeatureModel()) {
+  if (Verify && !vara::feature::verifyFeatureModel(FileNames[0])) {
     llvm::errs() << "error: Invalid feature model.\n";
     return 1;
   }
 
-  std::unique_ptr<vara::feature::FeatureModel> FM;
-
-  if (Xml) {
-    FM =
-        vara::feature::FeatureModelXmlParser(std::string(FS.get()->getBuffer()))
-            .buildFeatureModel();
-  } else {
-    assert(FM && "No matching parser.");
-  }
+  std::unique_ptr<vara::feature::FeatureModel> FM =
+      vara::feature::loadFeatureModel(FileNames[0]);
 
   if (!FM) {
     llvm::errs() << "error: Could not build feature model.\n";
