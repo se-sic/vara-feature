@@ -570,10 +570,10 @@ public:
 
 class PrimaryIntegerConstraint : public PrimaryConstraint {
 public:
-  PrimaryIntegerConstraint(int Value)
+  PrimaryIntegerConstraint(long Value)
       : PrimaryConstraint(ConstraintKind::CK_INTEGER), Value(Value) {}
 
-  [[nodiscard]] int getValue() const { return Value; }
+  [[nodiscard]] long getValue() const { return Value; }
 
   std::unique_ptr<Constraint> clone() override {
     return std::make_unique<PrimaryIntegerConstraint>(this->getValue());
@@ -590,7 +590,7 @@ public:
   void accept(ConstraintVisitor &V) override;
 
 private:
-  int Value;
+  long Value;
 };
 
 class Feature;

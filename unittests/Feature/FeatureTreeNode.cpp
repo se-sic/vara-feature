@@ -7,7 +7,7 @@ namespace vara::feature {
 class FeatureTreeNodeTest : public ::testing::Test {
 protected:
   void SetUp() override {
-    B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3});
+    B.makeFeature<NumericFeature>("a", NumericFeature::ValueListType{1, 2, 3});
     B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
     B.addEdge("a", "ab")->makeFeature<BinaryFeature>("ab");
   }

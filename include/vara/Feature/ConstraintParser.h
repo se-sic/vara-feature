@@ -227,7 +227,10 @@ private:
   }
 
   static ResultTy munchNumber(const llvm::StringRef &Str) {
-    auto Munch = Str.take_while([](auto C) { return llvm::isDigit(C); });
+    auto Munch = Str.take_while([](auto C) {
+      return llvm::isDigit(C) || C == 'e' || C == '+' || C == '-';
+    });
+
     return {ConstraintToken(ConstraintToken::ConstraintTokenKind::NUMBER,
                             Munch.str()),
             Munch.size()};
@@ -472,8 +475,7 @@ private:
             std::make_unique<Feature>(*next().getValue()));
       case ConstraintToken::ConstraintTokenKind::NUMBER:
         assert(peek().getValue().has_value());
-        return std::make_unique<PrimaryIntegerConstraint>(
-            std::stoi(*next().getValue()));
+        return parseUnsigned(*next().getValue());
       case ConstraintToken::ConstraintTokenKind::NOT:
         consume(ConstraintToken::ConstraintTokenKind::NOT);
         return createConstraint<NotConstraint>(NestingLevel + 1,
@@ -491,6 +493,30 @@ private:
         }
         return Constraint;
       }
+    }
+  }
+
+  static std::unique_ptr<Constraint> parseUnsigned(llvm::StringRef Str) {
+    if (Str.contains_lower('e')) {
+      double Number;
+      std::stringstream Stream(Str.str());
+      Stream >> Number;
+      if (Stream.fail()) {
+        llvm::errs() << "Failed to parse number '" << Str << "'\n";
+        return nullptr;
+      }
+      return std::make_unique<PrimaryIntegerConstraint>(round(Number));
+    }
+
+    try {
+      return std::make_unique<PrimaryIntegerConstraint>(std::stol(Str.str()));
+    } catch (std::invalid_argument &_) {
+      llvm::errs() << "Failed to parse number '" << Str << "'\n";
+      return nullptr;
+    } catch (std::out_of_range &_) {
+      llvm::errs() << "Number too large.\n";
+      return std::make_unique<PrimaryIntegerConstraint>(
+          std::numeric_limits<long>::max());
     }
   }
 

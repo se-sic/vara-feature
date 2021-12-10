@@ -67,6 +67,7 @@ private:
   static FeatureSourceRange::FeatureSourceLocation
   createFeatureSourceLocation(xmlNode *Node);
   static FeatureSourceRange createFeatureSourceRange(xmlNode *Head);
+  static long parseNumber(llvm::StringRef Str);
 
   UniqueXmlDoc parseDoc();
   static UniqueXmlDtd createDtd();

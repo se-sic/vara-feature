@@ -14,6 +14,7 @@ set(FEATURE_LIB_TEST_FILES
   xml/test.xml
   xml/test_children.xml
   xml/test_excludes.xml
+  xml/test_numbers.xml
   xml/test_only_children.xml
   xml/test_only_parents.xml
   xml/test_out_of_order.xml

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="ABC" root="test">
+  <binaryOptions>
+
+    <configurationOption>
+      <name>root</name>
+      <children>
+        <options>A</options>
+        <options>B</options>
+        <options>C</options>
+      </children>
+      <optional>False</optional>
+    </configurationOption>
+
+  </binaryOptions>
+  <numericOptions>
+
+    <configurationOption>
+      <name>A</name>
+      <parent>root</parent>
+      <optional>True</optional>
+      <minValue>-9223372036854775809</minValue>
+      <maxValue>9223372036854775808</maxValue>
+    </configurationOption>
+
+    <configurationOption>
+      <name>B</name>
+      <parent>root</parent>
+      <optional>True</optional>
+      <values>-9223372036854775809;0;9223372036854775808</values>
+    </configurationOption>
+
+    <configurationOption>
+      <name>C</name>
+      <parent>root</parent>
+      <optional>True</optional>
+      <minValue>2e-06</minValue>
+      <maxValue>4e+3</maxValue>
+    </configurationOption>
+
+  </numericOptions>
+</vm>

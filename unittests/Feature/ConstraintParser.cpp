@@ -31,6 +31,22 @@ TEST(ConstraintLexer, end) {
             ConstraintToken::ConstraintTokenKind::END_OF_FILE);
 }
 
+TEST(ConstraintLexer, scientific) {
+  ConstraintLexer L(
+      llvm::formatv("~{0}0e+2", std::numeric_limits<long>::max()));
+
+  auto TokenList = L.tokenize();
+  ASSERT_EQ(TokenList.size(), 3);
+
+  EXPECT_EQ(TokenList[0].getKind(), ConstraintToken::ConstraintTokenKind::NEG);
+  EXPECT_EQ(TokenList[1].getKind(),
+            ConstraintToken::ConstraintTokenKind::NUMBER);
+  EXPECT_EQ(*TokenList[1].getValue(),
+            llvm::formatv("{0}0e+2", std::numeric_limits<long>::max()).str());
+  EXPECT_EQ(TokenList[2].getKind(),
+            ConstraintToken::ConstraintTokenKind::END_OF_FILE);
+}
+
 class ConstraintLexerTest : public ::testing::Test {
 protected:
   static void checkPrimary(ConstraintToken::ConstraintTokenKind Kind,
@@ -133,6 +149,24 @@ TEST(ConstraintParser, error) {
 TEST(ConstraintParser, parenthesis) {
   EXPECT_FALSE(ConstraintParser("(feature_A))").buildConstraint());
   EXPECT_FALSE(ConstraintParser("((feature_A)").buildConstraint());
+}
+
+TEST(ConstraintParser, scientific) {
+  auto C = ConstraintParser("4e+3").buildConstraint();
+  ASSERT_TRUE(C);
+
+  EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
+  EXPECT_EQ(C->toString(), "4000");
+}
+
+TEST(ConstraintParser, clamp) {
+  auto C =
+      ConstraintParser(llvm::formatv("{0}0", std::numeric_limits<long>::max()))
+          .buildConstraint();
+  ASSERT_TRUE(C);
+
+  EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
+  EXPECT_EQ(C->toString(), std::to_string(std::numeric_limits<long>::max()));
 }
 
 class ConstraintParserTest : public ::testing::Test {

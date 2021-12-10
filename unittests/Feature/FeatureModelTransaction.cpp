@@ -372,7 +372,8 @@ TEST_F(FeatureModelMergeTransactionTest, RejectNonStrictDifferenceParent) {
 
 TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceKind) {
   FeatureModelBuilder B;
-  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3}, true);
+  B.makeFeature<NumericFeature>("a", NumericFeature::ValueListType{1, 2, 3},
+                                true);
   auto FM2 = B.buildFeatureModel();
   ASSERT_TRUE(FM2);
 
@@ -383,7 +384,8 @@ TEST_F(FeatureModelMergeTransactionTest, RejectDifferenceKind) {
 
 TEST_F(FeatureModelMergeTransactionTest, AcceptNonStrictDifferenceKind) {
   FeatureModelBuilder B;
-  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3}, true);
+  B.makeFeature<NumericFeature>("a", NumericFeature::ValueListType{1, 2, 3},
+                                true);
   auto FM2 = B.buildFeatureModel();
   ASSERT_TRUE(FM2);
 

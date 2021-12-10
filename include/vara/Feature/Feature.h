@@ -238,8 +238,10 @@ public:
 /// Options with numeric values.
 class NumericFeature : public Feature {
 public:
+  using ValueRangeType = typename std::pair<long, long>;
+  using ValueListType = typename std::vector<long>;
   using ValuesVariantType =
-      typename std::variant<std::pair<int, int>, std::vector<int>>;
+      typename std::variant<ValueRangeType, ValueListType>;
 
   NumericFeature(
       string Name, ValuesVariantType Values, bool Opt = false,

@@ -3,6 +3,7 @@
 #include "UnittestHelper.h"
 
 #include "llvm/Support/MemoryBuffer.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 namespace vara::feature {
@@ -49,6 +50,65 @@ TEST(FeatureModelParser, outOfOrder) {
 
   EXPECT_TRUE(P.verifyFeatureModel());
   EXPECT_TRUE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, longRange) {
+  auto FS =
+      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_numbers.xml"));
+  assert(FS);
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+  ASSERT_TRUE(P.verifyFeatureModel());
+  auto FM = P.buildFeatureModel();
+  ASSERT_TRUE(FM);
+
+  auto *F = llvm::dyn_cast_or_null<NumericFeature>(FM->getFeature("A"));
+  ASSERT_TRUE(F);
+
+  EXPECT_TRUE(
+      (std::holds_alternative<NumericFeature::ValueRangeType>(F->getValues())));
+  EXPECT_EQ((std::get<NumericFeature::ValueRangeType>(F->getValues())).first,
+            -9223372036854775808L);
+  EXPECT_EQ((std::get<NumericFeature::ValueRangeType>(F->getValues())).second,
+            9223372036854775807L);
+}
+
+TEST(FeatureModelParser, longList) {
+  auto FS =
+      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_numbers.xml"));
+  assert(FS);
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+  ASSERT_TRUE(P.verifyFeatureModel());
+  auto FM = P.buildFeatureModel();
+  ASSERT_TRUE(FM);
+
+  auto *F = llvm::dyn_cast_or_null<NumericFeature>(FM->getFeature("B"));
+  ASSERT_TRUE(F);
+
+  EXPECT_TRUE(
+      std::holds_alternative<NumericFeature::ValueListType>(F->getValues()));
+  EXPECT_THAT(
+      std::get<NumericFeature::ValueListType>(F->getValues()),
+      testing::ElementsAre(-9223372036854775808L, 0L, 9223372036854775807L));
+}
+
+TEST(FeatureModelParser, scientific) {
+  auto FS =
+      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_numbers.xml"));
+  assert(FS);
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+  ASSERT_TRUE(P.verifyFeatureModel());
+  auto FM = P.buildFeatureModel();
+  ASSERT_TRUE(FM);
+
+  auto *F = llvm::dyn_cast_or_null<NumericFeature>(FM->getFeature("C"));
+  ASSERT_TRUE(F);
+
+  EXPECT_TRUE(
+      (std::holds_alternative<NumericFeature::ValueRangeType>(F->getValues())));
+  EXPECT_EQ((std::get<NumericFeature::ValueRangeType>(F->getValues())).first,
+            0);
+  EXPECT_EQ((std::get<NumericFeature::ValueRangeType>(F->getValues())).second,
+            4000);
 }
 
 //===----------------------------------------------------------------------===//
