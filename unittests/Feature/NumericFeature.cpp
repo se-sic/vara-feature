@@ -25,7 +25,7 @@ TEST(NumericFeature, isa) {
 TEST(NumericFeature, NumericFeaturePair) {
   NumericFeature A("A", NumericFeature::ValueRangeType(0, 1));
 
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       (std::holds_alternative<NumericFeature::ValueRangeType>(A.getValues())));
   EXPECT_EQ((std::get<NumericFeature::ValueRangeType>(A.getValues())).first, 0);
   EXPECT_EQ((std::get<NumericFeature::ValueRangeType>(A.getValues())).second,
@@ -35,7 +35,7 @@ TEST(NumericFeature, NumericFeaturePair) {
 TEST(NumericFeature, NumericFeatureVector) {
   NumericFeature A("A", std::vector<long>{0, 1, 2, 3});
 
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       std::holds_alternative<NumericFeature::ValueListType>(A.getValues()));
   EXPECT_THAT(std::get<NumericFeature::ValueListType>(A.getValues()),
               testing::ElementsAre(0, 1, 2, 3));
