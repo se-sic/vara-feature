@@ -167,7 +167,17 @@ TEST(ConstraintParser, scientific) {
   EXPECT_EQ(C->toString(), "42");
 }
 
-TEST(ConstraintParser, clamp) {
+TEST(ConstraintParser, doubleClamp) {
+  auto C = ConstraintParser(
+               llvm::formatv("{0}e-0", std::numeric_limits<double>::max()))
+               .buildConstraint();
+  ASSERT_TRUE(C);
+
+  EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
+  EXPECT_EQ(C->toString(), std::to_string(std::numeric_limits<int64_t>::max()));
+}
+
+TEST(ConstraintParser, decimalClamp) {
   auto C = ConstraintParser(
                llvm::formatv("{0}0", std::numeric_limits<int64_t>::max()))
                .buildConstraint();

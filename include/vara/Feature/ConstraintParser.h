@@ -262,21 +262,16 @@ private:
 
 /// Parse 64-bit integer in decimal or scientific notation.
 static int64_t parseInteger(llvm::StringRef Str) {
-  int64_t Integer;
-  if (!Str.getAsInteger(10, Integer)) {
+  if (Str.contains_lower('e')) {
+    // If we encounter scientific notation we try to parse the number as double.
+    if (double Double; !Str.getAsDouble(Double)) {
+      return parseInteger(llvm::formatv("{0:0}", Double).str());
+    }
+  } else if (int64_t Integer; !Str.getAsInteger(10, Integer)) {
     return Integer;
   }
 
-  if (Str.contains_lower('e')) {
-    // If we encounter scientific notation we try to parse the number as double.
-    double Double = 0;
-    if (!Str.getAsDouble(Double)) {
-      return round(Double);
-    }
-    llvm::errs() << "Failed to parse double '" << Str << "'\n";
-  } else {
-    llvm::errs() << "Failed to parse integer '" << Str << "'\n";
-  }
+  llvm::errs() << "Failed to parse integer '" << Str << "'\n";
 
   // If parsing failed, we return minimal or maximal value respectively.
   if (Str.startswith("-")) {
