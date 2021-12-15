@@ -38,19 +38,15 @@ endif()
 # add_vara_unittest(test_dirname file1.cpp file2.cpp)
 #
 # Will compile the list of files together and link against VaRA and its dependences.
-function(add_vara_unittest test_name)
+function(add_vara_unittest test_unit test_name)
   if(COMMAND add_unittest)
-    foreach (TEST_UNIT ${VARA_FEATURE_TEST_UNITS})
-      add_unittest(${TEST_UNIT} ${test_name} ${ARGN})
-    endforeach()
+    add_unittest(${test_unit} ${test_name} ${ARGN})
   else()
     add_executable(${test_name} EXCLUDE_FROM_ALL ${ARGN})
     set_target_properties(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     target_link_libraries(${test_name} PRIVATE gtest_main gtest stdc++fs)
-    foreach(TEST_UNIT ${VARA_FEATURE_TEST_UNITS})
-      add_dependencies(${TEST_UNIT} ${test_name})
-    endforeach()
+    add_dependencies(${test_unit} ${test_name})
 
     set_property(TARGET ${test_name} PROPERTY FOLDER "VaRA/vara-feature")
     add_test(
