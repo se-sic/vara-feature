@@ -56,6 +56,7 @@ function(add_vara_unittest test_name)
     add_test(
       NAME "${test_name}"
       COMMAND ${test_name} ${CATCH_TEST_FILTER}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     set(CTEST_OUTPUT_ON_FAILURE 1)
   endif()
