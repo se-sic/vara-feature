@@ -426,8 +426,8 @@ $(function() {
 <div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="comment">// numeric elements</span></div>
 <div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="keywordflow">if</span> (<span class="keyword">auto</span> *NF = llvm::dyn_cast&lt;NumericFeature&gt;(&amp;Feature1)) {</div>
 <div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    <span class="keyword">auto</span> ValueVariant = NF-&gt;getValues();</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keywordflow">if</span> (std::holds_alternative&lt;std::pair&lt;int, int&gt;&gt;(ValueVariant)) {</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      <span class="keyword">auto</span> [Min, Max] = std::get&lt;std::pair&lt;int, int&gt;&gt;(ValueVariant);</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keywordflow">if</span> (std::holds_alternative&lt;NumericFeature::ValueRangeType&gt;(ValueVariant)) {</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      <span class="keyword">auto</span> [Min, Max] = std::get&lt;NumericFeature::ValueRangeType&gt;(ValueVariant);</div>
 <div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      RC = xmlTextWriterWriteElement(Writer, <a class="code" href="classvara_1_1feature_1_1XmlConstants.html#ade45033f3268fad93c0d909d09ef5a8c">XmlConstants::MINVALUE</a>,</div>
 <div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(std::to_string(Min).data()));</div>
 <div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
@@ -436,7 +436,7 @@ $(function() {
 <div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;                                     <a class="code" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a>(std::to_string(Max).data()));</div>
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;      <a class="code" href="FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2">CHECK_RC</a></div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;      <span class="keyword">auto</span> Values = std::get&lt;std::vector&lt;int&gt;&gt;(ValueVariant);</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;      <span class="keyword">auto</span> Values = std::get&lt;NumericFeature::ValueListType&gt;(ValueVariant);</div>
 <div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;      std::string Str;</div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;      std::for_each(std::begin(Values), std::end(Values) - 1, [&amp;Str](<span class="keywordtype">int</span> X) {</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;        Str.append(std::to_string(X));</div>
@@ -577,7 +577,7 @@ $(function() {
 <div class="ttc" id="anamespacevara_1_1feature_html_ab36c13804f2d432699f44adc99de2657"><div class="ttname"><a href="namespacevara_1_1feature.html#ab36c13804f2d432699f44adc99de2657">vara::feature::ENCODING</a></div><div class="ttdeci">static constexpr char ENCODING[]</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelWriter_8cpp_source.html#l00023">FeatureModelWriter.cpp:23</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 6 2021 23:09:03 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 15 2021 21:08:29 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

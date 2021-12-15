@@ -110,12 +110,12 @@ $(function() {
 <div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1NumericFeature.html#a321aff6ee55a2c23a3a21f6c081ed2a8">   32</a></span>&#160;std::string <a class="code" href="classvara_1_1feature_1_1NumericFeature.html#a321aff6ee55a2c23a3a21f6c081ed2a8">NumericFeature::toString</a>()<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  std::stringstream StrS;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  StrS &lt;&lt; <a class="code" href="classvara_1_1feature_1_1Feature.html#a53351cdafd1a5d47696c225e6f417fbf">Feature::toString</a>();</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordflow">if</span> (std::holds_alternative&lt;std::pair&lt;int, int&gt;&gt;(Values)) {</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    std::pair&lt;int, int&gt; Pair = std::get&lt;std::pair&lt;int, int&gt;&gt;(Values);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordflow">if</span> (std::holds_alternative&lt;ValueRangeType&gt;(Values)) {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">auto</span> Pair = std::get&lt;ValueRangeType&gt;(Values);</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    StrS &lt;&lt; <span class="stringliteral">&quot;,\n  minValue: &quot;</span> &lt;&lt; Pair.first &lt;&lt; <span class="stringliteral">&quot;,\n  maxValue: &quot;</span> &lt;&lt; Pair.second;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    StrS &lt;&lt; <span class="stringliteral">&quot;,\n  values: [&quot;</span>;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;Val : std::get&lt;std::vector&lt;int&gt;&gt;(Values)) {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;Val : std::get&lt;ValueListType&gt;(Values)) {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      StrS &lt;&lt; Val &lt;&lt; <span class="stringliteral">&quot;,&quot;</span>;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    }</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    StrS &lt;&lt; <span class="stringliteral">&quot;]&quot;</span>;</div>
@@ -173,7 +173,7 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange.html">vara::feature::FeatureSourceRange</a></div><div class="ttdef"><b>Definition:</b> <a href="FeatureSourceRange_8h_source.html#l00026">FeatureSourceRange.h:26</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 6 2021 23:09:03 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 15 2021 21:08:29 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
