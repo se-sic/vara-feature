@@ -32,12 +32,12 @@ std::string Feature::toString() const {
 std::string NumericFeature::toString() const {
   std::stringstream StrS;
   StrS << Feature::toString();
-  if (std::holds_alternative<std::pair<int, int>>(Values)) {
-    std::pair<int, int> Pair = std::get<std::pair<int, int>>(Values);
+  if (std::holds_alternative<ValueRangeType>(Values)) {
+    auto Pair = std::get<ValueRangeType>(Values);
     StrS << ",\n  minValue: " << Pair.first << ",\n  maxValue: " << Pair.second;
   } else {
     StrS << ",\n  values: [";
-    for (const auto &Val : std::get<std::vector<int>>(Values)) {
+    for (const auto &Val : std::get<ValueListType>(Values)) {
       StrS << Val << ",";
     }
     StrS << "]";

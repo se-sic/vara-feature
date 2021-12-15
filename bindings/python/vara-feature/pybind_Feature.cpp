@@ -97,11 +97,8 @@ void init_feature_module_binary_feature(py::module &M) {
 
 void init_feature_module_numeric_feature(py::module &M) {
   py::class_<vf::NumericFeature, vf::Feature>(M, "NumericFeature")
-      .def(
-          py::init<std::string,
-                   std::variant<std::pair<int, int>, std::vector<int>>, bool>())
-      .def(py::init<std::string,
-                    std::variant<std::pair<int, int>, std::vector<int>>, bool,
+      .def(py::init<std::string, vf::NumericFeature::ValuesVariantType, bool>())
+      .def(py::init<std::string, vf::NumericFeature::ValuesVariantType, bool,
                     std::vector<vara::feature::FeatureSourceRange>>())
       .def(
           "to_string", &vf::NumericFeature::toString,

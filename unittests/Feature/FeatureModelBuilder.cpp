@@ -28,7 +28,7 @@ TEST(FeatureModelBuilder, duplicateFeature) {
 TEST(FeatureModelBuilder, addNumericFeature) {
   FeatureModelBuilder B;
 
-  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3});
+  B.makeFeature<NumericFeature>("a", NumericFeature::ValueListType{1, 2, 3});
   auto FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
 
@@ -117,7 +117,7 @@ TEST(FeatureModelBuilder, addBinaryFeatureRef) {
 TEST(FeatureModelBuilder, addNumericFeatureRef) {
   FeatureModelBuilder B;
 
-  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3});
+  B.makeFeature<NumericFeature>("a", NumericFeature::ValueListType{1, 2, 3});
   B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
   auto FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
