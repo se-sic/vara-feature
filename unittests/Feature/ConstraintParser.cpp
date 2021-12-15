@@ -151,22 +151,30 @@ TEST(ConstraintParser, parenthesis) {
   EXPECT_FALSE(ConstraintParser("((feature_A)").buildConstraint());
 }
 
-TEST(ConstraintParser, scientific) {
-  auto C = ConstraintParser("4e+3").buildConstraint();
+TEST(ConstraintParser, radix) {
+  auto C = ConstraintParser("042").buildConstraint();
   ASSERT_TRUE(C);
 
   EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
-  EXPECT_EQ(C->toString(), "4000");
+  EXPECT_EQ(C->toString(), "42");
+}
+
+TEST(ConstraintParser, scientific) {
+  auto C = ConstraintParser("42e+0").buildConstraint();
+  ASSERT_TRUE(C);
+
+  EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
+  EXPECT_EQ(C->toString(), "42");
 }
 
 TEST(ConstraintParser, clamp) {
-  auto C =
-      ConstraintParser(llvm::formatv("{0}0", std::numeric_limits<long>::max()))
-          .buildConstraint();
+  auto C = ConstraintParser(
+               llvm::formatv("{0}0", std::numeric_limits<int64_t>::max()))
+               .buildConstraint();
   ASSERT_TRUE(C);
 
   EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
-  EXPECT_EQ(C->toString(), std::to_string(std::numeric_limits<long>::max()));
+  EXPECT_EQ(C->toString(), std::to_string(std::numeric_limits<int64_t>::max()));
 }
 
 class ConstraintParserTest : public ::testing::Test {

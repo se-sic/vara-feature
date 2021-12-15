@@ -24,9 +24,9 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                 bool Num = false) {
   std::string Name{"root"};
   bool Opt = false;
-  long MinValue = 0;
-  long MaxValue = 0;
-  std::vector<long> Values;
+  int64_t MinValue = 0;
+  int64_t MaxValue = 0;
+  std::vector<int64_t> Values;
   std::vector<FeatureSourceRange> SourceRanges;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
@@ -91,15 +91,15 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
         }
       } else if (Num) {
         if (!xmlStrcmp(Head->name, XmlConstants::MINVALUE)) {
-          MinValue = parseNumber(Cnt);
+          MinValue = parseInteger(Cnt);
         } else if (!xmlStrcmp(Head->name, XmlConstants::MAXVALUE)) {
-          MaxValue = parseNumber(Cnt);
+          MaxValue = parseInteger(Cnt);
         } else if (!xmlStrcmp(Head->name, XmlConstants::VALUES)) {
           const std::regex Regex(R"(-?\d+)");
           std::smatch Matches;
           for (std::string Suffix = Cnt; regex_search(Suffix, Matches, Regex);
                Suffix = Matches.suffix()) {
-            Values.emplace_back(parseNumber(Matches.str()));
+            Values.emplace_back(parseInteger(Matches.str()));
           }
         }
       }
@@ -121,32 +121,6 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
     FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges));
   }
   return Ok();
-}
-
-long FeatureModelXmlParser::parseNumber(llvm::StringRef Str) {
-  if (Str.contains_lower('e')) {
-    double Number;
-    std::stringstream Stream(Str.str());
-    Stream >> Number;
-    if (Stream.fail()) {
-      llvm::errs() << "Failed to parse number '" << Str << "'\n";
-      return 0;
-    }
-    return (long)round(Number);
-  }
-
-  try {
-    return std::stol(Str.str());
-  } catch (std::invalid_argument &_) {
-    llvm::errs() << "Failed to parse number '" << Str << "'\n";
-    return 0;
-  } catch (std::out_of_range &_) {
-    llvm::errs() << "Number out of range.\n";
-    if (Str.startswith("-")) {
-      return std::numeric_limits<long>::min();
-    }
-    return std::numeric_limits<long>::max();
-  }
 }
 
 FeatureSourceRange

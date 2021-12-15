@@ -7,6 +7,7 @@
 #include "llvm/ADT/StringExtras.h"
 
 #include <iostream>
+#include <regex>
 #include <utility>
 
 namespace vara::feature {
@@ -231,11 +232,11 @@ private:
 
   static ResultTy munchNumber(const llvm::StringRef &Str) {
     auto Munch = Str.take_while([](auto C) {
-      return llvm::isDigit(C) || C == 'e' || C == '+' || C == '-';
+      return llvm::isDigit(C) || C == 'e' || C == 'E' || C == '+' || C == '-';
     });
 
     return {ConstraintToken(ConstraintToken::ConstraintTokenKind::NUMBER,
-                            Munch.str()),
+                            Munch.lower()),
             Munch.size()};
   }
 
@@ -259,6 +260,31 @@ private:
 //===----------------------------------------------------------------------===//
 //                               ConstraintParser
 //===----------------------------------------------------------------------===//
+
+/// Parse 64-bit integer in decimal or scientific notation.
+static int64_t parseInteger(llvm::StringRef Str) {
+  int64_t Integer;
+  if (!Str.getAsInteger(10, Integer)) {
+    return Integer;
+  }
+
+  if (Str.contains_lower('e')) {
+    // If we encounter scientific notation we try to parse the number as double.
+    double Double = 0;
+    if (!Str.getAsDouble(Double)) {
+      return round(Double);
+    }
+    llvm::errs() << "Failed to parse double '" << Str << "'\n";
+  } else {
+    llvm::errs() << "Failed to parse integer '" << Str << "'\n";
+  }
+
+  // If parsing failed, we return minimal or maximal value respectively.
+  if (Str.startswith("-")) {
+    return std::numeric_limits<int64_t>::min();
+  }
+  return std::numeric_limits<int64_t>::max();
+}
 
 class ConstraintParser {
 public:
@@ -478,7 +504,8 @@ private:
             std::make_unique<Feature>(*next().getValue()));
       case ConstraintToken::ConstraintTokenKind::NUMBER:
         assert(peek().getValue().has_value());
-        return parseUnsigned(*next().getValue());
+        return std::make_unique<PrimaryIntegerConstraint>(
+            parseInteger(*next().getValue()));
       case ConstraintToken::ConstraintTokenKind::NOT:
         consume(ConstraintToken::ConstraintTokenKind::NOT);
         return createConstraint<NotConstraint>(NestingLevel + 1,
@@ -496,30 +523,6 @@ private:
         }
         return Constraint;
       }
-    }
-  }
-
-  static std::unique_ptr<Constraint> parseUnsigned(llvm::StringRef Str) {
-    if (Str.contains_lower('e')) {
-      double Number;
-      std::stringstream Stream(Str.str());
-      Stream >> Number;
-      if (Stream.fail()) {
-        llvm::errs() << "Failed to parse number '" << Str << "'\n";
-        return nullptr;
-      }
-      return std::make_unique<PrimaryIntegerConstraint>(round(Number));
-    }
-
-    try {
-      return std::make_unique<PrimaryIntegerConstraint>(std::stol(Str.str()));
-    } catch (std::invalid_argument &_) {
-      llvm::errs() << "Failed to parse number '" << Str << "'\n";
-      return nullptr;
-    } catch (std::out_of_range &_) {
-      llvm::errs() << "Number too large.\n";
-      return std::make_unique<PrimaryIntegerConstraint>(
-          std::numeric_limits<long>::max());
     }
   }
 
