@@ -7,7 +7,6 @@
 #include "llvm/ADT/StringExtras.h"
 
 #include <iostream>
-#include <regex>
 #include <utility>
 
 namespace vara::feature {
