@@ -261,7 +261,8 @@ private:
 //===----------------------------------------------------------------------===//
 
 /// Parse 64-bit integer in decimal or scientific notation.
-static int64_t parseInteger(llvm::StringRef Str) {
+static int64_t parseInteger(llvm::StringRef Str,
+                            std::optional<unsigned int> Line = std::nullopt) {
   if (Str.contains_lower('e')) {
     // If we encounter scientific notation we try to parse the number as double.
     if (double Double; !Str.getAsDouble(Double)) {
@@ -271,7 +272,12 @@ static int64_t parseInteger(llvm::StringRef Str) {
     return Integer;
   }
 
-  llvm::errs() << "Failed to parse integer '" << Str << "'\n";
+  if (Line.has_value()) {
+    llvm::errs() << "Failed to parse integer '" << Str << "' in line "
+                 << Line.value() << ".\n";
+  } else {
+    llvm::errs() << "Failed to parse integer '" << Str << "'.\n";
+  }
 
   // If parsing failed, we return minimal or maximal value respectively.
   if (Str.startswith("-")) {
@@ -282,8 +288,9 @@ static int64_t parseInteger(llvm::StringRef Str) {
 
 class ConstraintParser {
 public:
-  explicit ConstraintParser(std::string Cnt)
-      : TokenList(ConstraintLexer(std::move(Cnt)).tokenize()) {}
+  explicit ConstraintParser(std::string Cnt,
+                            std::optional<unsigned int> Line = std::nullopt)
+      : TokenList(ConstraintLexer(std::move(Cnt)).tokenize()), Line(Line) {}
 
   std::unique_ptr<Constraint> buildConstraint() { return parseConstraint(); }
 
@@ -499,7 +506,7 @@ private:
       case ConstraintToken::ConstraintTokenKind::NUMBER:
         assert(peek().getValue().has_value());
         return std::make_unique<PrimaryIntegerConstraint>(
-            parseInteger(*next().getValue()));
+            parseInteger(*next().getValue(), Line));
       case ConstraintToken::ConstraintTokenKind::NOT:
         consume(ConstraintToken::ConstraintTokenKind::NOT);
         return createConstraint<NotConstraint>(NestingLevel + 1,
@@ -521,6 +528,7 @@ private:
   }
 
   ConstraintLexer::TokenListTy TokenList;
+  std::optional<unsigned int> Line;
 };
 
 } // namespace vara::feature

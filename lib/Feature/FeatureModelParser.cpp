@@ -91,15 +91,15 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
         }
       } else if (Num) {
         if (!xmlStrcmp(Head->name, XmlConstants::MINVALUE)) {
-          MinValue = parseInteger(Cnt);
+          MinValue = parseInteger(Cnt, Head->line);
         } else if (!xmlStrcmp(Head->name, XmlConstants::MAXVALUE)) {
-          MaxValue = parseInteger(Cnt);
+          MaxValue = parseInteger(Cnt, Head->line);
         } else if (!xmlStrcmp(Head->name, XmlConstants::VALUES)) {
           const std::regex Regex(R"(-?\d+)");
           std::smatch Matches;
           for (std::string Suffix = Cnt; regex_search(Suffix, Matches, Regex);
                Suffix = Matches.suffix()) {
-            Values.emplace_back(parseInteger(Matches.str()));
+            Values.emplace_back(parseInteger(Matches.str(), Head->line));
           }
         }
       }
@@ -183,7 +183,8 @@ Result<FTErrorCode> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
         UniqueXmlChar Cnt(xmlNodeGetContent(H), xmlFree);
         if (auto Constraint =
                 ConstraintParser(
-                    std::string(reinterpret_cast<char *>(Cnt.get())))
+                    std::string(reinterpret_cast<char *>(Cnt.get())),
+                    Node->line)
                     .buildConstraint()) {
           FMB.addConstraint(std::move(Constraint));
         } else {
