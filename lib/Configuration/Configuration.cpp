@@ -14,8 +14,9 @@ std::unique_ptr<Configuration> Configuration::createConfigurationFromString(
       llvm::json::parse(ConfigurationString);
 
   // If there was an error while parsing...
-  if (!ParsedConfiguration) {
-    llvm::errs() << "The given configuration is not in the json format.\n";
+  if (auto Err = ParsedConfiguration.takeError()) {
+    llvm::errs() << "The given configuration is not in json format.\n";
+    llvm::outs() << "Error: " << toString(std::move(Err)) << "\n";
     return nullptr;
   }
   llvm::json::Value Value = ParsedConfiguration.get();
