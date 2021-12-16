@@ -6,6 +6,9 @@ set(VARA_FEATURE_LIBS
   VaRAFeature
   VaRAConfiguration
 )
+set(VARA_FEAUTRE_TEST_WORKING_DIR
+  ${CMAKE_CURRENT_BINARY_DIR}
+)
 
 foreach(TEST_UNIT ${VARA_FEATURE_TEST_UNITS})
   message(STATUS "Setting: ${TEST_UNIT}")
@@ -56,7 +59,7 @@ function(add_vara_unittest test_name)
     add_test(
       NAME "${test_name}"
       COMMAND ${test_name} ${CATCH_TEST_FILTER}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      WORKING_DIRECTORY ${VARA_FEAUTRE_TEST_WORKING_DIR}
     )
     set(CTEST_OUTPUT_ON_FAILURE 1)
   endif()
