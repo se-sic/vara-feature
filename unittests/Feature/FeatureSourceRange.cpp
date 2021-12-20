@@ -15,7 +15,8 @@ TEST(FeatureSourceRange, full) {
   auto L = FeatureSourceRange(
       fs::current_path(), FeatureSourceRange::FeatureSourceLocation(1, 4),
       FeatureSourceRange::FeatureSourceLocation(3, 5),
-      FeatureSourceRange::Category::inessential, "memberOffset");
+      FeatureSourceRange::Category::inessential,
+      FeatureSourceRange::FeatureMemberOffset("memberOffset"));
 
   EXPECT_EQ(L.getPath(), fs::current_path());
   EXPECT_EQ(L.getStart()->getLineNumber(), 1);
@@ -23,7 +24,22 @@ TEST(FeatureSourceRange, full) {
   EXPECT_EQ(L.getEnd()->getLineNumber(), 3);
   EXPECT_EQ(L.getEnd()->getColumnOffset(), 5);
   EXPECT_EQ(L.getCategory(), FeatureSourceRange::Category::inessential);
-  EXPECT_EQ(L.getMemberOffset()->compare("memberOffset"), 0);
+  EXPECT_EQ(L.getMemberOffset()->toString().compare("memberOffset"), 0);
+}
+
+TEST(FeatureSourceRange, noMemberOffset) {
+  auto L = FeatureSourceRange(fs::current_path(),
+                              FeatureSourceRange::FeatureSourceLocation(1, 4),
+                              FeatureSourceRange::FeatureSourceLocation(3, 5),
+                              FeatureSourceRange::Category::inessential);
+
+  EXPECT_EQ(L.getPath(), fs::current_path());
+  EXPECT_EQ(L.getStart()->getLineNumber(), 1);
+  EXPECT_EQ(L.getStart()->getColumnOffset(), 4);
+  EXPECT_EQ(L.getEnd()->getLineNumber(), 3);
+  EXPECT_EQ(L.getEnd()->getColumnOffset(), 5);
+  EXPECT_EQ(L.getCategory(), FeatureSourceRange::Category::inessential);
+  EXPECT_EQ(L.getMemberOffset(), nullptr);
 }
 
 TEST(FeatureSourceLocation, basicAccessors) {
@@ -47,6 +63,32 @@ TEST(FeatureSourceLocation, comparison) {
   auto OtherLCO = FeatureSourceRange::FeatureSourceLocation(3, 4);
 
   EXPECT_EQ(SelfLCO, OtherLCO);
+}
+
+TEST(FeatureMemberOffset, basicAccessor) {
+  auto Member = FeatureSourceRange::FeatureMemberOffset("member");
+
+  EXPECT_EQ(Member.getMemberOffset().compare("member"), 0);
+}
+
+TEST(FeatureMemberOffset, basicSetter) {
+  auto Member = FeatureSourceRange::FeatureMemberOffset("member");
+  Member.setMemberOffset("setMemberOffset");
+
+  EXPECT_EQ(Member.getMemberOffset().compare("setMemberOffset"), 0);
+}
+
+TEST(FeatureMemberOffset, comparison) {
+  const std::string MemString1 = "member1";
+  const std::string MemString2 = "member2";
+  auto Member1 = FeatureSourceRange::FeatureMemberOffset(MemString1);
+  auto Member2 = FeatureSourceRange::FeatureMemberOffset(MemString2);
+
+  EXPECT_NE(Member1, Member2);
+
+  Member2.setMemberOffset(MemString1);
+
+  EXPECT_EQ(Member1, Member2);
 }
 
 TEST(FeatureSourceRange, basicAccessors) {
@@ -79,14 +121,16 @@ TEST(FeatureSourceRange, onlyEnd) {
 
 TEST(FeatureSourceRange, equality) {
   const auto *Path1 = "path1";
-  const auto *MemberOffset1 = "memberOffset1";
+  const auto MemberOffset1 =
+      FeatureSourceRange::FeatureMemberOffset("memberOffset1");
   auto Fsl1start = FeatureSourceRange::FeatureSourceLocation(1, 2);
   auto Fsl1end = FeatureSourceRange::FeatureSourceLocation(1, 20);
   auto L1 = FeatureSourceRange(Path1, Fsl1start, Fsl1end,
                                FeatureSourceRange::Category::inessential,
                                MemberOffset1);
   const auto *Path2 = "path2";
-  const auto *MemberOffset2 = "memberOffset2";
+  const auto MemberOffset2 =
+      FeatureSourceRange::FeatureMemberOffset("memberOffset2");
   auto Fsl2start = FeatureSourceRange::FeatureSourceLocation(1, 2);
   auto Fsl2end = FeatureSourceRange::FeatureSourceLocation(1, 20);
   auto L2 = FeatureSourceRange(Path2, Fsl2start, Fsl2end,
@@ -97,7 +141,7 @@ TEST(FeatureSourceRange, equality) {
   L2.setPath(Path1);
   EXPECT_NE(L1, L2);
 
-  L2.setMemberOffset(MemberOffset1);
+  L2.getMemberOffset()->setMemberOffset("memberOffset1");
   EXPECT_EQ(L1, L2);
 }
 
@@ -105,7 +149,8 @@ TEST(FeatureSourceRange, clone) {
   auto FSR = std::make_unique<FeatureSourceRange>(
       "path", FeatureSourceRange::FeatureSourceLocation(1, 2),
       FeatureSourceRange::FeatureSourceLocation(3, 4),
-      FeatureSourceRange::Category::inessential, "memberOffset");
+      FeatureSourceRange::Category::inessential,
+      FeatureSourceRange::FeatureMemberOffset("memberOffset"));
 
   auto Clone = FeatureSourceRange(*FSR);
   FSR.reset();
@@ -117,7 +162,7 @@ TEST(FeatureSourceRange, clone) {
   EXPECT_EQ(Clone.getStart()->getColumnOffset(), 2);
   EXPECT_EQ(Clone.getEnd()->getLineNumber(), 3);
   EXPECT_EQ(Clone.getEnd()->getColumnOffset(), 4);
-  EXPECT_EQ(Clone.getMemberOffset()->compare("memberOffset"), 0);
+  EXPECT_EQ(Clone.getMemberOffset()->toString().compare("memberOffset"), 0);
   EXPECT_EQ(Clone.getCategory(), FeatureSourceRange::Category::inessential);
 }
 
