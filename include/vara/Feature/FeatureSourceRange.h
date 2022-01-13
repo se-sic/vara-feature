@@ -72,11 +72,6 @@ public:
   public:
     FeatureMemberOffset(std::string MemberOffset)
         : MemberOffset(std::move(MemberOffset)) {}
-    FeatureMemberOffset(const FeatureMemberOffset &L) = default;
-    FeatureMemberOffset &operator=(const FeatureMemberOffset &) = default;
-    FeatureMemberOffset(FeatureMemberOffset &&) = default;
-    FeatureMemberOffset &operator=(FeatureMemberOffset &&) = default;
-    virtual ~FeatureMemberOffset() = default;
 
     void setMemberOffset(std::string MemberOffset) {
       this->MemberOffset = std::move(MemberOffset);
