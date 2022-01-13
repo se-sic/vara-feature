@@ -129,6 +129,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
   std::optional<FeatureSourceRange::FeatureSourceLocation> End;
   enum FeatureSourceRange::Category Category;
+  std::optional<std::string> MemberOffset;
 
   std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
       xmlGetProp(Head, XmlConstants::CATEGORY), xmlFree);
@@ -156,10 +157,13 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
         Start = createFeatureSourceLocation(Child);
       } else if (!xmlStrcmp(Child->name, XmlConstants::END)) {
         End = createFeatureSourceLocation(Child);
+      } else if (!xmlStrcmp(Child->name, XmlConstants::MEMBEROFFSET)) {
+        MemberOffset =
+            std::string(reinterpret_cast<char *>(xmlNodeGetContent(Child)));
       }
     }
   }
-  return {Path, Start, End, Category};
+  return {Path, Start, End, Category, MemberOffset};
 }
 
 Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
