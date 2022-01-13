@@ -5,7 +5,7 @@
 #include "llvm/ADT/Twine.h"
 
 inline std::string getTestResource(llvm::StringRef ResourcePath = "") {
-  constexpr const char *BasePath = "../resources/";
+  constexpr const char *BasePath = "resources/";
   return (llvm::Twine(BasePath) + ResourcePath).str();
 }
 

@@ -4,6 +4,10 @@
 
 namespace test {
 
+using vara::Error;
+using vara::Ok;
+using vara::Result;
+
 enum ErrorCode { ERROR };
 
 TEST(Result, okSimple) {

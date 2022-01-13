@@ -10,6 +10,8 @@
 #include <type_traits>
 #include <variant>
 
+namespace vara {
+
 //===----------------------------------------------------------------------===//
 //                                      Ok
 //===----------------------------------------------------------------------===//
@@ -145,5 +147,7 @@ public:
 protected:
   std::variant<Ok<ValueTy>, Error<ErrorTy>> Variant;
 };
+
+} // namespace vara
 
 #endif // VARA_UTILS_RESULT_H
