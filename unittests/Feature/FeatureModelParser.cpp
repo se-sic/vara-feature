@@ -224,4 +224,23 @@ TEST(FeatureModelParser, detectXMLAlternativesOutOfOrder) {
   }
 }
 
+TEST(FeatureModelParser, memberOffset) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("test_member_offset.xml"));
+  ASSERT_TRUE(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  auto FM = P.buildFeatureModel();
+  EXPECT_TRUE(FM);
+
+  auto *Feature = FM->getFeature("A");
+  for (auto &Loc : Feature->getLocations()) {
+    EXPECT_TRUE(Loc.hasMemberOffset());
+    EXPECT_EQ(Loc.getMemberOffset()->memberName(), "methodName");
+    EXPECT_EQ(Loc.getMemberOffset()->className(), "className");
+  }
+}
+
 } // namespace vara::feature

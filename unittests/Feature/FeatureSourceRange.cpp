@@ -139,11 +139,11 @@ TEST(FeatureMemberOffset, comparison) {
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           MemString2);
 
-  EXPECT_NE(Member1, Member2);
+  EXPECT_NE(Member1.getValue(), Member2.getValue());
 
   Member2->setMemberOffset(MemString1);
 
-  EXPECT_EQ(Member1, Member2);
+  EXPECT_EQ(Member1.getValue(), Member2.getValue());
 }
 
 TEST(FeatureSourceRange, basicAccessors) {
@@ -200,6 +200,7 @@ TEST(FeatureSourceRange, equality) {
   L2.setPath(Path1);
   EXPECT_NE(L1, L2);
 
+  EXPECT_TRUE(L2.hasMemberOffset());
   L2.getMemberOffset()->setMemberOffset("class::memberOffset1");
   EXPECT_EQ(L1, L2);
 }

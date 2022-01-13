@@ -162,8 +162,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
       } else if (!xmlStrcmp(Child->name, XmlConstants::MEMBEROFFSET)) {
         MemberOffset =
             FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
-                std::string(
-                    reinterpret_cast<char *>(xmlNodeGetContent(Child))));
+                trim(reinterpret_cast<char *>(xmlNodeGetContent(Child))));
       }
     }
   }
