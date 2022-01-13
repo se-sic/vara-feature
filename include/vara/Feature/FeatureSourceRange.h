@@ -1,6 +1,9 @@
 #ifndef VARA_FEATURE_FEATURESOURCERANGE_H
 #define VARA_FEATURE_FEATURESOURCERANGE_H
 
+#include "llvm/ADT/None.h"
+#include "llvm/ADT/Optional.h"
+#include "llvm/IR/LLVMContext.h"
 #include "llvm/Support/FormatVariadic.h"
 
 #if __has_include(<filesystem>)
@@ -69,25 +72,52 @@ public:
   };
 
   class FeatureMemberOffset {
-  public:
     FeatureMemberOffset(std::string MemberOffset)
         : MemberOffset(std::move(MemberOffset)) {}
 
-    void setMemberOffset(std::string MemberOffset) {
-      this->MemberOffset = std::move(MemberOffset);
+  public:
+    static llvm::Optional<FeatureMemberOffset>
+    createFeatureMemberOffset(std::string MemberOffset) {
+      // Member offsets need to have excaptly one :: separator
+      if (isInMemberOffsetFormat(MemberOffset)) {
+        return FeatureMemberOffset(std::move(MemberOffset));
+      }
+
+      return {};
     }
-    [[nodiscard]] std::string getMemberOffset() const {
+
+    static bool isInMemberOffsetFormat(llvm::StringRef PossibleMemberOffset) {
+      return PossibleMemberOffset.contains("::") &&
+             PossibleMemberOffset.count(':') == 2;
+    }
+
+    void setMemberOffset(std::string MemberOffset) {
+      if (isInMemberOffsetFormat(MemberOffset)) {
+        this->MemberOffset = std::move(MemberOffset);
+      }
+    }
+    [[nodiscard]] std::string fullMemberOffset() const {
       return this->MemberOffset;
     }
 
-    [[nodiscard]] std::string toString() const { return getMemberOffset(); }
+    [[nodiscard]] llvm::StringRef className() const {
+      llvm::StringRef TmpRef{MemberOffset};
+      return TmpRef.substr(0, TmpRef.find_first_of(':'));
+    }
+
+    [[nodiscard]] llvm::StringRef memberName() const {
+      llvm::StringRef TmpRef{MemberOffset};
+      return TmpRef.substr(TmpRef.find_last_of(':') + 1);
+    }
+
+    [[nodiscard]] std::string toString() const { return fullMemberOffset(); }
 
     inline bool operator==(const FeatureMemberOffset &Other) const {
-      return getMemberOffset() == Other.getMemberOffset();
+      return fullMemberOffset() == Other.fullMemberOffset();
     }
 
     inline bool operator!=(const FeatureMemberOffset &Other) const {
-      return getMemberOffset() != Other.getMemberOffset();
+      return fullMemberOffset() != Other.fullMemberOffset();
     }
 
   private:
@@ -98,17 +128,17 @@ public:
       fs::path Path, std::optional<FeatureSourceLocation> Start = std::nullopt,
       std::optional<FeatureSourceLocation> End = std::nullopt,
       Category CategoryKind = Category::necessary,
-      std::optional<FeatureMemberOffset> MemberOffset = std::nullopt)
+      llvm::Optional<FeatureMemberOffset> MemberOffset = llvm::None)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
         CategoryKind(CategoryKind), MemberOffset(std::move(MemberOffset)) {}
 
   FeatureSourceRange(
       fs::path Path, FeatureSourceLocation Start, FeatureSourceLocation End,
       Category CategoryKind = Category::necessary,
-      std::optional<FeatureMemberOffset> MemberOffset = std::nullopt)
+      llvm::Optional<FeatureMemberOffset> MemberOffset = llvm::None)
       : FeatureSourceRange(std::move(Path), std::optional(std::move(Start)),
                            std::optional(std::move(End)), CategoryKind,
-                           std::optional(std::move(MemberOffset))) {}
+                           std::move(MemberOffset)) {}
 
   FeatureSourceRange(const FeatureSourceRange &L) = default;
   FeatureSourceRange &operator=(const FeatureSourceRange &) = default;
@@ -136,10 +166,10 @@ public:
   }
 
   [[nodiscard]] bool hasMemberOffset() const {
-    return MemberOffset.has_value();
+    return MemberOffset.hasValue();
   }
   [[nodiscard]] FeatureMemberOffset *getMemberOffset() {
-    return MemberOffset.has_value() ? &MemberOffset.value() : nullptr;
+    return MemberOffset.hasValue() ? MemberOffset.getPointer() : nullptr;
   }
 
   [[nodiscard]] std::string toString() const {
@@ -172,7 +202,7 @@ private:
   std::optional<FeatureSourceLocation> Start;
   std::optional<FeatureSourceLocation> End;
   Category CategoryKind;
-  std::optional<FeatureMemberOffset> MemberOffset;
+  llvm::Optional<FeatureMemberOffset> MemberOffset;
 };
 } // namespace vara::feature
 

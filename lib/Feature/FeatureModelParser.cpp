@@ -1,14 +1,16 @@
 #include "vara/Feature/FeatureModelParser.h"
 #include "vara/Feature/ConstraintParser.h"
 #include "vara/Feature/Feature.h"
+#include "vara/Feature/FeatureSourceRange.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include "vara/Utils/VariantUtil.h"
+
 #include "SxfmConstants.h"
 #include "XmlConstants.h"
-#include "vara/Utils/VariantUtil.h"
 
 #include <iostream>
 #include <regex>
@@ -129,7 +131,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
   std::optional<FeatureSourceRange::FeatureSourceLocation> End;
   enum FeatureSourceRange::Category Category;
-  std::optional<std::string> MemberOffset;
+  llvm::Optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
 
   std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
       xmlGetProp(Head, XmlConstants::CATEGORY), xmlFree);
@@ -159,7 +161,9 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
         End = createFeatureSourceLocation(Child);
       } else if (!xmlStrcmp(Child->name, XmlConstants::MEMBEROFFSET)) {
         MemberOffset =
-            std::string(reinterpret_cast<char *>(xmlNodeGetContent(Child)));
+            FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+                std::string(
+                    reinterpret_cast<char *>(xmlNodeGetContent(Child))));
       }
     }
   }
