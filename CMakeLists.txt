@@ -49,8 +49,10 @@ endif ()
 option(VARA_FEATURE_BUILD_DOC "Generate documentation" FALSE)
 
 # Extra debug warning flags
-string(TOUPPER ${CMAKE_BUILD_TYPE} build_type)
-if (build_type MATCHES "^(DEBUG)")
+if (CMAKE_BUILD_TYPE)
+  string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+endif()
+if (BUILD_TYPE MATCHES "^(DEBUG)")
   add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
 endif ()
 
