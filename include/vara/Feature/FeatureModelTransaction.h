@@ -574,7 +574,9 @@ public:
       return ERROR;
     }
     auto V = AddConstraintToModelVisitor(&FM);
-    InsertedConstraint->accept(V);
+    if (!InsertedConstraint->accept(V)) {
+      return MISSING_FEATURE;
+    }
     return InsertedConstraint;
   }
 
@@ -584,10 +586,15 @@ private:
   public:
     AddConstraintToModelVisitor(FeatureModel *FM) : FM(FM) {}
 
-    void visit(PrimaryFeatureConstraint *C) override {
+    bool visit(PrimaryFeatureConstraint *C) override {
       auto *F = FM->getFeature(C->getFeature()->getName());
+      if (!F) {
+        return false;
+      }
+
       AddConstraintToModel::setFeature(*C, *F);
       AddConstraintToModel::addConstraint(*F, *C);
+      return true;
     };
 
   private:
@@ -749,6 +756,10 @@ public:
                              [](FeatureTreeNode *Ptr) { return Ptr; },
                          },
                          Child);
+    if (!C) {
+      return MISSING_CHILD;
+    }
+
     auto *P = std::visit(Overloaded{
                              [&FM](const std::string &Name) {
                                return llvm::dyn_cast_or_null<FeatureTreeNode>(
@@ -757,7 +768,13 @@ public:
                              [](FeatureTreeNode *Ptr) { return Ptr; },
                          },
                          Parent);
-    assert(C && P);
+    if (!P) {
+      return MISSING_PARENT;
+    }
+
+    if (C == P) {
+      return RECURSIVE_EDGE;
+    }
 
     if (C->getParent()) {
       removeEdge(*C->getParent(), *C);

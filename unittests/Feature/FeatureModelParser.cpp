@@ -53,6 +53,75 @@ TEST(FeatureModelParser, outOfOrder) {
   EXPECT_TRUE(P.buildFeatureModel());
 }
 
+// TODO: Detect error while parsing
+//
+//  TEST(FeatureModelParser, errorMismatchParentChild) {
+//   auto FS = llvm::MemoryBuffer::getFileAsStream(
+//       getTestResource("error_mismatch_parent_child.xml"));
+//
+//   ASSERT_TRUE(FS);
+//
+//   auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+//
+//   EXPECT_TRUE(P.verifyFeatureModel());
+//   EXPECT_FALSE(P.buildFeatureModel());
+// }
+
+TEST(FeatureModelParser, errorMissingChild) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("error_missing_child.xml"));
+  ASSERT_TRUE(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, errorMissingExclude) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("error_missing_exclude.xml"));
+  ASSERT_TRUE(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, errorMissingImplication) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("error_missing_implication.xml"));
+  ASSERT_TRUE(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, errorMissingParent) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("error_missing_parent.xml"));
+  ASSERT_TRUE(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
+TEST(FeatureModelParser, errorRootRoot) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(
+      getTestResource("error_root_root.xml"));
+  ASSERT_TRUE(FS);
+
+  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+
+  EXPECT_TRUE(P.verifyFeatureModel());
+  EXPECT_FALSE(P.buildFeatureModel());
+}
+
 TEST(FeatureModelParser, longRange) {
   auto FS =
       llvm::MemoryBuffer::getFileAsStream(getTestResource("test_numbers.xml"));
