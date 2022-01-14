@@ -425,17 +425,24 @@ struct GraphWriter<vara::feature::FeatureModel *> {
         CS << "<tr><td>" << DOT::EscapeString(C->getRoot()->toHTML())
            << "</td></tr>";
       }
+
+      std::stringstream LS;
+      if (F->hasLocations()) {
+        LS << "<hr/>";
+        for (const auto &Location : F->getLocations()) {
+          LS << llvm::formatv("<tr><td><b>{0}</b></td></tr>",
+                              DOT::EscapeString(Location.toString()))
+                    .str();
+        }
+      }
+
       Label = llvm::formatv(
           "<<table align=\"center\" valign=\"middle\" border=\"0\" "
           "cellborder=\"0\" "
           "cellpadding=\"5\">{0}{1}{2}</table>>",
           llvm::formatv("<tr><td><b>{0}</b></td></tr>",
                         DOT::EscapeString(F->getName().str())),
-          CS.str(),
-          (F->hasLocations() ? llvm::formatv("<hr/><tr><td>{0}</td></tr>",
-                                             DOT::EscapeString(""))
-                                   .str()
-                             : ""));
+          CS.str(), LS.str());
     } else {
       Shape = "ellipse";
       if (auto *R = llvm::dyn_cast<vara::feature::Relationship>(Node); R) {
