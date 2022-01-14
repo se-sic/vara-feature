@@ -91,11 +91,12 @@ public:
   /// \returns a pointer to the inserted Feature in CopyMode, otherwise,
   ///          nothing.
   decltype(auto) addFeature(std::unique_ptr<Feature> NewFeature,
-                            Feature *Parent = nullptr) {
+                            Feature *Parent = nullptr,
+                            const std::set<Feature *> &Children = {}) {
     if constexpr (IsCopyMode) {
-      return this->addFeatureImpl(std::move(NewFeature), Parent);
+      return this->addFeatureImpl(std::move(NewFeature), Parent, Children);
     } else {
-      this->addFeatureImpl(std::move(NewFeature), Parent);
+      this->addFeatureImpl(std::move(NewFeature), Parent, Children);
     }
   }
 
@@ -314,16 +315,25 @@ public:
       setParent(*InsertedFeature, *FM.getRoot());
       addEdge(*FM.getRoot(), *InsertedFeature);
     }
+    if (!Children.empty()) {
+      for (auto *Child : Children) {
+        setParent(*Child, *InsertedFeature);
+        addEdge(*InsertedFeature, *Child);
+      }
+    }
     return InsertedFeature;
   }
 
 private:
   AddFeatureToModel(std::unique_ptr<Feature> NewFeature,
-                    Feature *Parent = nullptr)
-      : NewFeature(std::move(NewFeature)), Parent(Parent) {}
+                    Feature *Parent = nullptr,
+                    std::set<Feature *> Children = {})
+      : NewFeature(std::move(NewFeature)), Parent(Parent),
+        Children(std::move(Children)) {}
 
   std::unique_ptr<Feature> NewFeature;
   Feature *Parent;
+  std::set<Feature *> Children;
 };
 
 //===----------------------------------------------------------------------===//
@@ -801,16 +811,23 @@ protected:
   // Modifications
 
   Result<FTErrorCode, Feature *>
-  addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
+  addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent,
+                 const std::set<Feature *> &Children) {
     if (!FM) {
       return ERROR;
     }
 
     if (Parent) {
-      // To correctly add a parent, we need to translate it to a Feature in
-      // our copied FeatureModel
+      // To correctly add a parent and children, we need to translate them to
+      // Features in
+      //  our copied FeatureModel
+      std::set<Feature *> TranslatedChildren;
+      for (auto *Child : Children) {
+        TranslatedChildren.insert(translateFeature(*Child));
+      }
       return FeatureModelModification::makeModification<AddFeatureToModel>(
-          std::move(NewFeature), translateFeature(*Parent))(*FM);
+          std::move(NewFeature), translateFeature(*Parent),
+          TranslatedChildren)(*FM);
     }
 
     return FeatureModelModification::makeModification<AddFeatureToModel>(
@@ -979,12 +996,13 @@ protected:
   //===--------------------------------------------------------------------===//
   // Modifications
 
-  void addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
+  void addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent,
+                      const std::set<Feature *> &Children) {
     assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
         FeatureModelModification::makeUniqueModification<AddFeatureToModel>(
-            std::move(NewFeature), Parent));
+            std::move(NewFeature), Parent, Children));
   }
 
   void removeFeatureImpl(FeatureVariantTy &F, bool Recursive = false) {
@@ -1095,6 +1113,10 @@ void addFeature(FeatureModel &FM, std::unique_ptr<Feature> NewFeature,
 void addFeatures(
     FeatureModel &FM,
     std::vector<std::pair<std::unique_ptr<Feature>, Feature *>> NewFeatures);
+void addFeatures(FeatureModel &FM,
+                 std::vector<std::tuple<std::unique_ptr<Feature>, Feature *,
+                                        std::set<Feature *>>>
+                     NewFeatures);
 
 /// Removes a Feature from the FeatureModel
 ///

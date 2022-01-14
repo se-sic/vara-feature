@@ -31,6 +31,18 @@ void addFeatures(
   Trans.commit();
 }
 
+void addFeatures(FeatureModel &FM,
+                 std::vector<std::tuple<std::unique_ptr<Feature>, Feature *,
+                                        std::set<Feature *>>>
+                     NewFeatures) {
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+  for (auto &NewFeature : NewFeatures) {
+    Trans.addFeature(std::move(std::get<0>(NewFeature)),
+                     std::get<1>(NewFeature), std::get<2>(NewFeature));
+  }
+  Trans.commit();
+}
+
 void removeFeature(FeatureModel &FM,
                    detail::FeatureVariantTy FeatureToBeDeleted,
                    bool Recursive) {
