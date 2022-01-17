@@ -15,10 +15,20 @@ TEST(FeatureModelBuilder, addBinaryFeature) {
   EXPECT_EQ(FM->getFeature("a")->getKind(), Feature::FeatureKind::FK_BINARY);
 }
 
+TEST(FeatureModelBuilder, duplicateFeature) {
+  FeatureModelBuilder B;
+
+  B.makeFeature<BinaryFeature>("a");
+  B.makeFeature<BinaryFeature>("a");
+  auto FM = B.buildFeatureModel();
+
+  EXPECT_FALSE(FM);
+}
+
 TEST(FeatureModelBuilder, addNumericFeature) {
   FeatureModelBuilder B;
 
-  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3});
+  B.makeFeature<NumericFeature>("a", NumericFeature::ValueListType{1, 2, 3});
   auto FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
 
@@ -107,7 +117,7 @@ TEST(FeatureModelBuilder, addBinaryFeatureRef) {
 TEST(FeatureModelBuilder, addNumericFeatureRef) {
   FeatureModelBuilder B;
 
-  B.makeFeature<NumericFeature>("a", std::vector<int>{1, 2, 3});
+  B.makeFeature<NumericFeature>("a", NumericFeature::ValueListType{1, 2, 3});
   B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
   auto FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);

@@ -26,15 +26,15 @@ public:
 
   virtual ~FeatureModelParser() = default;
 
+  /// Checks whether input is a valid feature model as acyclic graph with unique
+  /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.
+  virtual Result<FTErrorCode> verifyFeatureModel() = 0;
+
   /// Build \a FeatureModel after parsing. May return null if parsing or
   /// building failed.
   ///
   /// \returns an instance of \a FeatureModel or \a nullptr
   virtual std::unique_ptr<FeatureModel> buildFeatureModel() = 0;
-
-  /// Checks whether input is a valid feature model as acyclic graph with unique
-  /// nodes and tree like structure. Tests precondition of \a buildFeatureModel.
-  virtual bool verifyFeatureModel() = 0;
 };
 
 //===----------------------------------------------------------------------===//
@@ -46,27 +46,31 @@ class FeatureModelXmlParser : public FeatureModelParser {
 public:
   explicit FeatureModelXmlParser(std::string Xml) : Xml(std::move(Xml)) {}
 
-  std::unique_ptr<FeatureModel> buildFeatureModel() override;
+  /// Check if XML is a valid feature model according to DTD.
+  ///
+  /// \return possible error if inconsistent
+  Result<FTErrorCode> verifyFeatureModel() override;
 
-  bool verifyFeatureModel() override;
+  std::unique_ptr<FeatureModel> buildFeatureModel() override;
 
   /// This method is solely relevant for parsing XML, as alternatives are
   /// represented als mutual excluded but non-optional features (which requires
   /// additional processing).
-  static bool detectXMLAlternatives(FeatureModel &FM);
+  static Result<FTErrorCode> detectXMLAlternatives(FeatureModel &FM);
 
 private:
   std::string Xml;
   FeatureModelBuilder FMB;
 
-  bool parseConfigurationOption(xmlNode *Node, bool Num);
-  bool parseOptions(xmlNode *Node, bool Num);
-  bool parseConstraints(xmlNode *Node);
-  bool parseVm(xmlNode *Node);
+  Result<FTErrorCode> parseConfigurationOption(xmlNode *Node, bool Num);
+  Result<FTErrorCode> parseOptions(xmlNode *Node, bool Num);
+  Result<FTErrorCode> parseConstraints(xmlNode *Node);
+  Result<FTErrorCode> parseVm(xmlNode *Node);
 
   static FeatureSourceRange::FeatureSourceLocation
   createFeatureSourceLocation(xmlNode *Node);
   static FeatureSourceRange createFeatureSourceRange(xmlNode *Head);
+  static long parseNumber(llvm::StringRef Str);
 
   UniqueXmlDoc parseDoc();
   static UniqueXmlDtd createDtd();
@@ -140,7 +144,7 @@ private:
 /// or alternatively:
 /// \code{unparsed}
 /// macro_rules! sxfm_constraints {
-///     (:$name:ident $cnf_formula:tt) => {...};
+///     ($name:ident : $cnf_formula:tt) => {...};
 /// }
 /// \endcode
 ///
@@ -157,7 +161,12 @@ public:
   /// This method checks if the given feature model is valid
   ///
   /// \returns true iff the feature model is valid
-  bool verifyFeatureModel() override { return parseDoc().get(); }
+  Result<FTErrorCode> verifyFeatureModel() override {
+    if (!parseDoc().get()) {
+      return Error(ERROR);
+    }
+    return Ok();
+  }
 
   /// Reads in and returns the feature model in the sxfm format
   ///
@@ -199,7 +208,7 @@ private:
   /// \param Constraints the node containing the constraint string
   ///
   /// \returns true iff parsing and processing the constraints was successful
-  static bool parseConstraints(xmlNode *Constraints);
+  bool parseConstraints(xmlNode *Constraints);
 
   /// This method extracts the cardinality from the given line.
   /// The cardinality is wrapped in square brackets (e.g., [1,1])
@@ -225,6 +234,7 @@ private:
   std::string Sxfm;
   FeatureModelBuilder FMB;
   std::string Indentation = "\t";
+  std::map<std::string, std::string> IdentifierMap;
 };
 
 } // namespace vara::feature

@@ -349,8 +349,8 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
   // numeric elements
   if (auto *NF = llvm::dyn_cast<NumericFeature>(&Feature1)) {
     auto ValueVariant = NF->getValues();
-    if (std::holds_alternative<std::pair<int, int>>(ValueVariant)) {
-      auto [Min, Max] = std::get<std::pair<int, int>>(ValueVariant);
+    if (std::holds_alternative<NumericFeature::ValueRangeType>(ValueVariant)) {
+      auto [Min, Max] = std::get<NumericFeature::ValueRangeType>(ValueVariant);
       RC = xmlTextWriterWriteElement(Writer, XmlConstants::MINVALUE,
                                      charToUChar(std::to_string(Min).data()));
       CHECK_RC
@@ -359,7 +359,7 @@ int FeatureModelXmlWriter::writeFeature(xmlTextWriterPtr Writer,
                                      charToUChar(std::to_string(Max).data()));
       CHECK_RC
     } else {
-      auto Values = std::get<std::vector<int>>(ValueVariant);
+      auto Values = std::get<NumericFeature::ValueListType>(ValueVariant);
       std::string Str;
       std::for_each(std::begin(Values), std::end(Values) - 1, [&Str](int X) {
         Str.append(std::to_string(X));

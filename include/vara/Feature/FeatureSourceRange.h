@@ -30,18 +30,19 @@ public:
   class FeatureSourceLocation {
 
   public:
-    FeatureSourceLocation(int Line, int Column) : Line(Line), Column(Column) {}
+    FeatureSourceLocation(unsigned Line, unsigned Column)
+        : Line(Line), Column(Column) {}
     FeatureSourceLocation(const FeatureSourceLocation &L) = default;
     FeatureSourceLocation &operator=(const FeatureSourceLocation &) = default;
     FeatureSourceLocation(FeatureSourceLocation &&) = default;
     FeatureSourceLocation &operator=(FeatureSourceLocation &&) = default;
     virtual ~FeatureSourceLocation() = default;
 
-    void setLineNumber(int LineNumber) { this->Line = LineNumber; }
-    [[nodiscard]] int getLineNumber() const { return this->Line; }
+    void setLineNumber(unsigned LineNumber) { this->Line = LineNumber; }
+    [[nodiscard]] unsigned getLineNumber() const { return this->Line; }
 
-    void setColumnOffset(int ColumnOffset) { this->Column = ColumnOffset; }
-    [[nodiscard]] int getColumnOffset() const { return this->Column; }
+    void setColumnOffset(unsigned ColumnOffset) { this->Column = ColumnOffset; }
+    [[nodiscard]] unsigned getColumnOffset() const { return this->Column; }
 
     [[nodiscard]] std::string toString() const {
       return llvm::formatv("{0}:{1}", getLineNumber(), getColumnOffset());
@@ -63,22 +64,51 @@ public:
     }
 
   private:
-    int Line;
-    int Column;
+    unsigned Line;
+    unsigned Column;
   };
 
-  FeatureSourceRange(fs::path Path,
-                     std::optional<FeatureSourceLocation> Start = std::nullopt,
-                     std::optional<FeatureSourceLocation> End = std::nullopt,
-                     Category CategoryKind = Category::necessary)
-      : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
-        CategoryKind(CategoryKind) {}
+  class FeatureMemberOffset {
+  public:
+    FeatureMemberOffset(std::string MemberOffset)
+        : MemberOffset(std::move(MemberOffset)) {}
 
-  FeatureSourceRange(fs::path Path, FeatureSourceLocation Start,
-                     FeatureSourceLocation End,
-                     Category CategoryKind = Category::necessary)
+    void setMemberOffset(std::string MemberOffset) {
+      this->MemberOffset = std::move(MemberOffset);
+    }
+    [[nodiscard]] std::string getMemberOffset() const {
+      return this->MemberOffset;
+    }
+
+    [[nodiscard]] std::string toString() const { return getMemberOffset(); }
+
+    inline bool operator==(const FeatureMemberOffset &Other) const {
+      return getMemberOffset() == Other.getMemberOffset();
+    }
+
+    inline bool operator!=(const FeatureMemberOffset &Other) const {
+      return getMemberOffset() != Other.getMemberOffset();
+    }
+
+  private:
+    std::string MemberOffset;
+  };
+
+  FeatureSourceRange(
+      fs::path Path, std::optional<FeatureSourceLocation> Start = std::nullopt,
+      std::optional<FeatureSourceLocation> End = std::nullopt,
+      Category CategoryKind = Category::necessary,
+      std::optional<FeatureMemberOffset> MemberOffset = std::nullopt)
+      : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
+        CategoryKind(CategoryKind), MemberOffset(std::move(MemberOffset)) {}
+
+  FeatureSourceRange(
+      fs::path Path, FeatureSourceLocation Start, FeatureSourceLocation End,
+      Category CategoryKind = Category::necessary,
+      std::optional<FeatureMemberOffset> MemberOffset = std::nullopt)
       : FeatureSourceRange(std::move(Path), std::optional(std::move(Start)),
-                           std::optional(std::move(End)), CategoryKind) {}
+                           std::optional(std::move(End)), CategoryKind,
+                           std::optional(std::move(MemberOffset))) {}
 
   FeatureSourceRange(const FeatureSourceRange &L) = default;
   FeatureSourceRange &operator=(const FeatureSourceRange &) = default;
@@ -105,6 +135,13 @@ public:
     return End.has_value() ? &End.value() : nullptr;
   }
 
+  [[nodiscard]] bool hasMemberOffset() const {
+    return MemberOffset.has_value();
+  }
+  [[nodiscard]] FeatureMemberOffset *getMemberOffset() {
+    return MemberOffset.has_value() ? &MemberOffset.value() : nullptr;
+  }
+
   [[nodiscard]] std::string toString() const {
     std::stringstream StrS;
     StrS << Path.string();
@@ -114,12 +151,16 @@ public:
     if (End) {
       StrS << "-" << End->toString();
     }
+    if (MemberOffset) {
+      StrS << " MemberOffset: " << MemberOffset->toString();
+    }
     return StrS.str();
   }
 
   inline bool operator==(const FeatureSourceRange &Other) const {
     return CategoryKind == Other.CategoryKind and Path == Other.Path and
-           Start == Other.Start and End == Other.End;
+           Start == Other.Start and End == Other.End and
+           MemberOffset == Other.MemberOffset;
   }
 
   inline bool operator!=(const FeatureSourceRange &Other) const {
@@ -131,6 +172,7 @@ private:
   std::optional<FeatureSourceLocation> Start;
   std::optional<FeatureSourceLocation> End;
   Category CategoryKind;
+  std::optional<FeatureMemberOffset> MemberOffset;
 };
 } // namespace vara::feature
 

@@ -31,6 +31,22 @@ TEST(ConstraintLexer, end) {
             ConstraintToken::ConstraintTokenKind::END_OF_FILE);
 }
 
+TEST(ConstraintLexer, scientific) {
+  ConstraintLexer L(
+      llvm::formatv("~{0}0e+2", std::numeric_limits<long>::max()));
+
+  auto TokenList = L.tokenize();
+  ASSERT_EQ(TokenList.size(), 3);
+
+  EXPECT_EQ(TokenList[0].getKind(), ConstraintToken::ConstraintTokenKind::NEG);
+  EXPECT_EQ(TokenList[1].getKind(),
+            ConstraintToken::ConstraintTokenKind::NUMBER);
+  EXPECT_EQ(*TokenList[1].getValue(),
+            llvm::formatv("{0}0e+2", std::numeric_limits<long>::max()).str());
+  EXPECT_EQ(TokenList[2].getKind(),
+            ConstraintToken::ConstraintTokenKind::END_OF_FILE);
+}
+
 class ConstraintLexerTest : public ::testing::Test {
 protected:
   static void checkPrimary(ConstraintToken::ConstraintTokenKind Kind,
@@ -133,6 +149,42 @@ TEST(ConstraintParser, error) {
 TEST(ConstraintParser, parenthesis) {
   EXPECT_FALSE(ConstraintParser("(feature_A))").buildConstraint());
   EXPECT_FALSE(ConstraintParser("((feature_A)").buildConstraint());
+}
+
+TEST(ConstraintParser, radix) {
+  auto C = ConstraintParser("042").buildConstraint();
+  ASSERT_TRUE(C);
+
+  EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
+  EXPECT_EQ(C->toString(), "42");
+}
+
+TEST(ConstraintParser, scientific) {
+  auto C = ConstraintParser("42e+0").buildConstraint();
+  ASSERT_TRUE(C);
+
+  EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
+  EXPECT_EQ(C->toString(), "42");
+}
+
+TEST(ConstraintParser, doubleClamp) {
+  auto C = ConstraintParser(
+               llvm::formatv("{0}e-0", std::numeric_limits<double>::max()))
+               .buildConstraint();
+  ASSERT_TRUE(C);
+
+  EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
+  EXPECT_EQ(C->toString(), std::to_string(std::numeric_limits<int64_t>::max()));
+}
+
+TEST(ConstraintParser, decimalClamp) {
+  auto C = ConstraintParser(
+               llvm::formatv("{0}0", std::numeric_limits<int64_t>::max()))
+               .buildConstraint();
+  ASSERT_TRUE(C);
+
+  EXPECT_EQ(C->getKind(), Constraint::ConstraintKind::CK_INTEGER);
+  EXPECT_EQ(C->toString(), std::to_string(std::numeric_limits<int64_t>::max()));
 }
 
 class ConstraintParserTest : public ::testing::Test {

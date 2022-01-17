@@ -25,6 +25,7 @@ public:
   static constexpr xmlChar OPTIONS[] = "options";
   static constexpr xmlChar LOCATIONS[] = "locations";
   static constexpr xmlChar SOURCERANGE[] = "sourceRange";
+  static constexpr xmlChar MEMBEROFFSET[] = "memberOffset";
   static constexpr xmlChar PATH[] = "path";
   static constexpr xmlChar START[] = "start";
   static constexpr xmlChar END[] = "end";
@@ -48,7 +49,8 @@ public:
   static inline const std::string DtdRaw =
       "<!ELEMENT vm (binaryOptions, numericOptions?, booleanConstraints?, "
       "nonBooleanConstraints?, mixedConstraints?)>\n"
-      "<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED commit CDATA #IMPLIED>\n"
+      "<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED commit CDATA "
+      "#IMPLIED>\n"
       "<!ELEMENT binaryOptions (configurationOption*)>\n"
       "<!ELEMENT numericOptions (configurationOption*)>\n"
       "<!ELEMENT booleanConstraints (constraint*)>\n"
@@ -79,7 +81,7 @@ public:
       "<!ELEMENT values (#PCDATA)>\n"
       "<!ELEMENT stepFunction (#PCDATA)>\n"
       "<!ELEMENT locations (sourceRange*)>\n"
-      "<!ELEMENT sourceRange (path, start, end)>\n"
+      "<!ELEMENT sourceRange (path, start, end, memberOffset?)>\n"
       "<!ATTLIST sourceRange category (necessary|inessential) \"necessary\">\n"
       "<!ELEMENT path (#PCDATA)>\n"
       "<!ELEMENT start (line, column)>\n"

@@ -49,9 +49,29 @@ endif ()
 option(VARA_FEATURE_BUILD_DOC "Generate documentation" FALSE)
 
 # Extra debug warning flags
-if (CMAKE_BUILD_TYPE EQUAL "Debug")
-  add_compile_options(-Wall -Wextra -Wno-unused-parameter)
+if (CMAKE_BUILD_TYPE)
+  string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+endif()
+if (BUILD_TYPE MATCHES "^(DEBUG)")
+  add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
 endif ()
+
+# Enable coverage tracking
+option(VARA_FEATURE_ENABLE_COVERAGE "Enable code coverage tracking" FALSE)
+if (VARA_FEATURE_ENABLE_COVERAGE)
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    add_compile_options(--coverage -O0)
+    add_link_options(--coverage)
+  elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    file(TO_NATIVE_PATH "${CMAKE_BINARY_DIR}/profiles" VARA_FEAUTRE_PROFILE_DATA_DIR)
+    set(VARA_FEATURE_PROFILE_PATTERN
+        "${VARA_FEAUTRE_PROFILE_DATA_DIR}/profile-%p.profraw"
+    )
+
+    add_compile_options(-fprofile-instr-generate=${VARA_FEATURE_PROFILE_PATTERN} -fcoverage-mapping)
+    add_link_options(-fprofile-instr-generate=${VARA_FEATURE_PROFILE_PATTERN})
+  endif()
+endif()
 
 # Setup git submodules (external projects)
 find_package(Git QUIET)
@@ -75,7 +95,7 @@ endif ()
 # Setup custom targets
 
 find_program(VARA_FEATURE_RUN_CLANG_TIDY
-  NAMES run-clang-tidy-11.py run-clang-tidy-11 run-clang-tidy.py run-clang-tidy clang-tidy-11 clang-tidy
+  NAMES run-clang-tidy-12.py run-clang-tidy-12 run-clang-tidy.py run-clang-tidy clang-tidy-12 clang-tidy
   PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
   )
 
@@ -165,3 +185,4 @@ else ()
 endif ()
 
 add_subdirectory(unittests)
+add_subdirectory(scripts)

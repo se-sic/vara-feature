@@ -11,9 +11,11 @@ set(FEATURE_LIB_TEST_FILES
   sxfm/test.sxfm
   sxfm/test_wrong_indentation.sxfm
   sxfm/test_wrong_xml_format.sxfm
+  sxfm/test_wrong_constraint_format.sxfm
   xml/test.xml
   xml/test_children.xml
   xml/test_excludes.xml
+  xml/test_numbers.xml
   xml/test_only_children.xml
   xml/test_only_parents.xml
   xml/test_out_of_order.xml

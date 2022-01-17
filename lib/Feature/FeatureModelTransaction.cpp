@@ -1,15 +1,18 @@
 #include "vara/Feature/FeatureModelTransaction.h"
+#include "vara/Utils/VariantUtil.h"
 
+#include <algorithm>
 #include <iostream>
+#include <vector>
 
 namespace vara::feature {
 
 bool mergeSubtree(FeatureModelCopyTransaction &Trans, FeatureModel const &FM,
                   Feature &F, bool Strict);
 
-std::unique_ptr<Feature> FeatureCopy(Feature &F);
+std::unique_ptr<Feature> featureCopy(Feature &F);
 
-bool CompareProperties(const Feature &F1, const Feature &F2, bool Strict);
+bool compareProperties(const Feature &F1, const Feature &F2, bool Strict);
 
 std::optional<Relationship *> getFeatureRelationship(Feature &F);
 
@@ -36,6 +39,105 @@ void removeFeature(FeatureModel &FM,
   auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
   Trans.removeFeature(FeatureToBeDeleted, Recursive);
   Trans.commit();
+}
+
+Feature *getActualFeature(FeatureModel &FM, detail::FeatureVariantTy &FV) {
+  Feature *ActualFeature = nullptr;
+  std::visit(Overloaded{[&ActualFeature](Feature *F) { ActualFeature = F; },
+                        [&ActualFeature, &FM](string &FName) {
+                          ActualFeature = FM.getFeature(FName);
+                        }},
+             FV);
+  return ActualFeature;
+}
+
+std::optional<bool> fvIsLeaf(FeatureModel &FM, detail::FeatureVariantTy &FV) {
+  Feature *ActualFeature = getActualFeature(FM, FV);
+  // if Feature does not exist in FM
+  if (ActualFeature == nullptr) {
+    return std::nullopt;
+  }
+  return std::optional<bool>{ActualFeature->isLeaf()};
+}
+
+/// Checks if in recursive mode the provided Feature can be deleted or not.
+///
+/// \param FM
+/// \param FV
+/// \param OtherFeatures
+/// \return optional of true, if all transitive children of FV are not part of
+/// OtherFeatures; optional of false, if at least one transitive child of FV is
+/// part of OtherFeatures; nullopt, if FV is not part of FM
+std::optional<bool>
+canBeDeletedRecursively(FeatureModel &FM, detail::FeatureVariantTy &FV,
+                        const std::set<FeatureTreeNode *> &OtherFeatures) {
+  Feature *ActualFeature = getActualFeature(FM, FV);
+  if (ActualFeature == nullptr) { // Feature does not exist in FM
+    return std::nullopt;
+  }
+
+  std::set<FeatureTreeNode *> Intersection;
+  auto AllChildrenInSubtree = ActualFeature->getChildren();
+  std::set_intersection(AllChildrenInSubtree.begin(),
+                        AllChildrenInSubtree.end(), OtherFeatures.begin(),
+                        OtherFeatures.end(),
+                        std::inserter(Intersection, Intersection.begin()));
+  // if the children are not matching the other features, the intersection is
+  // empty and we are good to go for deletion
+  return std::optional<bool>{Intersection.begin() == Intersection.end()};
+}
+
+std::vector<detail::FeatureVariantTy> removeFeatures(
+    FeatureModel &FM, std::vector<detail::FeatureVariantTy>::iterator Begin,
+    std::vector<detail::FeatureVariantTy>::iterator End, bool Recursive) {
+  // if everything was deleted
+  std::vector<detail::FeatureVariantTy> NotDeletedFeatures;
+  if (Begin == End) {
+    return NotDeletedFeatures;
+  }
+
+  std::set<FeatureTreeNode *> OtherFeatures;
+  std::transform(
+      Begin, End, std::inserter(OtherFeatures, OtherFeatures.begin()),
+      [&FM](detail::FeatureVariantTy &FV) { return getActualFeature(FM, FV); });
+  // Remove nullptr, in case, on of the specified Features could not be
+  // found in the FeatureModel
+  OtherFeatures.erase(nullptr);
+
+  // 3 use-cases:
+  // If Feature is Leave --> can be deleted
+  // If Feature is not a Leave and !Recursive --> cannot be deleted
+  // If Recursive --> partition by "youngest" feature in sub-tree --> delete
+  // those in recursive mode
+  auto DeleteIt = std::partition(
+      Begin, End,
+      [&FM, Recursive, &OtherFeatures](detail::FeatureVariantTy &FV) {
+        if (fvIsLeaf(FM, FV).value_or(false)) {
+          return true;
+        }
+        if (!Recursive) {
+          return false;
+        }
+        return canBeDeletedRecursively(FM, FV, OtherFeatures).value_or(false);
+      });
+
+  // check if something can be deleted --> if not and return non-deletable
+  // features
+  if (DeleteIt == Begin) {
+    return {Begin, End};
+  }
+
+  // perform actual removal of deletable features
+  auto Trans = FeatureModelModifyTransaction::openTransaction(FM);
+  auto FeatureIt = Begin;
+  while (FeatureIt != DeleteIt) {
+    Trans.removeFeature(*FeatureIt, Recursive);
+    FeatureIt = std::next(FeatureIt);
+  }
+  Trans.commit();
+
+  // call remove Features on non-leaves
+  return removeFeatures(FM, DeleteIt, End, Recursive);
 }
 
 void addRelationship(FeatureModel &FM,
@@ -66,7 +168,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
     Trans.abort();
     return nullptr;
   }
-  return Trans.commit();
+  return *Trans.commit();
 }
 
 [[nodiscard]] bool mergeSubtree(FeatureModelCopyTransaction &Trans,
@@ -106,7 +208,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
       return false;
     }
   } else {
-    std::unique_ptr<Feature> Copy = FeatureCopy(F);
+    std::unique_ptr<Feature> Copy = featureCopy(F);
     if (!Copy) {
       return false;
     }
@@ -126,7 +228,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
   return true;
 }
 
-[[nodiscard]] std::unique_ptr<Feature> FeatureCopy(Feature &F) {
+[[nodiscard]] std::unique_ptr<Feature> featureCopy(Feature &F) {
   switch (F.getKind()) {
   case Feature::FeatureKind::FK_BINARY:
     return std::make_unique<BinaryFeature>(
@@ -140,6 +242,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
           std::vector<FeatureSourceRange>(F.getLocationsBegin(),
                                           F.getLocationsEnd()));
     }
+    break;
   case Feature::FeatureKind::FK_ROOT:
     return std::make_unique<RootFeature>(F.getName().str());
   default:
@@ -148,7 +251,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
   return nullptr;
 }
 
-[[nodiscard]] bool CompareProperties(const Feature &F1, const Feature &F2,
+[[nodiscard]] bool compareProperties(const Feature &F1, const Feature &F2,
                                      bool Strict) {
   // name equality
   if (F1.getName() != F2.getName()) {

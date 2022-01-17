@@ -128,7 +128,15 @@ public:
 private:
   using ResultTy = std::pair<ConstraintToken, int>;
 
-  static ResultTy munch(const llvm::StringRef &Str) {
+  static ResultTy munch(const llvm::StringRef Str) {
+    if (('a' <= Str.front() && Str.front() <= 'z') ||
+        ('A' <= Str.front() && Str.front() <= 'Z')) {
+      return munchIdentifier(Str);
+    }
+    if ('0' <= Str.front() && Str.front() <= '9') {
+      return munchNumber(Str);
+    }
+
     switch (Str.front()) {
     case EOF:
     case '\0':
@@ -160,11 +168,6 @@ private:
     case '>':
     case '<':
       return munchOperator(Str);
-    case '0' ... '9':
-      return munchNumber(Str);
-    case 'a' ... 'z':
-    case 'A' ... 'Z':
-      return munchIdentifier(Str);
     default:
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::ERROR,
                               Str.take_front().str()),
@@ -227,9 +230,12 @@ private:
   }
 
   static ResultTy munchNumber(const llvm::StringRef &Str) {
-    auto Munch = Str.take_while([](auto C) { return llvm::isDigit(C); });
+    auto Munch = Str.take_while([](auto C) {
+      return llvm::isDigit(C) || C == 'e' || C == 'E' || C == '+' || C == '-';
+    });
+
     return {ConstraintToken(ConstraintToken::ConstraintTokenKind::NUMBER,
-                            Munch.str()),
+                            Munch.lower()),
             Munch.size()};
   }
 
@@ -254,10 +260,37 @@ private:
 //                               ConstraintParser
 //===----------------------------------------------------------------------===//
 
+/// Parse 64-bit integer in decimal or scientific notation.
+static int64_t parseInteger(llvm::StringRef Str,
+                            std::optional<unsigned int> Line = std::nullopt) {
+  if (Str.contains_lower('e')) {
+    // If we encounter scientific notation we try to parse the number as double.
+    if (double Double; !Str.getAsDouble(Double)) {
+      return parseInteger(llvm::formatv("{0:0}", Double).str());
+    }
+  } else if (int64_t Integer; !Str.getAsInteger(10, Integer)) {
+    return Integer;
+  }
+
+  if (Line.has_value()) {
+    llvm::errs() << "Failed to parse integer '" << Str << "' in line "
+                 << Line.value() << ".\n";
+  } else {
+    llvm::errs() << "Failed to parse integer '" << Str << "'.\n";
+  }
+
+  // If parsing failed, we return minimal or maximal value respectively.
+  if (Str.startswith("-")) {
+    return std::numeric_limits<int64_t>::min();
+  }
+  return std::numeric_limits<int64_t>::max();
+}
+
 class ConstraintParser {
 public:
-  explicit ConstraintParser(std::string Cnt)
-      : TokenList(ConstraintLexer(std::move(Cnt)).tokenize()) {}
+  explicit ConstraintParser(std::string Cnt,
+                            std::optional<unsigned int> Line = std::nullopt)
+      : TokenList(ConstraintLexer(std::move(Cnt)).tokenize()), Line(Line) {}
 
   std::unique_ptr<Constraint> buildConstraint() { return parseConstraint(); }
 
@@ -473,7 +506,7 @@ private:
       case ConstraintToken::ConstraintTokenKind::NUMBER:
         assert(peek().getValue().has_value());
         return std::make_unique<PrimaryIntegerConstraint>(
-            std::stoi(*next().getValue()));
+            parseInteger(*next().getValue(), Line));
       case ConstraintToken::ConstraintTokenKind::NOT:
         consume(ConstraintToken::ConstraintTokenKind::NOT);
         return createConstraint<NotConstraint>(NestingLevel + 1,
@@ -495,6 +528,7 @@ private:
   }
 
   ConstraintLexer::TokenListTy TokenList;
+  std::optional<unsigned int> Line;
 };
 
 } // namespace vara::feature
