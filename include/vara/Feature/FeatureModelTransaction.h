@@ -351,14 +351,21 @@ class RemoveConstraintFromModel : public FeatureModelModification {
   friend class RemoveFeatureFromModel;
 
 public:
-  void exec(FeatureModel &FM) override { (*this)(FM); }
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
+    if (auto E = (*this)(FM); !E) {
+      return E.getError();
+    }
+    return Ok();
+  }
 
-  void operator()(FeatureModel &FM) {
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
+    // TODO: Any error handling needed here?
     assert(RemoveConstraint.getParent() == nullptr &&
            "Subtree deletion is not supported");
     UncoupleVisitor UV;
     RemoveConstraint.accept(UV);
     removeConstraint(FM, &RemoveConstraint);
+    return Ok();
   }
 
 private:
@@ -961,7 +968,7 @@ protected:
   void removeConstraintImpl(Constraint &RemoveConstraint) {
     assert(FM && "FeatureModel is null.");
 
-    FeatureModelModification::make_modification<RemoveConstraintFromModel>(
+    FeatureModelModification::makeModification<RemoveConstraintFromModel>(
         RemoveConstraint)(*FM);
   }
 
@@ -1087,7 +1094,7 @@ protected:
   }
 
   void removeConstraintImpl(Constraint &RemoveConstraint) {
-    Modifications.push_back(FeatureModelModification::make_unique_modification<
+    Modifications.push_back(FeatureModelModification::makeUniqueModification<
                             RemoveConstraintFromModel>(RemoveConstraint));
   }
 

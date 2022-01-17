@@ -176,7 +176,7 @@ mergeFeatureModels(FeatureModel &FM1, FeatureModel &FM2, bool Strict) {
                                 bool Strict) {
   // Is there a similar Feature in the original FM
   if (Feature *CMP = FM.getFeature(F.getName())) {
-    if (CompareProperties(*CMP, F, Strict)) {
+    if (compareProperties(*CMP, F, Strict)) {
       // similar feature, maybe add relationship
       auto FRelationship = getFeatureRelationship(F);
       auto CMPRelationship = getFeatureRelationship(*CMP);
