@@ -414,35 +414,39 @@ struct GraphWriter<vara::feature::FeatureModel *> {
     }
   }
 
+  static std::string buildFeatureLabel(vara::feature::Feature *F) {
+    std::stringstream CS;
+    for (const auto &C : F->constraints()) {
+      CS << "<tr><td>" << DOT::EscapeString(C->getRoot()->toHTML())
+         << "</td></tr>";
+    }
+
+    std::stringstream LS;
+    if (F->hasLocations()) {
+      LS << "<hr/>";
+      for (const auto &Location : F->getLocations()) {
+        LS << llvm::formatv("<tr><td><b>{0}</b></td></tr>",
+                            DOT::EscapeString(Location.toString()))
+                  .str();
+      }
+    }
+
+    return llvm::formatv(
+        "<<table align=\"center\" valign=\"middle\" border=\"0\" "
+        "cellborder=\"0\" "
+        "cellpadding=\"5\">{0}{1}{2}</table>>",
+        llvm::formatv("<tr><td><b>{0}</b></td></tr>",
+                      DOT::EscapeString(F->getName().str())),
+        CS.str(), LS.str());
+  }
+
   /// Output \a Feature node with custom attributes.
   void emitNode(NodeRef Node) const {
     std::string Label;
     std::string Shape;
     if (auto *F = llvm::dyn_cast<vara::feature::Feature>(Node); F) {
       Shape = "box";
-      std::stringstream CS;
-      for (const auto &C : F->constraints()) {
-        CS << "<tr><td>" << DOT::EscapeString(C->getRoot()->toHTML())
-           << "</td></tr>";
-      }
-
-      std::stringstream LS;
-      if (F->hasLocations()) {
-        LS << "<hr/>";
-        for (const auto &Location : F->getLocations()) {
-          LS << llvm::formatv("<tr><td><b>{0}</b></td></tr>",
-                              DOT::EscapeString(Location.toString()))
-                    .str();
-        }
-      }
-
-      Label = llvm::formatv(
-          "<<table align=\"center\" valign=\"middle\" border=\"0\" "
-          "cellborder=\"0\" "
-          "cellpadding=\"5\">{0}{1}{2}</table>>",
-          llvm::formatv("<tr><td><b>{0}</b></td></tr>",
-                        DOT::EscapeString(F->getName().str())),
-          CS.str(), LS.str());
+      Label = buildFeatureLabel(F);
     } else {
       Shape = "ellipse";
       if (auto *R = llvm::dyn_cast<vara::feature::Relationship>(Node); R) {
