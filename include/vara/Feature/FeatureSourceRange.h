@@ -149,7 +149,7 @@ public:
       StrS << ":" << Start->toString();
     }
     if (End) {
-      StrS << "-" << End->toString();
+      StrS << "–" << End->toString();
     }
     if (MemberOffset) {
       StrS << " MemberOffset: " << MemberOffset->toString();
