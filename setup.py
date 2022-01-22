@@ -75,7 +75,7 @@ class CMakeBuild(build_ext):
 
 
 setup(name='vara_feature',
-      version='11.1.1',
+      version='11.1.2',
       author='Florian Sattler',
       author_email='sattlerf@cs.uni-saarland.de',
       description='Python bindings for vara-feature library',
