@@ -1,5 +1,5 @@
-#ifndef VARA_SAMPLING_SAMPLINGMETHOD_H
-#define VARA_SAMPLING_SAMPLINGMETHOD_H
+#ifndef VARA_SAMPLING_SAMPLINGMETHODS_H
+#define VARA_SAMPLING_SAMPLINGMETHODS_H
 
 #include <tuple>
 
@@ -9,4 +9,4 @@ std::tuple<double, double, double> getExampleValues();
 
 } // namespace vara::sampling
 
-#endif // VARA_SAMPLING_SAMPLINGMETHOD_H
+#endif // VARA_SAMPLING_SAMPLINGMETHODS_H
