@@ -7,3 +7,6 @@
 [submodule "external/stats"]
 	path = external/stats
 	url = https://github.com/kthohr/stats.git
+[submodule "external/gcem"]
+	path = external/gcem
+	url = https://github.com/kthohr/gcem.git

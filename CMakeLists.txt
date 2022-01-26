@@ -158,6 +158,9 @@ include_directories(include/)
 find_package(LibXml2 REQUIRED)
 include_directories(${LIBXML2_INCLUDE_DIR})
 
+include_directories(external/stats/include)
+include_directories(external/gcem/include/)
+
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
