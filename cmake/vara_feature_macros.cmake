@@ -95,7 +95,7 @@ int main(int argc, char ** argv) {
 std::filesystem::path p(argv[0]);
 return p.string().length(); }
 " STD_FS_NO_LIB_NEEDED)
-  set(CMAKE_REQUIRED_LIBRARIES "stdc++fs ${CMAKE_REQUIRED_LIBRARIES}")
+  set(CMAKE_REQUIRED_LIBRARIES "stdc++fs;${CMAKE_REQUIRED_LIBRARIES}")
   CHECK_CXX_SOURCE_COMPILES("
 #include <filesystem>
 int main(int argc, char ** argv) {
@@ -103,7 +103,7 @@ std::filesystem::path p(argv[0]);
 return p.string().length(); }
 " STD_FS_NEEDS_STDCXXFS)
   set(CMAKE_REQUIRED_LIBRARIES ${OLD_CMAKE_REQUIRED_LIBRARIES})
-  set(CMAKE_REQUIRED_LIBRARIES "c++fs ${CMAKE_REQUIRED_LIBRARIES}")
+  set(CMAKE_REQUIRED_LIBRARIES "c++fs;${CMAKE_REQUIRED_LIBRARIES}")
   CHECK_CXX_SOURCE_COMPILES("
 #include <filesystem>
 int main(int argc, char ** argv) {
@@ -114,8 +114,10 @@ return p.string().length(); }
   set(CMAKE_REQUIRED_FLAGS ${OLD_CMAKE_REQUIRED_FLAGS})
 
   if(${STD_FS_NEEDS_STDCXXFS})
+    message(STATUS "Adding linker argument -lstdc++fs")
     set(${varname} stdc++fs PARENT_SCOPE)
   elseif(${STD_FS_NEEDS_CXXFS})
+    message(WARNING "Adding linker argument -lstdc++fs")
     set(${varname} c++fs PARENT_SCOPE)
   elseif(${STD_FS_NO_LIB_NEEDED})
     set(${varname} "" PARENT_SCOPE)
