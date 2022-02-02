@@ -152,6 +152,7 @@ if (NOT VARA_HAS_STD_FILESYSTEM)
 else ()
   message(STATUS "Using std::filesystem")
 endif ()
+check_std_filesystem_flags(STD_FS_LIB)
 
 include_directories(include/)
 
