@@ -359,9 +359,9 @@ public:
   }
 
   Result<FTErrorCode> operator()(FeatureModel &FM) {
-    // TODO: Any error handling needed here?
-    assert(RemoveConstraint.getParent() == nullptr &&
-           "Subtree deletion is not supported");
+    if (RemoveConstraint.getParent() == nullptr) {
+      return FTErrorCode::CONSTRAINT_MALFORMED;
+    }
     UncoupleVisitor UV;
     RemoveConstraint.accept(UV);
     removeConstraint(FM, &RemoveConstraint);
