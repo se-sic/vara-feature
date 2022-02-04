@@ -87,7 +87,8 @@ public:
       "<!ELEMENT start (line, column)>\n"
       "<!ELEMENT end (line, column)>\n"
       "<!ELEMENT line (#PCDATA)>\n"
-      "<!ELEMENT column (#PCDATA)>";
+      "<!ELEMENT column (#PCDATA)>\n"
+      "<!ELEMENT memberOffset (#PCDATA)>";
 };
 } // namespace vara::feature
 
