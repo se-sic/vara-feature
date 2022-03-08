@@ -7,6 +7,7 @@
 #include "libxml/tree.h"
 
 #include <memory>
+#include <map>
 
 namespace vara::feature {
 
