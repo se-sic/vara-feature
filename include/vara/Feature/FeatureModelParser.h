@@ -6,8 +6,8 @@
 #include "libxml/parser.h"
 #include "libxml/tree.h"
 
-#include <memory>
 #include <map>
+#include <memory>
 
 namespace vara::feature {
 
