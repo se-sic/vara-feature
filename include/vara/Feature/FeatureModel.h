@@ -423,7 +423,7 @@ struct GraphWriter<vara::feature::FeatureModel *> {
 
     std::stringstream LS;
     if (F->hasLocations()) {
-      LS << "<hr>";
+      LS << "<hr/>";
       for (const auto &Location : F->getLocations()) {
         LS << llvm::formatv("<tr><td><b>{0}</b></td></tr>",
                             DOT::EscapeString(Location.toString()))
