@@ -1,10 +1,10 @@
-set(SAMPLING_LIB_SRC
-  SamplingMethods.cpp
+set(SOLVER_LIB_SRC
+  Solver.cpp
 )
 
 set(LLVM_LINK_COMPONENTS
 )
 
 add_vara_library(VaRASolver
-  ${SAMPLING_LIB_SRC}
+  ${SOLVER_LIB_SRC}
 )
