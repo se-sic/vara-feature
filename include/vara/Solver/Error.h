@@ -1,0 +1,47 @@
+#ifndef VARA_SOLVER_ERROR_H_
+#define VARA_SOLVER_ERROR_H_
+
+#include "vara/Utils/Result.h"
+
+namespace vara {
+namespace solver {
+
+enum SolverErrorCode {
+  UNSAT,
+  ALREADY_PRESENT
+};
+
+} // namespace solver
+
+template <>
+class Error<vara::solver::SolverErrorCode> {
+public:
+  Error(vara::solver::SolverErrorCode E) : E(E) {}
+
+  vara::solver::SolverErrorCode operator*() { return E; }
+
+  vara::solver::SolverErrorCode extractError() { return E; }
+
+  operator bool() const { return false; }
+
+  friend llvm::raw_ostream &
+  operator<<(llvm::raw_ostream &OS,
+             const Error<vara::solver::SolverErrorCode> &Error) {
+    switch (Error.E) {
+    case vara::solver::UNSAT:
+      OS << "The current model is unsatisfiable.";
+      break;
+    case vara::solver::ALREADY_PRESENT:
+      OS << "Variable is already present.";
+      break;
+    }
+    return OS;
+  }
+
+private:
+  vara::solver::SolverErrorCode E;
+};
+
+}
+
+#endif // VARA_SOLVER_ERROR_H_
