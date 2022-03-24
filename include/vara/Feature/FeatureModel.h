@@ -8,6 +8,7 @@
 #include "vara/Utils/Result.h"
 
 #include "llvm/ADT/SmallSet.h"
+#include "llvm/ADT/StringMap.h"
 #include "llvm/Support/GraphWriter.h"
 
 #include <algorithm>
