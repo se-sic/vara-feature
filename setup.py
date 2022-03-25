@@ -10,12 +10,14 @@ from distutils.version import LooseVersion
 
 
 class CMakeExtension(Extension):
+
     def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
 
 
 class CMakeBuild(build_ext):
+
     def run(self):
         try:
             out = subprocess.check_output(['cmake', '--version'])
@@ -73,7 +75,7 @@ class CMakeBuild(build_ext):
 
 
 setup(name='vara_feature',
-      version='0.0.5',
+      version='11.1.3',
       author='Florian Sattler',
       author_email='sattlerf@cs.uni-saarland.de',
       description='Python bindings for vara-feature library',

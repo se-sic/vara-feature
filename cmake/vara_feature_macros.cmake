@@ -82,3 +82,40 @@ int main() { return 0; }
 " ${varname})
   set(CMAKE_REQUIRED_FLAGS ${OLD_CMAKE_REQUIRED_FLAGS})
 endfunction()
+
+function(check_std_filesystem_flags varname)
+  # Check if we need to add -lstdc++fs or -lc++fs or nothing
+  set(OLD_CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES})
+  set(OLD_CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
+  set(CMAKE_REQUIRED_FLAGS "-std=c++17 ${CMAKE_REQUIRED_FLAGS}")
+
+  set(STD_FILESYSTEM_TEST_PROG "
+#include <filesystem>
+int main(int argc, char ** argv) {
+std::filesystem::path p(argv[0]);
+return p.string().length(); }
+")
+
+  CHECK_CXX_SOURCE_COMPILES("${STD_FILESYSTEM_TEST_PROG}" STD_FS_NO_LIB_NEEDED)
+  set(CMAKE_REQUIRED_LIBRARIES "stdc++fs;${CMAKE_REQUIRED_LIBRARIES}")
+  CHECK_CXX_SOURCE_COMPILES("${STD_FILESYSTEM_TEST_PROG}" STD_FS_NEEDS_STDCXXFS)
+  set(CMAKE_REQUIRED_LIBRARIES ${OLD_CMAKE_REQUIRED_LIBRARIES})
+  set(CMAKE_REQUIRED_LIBRARIES "c++fs;${CMAKE_REQUIRED_LIBRARIES}")
+  CHECK_CXX_SOURCE_COMPILES("${STD_FILESYSTEM_TEST_PROG}" STD_FS_NEEDS_CXXFS)
+  set(CMAKE_REQUIRED_LIBRARIES ${OLD_CMAKE_REQUIRED_LIBRARIES})
+  set(CMAKE_REQUIRED_FLAGS ${OLD_CMAKE_REQUIRED_FLAGS})
+
+
+  if(${STD_FS_NO_LIB_NEEDED})
+    set(${varname} "" PARENT_SCOPE)
+  elseif(${STD_FS_NEEDS_STDCXXFS})
+    message(STATUS "Adding linker argument -lstdc++fs")
+    set(${varname} stdc++fs PARENT_SCOPE)
+  elseif(${STD_FS_NEEDS_CXXFS})
+    message(STATUS "Adding linker argument -lc++fs")
+    set(${varname} c++fs PARENT_SCOPE)
+  else()
+    message(WARNING "Unknown C++17 compiler - not passing -lstdc++fs")
+    set(${varname} "" PARENT_SCOPE)
+  endif()
+endfunction()
