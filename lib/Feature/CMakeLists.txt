@@ -22,12 +22,6 @@ add_vara_library(VaRAFeature
 target_link_libraries(VaRAFeature
   LINK_PUBLIC
   ${LIBXML2_LIBRARIES}
+  ${STD_FS_LIB}
   )
-
-if (HAS_STD_EXPERIMENTAL_FILESYSTEM OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  target_link_libraries(VaRAFeature
-    LINK_PUBLIC
-    stdc++fs
-    )
-endif ()
 

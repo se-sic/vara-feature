@@ -152,11 +152,15 @@ if (NOT VARA_HAS_STD_FILESYSTEM)
 else ()
   message(STATUS "Using std::filesystem")
 endif ()
+check_std_filesystem_flags(STD_FS_LIB)
 
 include_directories(include/)
 
 find_package(LibXml2 REQUIRED)
 include_directories(${LIBXML2_INCLUDE_DIR})
+
+include_directories(external/stats/include)
+include_directories(external/gcem/include/)
 
 add_subdirectory(include)
 add_subdirectory(lib)

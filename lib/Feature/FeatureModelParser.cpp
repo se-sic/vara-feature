@@ -1,14 +1,16 @@
 #include "vara/Feature/FeatureModelParser.h"
 #include "vara/Feature/ConstraintParser.h"
 #include "vara/Feature/Feature.h"
+#include "vara/Feature/FeatureSourceRange.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include "vara/Utils/VariantUtil.h"
+
 #include "SxfmConstants.h"
 #include "XmlConstants.h"
-#include "vara/Utils/VariantUtil.h"
 
 #include <iostream>
 #include <regex>
@@ -129,7 +131,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
   std::optional<FeatureSourceRange::FeatureSourceLocation> End;
   enum FeatureSourceRange::Category Category;
-  std::optional<std::string> MemberOffset;
+  llvm::Optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
 
   std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
       xmlGetProp(Head, XmlConstants::CATEGORY), xmlFree);
@@ -148,18 +150,17 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   for (xmlNode *Child = Head->children; Child; Child = Child->next) {
     if (Child->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
-        Path = fs::path(trim(
-            reinterpret_cast<char *>(std::unique_ptr<xmlChar, void (*)(void *)>(
-                                         xmlNodeGetContent(Child), xmlFree)
-                                         .get())));
-
+        Path = fs::path(trim(reinterpret_cast<char *>(
+            UniqueXmlChar(xmlNodeGetContent(Child), xmlFree).get())));
       } else if (!xmlStrcmp(Child->name, XmlConstants::START)) {
         Start = createFeatureSourceLocation(Child);
       } else if (!xmlStrcmp(Child->name, XmlConstants::END)) {
         End = createFeatureSourceLocation(Child);
       } else if (!xmlStrcmp(Child->name, XmlConstants::MEMBEROFFSET)) {
         MemberOffset =
-            std::string(reinterpret_cast<char *>(xmlNodeGetContent(Child)));
+            FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+                trim(reinterpret_cast<char *>(
+                    UniqueXmlChar(xmlNodeGetContent(Child), xmlFree).get())));
       }
     }
   }
