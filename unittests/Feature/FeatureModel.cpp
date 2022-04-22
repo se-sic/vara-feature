@@ -221,6 +221,34 @@ TEST_F(FeatureModelTest, dfs) {
 }
 
 //===----------------------------------------------------------------------===//
+//                    FeatureModelGetChildren Tests
+//===----------------------------------------------------------------------===//
+
+class FeatureModelGetChildrenTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    FeatureModelBuilder B;
+    B.makeFeature<BinaryFeature>("a");
+    B.addEdge("a", "aa")->makeFeature<BinaryFeature>("aa");
+    B.addEdge("a", "ab")->makeFeature<BinaryFeature>("ab");
+    B.emplaceRelationship(Relationship::RelationshipKind::RK_OR, "ab");
+    B.addEdge("ab", "aba")->makeFeature<BinaryFeature>("aba");
+    B.addEdge("ab", "abb")->makeFeature<BinaryFeature>("abb");
+    B.makeFeature<BinaryFeature>("b");
+    B.emplaceRelationship(Relationship::RelationshipKind::RK_ALTERNATIVE, "b");
+    B.addEdge("b", "ba")->makeFeature<BinaryFeature>("ba");
+    B.addEdge("b", "bb")->makeFeature<BinaryFeature>("bb");
+    B.makeFeature<BinaryFeature>("c");
+    B.addEdge("c", "ca")->makeFeature<NumericFeature>("ca", std::pair(1, 5));
+    B.addEdge("c", "cb")->makeFeature<NumericFeature>("cb", std::pair(1, 5));
+    FM = B.buildFeatureModel();
+    ASSERT_TRUE(FM);
+  }
+
+  std::unique_ptr<FeatureModel> FM;
+};
+
+//===----------------------------------------------------------------------===//
 //                    FeatureModelConsistencyChecker Tests
 //===----------------------------------------------------------------------===//
 

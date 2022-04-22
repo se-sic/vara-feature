@@ -22,7 +22,8 @@ enum FTErrorCode {
   MISSING_FEATURE,
   MISSING_MODEL,
   MISSING_PARENT,
-  NON_LEAF_NODE
+  NON_LEAF_NODE,
+  CONSTRAINT_MALFORMED
 };
 
 } // namespace feature
@@ -66,6 +67,8 @@ public:
     case vara::feature::NON_LEAF_NODE:
       OS << "Not a leaf node.";
       break;
+    case vara::feature::CONSTRAINT_MALFORMED:
+      OS << "Constraint is malformed.";
     }
     return OS;
   }

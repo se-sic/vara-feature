@@ -287,6 +287,15 @@ private:
     return Constraints.back().get();
   }
 
+  void removeConstraint(Constraint *C) {
+    // TODO se-sic/VaRA#701 implement tree based comparison
+    Constraints.erase(
+        std::find_if(Constraints.begin(), Constraints.end(),
+                     [C](const std::unique_ptr<Constraint> &UniC) {
+                       return UniC.get() == C;
+                     }));
+  }
+
   /// Delete a \a Feature.
   void removeFeature(Feature &Feature);
 

@@ -138,6 +138,10 @@ public:
     }
   }
 
+  void removeConstraint(Constraint &RemoveConstraint) {
+    this->removeConstraintImpl(RemoveConstraint);
+  }
+
   void setName(std::string Name) { return this->setNameImpl(std::move(Name)); }
 
   void setCommit(std::string Commit) {
@@ -252,6 +256,14 @@ protected:
     return FM.addConstraint(std::move(Constraint));
   }
 
+  static void removeConstraint(FeatureModel &FM, Constraint *R) {
+    FM.removeConstraint(R);
+  }
+
+  static void removeConstraint(Feature &F, Constraint *C) {
+    F.removeConstraintNonPreserve(C);
+  }
+
   static void setName(FeatureModel &FM, std::string NewName) {
     FM.setName(std::move(NewName));
   }
@@ -308,8 +320,12 @@ public:
       return ALREADY_PRESENT;
     }
     if (Parent) {
-      setParent(*InsertedFeature, *Parent);
-      addEdge(*Parent, *InsertedFeature);
+      FeatureTreeNode *ParentNode = Parent;
+      if (!Parent->getChildren<Relationship>(1).empty()) {
+        ParentNode = *(Parent->getChildren<Relationship>(1).begin());
+      }
+      setParent(*InsertedFeature, *ParentNode);
+      addEdge(*ParentNode, *InsertedFeature);
     } else if (FM.getRoot()) {
       setParent(*InsertedFeature, *FM.getRoot());
       addEdge(*FM.getRoot(), *InsertedFeature);
@@ -324,6 +340,46 @@ private:
 
   std::unique_ptr<Feature> NewFeature;
   Feature *Parent;
+};
+
+//===----------------------------------------------------------------------===//
+//                       RemoveConstraintFromModel
+//===----------------------------------------------------------------------===//
+
+class RemoveConstraintFromModel : public FeatureModelModification {
+  friend class FeatureModelModification;
+  friend class RemoveFeatureFromModel;
+
+public:
+  Result<FTErrorCode> exec(FeatureModel &FM) override {
+    if (auto E = (*this)(FM); !E) {
+      return E.getError();
+    }
+    return Ok();
+  }
+
+  Result<FTErrorCode> operator()(FeatureModel &FM) {
+    if (RemoveConstraint.getParent() == nullptr) {
+      return FTErrorCode::CONSTRAINT_MALFORMED;
+    }
+    UncoupleVisitor UV;
+    RemoveConstraint.accept(UV);
+    removeConstraint(FM, &RemoveConstraint);
+    return Ok();
+  }
+
+private:
+  RemoveConstraintFromModel(Constraint &RemoveConstraint)
+      : RemoveConstraint(RemoveConstraint) {}
+
+  class UncoupleVisitor : public ConstraintVisitor {
+  public:
+    void visit(PrimaryFeatureConstraint *C) override {
+      removeConstraint(*C->getFeature(), C);
+    }
+  };
+
+  Constraint &RemoveConstraint;
 };
 
 //===----------------------------------------------------------------------===//
@@ -369,6 +425,16 @@ public:
       if (!F->getChildren<Relationship>().empty()) {
         removeRelationship(FM, *F->getChildren<Relationship>().begin());
       }
+    }
+
+    // TODO (se-passau/VaRA#790): different approches to handle constraints
+    while (!F->constraints().empty()) {
+      Constraint *C = *(F->constraints().begin());
+      while (C->getParent()) {
+        C = C->getParent();
+      }
+      RemoveConstraintFromModel RCFM(*C);
+      RCFM(FM);
     }
 
     removeEdge(*F->getParent(), *F);
@@ -899,6 +965,13 @@ protected:
         std::move(NewConstraint))(*FM);
   }
 
+  void removeConstraintImpl(Constraint &RemoveConstraint) {
+    assert(FM && "FeatureModel is null.");
+
+    FeatureModelModification::makeModification<RemoveConstraintFromModel>(
+        RemoveConstraint)(*FM);
+  }
+
   void setNameImpl(std::string Name) {
     assert(FM && "FeatureModel is null.");
 
@@ -1018,6 +1091,11 @@ protected:
     Modifications.push_back(
         FeatureModelModification::makeUniqueModification<AddConstraintToModel>(
             std::move(NewConstraint)));
+  }
+
+  void removeConstraintImpl(Constraint &RemoveConstraint) {
+    Modifications.push_back(FeatureModelModification::makeUniqueModification<
+                            RemoveConstraintFromModel>(RemoveConstraint));
   }
 
   void setNameImpl(std::string Name) {
