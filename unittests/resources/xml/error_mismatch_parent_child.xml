@@ -2,33 +2,41 @@
 <!DOCTYPE vm SYSTEM "vm.dtd">
 <!--Model is intentionally broken!-->
 <vm name="Children" root="test">
-  <binaryOptions>
-    <!--root, C, and Error do not agree on parent-child relationship-->
-    <configurationOption>
-      <name>root</name>
-      <children>
-        <options>A</options>
-        <options>B</options>
-        <options>C</options>
-      </children>
-      <optional>False</optional>
-    </configurationOption>
-    <configurationOption>
-      <name>A</name>
-      <parent>root</parent>
-      <optional>True</optional>
-    </configurationOption>
-    <configurationOption>
-      <name>B</name>
-      <parent>root</parent>
-      <optional>True</optional>
-    </configurationOption>
-    <configurationOption>
-      <name>C</name>
-      <parent>A</parent>
-      <optional>True</optional>
-    </configurationOption>
-  </binaryOptions>
-  <numericOptions/>
-  <booleanConstraints/>
+    <binaryOptions>
+        <!--root, C, and Error do not agree on parent-child relationship-->
+        <configurationOption>
+            <name>root</name>
+            <children>
+                <options>A</options>
+                <options>B</options>
+                <options>C</options>
+            </children>
+            <optional>False</optional>
+        </configurationOption>
+        <configurationOption>
+            <name>A</name>
+            <parent>root</parent>
+            <optional>True</optional>
+        </configurationOption>
+        <configurationOption>
+            <name>B</name>
+            <parent>root</parent>
+            <optional>True</optional>
+        </configurationOption>
+        <configurationOption>
+            <name>C</name>
+            <parent>root</parent>
+            <children>
+                <options>Error</options>
+            </children>
+            <optional>True</optional>
+        </configurationOption>
+        <configurationOption>
+            <name>Error</name>
+            <parent>root</parent>
+            <optional>True</optional>
+        </configurationOption>
+    </binaryOptions>
+    <numericOptions/>
+    <booleanConstraints/>
 </vm>
