@@ -57,8 +57,8 @@ public:
   }
 
   std::optional<std::string> getParentName(const std::string &FeatureName) {
-    if (Parents.find(FeatureName) != Parents.end()) {
-      return Parents[FeatureName];
+    if (auto P = Parents.find(FeatureName); P != Parents.end()) {
+      return P->getValue();
     }
     return std::nullopt;
   }
