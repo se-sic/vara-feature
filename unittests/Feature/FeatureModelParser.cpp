@@ -33,12 +33,9 @@ TEST(FeatureModelParser, outOfOrder) {
   EXPECT_TRUE(buildFeatureModel("test_out_of_order.xml"));
 }
 
-// TODO: We currently are unable to detect, whether the parent of a node lists
-//  this node as a child in XML.
-//
-// TEST(FeatureModelParser, errorMismatchParentChild) {
-//   EXPECT_FALSE(buildFeatureModel("error_mismatch_parent_child.xml"));
-// }
+TEST(FeatureModelParser, errorMismatchParentChild) {
+  EXPECT_FALSE(buildFeatureModel("error_mismatch_parent_child.xml"));
+}
 
 TEST(FeatureModelParser, errorMissingChild) {
   EXPECT_FALSE(buildFeatureModel("error_missing_child.xml"));

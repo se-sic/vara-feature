@@ -45,15 +45,28 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
         Opt = Cnt == "True";
       } else if (!xmlStrcmp(Head->name, XmlConstants::PARENT)) {
+        if (auto P = FMB.getParentName(Name); P && *P != Cnt) {
+          llvm::errs() << llvm::formatv(
+              "Ambiguous edge to {0} from either '{1}' or '{2}'.\n", Name, *P,
+              Cnt);
+          return Error(INCONSISTENT);
+        }
         FMB.addEdge(Cnt, Name);
       } else if (!xmlStrcmp(Head->name, XmlConstants::CHILDREN)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
-              FMB.addEdge(Name, std::string(reinterpret_cast<char *>(
-                                    std::unique_ptr<xmlChar, void (*)(void *)>(
-                                        xmlNodeGetContent(Child), xmlFree)
-                                        .get())));
+              auto FeatureName = std::string(reinterpret_cast<char *>(
+                  std::unique_ptr<xmlChar, void (*)(void *)>(
+                      xmlNodeGetContent(Child), xmlFree)
+                      .get()));
+              if (auto P = FMB.getParentName(FeatureName); P && *P != Name) {
+                llvm::errs() << llvm::formatv(
+                    "Ambiguous edge to {0} from either '{1}' or '{2}'.\n",
+                    FeatureName, *P, Name);
+                return Error(INCONSISTENT);
+              }
+              FMB.addEdge(Name, FeatureName);
             }
           }
         }

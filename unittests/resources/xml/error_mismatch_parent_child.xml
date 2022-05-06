@@ -25,15 +25,7 @@
     </configurationOption>
     <configurationOption>
       <name>C</name>
-      <parent>root</parent>
-      <children>
-        <options>Error</options>
-      </children>
-      <optional>True</optional>
-    </configurationOption>
-    <configurationOption>
-      <name>Error</name>
-      <parent>root</parent>
+      <parent>A</parent>
       <optional>True</optional>
     </configurationOption>
   </binaryOptions>
