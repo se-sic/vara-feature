@@ -231,7 +231,10 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25aa85a96d6454c7bf82bc8a8a353741fad">MISSING_FEATURE</a>, 
 <a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a99cb21c9134e7e2df78d10f7a363befb">MISSING_MODEL</a>, 
 <a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a96319bd00dd462adacfdf90f7cb26219">MISSING_PARENT</a>, 
-<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a8f87e93b5ad1ab65ca5f176f401e9707">NON_LEAF_NODE</a>
+<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a3b4e6a6a27390636f55300bb32e07b3d">MISSING_CHILD</a>, 
+<br />
+&#160;&#160;<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a8f87e93b5ad1ab65ca5f176f401e9707">NON_LEAF_NODE</a>, 
+<a class="el" href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a04d60e18f3f6b016526d899965d0012f">RECURSIVE_EDGE</a>
 <br />
  }</td></tr>
 <tr class="separator:aa872ca7d15a64455c6b1d5cfa2e81b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -361,7 +364,9 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25aa85a96d6454c7bf82bc8a8a353741fad"></a>MISSING_FEATURE&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a99cb21c9134e7e2df78d10f7a363befb"></a>MISSING_MODEL&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a96319bd00dd462adacfdf90f7cb26219"></a>MISSING_PARENT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a3b4e6a6a27390636f55300bb32e07b3d"></a>MISSING_CHILD&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a8f87e93b5ad1ab65ca5f176f401e9707"></a>NON_LEAF_NODE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa872ca7d15a64455c6b1d5cfa2e81b25a04d60e18f3f6b016526d899965d0012f"></a>RECURSIVE_EDGE&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="Error_8h_source.html#l00017">17</a> of file <a class="el" href="Error_8h_source.html">Error.h</a>.</p>
@@ -650,7 +655,7 @@ Variables</h2></td></tr>
 <p>Decide whether feature A excludes B. </p>
 <p>Beware that this method only detects very simple trees with binary excludes. </p>
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8cpp_source.html#l00259">259</a> of file <a class="el" href="FeatureModelParser_8cpp_source.html">FeatureModelParser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelParser_8cpp_source.html#l00272">272</a> of file <a class="el" href="FeatureModelParser_8cpp_source.html">FeatureModelParser.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="Feature_8h_source.html#l00148">vara::feature::Feature::excludes()</a>.</p>
 
@@ -812,7 +817,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00109">109</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00296">vara::feature::FeatureModelXmlParser::buildFeatureModel()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00309">vara::feature::FeatureModelXmlParser::buildFeatureModel()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00114">loadFeatureModelFromBuffer()</a>.</p>
 
@@ -1052,7 +1057,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Vector of all FeatureVariants, that cannot be deleted </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l01127">1127</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l01144">1144</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
 <p class="reference">References <a class="el" href="FeatureModel_8h_source.html#l00149">vara::feature::FeatureModel::begin()</a>, and <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00088">removeFeatures()</a>.</p>
 
@@ -1112,7 +1117,7 @@ Variables</h2></td></tr>
 
 <p class="reference">References <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00070">canBeDeletedRecursively()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00052">fvIsLeaf()</a>, and <a class="el" href="FeatureModelTransaction_8h_source.html#l00050">vara::feature::FeatureModelTransaction&lt; CopyMode &gt;::openTransaction()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8h_source.html#l01127">removeFeatures()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModelTransaction_8h_source.html#l01144">removeFeatures()</a>.</p>
 
 </div>
 </div>
@@ -1282,7 +1287,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="FeatureModel_8cpp_source.html#l00129">129</a> of file <a class="el" href="FeatureModel_8cpp_source.html">FeatureModel.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00345">vara::feature::FeatureModelXmlParser::verifyFeatureModel()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureModelParser_8cpp_source.html#l00358">vara::feature::FeatureModelXmlParser::verifyFeatureModel()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="FeatureModel_8cpp_source.html#l00134">verifyFeatureModelFromBuffer()</a>.</p>
 
@@ -1342,7 +1347,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 24 2022 11:41:07 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 7 2022 20:29:37 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
