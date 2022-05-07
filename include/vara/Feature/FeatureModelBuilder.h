@@ -51,8 +51,17 @@ public:
 
   FeatureModelBuilder *addEdge(const std::string &ParentName,
                                const std::string &FeatureName) {
+    Parents[FeatureName] = ParentName;
     ModelBuilder.addChild(ParentName, FeatureName);
     return this;
+  }
+
+  [[nodiscard]] std::optional<std::string>
+  getParentName(const std::string &FeatureName) const {
+    if (const auto P = Parents.find(FeatureName); P != Parents.end()) {
+      return P->getValue();
+    }
+    return std::nullopt;
   }
 
   FeatureModelBuilder *emplaceRelationship(Relationship::RelationshipKind RK,
@@ -94,6 +103,7 @@ public:
 
 private:
   std::unique_ptr<FeatureModel> FM;
+  llvm::StringMap<std::string> Parents;
   // Modifications to initialize features as children of root.
   FeatureModelTransaction<detail::ModifyTransactionMode> FeatureBuilder;
   // Modifications to build tree structure and set FM meta information.

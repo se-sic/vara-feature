@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<!--Model is intentionally broken!-->
+<vm name="Children" root="test">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <children>
+        <options>A</options>
+        <options>B</options>
+        <options>C</options>
+      </children>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>A</name>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>B</name>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <!--implied option MISSING does not exist-->
+      <name>C</name>
+      <parent>root</parent>
+      <impliedOptions>
+        <options>MISSING</options>
+      </impliedOptions>
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions/>
+  <booleanConstraints/>
+</vm>

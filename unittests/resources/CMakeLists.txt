@@ -12,6 +12,12 @@ set(FEATURE_LIB_TEST_FILES
   sxfm/test_wrong_indentation.sxfm
   sxfm/test_wrong_xml_format.sxfm
   sxfm/test_wrong_constraint_format.sxfm
+  xml/error_mismatch_parent_child.xml
+  xml/error_missing_child.xml
+  xml/error_missing_exclude.xml
+  xml/error_missing_implication.xml
+  xml/error_missing_parent.xml
+  xml/error_root_root.xml
   xml/test.xml
   xml/test_children.xml
   xml/test_excludes.xml

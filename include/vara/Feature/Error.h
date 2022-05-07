@@ -22,7 +22,9 @@ enum FTErrorCode {
   MISSING_FEATURE,
   MISSING_MODEL,
   MISSING_PARENT,
-  NON_LEAF_NODE
+  MISSING_CHILD,
+  NON_LEAF_NODE,
+  RECURSIVE_EDGE
 };
 
 } // namespace feature
@@ -60,11 +62,17 @@ public:
     case vara::feature::MISSING_PARENT:
       OS << "Missing parent of node.";
       break;
+    case vara::feature::MISSING_CHILD:
+      OS << "Missing child of node.";
+      break;
     case vara::feature::MISSING_MODEL:
       OS << "Missing a feature model.";
       break;
     case vara::feature::NON_LEAF_NODE:
       OS << "Not a leaf node.";
+      break;
+    case vara::feature::RECURSIVE_EDGE:
+      OS << "Recursive edge.";
       break;
     }
     return OS;

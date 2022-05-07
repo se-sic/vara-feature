@@ -80,7 +80,7 @@ public:
 
   [[nodiscard]] virtual std::string toHTML() const { return toString(); }
 
-  virtual void accept(ConstraintVisitor &V) = 0;
+  virtual bool accept(ConstraintVisitor &V) = 0;
 
 private:
   const ConstraintKind Kind;
@@ -107,7 +107,7 @@ public:
     return RightOperand.get();
   }
 
-  void accept(ConstraintVisitor &V) override;
+  bool accept(ConstraintVisitor &V) override;
 
 protected:
   std::unique_ptr<Constraint> LeftOperand;
@@ -519,7 +519,7 @@ public:
 
   Constraint *getOperand() { return Operand.get(); }
 
-  void accept(ConstraintVisitor &V) override;
+  bool accept(ConstraintVisitor &V) override;
 
 protected:
   std::unique_ptr<Constraint> Operand;
@@ -587,7 +587,7 @@ public:
     return C->getKind() == ConstraintKind::CK_INTEGER;
   }
 
-  void accept(ConstraintVisitor &V) override;
+  bool accept(ConstraintVisitor &V) override;
 
 private:
   int64_t Value;
@@ -621,7 +621,7 @@ public:
     return C->getKind() == ConstraintKind::CK_FEATURE;
   }
 
-  void accept(ConstraintVisitor &V) override;
+  bool accept(ConstraintVisitor &V) override;
 
 private:
   std::variant<Feature *, std::unique_ptr<Feature>> FV;
@@ -633,16 +633,19 @@ class ConstraintVisitor {
 public:
   virtual ~ConstraintVisitor() = default;
 
-  virtual void visit(BinaryConstraint *C) {
-    C->getLeftOperand()->accept(*this);
-    C->getRightOperand()->accept(*this);
+  virtual bool visit(BinaryConstraint *C) {
+    bool LHS = C->getLeftOperand()->accept(*this);
+    bool RHS = C->getRightOperand()->accept(*this);
+    return LHS && RHS;
   }
 
-  virtual void visit(UnaryConstraint *C) { C->getOperand()->accept(*this); }
+  virtual bool visit(UnaryConstraint *C) {
+    return C->getOperand()->accept(*this);
+  }
 
-  virtual void visit(PrimaryIntegerConstraint *C) {}
+  virtual bool visit(PrimaryIntegerConstraint *C) { return true; }
 
-  virtual void visit(PrimaryFeatureConstraint *C) {}
+  virtual bool visit(PrimaryFeatureConstraint *C) { return true; }
 };
 
 } // namespace vara::feature
