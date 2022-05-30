@@ -46,6 +46,8 @@ if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
   add_compile_options(-fPIC)
 endif ()
 
+option(VARA_FEATURE_BUILD_SOLVER_Z3 "Build z3 solver for the use in vara-feature" FALSE)
+
 option(VARA_FEATURE_BUILD_DOC "Generate documentation" FALSE)
 
 # Extra debug warning flags
@@ -175,6 +177,10 @@ endif ()
 if (${VARA_FEATURE_BUILD_DOC})
   add_subdirectory(docs)
 endif()
+
+if (${VARA_FEATURE_BUILD_SOLVER_Z3})
+	find_package(Z3 4.8.10 REQUIRED)
+endif ()
 
 if (VARA_FEATURE_IN_TREE)
   # Set llvm distributed includes for gtest header
