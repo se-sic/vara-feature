@@ -159,7 +159,9 @@ public:
     return End.has_value() ? &End.value() : nullptr;
   }
 
-  [[nodiscard]] bool hasMemberOffset() const { return MemberOffset.has_value(); }
+  [[nodiscard]] bool hasMemberOffset() const {
+    return MemberOffset.has_value();
+  }
   [[nodiscard]] FeatureMemberOffset *getMemberOffset() {
     return MemberOffset.has_value() ? &MemberOffset.value() : nullptr;
   }
