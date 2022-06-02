@@ -109,13 +109,14 @@ TEST(FeatureModelParser, scientific) {
 
 TEST(FeatureModelParser, memberOffset) {
   auto FM = buildFeatureModel("test_member_offset.xml");
-  EXPECT_TRUE(FM);
+  ASSERT_TRUE(FM);
 
   auto *Feature = FM->getFeature("A");
   for (auto &Loc : Feature->getLocations()) {
-    EXPECT_TRUE(Loc.hasMemberOffset());
-    EXPECT_EQ(Loc.getMemberOffset()->memberName(), "methodName");
-    EXPECT_EQ(Loc.getMemberOffset()->className(), "className");
+    ASSERT_TRUE(Loc.hasMemberOffset());
+    EXPECT_EQ(Loc.getMemberOffset()->depth(), 1);
+    EXPECT_EQ((*Loc.getMemberOffset())[0], "className");
+    EXPECT_EQ((*Loc.getMemberOffset())[1], "methodName");
   }
 }
 

@@ -4,7 +4,7 @@
 
 namespace vara::feature {
 
-TEST(FeatureSourceRange, comparison) {
+TEST(FeatureSourceLocation, comparison) {
   auto SelfLCO = FeatureSourceRange::FeatureSourceLocation(3, 4);
   auto OtherLCO = FeatureSourceRange::FeatureSourceLocation(3, 4);
 
@@ -18,7 +18,7 @@ TEST(FeatureSourceRange, full) {
       FeatureSourceRange::Category::inessential,
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           "class::memberOffset")
-          .getValue());
+          .value());
 
   EXPECT_EQ(L.getPath(), fs::current_path());
   EXPECT_EQ(L.getStart()->getLineNumber(), 1);
@@ -60,43 +60,26 @@ TEST(FeatureSourceLocation, basicSetter) {
   EXPECT_EQ(TestLCO.getColumnOffset(), 5);
 }
 
-TEST(FeatureSourceLocation, comparison) {
-  auto SelfLCO = FeatureSourceRange::FeatureSourceLocation(3, 4);
-  auto OtherLCO = FeatureSourceRange::FeatureSourceLocation(3, 4);
-
-  EXPECT_EQ(SelfLCO, OtherLCO);
-}
-
-TEST(FeatureMemberOffset, offsetFormatCheck) {
-  EXPECT_TRUE(FeatureSourceRange::FeatureMemberOffset::isInMemberOffsetFormat(
-      "foo::bar"));
-  EXPECT_TRUE(FeatureSourceRange::FeatureMemberOffset::isInMemberOffsetFormat(
-      "class::member"));
-
-  EXPECT_FALSE(FeatureSourceRange::FeatureMemberOffset::isInMemberOffsetFormat(
-      "foo:bar"));
-  EXPECT_FALSE(FeatureSourceRange::FeatureMemberOffset::isInMemberOffsetFormat(
-      "classMember"));
-  EXPECT_FALSE(FeatureSourceRange::FeatureMemberOffset::isInMemberOffsetFormat(
-      "class::class::member"));
-}
-
 TEST(FeatureMemberOffset, testCreationFactoryMethod) {
-  auto FMO = FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
-      "class::member");
+  EXPECT_TRUE(
+      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+          "::member"));
+  EXPECT_TRUE(
+      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+          "foo::member"));
+  EXPECT_TRUE(
+      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+          "foo::bar::member"));
 
-  EXPECT_TRUE(FMO);
-  EXPECT_EQ(FMO.getValue().fullMemberOffset(), "class::member");
-
-  EXPECT_EQ(FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
-                "foo:bar"),
-            llvm::None);
-  EXPECT_EQ(FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
-                "classMember"),
-            llvm::None);
-  EXPECT_EQ(FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
-                "class::class::member"),
-            llvm::None);
+  EXPECT_FALSE(
+      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+          "foo:bar"));
+  EXPECT_FALSE(
+      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+          "member"));
+  EXPECT_FALSE(
+      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+          "foo::"));
 }
 
 TEST(FeatureMemberOffset, basicAccessor) {
@@ -104,7 +87,7 @@ TEST(FeatureMemberOffset, basicAccessor) {
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           "class::member");
 
-  EXPECT_EQ(Member->fullMemberOffset().compare("class::member"), 0);
+  EXPECT_EQ(Member->toString().compare("class::member"), 0);
 }
 
 TEST(FeatureMemberOffset, indivitualAccessors) {
@@ -112,21 +95,10 @@ TEST(FeatureMemberOffset, indivitualAccessors) {
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           "class::member");
 
-  EXPECT_EQ(Member->className(), "class");
-  EXPECT_EQ(Member->memberName(), "member");
-}
+  ASSERT_TRUE(Member.has_value());
 
-TEST(FeatureMemberOffset, basicSetter) {
-  auto Member =
-      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
-          "class::member");
-  Member->setMemberOffset("class::setMemberOffset");
-
-  EXPECT_EQ(Member->fullMemberOffset(), "class::setMemberOffset");
-
-  Member->setMemberOffset(
-      "onlyMemberOffsetPart"); // don't override with wrong format
-  EXPECT_EQ(Member->fullMemberOffset(), "class::setMemberOffset");
+  EXPECT_EQ(Member.value()[0], "class");
+  EXPECT_EQ(Member.value()[1], "member");
 }
 
 TEST(FeatureMemberOffset, comparison) {
@@ -138,12 +110,27 @@ TEST(FeatureMemberOffset, comparison) {
   auto Member2 =
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           MemString2);
+  auto Member3 =
+      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+          MemString2);
 
-  EXPECT_NE(Member1.getValue(), Member2.getValue());
+  ASSERT_TRUE(Member1.has_value());
+  ASSERT_TRUE(Member2.has_value());
+  ASSERT_TRUE(Member3.has_value());
 
-  Member2->setMemberOffset(MemString1);
+  EXPECT_NE(Member1.value(), Member2.value());
+  EXPECT_NE(Member1.value(), Member3.value());
+  EXPECT_EQ(Member2.value(), Member3.value());
+}
 
-  EXPECT_EQ(Member1.getValue(), Member2.getValue());
+TEST(FeatureMemberOffset, depth) {
+  auto MemOff =
+      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+          "Foo::Bar::Member");
+
+  ASSERT_TRUE(MemOff.has_value());
+
+  EXPECT_EQ(MemOff.value().depth(), 2);
 }
 
 TEST(FeatureSourceRange, basicAccessors) {
@@ -174,35 +161,40 @@ TEST(FeatureSourceRange, onlyEnd) {
   EXPECT_TRUE(L.hasEnd());
 }
 
-TEST(FeatureSourceRange, equality) {
-  const auto *Path1 = "path1";
-  const auto MemberOffset1 =
+TEST(FeatureSourceRange, comparison) {
+  const auto MemOff1 =
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           "class::memberOffset1");
-  auto Fsl1start = FeatureSourceRange::FeatureSourceLocation(1, 2);
-  auto Fsl1end = FeatureSourceRange::FeatureSourceLocation(1, 20);
-  EXPECT_TRUE(MemberOffset1);
-  auto L1 = FeatureSourceRange(Path1, Fsl1start, Fsl1end,
-                               FeatureSourceRange::Category::inessential,
-                               MemberOffset1.getValue());
-  const auto *Path2 = "path2";
-  const auto MemberOffset2 =
+  ASSERT_TRUE(MemOff1.has_value());
+
+  const auto MemOff2 =
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           "class::memberOffset2");
-  auto Fsl2start = FeatureSourceRange::FeatureSourceLocation(1, 2);
-  auto Fsl2end = FeatureSourceRange::FeatureSourceLocation(1, 20);
-  EXPECT_TRUE(MemberOffset2);
-  auto L2 = FeatureSourceRange(Path2, Fsl2start, Fsl2end,
-                               FeatureSourceRange::Category::inessential,
-                               MemberOffset2.getValue());
-  EXPECT_NE(L1, L2);
+  ASSERT_TRUE(MemOff2.has_value());
 
-  L2.setPath(Path1);
-  EXPECT_NE(L1, L2);
+  const auto MemOff3 =
+      FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
+          "class::memberOffset2");
+  ASSERT_TRUE(MemOff3.has_value());
 
-  EXPECT_TRUE(L2.hasMemberOffset());
-  L2.getMemberOffset()->setMemberOffset("class::memberOffset1");
-  EXPECT_EQ(L1, L2);
+  auto L1 = FeatureSourceRange(
+      "path1", FeatureSourceRange::FeatureSourceLocation(1, 2),
+      FeatureSourceRange::FeatureSourceLocation(1, 20),
+      FeatureSourceRange::Category::inessential, MemOff1.value());
+
+  auto L2 = FeatureSourceRange(
+      "path2", FeatureSourceRange::FeatureSourceLocation(1, 2),
+      FeatureSourceRange::FeatureSourceLocation(1, 20),
+      FeatureSourceRange::Category::inessential, MemOff2.value());
+
+  auto L3 = FeatureSourceRange(
+      "path2", FeatureSourceRange::FeatureSourceLocation(1, 2),
+      FeatureSourceRange::FeatureSourceLocation(1, 20),
+      FeatureSourceRange::Category::inessential, MemOff3.value());
+
+  EXPECT_NE(L1, L2);
+  EXPECT_NE(L1, L3);
+  EXPECT_EQ(L2, L3);
 }
 
 TEST(FeatureSourceRange, clone) {
@@ -212,7 +204,7 @@ TEST(FeatureSourceRange, clone) {
       FeatureSourceRange::Category::inessential,
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           "class::memberOffset")
-          .getValue());
+          .value());
 
   auto Clone = FeatureSourceRange(*FSR);
   FSR.reset();
