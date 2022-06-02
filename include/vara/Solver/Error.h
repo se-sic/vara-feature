@@ -7,6 +7,8 @@ namespace vara {
 namespace solver {
 
 enum SolverErrorCode {
+  NOT_IMPLEMENTED,
+  NOT_SUPPORTED,
   UNSAT,
   ALREADY_PRESENT
 };
@@ -28,6 +30,12 @@ public:
   operator<<(llvm::raw_ostream &OS,
              const Error<vara::solver::SolverErrorCode> &Error) {
     switch (Error.E) {
+    case vara::solver::NOT_IMPLEMENTED:
+      OS << "This method is not implemented yet.";
+      break;
+    case vara::solver::NOT_SUPPORTED:
+      OS << "This method is not supported.";
+      break;
     case vara::solver::UNSAT:
       OS << "The current model is unsatisfiable.";
       break;

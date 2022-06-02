@@ -88,7 +88,7 @@ public:
   /// \return an error if, for instance, not all constraints could be parsed yet
   /// because of missing variables. Otherwise, it contains a boolean whether the
   /// current constraint system is solvable (\c true) or not (\c false).
-  virtual Result<SolverErrorCode, bool> hasValidConfigurations() = 0;
+  virtual Result<SolverErrorCode, bool *> hasValidConfigurations() = 0;
 
   /// Returns the number of valid configurations of the current constraint
   /// system (i.e., its features and its constraints). In principle, this is a
@@ -96,7 +96,7 @@ public:
   /// \return an error if the number of valid configurations can not be retried.
   /// This can be the case if there are still constraints left that were not
   /// included into the solver because of missing variables.
-  virtual Result<SolverErrorCode, u_int64_t> getNumberValidConfigurations() = 0;
+  virtual Result<SolverErrorCode, u_int64_t *> getNumberValidConfigurations() = 0;
 
   /// This method returns the next configuration or an error in case of an
   /// error. \return the next configuration or an error (e.g., if it is
@@ -115,7 +115,7 @@ public:
   /// \return an error if an error occurs while retrieving the configurations.
   /// Otherwise, it will return the configurations.
   virtual Result<SolverErrorCode,
-                 std::vector<std::unique_ptr<vara::feature::Configuration>>>
+                 std::vector<std::unique_ptr<vara::feature::Configuration>> *>
   getAllValidConfigurations() = 0;
 };
 
@@ -152,15 +152,17 @@ public:
   Result<SolverErrorCode>
   maximizeConfiguration(const feature::Configuration &Config) override;
 
-  bool hasValidConfigurations() override;
+  Result<SolverErrorCode, bool *> hasValidConfigurations() override;
 
-  Result<SolverErrorCode, u_int64_t> getNumberValidConfigurations() override;
+  Result<SolverErrorCode, u_int64_t *> getNumberValidConfigurations() override;
 
   Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getNextConfiguration() override;
 
+  Result<SolverErrorCode> resetConfigurationIterator() override;
+
   Result<SolverErrorCode,
-         std::vector<std::unique_ptr<vara::feature::Configuration>>>
+         std::vector<std::unique_ptr<vara::feature::Configuration>> *>
   getAllValidConfigurations() override;
 
 private:
