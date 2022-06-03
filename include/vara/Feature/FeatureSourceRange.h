@@ -89,7 +89,7 @@ public:
     className(std::optional<size_t> Nested = std::nullopt) const {
       if (Nested.has_value()) {
         assert(Nested.value() < Class.size());
-        return Class[Nested.value()];
+        return Class[Class.size() - Nested.value() - 1];
       }
       std::stringstream StrS;
       StrS << Class[0];

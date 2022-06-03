@@ -98,8 +98,8 @@ TEST(FeatureMemberOffset, indivitualAccessors) {
   ASSERT_TRUE(Member.has_value());
 
   EXPECT_EQ(Member.value().className(), "foo::bar");
-  EXPECT_EQ(Member.value().className(0), "foo");
-  EXPECT_EQ(Member.value().className(1), "bar");
+  EXPECT_EQ(Member.value().className(0), "bar");
+  EXPECT_EQ(Member.value().className(1), "foo");
   EXPECT_EQ(Member.value().memberName(), "member");
 }
 
