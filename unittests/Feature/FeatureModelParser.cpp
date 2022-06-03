@@ -114,9 +114,8 @@ TEST(FeatureModelParser, memberOffset) {
   auto *Feature = FM->getFeature("A");
   for (auto &Loc : Feature->getLocations()) {
     ASSERT_TRUE(Loc.hasMemberOffset());
-    EXPECT_EQ(Loc.getMemberOffset()->depth(), 1);
-    EXPECT_EQ((*Loc.getMemberOffset())[0], "className");
-    EXPECT_EQ((*Loc.getMemberOffset())[1], "methodName");
+    EXPECT_EQ(Loc.getMemberOffset()->className(), "className");
+    EXPECT_EQ(Loc.getMemberOffset()->memberName(), "methodName");
   }
 }
 

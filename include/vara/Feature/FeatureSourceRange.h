@@ -74,48 +74,56 @@ public:
   class FeatureMemberOffset {
   public:
     static std::optional<FeatureMemberOffset>
-    createFeatureMemberOffset(const std::string &MemberOffset) {
-      auto FMemOff = FeatureMemberOffset(MemberOffset);
-      if (FMemOff.Names.size() > 1 && !FMemOff.Names.back().empty()) {
-        return FMemOff;
+    createFeatureMemberOffset(llvm::StringRef MemberOffset) {
+      auto RSplit = MemberOffset.rsplit("::");
+      if (RSplit.second.empty()) {
+        // wrong format
+        return std::nullopt;
       }
-      return std::nullopt;
+      llvm::SmallVector<llvm::StringRef, 1> Class;
+      RSplit.first.split(Class, "::");
+      return FeatureMemberOffset(Class, RSplit.second);
     }
 
-    [[nodiscard]] std::size_t depth() const { return Names.size() - 1; }
-
-    llvm::StringRef operator[](std::size_t Index) const {
-      assert(Index <= depth());
-      return Names[Index];
-    }
-
-    inline bool operator==(const FeatureMemberOffset &Other) const {
-      return Names == Other.Names;
-    }
-
-    inline bool operator!=(const FeatureMemberOffset &Other) const {
-      return Names != Other.Names;
-    }
-
-    [[nodiscard]] std::string toString() const {
+    [[nodiscard]] std::string
+    className(std::optional<size_t> Nested = std::nullopt) const {
+      if (Nested.has_value()) {
+        assert(Nested.value() < Class.size());
+        return Class[Nested.value()];
+      }
       std::stringstream StrS;
-      StrS << Names[0];
-      for (std::size_t Idx = 1; Idx < Names.size(); ++Idx) {
-        StrS << "::" << Names[Idx];
+      StrS << Class[0];
+      for (size_t Idx = 1; Idx < Class.size(); ++Idx) {
+        StrS << "::" << Class[Idx];
       }
       return StrS.str();
     }
 
+    [[nodiscard]] std::string memberName() const { return Member; }
+
+    [[nodiscard]] std::string toString() const {
+      return className() + "::" + memberName();
+    }
+
+    inline bool operator==(const FeatureMemberOffset &Other) const {
+      return Member == Other.Member && Class == Other.Class;
+    }
+
+    inline bool operator!=(const FeatureMemberOffset &Other) const {
+      return !(*this == Other);
+    }
+
   private:
-    FeatureMemberOffset(const std::string &MemberOffset) {
-      llvm::SmallVector<llvm::StringRef, 2> Split;
-      llvm::StringRef(MemberOffset).split(Split, "::");
-      for (const auto Ref : Split) {
-        Names.push_back(Ref.str());
+    FeatureMemberOffset(const llvm::SmallVector<llvm::StringRef, 1> &Class,
+                        llvm::StringRef Member)
+        : Member(Member.str()) {
+      for (const auto C : Class) {
+        this->Class.push_back(C.str());
       }
     }
 
-    llvm::SmallVector<std::string, 2> Names;
+    llvm::SmallVector<std::string, 1> Class;
+    std::string Member;
   };
 
   FeatureSourceRange(
