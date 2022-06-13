@@ -73,16 +73,19 @@ public:
 
   class FeatureMemberOffset {
   public:
-    static std::optional<FeatureMemberOffset>
+    [[nodiscard]] static std::optional<FeatureMemberOffset>
     createFeatureMemberOffset(llvm::StringRef MemberOffset) {
-      auto RSplit = MemberOffset.rsplit("::");
-      if (RSplit.second.empty()) {
-        // wrong format
+      auto Split = splitMemberOffset(MemberOffset);
+      if (!Split.has_value()) {
         return std::nullopt;
       }
-      llvm::SmallVector<llvm::StringRef, 1> Class;
-      RSplit.first.split(Class, "::");
-      return FeatureMemberOffset(Class, RSplit.second);
+      return FeatureMemberOffset(splitClass(Split.value().first),
+                                 Split.value().second);
+    }
+
+    [[nodiscard]] static bool
+    isMemberOffsetFormat(llvm::StringRef PossibleMemberOffset) {
+      return splitMemberOffset(PossibleMemberOffset).has_value();
     }
 
     [[nodiscard]] std::string
@@ -116,10 +119,23 @@ public:
   private:
     FeatureMemberOffset(const llvm::SmallVector<llvm::StringRef, 1> &Class,
                         llvm::StringRef Member)
-        : Member(Member.str()) {
-      for (const auto C : Class) {
-        this->Class.push_back(C.str());
+        : Class{Class.begin(), Class.end()}, Member(Member.str()) {}
+
+    static std::optional<std::pair<llvm::StringRef, llvm::StringRef>>
+    splitMemberOffset(llvm::StringRef MemberOffset) {
+      auto Split = MemberOffset.rsplit("::");
+      if (Split.second.empty()) {
+        // wrong format
+        return std::nullopt;
       }
+      return Split;
+    }
+
+    static llvm::SmallVector<llvm::StringRef, 1>
+    splitClass(llvm::StringRef Class) {
+      llvm::SmallVector<llvm::StringRef, 1> Split;
+      Class.split(Split, "::");
+      return Split;
     }
 
     llvm::SmallVector<std::string, 1> Class;

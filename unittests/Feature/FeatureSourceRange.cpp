@@ -60,7 +60,23 @@ TEST(FeatureSourceLocation, basicSetter) {
   EXPECT_EQ(TestLCO.getColumnOffset(), 5);
 }
 
-TEST(FeatureMemberOffset, testCreationFactoryMethod) {
+TEST(FeatureMemberOffset, testFormatMethod) {
+  EXPECT_TRUE(FeatureSourceRange::FeatureMemberOffset::isMemberOffsetFormat(
+      "::member"));
+  EXPECT_TRUE(FeatureSourceRange::FeatureMemberOffset::isMemberOffsetFormat(
+      "foo::member"));
+  EXPECT_TRUE(FeatureSourceRange::FeatureMemberOffset::isMemberOffsetFormat(
+      "foo::bar::member"));
+
+  EXPECT_FALSE(
+      FeatureSourceRange::FeatureMemberOffset::isMemberOffsetFormat("foo:bar"));
+  EXPECT_FALSE(
+      FeatureSourceRange::FeatureMemberOffset::isMemberOffsetFormat("member"));
+  EXPECT_FALSE(
+      FeatureSourceRange::FeatureMemberOffset::isMemberOffsetFormat("foo::"));
+}
+
+TEST(FeatureMemberOffset, testFactoryMethod) {
   EXPECT_TRUE(
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           "::member"));
@@ -90,7 +106,7 @@ TEST(FeatureMemberOffset, basicAccessor) {
   EXPECT_EQ(Member->toString(), "foo::bar::member");
 }
 
-TEST(FeatureMemberOffset, indivitualAccessors) {
+TEST(FeatureMemberOffset, individualAccessors) {
   auto Member =
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           "foo::bar::member");
