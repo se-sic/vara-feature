@@ -144,7 +144,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
   std::optional<FeatureSourceRange::FeatureSourceLocation> End;
   enum FeatureSourceRange::Category Category;
-  llvm::Optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
+  std::optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
 
   std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
       xmlGetProp(Head, XmlConstants::CATEGORY), xmlFree);
