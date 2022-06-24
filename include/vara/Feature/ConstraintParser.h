@@ -47,7 +47,7 @@ public:
   };
 
   ConstraintToken(ConstraintTokenKind Kind) : Kind(Kind) {}
-  ConstraintToken(ConstraintTokenKind Kind, std::string Value)
+  ConstraintToken(ConstraintTokenKind Kind, const std::string &Value)
       : Kind(Kind), Value(Value) {}
   virtual ~ConstraintToken() = default;
 
