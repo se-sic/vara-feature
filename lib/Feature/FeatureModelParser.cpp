@@ -772,19 +772,20 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
 
 std::optional<int>
 FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {
-  std::optional<int> Result = std::optional<int>();
+  std::optional<int> Result;
   if (CardinalityString == "*") {
     // We use -1 as our magic integer to indicate that the cardinality is a
     // wildcard.
     Result = SxfmConstants::WILDCARD;
   } else {
     // Convert the string into an integer in a safe way
-    long LongNumber;
-    if (!llvm::to_integer(CardinalityString, LongNumber, 10)) {
+    int CardinalityValue;
+    if (!llvm::to_integer(CardinalityString, CardinalityValue, 10)) {
       llvm::errs() << llvm::formatv(
-          "The cardinality: '{0}' was not an integer.\n", CardinalityString);
+          "The cardinality: '{0}' was not an {1}-bit integer.\n",
+          CardinalityString, sizeof(CardinalityValue) * 8);
     } else {
-      Result = LongNumber;
+      Result = CardinalityValue;
     }
   }
 
