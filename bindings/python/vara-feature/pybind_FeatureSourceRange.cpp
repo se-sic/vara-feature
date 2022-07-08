@@ -24,26 +24,29 @@ void init_feature_location_module(py::module &M) {
        return vf::FeatureSourceRange(fs::path(std::move(Path)));
      }))
       .def(py::init(
-          [](std::string Path,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
-                 Start) {
-            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start);
+          [](const std::string &Path,
+             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &Start) {
+            return vf::FeatureSourceRange(fs::path(Path), Start);
           }))
       .def(py::init(
-          [](std::string Path,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> Start,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End) {
+          [](const std::string &Path,
+             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &Start,
+             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &End) {
             return vf::FeatureSourceRange(
-                fs::path(std::move(Path)), Start, End,
+                fs::path(Path), Start, End,
                 vf::FeatureSourceRange::Category::necessary);
           }))
       .def(py::init(
-          [](std::string Path,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> Start,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End,
+          [](const std::string &Path,
+             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &Start,
+             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &End,
              vf::FeatureSourceRange::Category Category) {
-            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start, End,
-                                          Category);
+            return vf::FeatureSourceRange(fs::path(Path), Start, End, Category);
           }))
       .def_property(
           "path",
