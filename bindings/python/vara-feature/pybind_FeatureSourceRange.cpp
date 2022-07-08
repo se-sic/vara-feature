@@ -5,8 +5,6 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 
-#include <optional>
-
 #if __has_include(<filesystem>)
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -25,26 +23,21 @@ void init_feature_location_module(py::module &M) {
      }))
       .def(py::init(
           [](const std::string &Path,
-             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
-                 &Start) {
+             const vf::FeatureSourceRange::FeatureSourceLocation &Start) {
             return vf::FeatureSourceRange(fs::path(Path), Start);
           }))
       .def(py::init(
           [](const std::string &Path,
-             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
-                 &Start,
-             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
-                 &End) {
+             const vf::FeatureSourceRange::FeatureSourceLocation &Start,
+             const vf::FeatureSourceRange::FeatureSourceLocation &End) {
             return vf::FeatureSourceRange(
                 fs::path(Path), Start, End,
                 vf::FeatureSourceRange::Category::necessary);
           }))
       .def(py::init(
           [](const std::string &Path,
-             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
-                 &Start,
-             const llvm::Optional<vf::FeatureSourceRange::FeatureSourceLocation>
-                 &End,
+             const vf::FeatureSourceRange::FeatureSourceLocation &Start,
+             const vf::FeatureSourceRange::FeatureSourceLocation &End,
              vf::FeatureSourceRange::Category Category) {
             return vf::FeatureSourceRange(fs::path(Path), Start, End, Category);
           }))
