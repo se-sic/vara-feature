@@ -47,13 +47,15 @@ public:
   };
 
   ConstraintToken(ConstraintTokenKind Kind) : Kind(Kind) {}
-  ConstraintToken(ConstraintTokenKind Kind, std::string Value)
+  ConstraintToken(ConstraintTokenKind Kind, const std::string &Value)
       : Kind(Kind), Value(Value) {}
   virtual ~ConstraintToken() = default;
 
   [[nodiscard]] ConstraintTokenKind getKind() const { return Kind; };
 
-  [[nodiscard]] llvm::Optional<std::string> getValue() const { return Value; }
+  [[nodiscard]] llvm::Optional<const std::string> getValue() const {
+    return Value;
+  }
 
   [[nodiscard]] PrecedenceTy calcPrecedence() const {
     switch (Kind) {
@@ -87,7 +89,7 @@ public:
 
 private:
   const ConstraintTokenKind Kind;
-  const llvm::Optional<std::string> Value{llvm::None};
+  const llvm::Optional<const std::string> Value{llvm::None};
 };
 
 //===----------------------------------------------------------------------===//
