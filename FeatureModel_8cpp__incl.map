@@ -1,52 +1,51 @@
 <map id="lib/Feature/FeatureModel.cpp" name="lib/Feature/FeatureModel.cpp">
-<area shape="rect" id="node1" title=" " alt="" coords="1044,5,1255,32"/>
-<area shape="rect" id="node2" href="$FeatureModel_8h.html" title=" " alt="" coords="1066,348,1275,375"/>
-<area shape="rect" id="node40" title=" " alt="" coords="859,423,944,449"/>
-<area shape="rect" id="node43" href="$FeatureModelBuilder_8h.html" title=" " alt="" coords="1161,169,1359,211"/>
-<area shape="rect" id="node45" href="$FeatureModelParser_8h.html" title=" " alt="" coords="855,80,1052,121"/>
-<area shape="rect" id="node49" title=" " alt="" coords="1212,87,1383,114"/>
-<area shape="rect" id="node50" title=" " alt="" coords="1407,87,1620,114"/>
-<area shape="rect" id="node3" href="$Constraint_8h.html" title=" " alt="" coords="799,505,985,531"/>
-<area shape="rect" id="node10" title=" " alt="" coords="1922,676,1982,703"/>
-<area shape="rect" id="node12" href="$Error_8h.html" title=" " alt="" coords="442,423,593,449"/>
-<area shape="rect" id="node13" href="$Result_8h.html" title=" " alt="" coords="337,505,479,531"/>
-<area shape="rect" id="node19" href="$Feature_8h.html" title=" " alt="" coords="1835,423,2005,449"/>
-<area shape="rect" id="node29" title=" " alt="" coords="1713,594,1869,621"/>
-<area shape="rect" id="node37" href="$Relationship_8h.html" title=" " alt="" coords="2375,423,2577,449"/>
-<area shape="rect" id="node38" title=" " alt="" coords="1425,423,1589,449"/>
-<area shape="rect" id="node39" title=" " alt="" coords="1613,423,1811,449"/>
-<area shape="rect" id="node41" title=" " alt="" coords="1133,423,1208,449"/>
-<area shape="rect" id="node42" title=" " alt="" coords="1233,423,1295,449"/>
-<area shape="rect" id="node4" title=" " alt="" coords="1531,594,1688,621"/>
-<area shape="rect" id="node5" title=" " alt="" coords="843,676,1061,703"/>
-<area shape="rect" id="node6" title=" " alt="" coords="263,676,332,703"/>
-<area shape="rect" id="node7" title=" " alt="" coords="523,594,600,621"/>
-<area shape="rect" id="node8" title=" " alt="" coords="661,676,736,703"/>
-<area shape="rect" id="node9" title=" " alt="" coords="760,676,819,703"/>
-<area shape="rect" id="node11" title=" " alt="" coords="1155,594,1223,621"/>
+<area shape="rect" id="node1" title=" " alt="" coords="1416,5,1627,32"/>
+<area shape="rect" id="node2" href="$FeatureModel_8h.html" title=" " alt="" coords="1035,348,1245,375"/>
+<area shape="rect" id="node39" title=" " alt="" coords="2700,423,2785,449"/>
+<area shape="rect" id="node42" href="$FeatureModelBuilder_8h.html" title=" " alt="" coords="913,169,1111,211"/>
+<area shape="rect" id="node44" href="$FeatureModelParser_8h.html" title=" " alt="" coords="1140,80,1337,121"/>
+<area shape="rect" id="node48" title=" " alt="" coords="1584,87,1755,114"/>
+<area shape="rect" id="node49" title=" " alt="" coords="1779,87,1992,114"/>
+<area shape="rect" id="node3" href="$Constraint_8h.html" title=" " alt="" coords="764,505,951,531"/>
+<area shape="rect" id="node10" title=" " alt="" coords="1342,676,1402,703"/>
+<area shape="rect" id="node12" href="$Error_8h.html" title=" " alt="" coords="285,423,435,449"/>
+<area shape="rect" id="node13" href="$Result_8h.html" title=" " alt="" coords="394,505,537,531"/>
+<area shape="rect" id="node19" href="$Feature_8h.html" title=" " alt="" coords="1589,423,1758,449"/>
+<area shape="rect" id="node28" title=" " alt="" coords="2827,594,2983,621"/>
+<area shape="rect" id="node36" href="$Relationship_8h.html" title=" " alt="" coords="2269,423,2470,449"/>
+<area shape="rect" id="node37" title=" " alt="" coords="1178,423,1342,449"/>
+<area shape="rect" id="node38" title=" " alt="" coords="1366,423,1565,449"/>
+<area shape="rect" id="node40" title=" " alt="" coords="940,423,1015,449"/>
+<area shape="rect" id="node41" title=" " alt="" coords="1039,423,1102,449"/>
+<area shape="rect" id="node4" title=" " alt="" coords="1431,594,1588,621"/>
+<area shape="rect" id="node5" title=" " alt="" coords="1080,676,1299,703"/>
+<area shape="rect" id="node6" title=" " alt="" coords="385,676,455,703"/>
+<area shape="rect" id="node7" title=" " alt="" coords="649,594,727,621"/>
+<area shape="rect" id="node8" title=" " alt="" coords="783,676,857,703"/>
+<area shape="rect" id="node9" title=" " alt="" coords="959,676,1017,703"/>
+<area shape="rect" id="node11" title=" " alt="" coords="1005,594,1073,621"/>
 <area shape="rect" id="node14" href="$VariantUtil_8h.html" title=" " alt="" coords="5,594,176,621"/>
-<area shape="rect" id="node16" title=" " alt="" coords="1299,594,1506,621"/>
-<area shape="rect" id="node17" title=" " alt="" coords="419,594,499,621"/>
+<area shape="rect" id="node16" title=" " alt="" coords="1199,594,1406,621"/>
+<area shape="rect" id="node17" title=" " alt="" coords="368,594,448,621"/>
 <area shape="rect" id="node18" title=" " alt="" coords="251,594,343,621"/>
 <area shape="rect" id="node15" title=" " alt="" coords="61,676,120,703"/>
-<area shape="rect" id="node20" href="$FeatureSourceRange_8h.html" title=" " alt="" coords="878,587,1079,628"/>
-<area shape="rect" id="node27" href="$FeatureTreeNode_8h.html" title=" " alt="" coords="1751,497,1935,539"/>
-<area shape="rect" id="node30" title=" " alt="" coords="2359,594,2550,621"/>
-<area shape="rect" id="node31" title=" " alt="" coords="2575,594,2713,621"/>
-<area shape="rect" id="node32" title=" " alt="" coords="2737,594,2857,621"/>
-<area shape="rect" id="node33" title=" " alt="" coords="2211,594,2253,621"/>
-<area shape="rect" id="node34" title=" " alt="" coords="2278,594,2335,621"/>
-<area shape="rect" id="node35" title=" " alt="" coords="2396,505,2556,531"/>
-<area shape="rect" id="node36" title=" " alt="" coords="2213,505,2371,531"/>
-<area shape="rect" id="node21" title=" " alt="" coords="1185,676,1317,703"/>
-<area shape="rect" id="node22" title=" " alt="" coords="1341,676,1494,703"/>
-<area shape="rect" id="node23" title=" " alt="" coords="1518,676,1687,703"/>
-<area shape="rect" id="node24" title=" " alt="" coords="1712,676,1893,703"/>
-<area shape="rect" id="node25" title=" " alt="" coords="1085,676,1160,703"/>
-<area shape="rect" id="node26" title=" " alt="" coords="582,676,637,703"/>
-<area shape="rect" id="node28" title=" " alt="" coords="1995,594,2187,621"/>
-<area shape="rect" id="node44" href="$FeatureModelTransaction_8h.html" title=" " alt="" coords="651,259,848,300"/>
-<area shape="rect" id="node46" title=" " alt="" coords="967,177,1086,203"/>
-<area shape="rect" id="node47" title=" " alt="" coords="762,177,867,203"/>
-<area shape="rect" id="node48" title=" " alt="" coords="892,177,943,203"/>
+<area shape="rect" id="node20" href="$FeatureSourceRange_8h.html" title=" " alt="" coords="1613,587,1814,628"/>
+<area shape="rect" id="node26" href="$FeatureTreeNode_8h.html" title=" " alt="" coords="1879,497,2063,539"/>
+<area shape="rect" id="node29" title=" " alt="" coords="2254,594,2445,621"/>
+<area shape="rect" id="node30" title=" " alt="" coords="2469,594,2608,621"/>
+<area shape="rect" id="node31" title=" " alt="" coords="2632,594,2752,621"/>
+<area shape="rect" id="node32" title=" " alt="" coords="2105,594,2148,621"/>
+<area shape="rect" id="node33" title=" " alt="" coords="2173,594,2230,621"/>
+<area shape="rect" id="node34" title=" " alt="" coords="1593,505,1753,531"/>
+<area shape="rect" id="node35" title=" " alt="" coords="2290,505,2449,531"/>
+<area shape="rect" id="node21" title=" " alt="" coords="1642,676,1774,703"/>
+<area shape="rect" id="node22" title=" " alt="" coords="1798,676,1951,703"/>
+<area shape="rect" id="node23" title=" " alt="" coords="1975,676,2145,703"/>
+<area shape="rect" id="node24" title=" " alt="" coords="1436,676,1617,703"/>
+<area shape="rect" id="node25" title=" " alt="" coords="606,676,661,703"/>
+<area shape="rect" id="node27" title=" " alt="" coords="1889,594,2081,621"/>
+<area shape="rect" id="node43" href="$FeatureModelTransaction_8h.html" title=" " alt="" coords="527,259,724,300"/>
+<area shape="rect" id="node45" title=" " alt="" coords="1210,177,1329,203"/>
+<area shape="rect" id="node46" title=" " alt="" coords="1353,177,1458,203"/>
+<area shape="rect" id="node47" title=" " alt="" coords="1135,177,1185,203"/>
 </map>

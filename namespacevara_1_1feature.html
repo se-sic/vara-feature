@@ -241,9 +241,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aaf84022565687825f32764516861fdb5"><td class="memItemLeft" align="right" valign="top">static int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#aaf84022565687825f32764516861fdb5">parseInteger</a> (llvm::StringRef Str, std::optional&lt; unsigned int &gt; Line=std::nullopt)</td></tr>
-<tr class="memdesc:aaf84022565687825f32764516861fdb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse 64-bit integer in decimal or scientific notation.  <a href="namespacevara_1_1feature.html#aaf84022565687825f32764516861fdb5">More...</a><br /></td></tr>
-<tr class="separator:aaf84022565687825f32764516861fdb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacd1d1412d7ec37be06a2276df667b87"><td class="memItemLeft" align="right" valign="top">static int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#aacd1d1412d7ec37be06a2276df667b87">parseInteger</a> (llvm::StringRef Str, llvm::Optional&lt; unsigned int &gt; Line=llvm::None)</td></tr>
+<tr class="memdesc:aacd1d1412d7ec37be06a2276df667b87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse 64-bit integer in decimal or scientific notation.  <a href="namespacevara_1_1feature.html#aacd1d1412d7ec37be06a2276df667b87">More...</a><br /></td></tr>
+<tr class="separator:aacd1d1412d7ec37be06a2276df667b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae34c88f0a2ae9fbdddf2c29bb08dd407"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#ae34c88f0a2ae9fbdddf2c29bb08dd407">loadFeatureModel</a> (llvm::StringRef Path)</td></tr>
 <tr class="separator:ae34c88f0a2ae9fbdddf2c29bb08dd407"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27f08d68bdfeefeb61f975069ce63c31"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a27f08d68bdfeefeb61f975069ce63c31">verifyFeatureModel</a> (llvm::StringRef Path)</td></tr>
@@ -296,11 +296,11 @@ Functions</h2></td></tr>
 <tr class="separator:aea3aa6c277b7fcc2bf231f82997edf1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5047753263b2893843e70a172ed09925"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a5047753263b2893843e70a172ed09925">getActualFeature</a> (<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM, <a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;FV)</td></tr>
 <tr class="separator:a5047753263b2893843e70a172ed09925"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1eca3327b4dbb49edc6dc07dca6a9b5"><td class="memItemLeft" align="right" valign="top">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#ad1eca3327b4dbb49edc6dc07dca6a9b5">fvIsLeaf</a> (<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM, <a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;FV)</td></tr>
-<tr class="separator:ad1eca3327b4dbb49edc6dc07dca6a9b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a348ca49f0b1717cedc4cc70ee509ee4d"><td class="memItemLeft" align="right" valign="top">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a348ca49f0b1717cedc4cc70ee509ee4d">canBeDeletedRecursively</a> (<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM, <a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;FV, const <a class="el" href="lib_2Sampling_2CMakeLists_8txt.html#a5c7476e7164489e0a0b0f3964fc69109">std::set</a>&lt; <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> * &gt; &amp;OtherFeatures)</td></tr>
-<tr class="memdesc:a348ca49f0b1717cedc4cc70ee509ee4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if in recursive mode the provided <a class="el" href="classvara_1_1feature_1_1Feature.html" title="Base class for components of FeatureModel.">Feature</a> can be deleted or not.  <a href="namespacevara_1_1feature.html#a348ca49f0b1717cedc4cc70ee509ee4d">More...</a><br /></td></tr>
-<tr class="separator:a348ca49f0b1717cedc4cc70ee509ee4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adacca9134b293ec4f0dc894f274dd153"><td class="memItemLeft" align="right" valign="top">llvm::Optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#adacca9134b293ec4f0dc894f274dd153">fvIsLeaf</a> (<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM, <a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;FV)</td></tr>
+<tr class="separator:adacca9134b293ec4f0dc894f274dd153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76545a310ce24f0c914739ed6202c5ef"><td class="memItemLeft" align="right" valign="top">llvm::Optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a76545a310ce24f0c914739ed6202c5ef">canBeDeletedRecursively</a> (<a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;FM, <a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;FV, const <a class="el" href="lib_2Sampling_2CMakeLists_8txt.html#a5c7476e7164489e0a0b0f3964fc69109">std::set</a>&lt; <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> * &gt; &amp;OtherFeatures)</td></tr>
+<tr class="memdesc:a76545a310ce24f0c914739ed6202c5ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if in recursive mode the provided <a class="el" href="classvara_1_1feature_1_1Feature.html" title="Base class for components of FeatureModel.">Feature</a> can be deleted or not.  <a href="namespacevara_1_1feature.html#a76545a310ce24f0c914739ed6202c5ef">More...</a><br /></td></tr>
+<tr class="separator:a76545a310ce24f0c914739ed6202c5ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c5049fad466ba21796451818ab9d72b"><td class="memItemLeft" align="right" valign="top">const unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b">charToUChar</a> (const char *CP)</td></tr>
 <tr class="separator:a7c5049fad466ba21796451818ab9d72b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -515,14 +515,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a348ca49f0b1717cedc4cc70ee509ee4d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a348ca49f0b1717cedc4cc70ee509ee4d">&#9670;&nbsp;</a></span>canBeDeletedRecursively()</h2>
+<a id="a76545a310ce24f0c914739ed6202c5ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76545a310ce24f0c914739ed6202c5ef">&#9670;&nbsp;</a></span>canBeDeletedRecursively()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::optional&lt;bool&gt; vara::feature::canBeDeletedRecursively </td>
+          <td class="memname">llvm::Optional&lt;bool&gt; vara::feature::canBeDeletedRecursively </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;&#160;</td>
           <td class="paramname"><em>FM</em>, </td>
@@ -685,14 +685,14 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ad1eca3327b4dbb49edc6dc07dca6a9b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad1eca3327b4dbb49edc6dc07dca6a9b5">&#9670;&nbsp;</a></span>fvIsLeaf()</h2>
+<a id="adacca9134b293ec4f0dc894f274dd153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adacca9134b293ec4f0dc894f274dd153">&#9670;&nbsp;</a></span>fvIsLeaf()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::optional&lt;bool&gt; vara::feature::fvIsLeaf </td>
+          <td class="memname">llvm::Optional&lt;bool&gt; vara::feature::fvIsLeaf </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classvara_1_1feature_1_1FeatureModel.html">FeatureModel</a> &amp;&#160;</td>
           <td class="paramname"><em>FM</em>, </td>
@@ -919,8 +919,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="aaf84022565687825f32764516861fdb5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaf84022565687825f32764516861fdb5">&#9670;&nbsp;</a></span>parseInteger()</h2>
+<a id="aacd1d1412d7ec37be06a2276df667b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacd1d1412d7ec37be06a2276df667b87">&#9670;&nbsp;</a></span>parseInteger()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -937,8 +937,8 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::optional&lt; unsigned int &gt;&#160;</td>
-          <td class="paramname"><em>Line</em> = <code>std::nullopt</code>&#160;</td>
+          <td class="paramtype">llvm::Optional&lt; unsigned int &gt;&#160;</td>
+          <td class="paramname"><em>Line</em> = <code>llvm::None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -955,7 +955,7 @@ Variables</h2></td></tr>
 
 <p>Parse 64-bit integer in decimal or scientific notation. </p>
 
-<p class="definition">Definition at line <a class="el" href="ConstraintParser_8h_source.html#l00264">264</a> of file <a class="el" href="ConstraintParser_8h_source.html">ConstraintParser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ConstraintParser_8h_source.html#l00266">266</a> of file <a class="el" href="ConstraintParser_8h_source.html">ConstraintParser.h</a>.</p>
 
 </div>
 </div>
@@ -1347,7 +1347,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 28 2022 09:11:05 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Aug 22 2022 10:05:30 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

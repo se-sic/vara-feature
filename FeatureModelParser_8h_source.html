@@ -296,7 +296,7 @@ $(function() {
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment">  ///</span></div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment">  /// \returns the cardinality of the given string and is empty if the</span></div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="comment">  /// format of the string is wrong</span></div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> std::optional&lt;std::tuple&lt;int, int&gt;&gt;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> llvm::Optional&lt;std::tuple&lt;int, int&gt;&gt;</div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  extractCardinality(llvm::StringRef StringToExtractFrom);</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="comment"></span> </div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="comment">  /// This method parses the given cardinality and returns an optional.</span></div>
@@ -308,20 +308,21 @@ $(function() {
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment">  ///</span></div>
 <div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment">  /// \returns an optional that contains no integer in case of failure or</span></div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment">  /// UINT_MAX for wildcard, or the number itself.</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> std::optional&lt;int&gt; parseCardinality(llvm::StringRef CardinalityString);</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160; </div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  std::string Sxfm;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  <a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> FMB;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  std::string Indentation = <span class="stringliteral">&quot;\t&quot;</span>;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  std::map&lt;std::string, std::string&gt; IdentifierMap;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;};</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160; </div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="preprocessor">#endif // VARA_FEATURE_FEATUREMODELPARSER_H</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment"></span>  <span class="keyword">static</span> llvm::Optional&lt;int&gt;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  parseCardinality(llvm::StringRef CardinalityString);</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160; </div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  std::string Sxfm;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <a class="code" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> FMB;</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  std::string Indentation = <span class="stringliteral">&quot;\t&quot;</span>;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  std::map&lt;std::string, std::string&gt; IdentifierMap;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;};</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160; </div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="preprocessor">#endif // VARA_FEATURE_FEATUREMODELPARSER_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassvara_1_1Error_html"><div class="ttname"><a href="classvara_1_1Error.html">vara::Error</a></div><div class="ttdef"><b>Definition:</b> <a href="Result_8h_source.html#l00062">Result.h:62</a></div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation.html">vara::feature::FeatureSourceRange::FeatureSourceLocation</a></div><div class="ttdef"><b>Definition:</b> <a href="FeatureSourceRange_8h_source.html#l00033">FeatureSourceRange.h:33</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange_1_1FeatureSourceLocation.html">vara::feature::FeatureSourceRange::FeatureSourceLocation</a></div><div class="ttdef"><b>Definition:</b> <a href="FeatureSourceRange_8h_source.html#l00032">FeatureSourceRange.h:32</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_ab0e06b1fc74dd6592534b3232855f2a1"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#ab0e06b1fc74dd6592534b3232855f2a1">vara::feature::FeatureModelParser::FeatureModelParser</a></div><div class="ttdeci">FeatureModelParser()=default</div></div>
 <div class="ttc" id="anamespacevara_1_1feature_html"><div class="ttname"><a href="namespacevara_1_1feature.html">vara::feature</a></div><div class="ttdef"><b>Definition:</b> <a href="Configuration_8h_source.html#l00013">Configuration.h:13</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html_af7772abf3803ed9c7904cc480f3778bf"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html#af7772abf3803ed9c7904cc480f3778bf">vara::feature::FeatureModelXmlParser::buildFeatureModel</a></div><div class="ttdeci">std::unique_ptr&lt; FeatureModel &gt; buildFeatureModel() override</div><div class="ttdoc">Build FeatureModel after parsing.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8cpp_source.html#l00309">FeatureModelParser.cpp:309</a></div></div>
@@ -343,13 +344,13 @@ $(function() {
 <div class="ttc" id="anamespacevara_1_1feature_html_aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3"><div class="ttname"><a href="namespacevara_1_1feature.html#aa872ca7d15a64455c6b1d5cfa2e81b25a73c4b0454b0d47176bdbb9e0e429aee3">vara::feature::ERROR</a></div><div class="ttdeci">@ ERROR</div><div class="ttdef"><b>Definition:</b> <a href="Error_8h_source.html#l00020">Error.h:20</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelParser_html_a24e7368fb47466534f8c7259baa48673"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelParser.html#a24e7368fb47466534f8c7259baa48673">vara::feature::FeatureModelParser::UniqueXmlDoc</a></div><div class="ttdeci">std::unique_ptr&lt; xmlDoc, void(*)(xmlDocPtr)&gt; UniqueXmlDoc</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00024">FeatureModelParser.h:24</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html">vara::feature::FeatureModelSxfmParser</a></div><div class="ttdoc">Parsers for feature models in SXFM.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00158">FeatureModelParser.h:158</a></div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange.html">vara::feature::FeatureSourceRange</a></div><div class="ttdef"><b>Definition:</b> <a href="FeatureSourceRange_8h_source.html#l00029">FeatureSourceRange.h:29</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1FeatureSourceRange_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureSourceRange.html">vara::feature::FeatureSourceRange</a></div><div class="ttdef"><b>Definition:</b> <a href="FeatureSourceRange_8h_source.html#l00028">FeatureSourceRange.h:28</a></div></div>
 <div class="ttc" id="aFeatureModelBuilder_8h_html"><div class="ttname"><a href="FeatureModelBuilder_8h.html">FeatureModelBuilder.h</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelXmlParser_html"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelXmlParser.html">vara::feature::FeatureModelXmlParser</a></div><div class="ttdoc">Parsers for feature models in XML.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00046">FeatureModelParser.h:46</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1FeatureModelSxfmParser_html_abfde151e22d35f86ed1d811ccb6a1c1c"><div class="ttname"><a href="classvara_1_1feature_1_1FeatureModelSxfmParser.html#abfde151e22d35f86ed1d811ccb6a1c1c">vara::feature::FeatureModelSxfmParser::verifyFeatureModel</a></div><div class="ttdeci">Result&lt; FTErrorCode &gt; verifyFeatureModel() override</div><div class="ttdoc">This method checks if the given feature model is valid.</div><div class="ttdef"><b>Definition:</b> <a href="FeatureModelParser_8h_source.html#l00165">FeatureModelParser.h:165</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 28 2022 09:11:04 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Aug 22 2022 10:05:30 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
