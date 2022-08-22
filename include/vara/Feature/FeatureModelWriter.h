@@ -27,7 +27,7 @@ public:
   ///
   /// \returns an instance of \a FeatureModel or \a nullptr
   virtual int writeFeatureModel(std::string Path) = 0;
-  virtual std::optional<std::string> writeFeatureModel() = 0;
+  virtual llvm::Optional<std::string> writeFeatureModel() = 0;
 };
 
 //===----------------------------------------------------------------------===//
@@ -40,7 +40,7 @@ public:
   explicit FeatureModelXmlWriter(const FeatureModel &Fm) : Fm{Fm} {}
 
   int writeFeatureModel(std::string Path) override;
-  std::optional<std::string> writeFeatureModel() override;
+  llvm::Optional<std::string> writeFeatureModel() override;
 
 private:
   int writeFeatureModel(xmlTextWriterPtr Writer);

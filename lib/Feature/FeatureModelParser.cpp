@@ -141,10 +141,10 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
 FeatureSourceRange
 FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   fs::path Path;
-  std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
-  std::optional<FeatureSourceRange::FeatureSourceLocation> End;
+  llvm::Optional<FeatureSourceRange::FeatureSourceLocation> Start;
+  llvm::Optional<FeatureSourceRange::FeatureSourceLocation> End;
   enum FeatureSourceRange::Category Category;
-  std::optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
+  llvm::Optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
 
   std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
       xmlGetProp(Head, XmlConstants::CATEGORY), xmlFree);
@@ -520,7 +520,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       // the feature (m for mandatory, o for optional, a for alternative)
       std::string::size_type Pos =
           CurrentIndentationLevel * Indentation.length() + 2;
-      std::optional<std::tuple<int, int>> Cardinalities;
+      llvm::Optional<std::tuple<int, int>> Cardinalities;
 
       switch (To.at(Pos - 1)) {
       case 'r':
@@ -537,7 +537,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
         Opt = false;
         // Extract the cardinality
         Cardinalities = extractCardinality(To);
-        if (!Cardinalities.has_value()) {
+        if (!Cardinalities.hasValue()) {
           return false;
         }
         break;
@@ -634,10 +634,10 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       }
 
       // Remember the new or group parent if there is one
-      if (Cardinalities.has_value()) {
+      if (Cardinalities.hasValue()) {
         Relationship::RelationshipKind GroupKind =
             Relationship::RelationshipKind::RK_ALTERNATIVE;
-        if (std::get<1>(Cardinalities.value()) == SxfmConstants::WILDCARD) {
+        if (std::get<1>(Cardinalities.getValue()) == SxfmConstants::WILDCARD) {
           GroupKind = Relationship::RelationshipKind::RK_OR;
         }
         OrGroupMapping[CurrentIndentationLevel] =
@@ -732,10 +732,10 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
   return true;
 }
 
-std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
+llvm::Optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
     llvm::StringRef StringToExtractFrom) {
-  std::optional<int> MinCardinality;
-  std::optional<int> MaxCardinality;
+  llvm::Optional<int> MinCardinality;
+  llvm::Optional<int> MaxCardinality;
 
   // Search for the first occurrence of '['; then read in the min cardinality
   // until the comma. Afterwards, read in the max cardinality until ']'
@@ -754,25 +754,26 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
           .substr(Pos + 1, CardinalityString.find(']', Pos + 1) - Pos - 1)
           .str());
 
-  if (!MinCardinality.has_value() || !MaxCardinality.has_value()) {
+  if (!MinCardinality.hasValue() || !MaxCardinality.hasValue()) {
     llvm::errs() << "No parsable cardinality!\n";
     return {};
   }
 
-  if (MinCardinality.value() != 1 ||
-      (MaxCardinality.value() != 1 &&
-       MaxCardinality.value() != SxfmConstants::WILDCARD)) {
+  if (MinCardinality.getValue() != 1 ||
+      (MaxCardinality.getValue() != 1 &&
+       MaxCardinality.getValue() != SxfmConstants::WILDCARD)) {
     llvm::errs() << "Cardinality unsupported. We support cardinalities [1,1] "
                     "(alternative) or [1, *] (or group).\n";
     return {};
   }
 
-  return {std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()}};
+  return {std::tuple<int, int>{MinCardinality.getValue(),
+                               MaxCardinality.getValue()}};
 }
 
-std::optional<int>
+llvm::Optional<int>
 FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {
-  std::optional<int> Result;
+  llvm::Optional<int> Result;
   if (CardinalityString == "*") {
     // We use -1 as our magic integer to indicate that the cardinality is a
     // wildcard.

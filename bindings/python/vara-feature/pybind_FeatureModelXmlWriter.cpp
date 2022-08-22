@@ -1,5 +1,5 @@
-#include "vara/Feature/FeatureModelWriter.h"
 #include "pybind_common.h"
+#include "vara/Feature/FeatureModelWriter.h"
 
 #include "pybind11/detail/common.h"
 #include "pybind11/pybind11.h"
@@ -15,12 +15,12 @@ void init_xml_writer(py::module &M) {
       .def(
           "get_feature_model_as_string",
           [](vf::FeatureModelXmlWriter &Fmxw) {
-            return Fmxw.writeFeatureModel();
+            return Fmxw.writeFeatureModel().getValueOr("");
           },
           R"pbdoc(Return the xml representation as string)pbdoc")
       .def(
           "write_feature_model_to_file",
-          [](vf::FeatureModelXmlWriter &Fmxw, const std::string StrS) {
+          [](vf::FeatureModelXmlWriter &Fmxw, const std::string &StrS) {
             return Fmxw.writeFeatureModel(StrS);
           },
           R"pbdoc(Write feature model to the given file)pbdoc");

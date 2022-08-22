@@ -56,12 +56,12 @@ public:
     return this;
   }
 
-  [[nodiscard]] std::optional<std::string>
+  [[nodiscard]] llvm::Optional<std::string>
   getParentName(const std::string &FeatureName) const {
     if (const auto P = Parents.find(FeatureName); P != Parents.end()) {
       return P->getValue();
     }
-    return std::nullopt;
+    return llvm::None;
   }
 
   FeatureModelBuilder *emplaceRelationship(Relationship::RelationshipKind RK,

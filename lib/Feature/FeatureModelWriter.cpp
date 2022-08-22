@@ -34,7 +34,7 @@ int FeatureModelXmlWriter::writeFeatureModel(std::string Path) {
   return RC;
 }
 
-std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
+llvm::Optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
   int RC;
 
   std::unique_ptr<xmlDocPtr, void (*)(xmlDocPtr *)> DocPtrPtr(
@@ -48,11 +48,11 @@ std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
   std::unique_ptr<xmlTextWriter, void (*)(xmlTextWriterPtr)> Writer(
       xmlNewTextWriterDoc(DocPtrPtr.get(), 0), &xmlFreeTextWriter);
   if (!Writer) {
-    return std::nullopt;
+    return llvm::None;
   }
   RC = writeFeatureModel(Writer.get());
   if (RC < 0) {
-    return std::nullopt;
+    return llvm::None;
   }
 
   std::unique_ptr<xmlChar *, void (*)(xmlChar **)> XmlBuffPtr(

@@ -5,8 +5,6 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 
-#include <optional>
-
 #if __has_include(<filesystem>)
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -18,32 +16,46 @@ namespace fs = std::experimental::filesystem;
 namespace vf = vara::feature;
 namespace py = pybind11;
 
+template <typename T>
+llvm::Optional<T> convertOptional(const std::optional<T> &Value) {
+  if (Value.has_value()) {
+    return {std::move(Value.value())};
+  }
+  return llvm::None;
+}
+
 void init_feature_location_module(py::module &M) {
   py::class_<vf::FeatureSourceRange> Loc(M, "Location");
   Loc.def(py::init([](std::string Path) {
        return vf::FeatureSourceRange(fs::path(std::move(Path)));
      }))
       .def(py::init(
-          [](std::string Path,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
-                 Start) {
-            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start);
+          [](const std::string &Path,
+             const std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &Start) {
+            return vf::FeatureSourceRange(fs::path(Path),
+                                          convertOptional(Start));
           }))
       .def(py::init(
-          [](std::string Path,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> Start,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End) {
+          [](const std::string &Path,
+             const std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &Start,
+             const std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &End) {
             return vf::FeatureSourceRange(
-                fs::path(std::move(Path)), Start, End,
+                fs::path(Path), convertOptional(Start), convertOptional(End),
                 vf::FeatureSourceRange::Category::necessary);
           }))
       .def(py::init(
-          [](std::string Path,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> Start,
-             std::optional<vf::FeatureSourceRange::FeatureSourceLocation> End,
+          [](const std::string &Path,
+             const std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &Start,
+             const std::optional<vf::FeatureSourceRange::FeatureSourceLocation>
+                 &End,
              vf::FeatureSourceRange::Category Category) {
-            return vf::FeatureSourceRange(fs::path(std::move(Path)), Start, End,
-                                          Category);
+            return vf::FeatureSourceRange(fs::path(Path),
+                                          convertOptional(Start),
+                                          convertOptional(End), Category);
           }))
       .def_property(
           "path",
