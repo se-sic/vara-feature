@@ -101,6 +101,8 @@ public:
       return StrS.str();
     }
 
+    [[nodiscard]] size_t nested() const { return Class.size(); }
+
     [[nodiscard]] std::string memberName() const { return Member; }
 
     [[nodiscard]] std::string toString() const {
