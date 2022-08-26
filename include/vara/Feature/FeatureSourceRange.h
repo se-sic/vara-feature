@@ -101,6 +101,9 @@ public:
       return StrS.str();
     }
 
+    /// Get the number of nested classes.
+    [[nodiscard]] size_t nestingDepth() const { return Class.size(); }
+
     [[nodiscard]] std::string memberName() const { return Member; }
 
     [[nodiscard]] std::string toString() const {
