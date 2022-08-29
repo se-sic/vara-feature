@@ -1,7 +1,8 @@
 #include "vara/Solver/Solver.h"
 
-#include "gtest/gtest.h"
 #include "z3++.h"
+
+#include "gtest/gtest.h"
 
 namespace vara::solver {
 
@@ -30,7 +31,7 @@ TEST(Solver, RetrieveSatisfyingModel) {
   z3::expr C = Con.bool_const("C");
   z3::expr D = Con.bool_const("D");
 
-  z3::expr Expression = A && B && !C && D;
+  z3::expr Expression = A && B && !C;
 
   z3::solver S(Con);
 
@@ -43,10 +44,29 @@ TEST(Solver, RetrieveSatisfyingModel) {
   EXPECT_TRUE(M.get_const_interp(A.decl()));
   EXPECT_TRUE(M.get_const_interp(B.decl()));
   EXPECT_FALSE(M.get_const_interp(C.decl()));
-  EXPECT_TRUE(M.get_const_interp(D.decl()));
 
   // Add the current configuration as a constraint
-  S.add(!(A && B && !C && D));
+  if (M.get_const_interp(D.decl())) {
+    S.add(!(A && B && !C && D));
+  } else {
+    S.add(!(A && B && !C && !D));
+  }
+
+  EXPECT_EQ(S.check(), z3::sat);
+
+  M = S.get_model();
+
+  // Retrieve the model by using the declaration function of each expression
+  EXPECT_TRUE(M.get_const_interp(A.decl()));
+  EXPECT_TRUE(M.get_const_interp(B.decl()));
+  EXPECT_FALSE(M.get_const_interp(C.decl()));
+
+  if (M.get_const_interp(D.decl())) {
+    S.add(!(A && B && !C && D));
+  } else {
+    S.add(!(A && B && !C && !D));
+  }
+
   EXPECT_EQ(S.check(), z3::unsat);
 }
 
@@ -63,10 +83,10 @@ TEST(Solver, RetrieveAllSatisfyingModels) {
   S.add(A);
 
   unsigned Counter = 0;
-  while(S.check() == z3::sat) {
+  while (S.check() == z3::sat) {
     z3::model Model = S.get_model();
     z3::expr Tmp = Con.bool_val(false);
-    for (auto && Variable : Variables) {
+    for (auto &&Variable : Variables) {
       if (Model.get_const_interp(Variable.decl())) {
         Tmp = Tmp || !Variable;
       } else {
@@ -78,7 +98,6 @@ TEST(Solver, RetrieveAllSatisfyingModels) {
   }
 
   EXPECT_EQ(Counter, 2);
-
 }
 
 TEST(Solver, EquationSystem) {
@@ -108,7 +127,7 @@ TEST(Solver, EquationSystem) {
   while (S.check() == z3::sat) {
     z3::model Model = S.get_model();
     z3::expr Tmp = Con.bool_val(false);
-    for(auto && Variable : Variables) {
+    for (auto &&Variable : Variables) {
       Tmp = Tmp || (Variable != Model.eval(Variable));
     }
     S.add(Tmp);
@@ -117,8 +136,6 @@ TEST(Solver, EquationSystem) {
   EXPECT_EQ(Counter, 313);
 }
 
-TEST(Solver, AddFeature) {
-
-}
+TEST(Solver, AddFeature) {}
 
 } // namespace vara::solver

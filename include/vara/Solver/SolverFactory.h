@@ -9,7 +9,8 @@ namespace vara::solver {
 class SolverFactory {
 public:
   // TODO: Add type as parameter? 0 -> Z3, 1 -> ?, ...
-  static std::unique_ptr<Solver> initializeZ3Solver(const feature::FeatureModel &Model);
+  static std::unique_ptr<Solver>
+  initializeZ3Solver(const feature::FeatureModel &Model);
 
   static std::unique_ptr<Solver> initializeZ3Solver();
 };

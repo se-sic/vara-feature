@@ -62,27 +62,6 @@ public:
   virtual Result<SolverErrorCode>
   removeConstraint(const feature::Constraint &ConstraintToRemove) = 0;
 
-  /// This method gets a partial configuration and searches for another
-  /// valid configuration which minimizes the number of selected features.
-  /// This is usually used for t-wise.
-  /// \return a possible error if minimizing the configuration could not be
-  /// done.
-  virtual Result<SolverErrorCode>
-  minimizeConfiguration(const feature::Configuration &Config) = 0;
-
-  /// This method searches a maximum configuration for the given partial
-  /// configuration.
-  /// This is usually used for negative feature wise sampling.
-  /// \return a possible error if maximizing the configuration could not be
-  /// done.
-  virtual Result<SolverErrorCode>
-  maximizeConfiguration(const feature::Configuration &Config) = 0;
-
-  // TODO: This could be redundant when replacing by a constraint (sum)
-  // virtual bool addExactFeatureNumber(int NumberFeaturesEnabled) = 0;
-
-  // TODO: Remove minimize/maximize/exactFeature constraint?
-
   /// Returns \c true if the current constraint system (i.e., its features and
   /// its constraints) has valid configurations.
   /// \return an error if, for instance, not all constraints could be parsed yet
@@ -96,7 +75,8 @@ public:
   /// \return an error if the number of valid configurations can not be retried.
   /// This can be the case if there are still constraints left that were not
   /// included into the solver because of missing variables.
-  virtual Result<SolverErrorCode, u_int64_t *> getNumberValidConfigurations() = 0;
+  virtual Result<SolverErrorCode, u_int64_t *>
+  getNumberValidConfigurations() = 0;
 
   /// This method returns the next configuration or an error in case of an
   /// error. \return the next configuration or an error (e.g., if it is
@@ -146,12 +126,6 @@ public:
   Result<SolverErrorCode>
   removeConstraint(const feature::Constraint &ConstraintToRemove) override;
 
-  Result<SolverErrorCode>
-  minimizeConfiguration(const feature::Configuration &Config) override;
-
-  Result<SolverErrorCode>
-  maximizeConfiguration(const feature::Configuration &Config) override;
-
   Result<SolverErrorCode, bool *> hasValidConfigurations() override;
 
   Result<SolverErrorCode, u_int64_t *> getNumberValidConfigurations() override;
@@ -172,7 +146,7 @@ private:
 
   /// This vector contains the constraints that remain unprocessed because of
   /// features/variables that are not included yet into the solver.
-  llvm::SmallVector<std::unique_ptr<feature::Constraint>>
+  llvm::SmallVector<std::unique_ptr<feature::Constraint>, 10>
       UnprocessedConstraints;
 
   /// The context of Z3 needed for every allocation.

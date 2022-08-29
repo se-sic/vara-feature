@@ -5,9 +5,7 @@
 
 namespace vara::sampling {
 
-class SamplingMethod {
-
-};
+class SamplingMethod {};
 
 std::tuple<double, double, double> getExampleValues();
 

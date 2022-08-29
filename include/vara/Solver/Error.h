@@ -6,12 +6,7 @@
 namespace vara {
 namespace solver {
 
-enum SolverErrorCode {
-  NOT_IMPLEMENTED,
-  NOT_SUPPORTED,
-  UNSAT,
-  ALREADY_PRESENT
-};
+enum SolverErrorCode { NOT_IMPLEMENTED, NOT_SUPPORTED, UNSAT, ALREADY_PRESENT };
 
 } // namespace solver
 
@@ -50,6 +45,6 @@ private:
   vara::solver::SolverErrorCode E;
 };
 
-}
+} // namespace vara
 
 #endif // VARA_SOLVER_ERROR_H_
