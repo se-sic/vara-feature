@@ -1,5 +1,5 @@
-#ifndef VARA_FEATURE_INCLUDE_VARA_SOLVER_SOLVER_H_
-#define VARA_FEATURE_INCLUDE_VARA_SOLVER_SOLVER_H_
+#ifndef VARA_SOLVER_SOLVER_H_
+#define VARA_SOLVER_SOLVER_H_
 
 #include "vara/Configuration/Configuration.h"
 #include "vara/Feature/Constraint.h"
@@ -159,4 +159,4 @@ private:
 
 } // namespace vara::solver
 
-#endif // VARA_FEATURE_INCLUDE_VARA_SOLVER_SOLVER_H_
+#endif // VARA_SOLVER_SOLVER_H_
