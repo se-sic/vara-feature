@@ -179,7 +179,7 @@ if (${VARA_FEATURE_BUILD_DOC})
 endif()
 
 if (${VARA_FEATURE_BUILD_SOLVER_Z3})
-  find_package(Z3 4.8.10 REQUIRED)
+  find_package(Z3 4.8.7 REQUIRED)
   if ( NOT Z3_FOUND )
     message(FATAL_ERROR "Z3 library not found!")
   endif ()
