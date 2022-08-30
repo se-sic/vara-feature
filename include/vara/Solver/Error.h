@@ -6,7 +6,13 @@
 namespace vara {
 namespace solver {
 
-enum SolverErrorCode { NOT_IMPLEMENTED, NOT_SUPPORTED, UNSAT, ALREADY_PRESENT };
+enum SolverErrorCode {
+  NOT_IMPLEMENTED,
+  NOT_SUPPORTED,
+  UNSAT,
+  ALREADY_PRESENT,
+  NOT_ALL_CONSTRAINTS_PROCESSED,
+};
 
 } // namespace solver
 
@@ -36,6 +42,10 @@ public:
       break;
     case vara::solver::ALREADY_PRESENT:
       OS << "Variable is already present.";
+      break;
+    case vara::solver::NOT_ALL_CONSTRAINTS_PROCESSED:
+      OS << "Not all constraints have been processed yet; are there variables "
+            "missing?";
       break;
     }
     return OS;

@@ -32,7 +32,7 @@ public:
   /// that this method does only include a boolean feature with no constraints.
   /// If this is not intended, use the other methods, instead.
   /// \return a possible error if adding the boolean feature was not successful.
-  virtual Result<SolverErrorCode> addFeature(string FeatureName) = 0;
+  virtual Result<SolverErrorCode> addFeature(const string &FeatureName) = 0;
 
   /// Adds a numeric feature with the given name and the given values.
   /// Be aware that this method includes a numeric feature with no constraints
@@ -111,7 +111,7 @@ public:
   Result<SolverErrorCode>
   addFeature(const feature::Feature &FeatureToAdd) override;
 
-  Result<SolverErrorCode> addFeature(string FeatureName) override;
+  Result<SolverErrorCode> addFeature(const string &FeatureName) override;
 
   Result<SolverErrorCode>
   addFeature(const string &FeatureName,
@@ -140,6 +140,16 @@ public:
   getAllValidConfigurations() override;
 
 private:
+  /// Returns the current configuration.
+  /// \return the current configuration found by z3; an error code in case of
+  /// error.
+  Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
+  getCurrentConfiguration();
+
+  /// Exclude the current configuration by adding it as a constraint
+  /// \return an error code in case of error.
+  Result<SolverErrorCode> excludeCurrentConfiguration();
+
   /// This map contains the original feature names as key and maps it to the
   /// Z3 value.
   llvm::StringMap<std::unique_ptr<z3::expr>> OptionToVariableMapping;
