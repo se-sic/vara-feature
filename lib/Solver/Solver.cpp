@@ -56,15 +56,15 @@ Z3Solver::removeConstraint(const feature::Constraint &ConstraintToRemove) {
   return NOT_SUPPORTED;
 }
 
-Result<SolverErrorCode, bool *> Z3Solver::hasValidConfigurations() {
+Result<SolverErrorCode> Z3Solver::hasValidConfigurations() {
   // TODO: Try to process the constraints first
   if (!UnprocessedConstraints.empty()) {
     return NOT_ALL_CONSTRAINTS_PROCESSED;
   }
   if (Solver.check() == z3::sat) {
-    return Ok(new bool(true));
+    return Ok();
   }
-  return Ok(new bool(false));
+  return UNSAT;
 }
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
