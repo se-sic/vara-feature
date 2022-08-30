@@ -27,14 +27,14 @@ Z3Solver::addFeature(const string &FeatureName,
       OptionToVariableMapping.end()) {
     return ALREADY_PRESENT;
   }
-  z3::expr Feature = Context.real_const(FeatureName.c_str());
+  z3::expr Feature = Context.int_const(FeatureName.c_str());
   OptionToVariableMapping.insert(
       std::make_pair(FeatureName, std::make_unique<z3::expr>(Feature)));
 
   // Add the numeric values as constraints
   z3::expr Constraint = Context.bool_val(false);
   for (int64_t Value : Values) {
-    Constraint = Constraint || (Feature == Context.real_val(Value));
+    Constraint = Constraint || (Feature == Context.int_val(Value));
   }
   Solver.add(Constraint);
 
