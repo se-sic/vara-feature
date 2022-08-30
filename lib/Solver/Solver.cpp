@@ -56,23 +56,24 @@ Z3Solver::removeConstraint(const feature::Constraint &ConstraintToRemove) {
   return NOT_SUPPORTED;
 }
 
-Result<SolverErrorCode> Z3Solver::hasValidConfigurations() {
+Result<SolverErrorCode, std::unique_ptr<bool>> Z3Solver::hasValidConfigurations() {
   // TODO: Try to process the constraints first
   if (!UnprocessedConstraints.empty()) {
     return NOT_ALL_CONSTRAINTS_PROCESSED;
   }
   if (Solver.check() == z3::sat) {
-    return Ok();
+    return Ok(std::make_unique<bool>(true));
   }
-  return UNSAT;
+  return Ok(std::make_unique<bool>(false));
 }
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getNextConfiguration() {
   // Add previous configuration as a constraint
+  excludeCurrentConfiguration();
 
   // Retrieve the next configuration
-  return NOT_IMPLEMENTED;
+  return getCurrentConfiguration();
 }
 
 Result<SolverErrorCode> Z3Solver::resetConfigurationIterator() {
@@ -90,11 +91,13 @@ Z3Solver::getAllValidConfigurations() {
 }
 
 Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
+  z3::model M = Solver.get_model();
   return NOT_IMPLEMENTED;
 }
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getCurrentConfiguration() {
+  z3::model M = Solver.get_model();
   return NOT_IMPLEMENTED;
 }
 
