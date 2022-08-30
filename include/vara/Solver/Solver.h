@@ -67,7 +67,8 @@ public:
   /// \return an error if, for instance, not all constraints could be parsed yet
   /// because of missing variables. Otherwise, it contains a boolean whether the
   /// current constraint system is solvable (\c true) or not (\c false).
-  virtual Result<SolverErrorCode, std::unique_ptr<bool>> hasValidConfigurations() = 0;
+  virtual Result<SolverErrorCode, std::unique_ptr<bool>>
+  hasValidConfigurations() = 0;
 
   /// Returns the number of valid configurations of the current constraint
   /// system (i.e., its features and its constraints). In principle, this is a
@@ -126,7 +127,8 @@ public:
   Result<SolverErrorCode>
   removeConstraint(const feature::Constraint &ConstraintToRemove) override;
 
-  Result<SolverErrorCode, std::unique_ptr<bool>> hasValidConfigurations() override;
+  Result<SolverErrorCode, std::unique_ptr<bool>>
+  hasValidConfigurations() override;
 
   Result<SolverErrorCode, u_int64_t *> getNumberValidConfigurations() override;
 

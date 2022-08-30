@@ -56,7 +56,8 @@ Z3Solver::removeConstraint(const feature::Constraint &ConstraintToRemove) {
   return NOT_SUPPORTED;
 }
 
-Result<SolverErrorCode, std::unique_ptr<bool>> Z3Solver::hasValidConfigurations() {
+Result<SolverErrorCode, std::unique_ptr<bool>>
+Z3Solver::hasValidConfigurations() {
   // TODO: Try to process the constraints first
   if (!UnprocessedConstraints.empty()) {
     return NOT_ALL_CONSTRAINTS_PROCESSED;
