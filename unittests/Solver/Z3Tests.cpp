@@ -19,7 +19,6 @@ TEST(Z3Solver, AddFeatureTest) {
 
   Result F = S.hasValidConfigurations();
   EXPECT_TRUE(F);
-  EXPECT_TRUE(F.extractValue());
 
   E = S.addFeature("A");
   EXPECT_FALSE(E);
