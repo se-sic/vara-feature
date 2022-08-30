@@ -13,16 +13,19 @@ TEST(Z3Solver, AddFeatureTest) {
   E = S.addFeature("B");
   EXPECT_TRUE(E);
 
-  std::vector<int64_t> vect{10, 20, 30};
-  S.addFeature("X", vect);
+  std::vector<int64_t> Vector{10, 20, 30};
+  S.addFeature("X", Vector);
   EXPECT_TRUE(E);
 
-  EXPECT_TRUE(S.hasValidConfigurations());
+  Result F = S.hasValidConfigurations();
+  EXPECT_TRUE(F);
+  EXPECT_TRUE(F.extractValue());
+
   E = S.addFeature("A");
   EXPECT_FALSE(E);
   EXPECT_EQ(ALREADY_PRESENT, E.getError());
-  
-  E = S.addFeature("X", vect);
+
+  E = S.addFeature("X", Vector);
   EXPECT_FALSE(E);
   EXPECT_EQ(ALREADY_PRESENT, E.getError());
 }
