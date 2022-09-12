@@ -152,6 +152,11 @@ private:
   /// \return an error code in case of error.
   Result<SolverErrorCode> excludeCurrentConfiguration();
 
+  /// Processes the constraints of the binary feature.
+  /// \return an error code in case of error.
+  Result<SolverErrorCode>
+  setBinaryFeatureConstraints(const feature::BinaryFeature &Feature);
+
   /// This map contains the original feature names as key and maps it to the
   /// Z3 value.
   llvm::StringMap<std::unique_ptr<z3::expr>> OptionToVariableMapping;

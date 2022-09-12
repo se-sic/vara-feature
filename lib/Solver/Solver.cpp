@@ -6,7 +6,51 @@ namespace vara::solver {
 
 Result<SolverErrorCode>
 Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
-  return NOT_IMPLEMENTED;
+  // Check whether the parent feature is already added
+  vara::feature::Feature *Parent = FeatureToAdd.getParentFeature();
+  if (Parent != nullptr && OptionToVariableMapping.find(Parent->getName()) ==
+                               OptionToVariableMapping.end()) {
+    return PARENT_NOT_PRESENT;
+  }
+
+  // Add the feature
+  switch (FeatureToAdd.getKind()) {
+  case feature::Feature::FeatureKind::FK_NUMERIC: {
+    const auto *F =
+        llvm::dyn_cast<vara::feature::NumericFeature>(&FeatureToAdd);
+    const auto Values = F->getValues();
+    if (std::holds_alternative<vara::feature::NumericFeature::ValueListType>(
+            Values)) {
+      addFeature(
+          F->getName(),
+          std::get<vara::feature::NumericFeature::ValueListType>(Values));
+    } else {
+      // TODO: This has to be implemented on feature side using the constraint
+      // parser
+      return NOT_IMPLEMENTED;
+    }
+    // addFeature(FeatureToAdd.getName(), F->getValues());
+    break;
+  }
+  case feature::Feature::FeatureKind::FK_BINARY:
+    addFeature(FeatureToAdd.getName());
+    // Add all constraints (i.e., implications, exclusions, parent feature)
+    if (auto R = setBinaryFeatureConstraints(
+            *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd));
+        !R) {
+      return R;
+    }
+    break;
+  case feature::Feature::FeatureKind::FK_ROOT:
+    addFeature(FeatureToAdd.getName());
+    // Add root as a constraint; root is mandatory
+    Solver.add(*OptionToVariableMapping[FeatureToAdd.getName()]);
+    break;
+  case feature::Feature::FeatureKind::FK_UNKNOWN:
+    return NOT_SUPPORTED;
+  }
+
+  return Ok();
 }
 
 Result<SolverErrorCode> Z3Solver::addFeature(const string &FeatureName) {
@@ -91,14 +135,46 @@ Z3Solver::getAllValidConfigurations() {
   return NOT_IMPLEMENTED;
 }
 
+Result<SolverErrorCode>
+Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature) {
+  // Add constraint to parent
+  Solver.add(!*OptionToVariableMapping[Feature.getName()] ||
+             *OptionToVariableMapping[Feature.getParentFeature()->getName()]);
+
+  if (!Feature.isOptional()) {
+    Solver.add(
+        *OptionToVariableMapping[Feature.getName()] ||
+        !*OptionToVariableMapping[Feature.getParentFeature()->getName()]);
+  }
+
+  // Process excludes
+  for (const auto *C : Feature.excludes()) {
+  }
+
+  // Process implications
+  for (const auto *C : Feature.implications()) {
+  }
+  return Ok();
+}
+
 Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
-  z3::model M = Solver.get_model();
-  return NOT_IMPLEMENTED;
+  auto R = getCurrentConfiguration();
+  if (!R) {
+    return R.getError();
+  }
+  // Get the current configuration and exclude it
+  vara::feature::Configuration Config = *R.extractValue();
+  return Ok();
 }
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getCurrentConfiguration() {
   z3::model M = Solver.get_model();
+  for (size_t Pos = 0; Pos < M.size(); Pos++) {
+    z3::func_decl F = M[(int)Pos];
+    // Make sure we have only constants here
+    assert(F.arity() == 0);
+  }
   return NOT_IMPLEMENTED;
 }
 

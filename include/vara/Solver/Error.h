@@ -12,6 +12,7 @@ enum SolverErrorCode {
   UNSAT,
   ALREADY_PRESENT,
   NOT_ALL_CONSTRAINTS_PROCESSED,
+  PARENT_NOT_PRESENT,
 };
 
 } // namespace solver
@@ -46,6 +47,9 @@ public:
     case vara::solver::NOT_ALL_CONSTRAINTS_PROCESSED:
       OS << "Not all constraints have been processed yet; are there variables "
             "missing?";
+      break;
+    case vara::solver::PARENT_NOT_PRESENT:
+      OS << "Parent feature of a feature is not present.";
       break;
     }
     return OS;
