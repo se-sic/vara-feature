@@ -162,8 +162,7 @@ Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
   if (!R) {
     return R.getError();
   }
-  // Get the current configuration and exclude it
-  vara::feature::Configuration Config = *R.extractValue();
+  // TODO: Get the current configuration and exclude it
   return Ok();
 }
 
