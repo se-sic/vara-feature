@@ -13,6 +13,11 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
     return PARENT_NOT_PRESENT;
   }
 
+  if (OptionToVariableMapping.find(FeatureToAdd.getName()) !=
+      OptionToVariableMapping.end()) {
+    return ALREADY_PRESENT;
+  }
+
   // Add the feature
   switch (FeatureToAdd.getKind()) {
   case feature::Feature::FeatureKind::FK_NUMERIC: {
@@ -21,19 +26,21 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
     const auto Values = F->getValues();
     if (std::holds_alternative<vara::feature::NumericFeature::ValueListType>(
             Values)) {
-      addFeature(
-          F->getName(),
-          std::get<vara::feature::NumericFeature::ValueListType>(Values));
+      if (auto R = addFeature(
+              F->getName().str(),
+              std::get<vara::feature::NumericFeature::ValueListType>(Values));
+          !R) {
+        return R;
+      }
     } else {
       // TODO: This has to be implemented on feature side using the constraint
       // parser
       return NOT_IMPLEMENTED;
     }
-    // addFeature(FeatureToAdd.getName(), F->getValues());
     break;
   }
   case feature::Feature::FeatureKind::FK_BINARY:
-    addFeature(FeatureToAdd.getName());
+    addFeature(FeatureToAdd.getName().str());
     // Add all constraints (i.e., implications, exclusions, parent feature)
     if (auto R = setBinaryFeatureConstraints(
             *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd));
@@ -42,7 +49,7 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
     }
     break;
   case feature::Feature::FeatureKind::FK_ROOT:
-    addFeature(FeatureToAdd.getName());
+    addFeature(FeatureToAdd.getName().str());
     // Add root as a constraint; root is mandatory
     Solver.add(*OptionToVariableMapping[FeatureToAdd.getName()]);
     break;

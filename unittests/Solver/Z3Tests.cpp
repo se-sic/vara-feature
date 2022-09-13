@@ -57,6 +57,12 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   V = S.hasValidConfigurations();
   EXPECT_TRUE(V);
   EXPECT_TRUE(*V.extractValue());
+  E = S.addFeature(*FM->getFeature("B"));
+  EXPECT_FALSE(E);
+  EXPECT_EQ(SolverErrorCode::ALREADY_PRESENT, E.getError());
+
+  // Test the configurations
+  S.getNextConfiguration();
 }
 
 } // namespace vara::solver
