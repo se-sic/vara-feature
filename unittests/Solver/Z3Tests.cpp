@@ -70,7 +70,6 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   Enumerate = S.getNumberValidConfigurations();
   EXPECT_TRUE(Enumerate);
   EXPECT_EQ(6, *Enumerate.extractValue());
-
 }
 
 } // namespace vara::solver
