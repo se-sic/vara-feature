@@ -210,7 +210,9 @@ Z3Solver::getCurrentConfiguration() {
     z3::func_decl F = M[(int)Pos];
     // Make sure we have only constants here
     assert(F.arity() == 0);
-    Config->setConfigurationOption(llvm::StringRef(F.name().str()), llvm::StringRef(M.get_const_interp(F).to_string()));
+    Config->setConfigurationOption(
+        llvm::StringRef(F.name().str()),
+        llvm::StringRef(M.get_const_interp(F).to_string()));
   }
   return Config;
 }
