@@ -52,6 +52,11 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   V = S.hasValidConfigurations();
   EXPECT_TRUE(V);
   EXPECT_TRUE(*V.extractValue());
+  // Enumerate the solutions
+  auto Enumerate = S.getNumberValidConfigurations();
+  EXPECT_TRUE(Enumerate);
+  EXPECT_EQ(2, *Enumerate.extractValue());
+
   E = S.addFeature(*FM->getFeature("B"));
   EXPECT_TRUE(E);
   V = S.hasValidConfigurations();
@@ -61,8 +66,11 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   EXPECT_FALSE(E);
   EXPECT_EQ(SolverErrorCode::ALREADY_PRESENT, E.getError());
 
-  // Test the configurations
-  S.getNextConfiguration();
+  // Enumerate the solutions
+  Enumerate = S.getNumberValidConfigurations();
+  EXPECT_TRUE(Enumerate);
+  EXPECT_EQ(6, *Enumerate.extractValue());
+
 }
 
 } // namespace vara::solver

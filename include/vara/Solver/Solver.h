@@ -76,7 +76,7 @@ public:
   /// \return an error if the number of valid configurations can not be retried.
   /// This can be the case if there are still constraints left that were not
   /// included into the solver because of missing variables.
-  virtual Result<SolverErrorCode, u_int64_t *>
+  virtual Result<SolverErrorCode, std::unique_ptr<uint64_t>>
   getNumberValidConfigurations() = 0;
 
   /// This method returns the next configuration or an error in case of an
@@ -130,7 +130,8 @@ public:
   Result<SolverErrorCode, std::unique_ptr<bool>>
   hasValidConfigurations() override;
 
-  Result<SolverErrorCode, u_int64_t *> getNumberValidConfigurations() override;
+  Result<SolverErrorCode, std::unique_ptr<uint64_t>>
+  getNumberValidConfigurations() override;
 
   Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getNextConfiguration() override;

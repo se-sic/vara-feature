@@ -41,6 +41,8 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
   }
   case feature::Feature::FeatureKind::FK_BINARY:
     addFeature(FeatureToAdd.getName().str());
+    Solver.add(!*OptionToVariableMapping[FeatureToAdd.getName()] ||
+               *OptionToVariableMapping[FeatureToAdd.getName()]);
     // Add all constraints (i.e., implications, exclusions, parent feature)
     if (auto R = setBinaryFeatureConstraints(
             *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd));
@@ -132,8 +134,16 @@ Result<SolverErrorCode> Z3Solver::resetConfigurationIterator() {
   return NOT_IMPLEMENTED;
 }
 
-Result<SolverErrorCode, u_int64_t *> Z3Solver::getNumberValidConfigurations() {
-  return NOT_IMPLEMENTED;
+Result<SolverErrorCode, std::unique_ptr<uint64_t>>
+Z3Solver::getNumberValidConfigurations() {
+  Solver.push();
+  std::unique_ptr<uint64_t> Count = std::make_unique<uint64_t>(0);
+  while (Solver.check() == z3::sat) {
+    excludeCurrentConfiguration();
+    (*Count)++;
+  }
+  Solver.pop();
+  return Count;
 }
 
 Result<SolverErrorCode,
@@ -165,23 +175,44 @@ Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature) {
 }
 
 Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
-  auto R = getCurrentConfiguration();
-  if (!R) {
-    return R.getError();
+  if (Solver.check() == z3::unsat) {
+    return UNSAT;
   }
-  // TODO: Get the current configuration and exclude it
+  z3::model M = Solver.get_model();
+  z3::expr Expr = Context.bool_val(false);
+  for (size_t Pos = 0; Pos < M.size(); Pos++) {
+    z3::func_decl F = M[(int)Pos];
+    // Make sure we have only constants here
+    assert(F.arity() == 0);
+    z3::expr Value = M.get_const_interp(F);
+    if (Value.is_bool()) {
+      if (Value.is_true()) {
+        Expr = Expr || !*OptionToVariableMapping[F.name().str()];
+      } else {
+        Expr = Expr || *OptionToVariableMapping[F.name().str()];
+      }
+    } else {
+      Expr = Expr || (*OptionToVariableMapping[F.name().str()] != Value);
+    }
+  }
+  Solver.add(Expr);
   return Ok();
 }
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getCurrentConfiguration() {
+  if (Solver.check() == z3::unsat) {
+    return UNSAT;
+  }
   z3::model M = Solver.get_model();
+  std::unique_ptr<vara::feature::Configuration> Config{};
   for (size_t Pos = 0; Pos < M.size(); Pos++) {
     z3::func_decl F = M[(int)Pos];
     // Make sure we have only constants here
     assert(F.arity() == 0);
+    Config->setConfigurationOption(llvm::StringRef(F.name().str()), llvm::StringRef(M.get_const_interp(F).to_string()));
   }
-  return NOT_IMPLEMENTED;
+  return Config;
 }
 
 } // namespace vara::solver
