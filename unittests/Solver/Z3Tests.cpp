@@ -8,7 +8,7 @@
 namespace vara::solver {
 
 TEST(Z3Solver, AddFeatureTest) {
-  Z3Solver S;
+  Z3Solver S = Z3Solver::create();
   Result E = S.addFeature("A");
   EXPECT_TRUE(E);
   E = S.addFeature("B");
@@ -31,7 +31,7 @@ TEST(Z3Solver, AddFeatureTest) {
 }
 
 TEST(Z3Solver, AddFeatureObjectTest) {
-  Z3Solver S;
+  Z3Solver S = Z3Solver::create();
   // Construct a small feature model
   vara::feature::FeatureModelBuilder B;
   B.makeRoot("root");

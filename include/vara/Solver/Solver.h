@@ -106,14 +106,17 @@ public:
 
 /// \brief The Z3 solver implementation for handling constraints
 class Z3Solver : public Solver {
-  explicit Z3Solver(z3::context C) : Solver(C) {}
+  explicit Z3Solver(z3::config &Cfg) : Context(Cfg) {
+    Solver = std::make_unique<z3::solver>(Context);
+  }
 
 public:
   static Z3Solver create() {
     // The configuration of z3
     z3::config Cfg;
-    Cfg.set("model", true);
-    return Z3Solver(z3::context(Cfg));
+    Cfg.set("model", "true");
+    Cfg.set("model-validate", "true");
+    return Z3Solver(Cfg);
   }
 
   Result<SolverErrorCode>
@@ -174,9 +177,12 @@ private:
   llvm::SmallVector<std::unique_ptr<feature::Constraint>, 10>
       UnprocessedConstraints;
 
+  /// The context of Z3 needed to initialize variables.
+  z3::context Context;
+
   /// The instance of the Z3 solver needed for caching the constraints and
   /// variables.
-  z3::solver Solver;
+  std::unique_ptr<z3::solver> Solver;
 };
 
 } // namespace vara::solver

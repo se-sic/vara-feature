@@ -41,8 +41,8 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
   }
   case feature::Feature::FeatureKind::FK_BINARY:
     addFeature(FeatureToAdd.getName().str());
-    Solver.add(!*OptionToVariableMapping[FeatureToAdd.getName()] ||
-               *OptionToVariableMapping[FeatureToAdd.getName()]);
+    (*Solver).add(!*OptionToVariableMapping[FeatureToAdd.getName()] ||
+                  *OptionToVariableMapping[FeatureToAdd.getName()]);
     // Add all constraints (i.e., implications, exclusions, parent feature)
     if (auto R = setBinaryFeatureConstraints(
             *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd));
@@ -53,12 +53,12 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
   case feature::Feature::FeatureKind::FK_ROOT:
     addFeature(FeatureToAdd.getName().str());
     // Add root as a constraint; root is mandatory
-    Solver.add(*OptionToVariableMapping[FeatureToAdd.getName()]);
+    (*Solver).add(*OptionToVariableMapping[FeatureToAdd.getName()]);
     break;
   case feature::Feature::FeatureKind::FK_UNKNOWN:
     return NOT_SUPPORTED;
   }
-
+  (*Solver).push();
   return Ok();
 }
 
@@ -67,7 +67,7 @@ Result<SolverErrorCode> Z3Solver::addFeature(const string &FeatureName) {
       OptionToVariableMapping.end()) {
     return ALREADY_PRESENT;
   }
-  z3::expr Feature = Solver.ctx().bool_const(FeatureName.c_str());
+  z3::expr Feature = Context.bool_const(FeatureName.c_str());
   OptionToVariableMapping.insert(
       std::make_pair(FeatureName, std::make_unique<z3::expr>(Feature)));
   return Ok();
@@ -80,16 +80,16 @@ Z3Solver::addFeature(const string &FeatureName,
       OptionToVariableMapping.end()) {
     return ALREADY_PRESENT;
   }
-  z3::expr Feature = Solver.ctx().int_const(FeatureName.c_str());
+  z3::expr Feature = Context.int_const(FeatureName.c_str());
   OptionToVariableMapping.insert(
       std::make_pair(FeatureName, std::make_unique<z3::expr>(Feature)));
 
   // Add the numeric values as constraints
-  z3::expr Constraint = Solver.ctx().bool_val(false);
+  z3::expr Constraint = Context.bool_val(false);
   for (int64_t Value : Values) {
-    Constraint = Constraint || (Feature == Solver.ctx().int_val(Value));
+    Constraint = Constraint || (Feature == Context.int_val(Value));
   }
-  Solver.add(Constraint);
+  (*Solver).add(Constraint);
 
   return Ok();
 }
@@ -115,7 +115,7 @@ Z3Solver::hasValidConfigurations() {
   if (!UnprocessedConstraints.empty()) {
     return NOT_ALL_CONSTRAINTS_PROCESSED;
   }
-  if (Solver.check() == z3::sat) {
+  if ((*Solver).check() == z3::sat) {
     return Ok(std::make_unique<bool>(true));
   }
   return Ok(std::make_unique<bool>(false));
@@ -136,13 +136,13 @@ Result<SolverErrorCode> Z3Solver::resetConfigurationIterator() {
 
 Result<SolverErrorCode, std::unique_ptr<uint64_t>>
 Z3Solver::getNumberValidConfigurations() {
-  Solver.push();
+  (*Solver).push();
   std::unique_ptr<uint64_t> Count = std::make_unique<uint64_t>(0);
-  while (Solver.check() == z3::sat) {
+  while ((*Solver).check() == z3::sat) {
     excludeCurrentConfiguration();
     (*Count)++;
   }
-  Solver.pop();
+  (*Solver).pop();
   return Count;
 }
 
@@ -155,11 +155,12 @@ Z3Solver::getAllValidConfigurations() {
 Result<SolverErrorCode>
 Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature) {
   // Add constraint to parent
-  Solver.add(z3::implies(*OptionToVariableMapping[Feature.getName()],
-             *OptionToVariableMapping[Feature.getParentFeature()->getName()]));
+  (*Solver).add(z3::implies(
+      *OptionToVariableMapping[Feature.getName()],
+      *OptionToVariableMapping[Feature.getParentFeature()->getName()]));
 
   if (!Feature.isOptional()) {
-    Solver.add(z3::implies(
+    (*Solver).add(z3::implies(
         *OptionToVariableMapping[Feature.getParentFeature()->getName()],
         *OptionToVariableMapping[Feature.getName()]));
   }
@@ -175,44 +176,41 @@ Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature) {
 }
 
 Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
-  if (Solver.check() == z3::unsat) {
+  if ((*Solver).check() == z3::unsat) {
     return UNSAT;
   }
-  z3::model M = Solver.get_model();
+  z3::model M = (*Solver).get_model();
   z3::expr Expr = Context.bool_val(false);
-  for (size_t Pos = 0; Pos < M.size(); Pos++) {
-    z3::func_decl F = M[(int)Pos];
-    // Make sure we have only constants here
-    assert(F.arity() == 0);
-    z3::expr Value = M.get_const_interp(F);
+  for (auto Option : OptionToVariableMapping.keys()) {
+    z3::expr OptionExpr = *OptionToVariableMapping[Option];
+    z3::expr Value = M.eval(OptionExpr, true);
     if (Value.is_bool()) {
       if (Value.is_true()) {
-        Expr = Expr || !*OptionToVariableMapping[F.name().str()];
+        Expr = Expr || !*OptionToVariableMapping[Option];
       } else {
-        Expr = Expr || *OptionToVariableMapping[F.name().str()];
+        Expr = Expr || *OptionToVariableMapping[Option];
       }
     } else {
-      Expr = Expr || (*OptionToVariableMapping[F.name().str()] != Value);
+      Expr = Expr || (*OptionToVariableMapping[Option] != Value);
     }
   }
-  Solver.add(Expr);
+  (*Solver).add(Expr);
   return Ok();
 }
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getCurrentConfiguration() {
-  if (Solver.check() == z3::unsat) {
+  if ((*Solver).check() == z3::unsat) {
     return UNSAT;
   }
-  z3::model M = Solver.get_model();
+  z3::model M = (*Solver).get_model();
   std::unique_ptr<vara::feature::Configuration> Config{};
-  for (size_t Pos = 0; Pos < M.size(); Pos++) {
-    z3::func_decl F = M[(int)Pos];
-    // Make sure we have only constants here
-    assert(F.arity() == 0);
-    Config->setConfigurationOption(
-        llvm::StringRef(F.name().str()),
-        llvm::StringRef(M.get_const_interp(F).to_string()));
+
+  for (auto Option : OptionToVariableMapping.keys()) {
+    z3::expr OptionExpr = *OptionToVariableMapping[Option];
+    z3::expr Value = M.eval(OptionExpr, true);
+    Config->setConfigurationOption(llvm::StringRef(Option),
+                                   llvm::StringRef(Value.to_string()));
   }
   return Config;
 }
