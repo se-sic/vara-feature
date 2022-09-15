@@ -106,8 +106,15 @@ public:
 
 /// \brief The Z3 solver implementation for handling constraints
 class Z3Solver : public Solver {
+  explicit Z3Solver(z3::context C) : Solver(C) {}
+
 public:
-  explicit Z3Solver() : Solver(Context) {}
+  static Z3Solver create() {
+    // The configuration of z3
+    z3::config Cfg;
+    Cfg.set("model", true);
+    return Z3Solver(z3::context(Cfg));
+  }
 
   Result<SolverErrorCode>
   addFeature(const feature::Feature &FeatureToAdd) override;
@@ -166,9 +173,6 @@ private:
   /// features/variables that are not included yet into the solver.
   llvm::SmallVector<std::unique_ptr<feature::Constraint>, 10>
       UnprocessedConstraints;
-
-  /// The context of Z3 needed for every allocation.
-  z3::context Context;
 
   /// The instance of the Z3 solver needed for caching the constraints and
   /// variables.

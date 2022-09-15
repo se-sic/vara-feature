@@ -67,7 +67,7 @@ Result<SolverErrorCode> Z3Solver::addFeature(const string &FeatureName) {
       OptionToVariableMapping.end()) {
     return ALREADY_PRESENT;
   }
-  z3::expr Feature = Context.bool_const(FeatureName.c_str());
+  z3::expr Feature = Solver.ctx().bool_const(FeatureName.c_str());
   OptionToVariableMapping.insert(
       std::make_pair(FeatureName, std::make_unique<z3::expr>(Feature)));
   return Ok();
@@ -80,14 +80,14 @@ Z3Solver::addFeature(const string &FeatureName,
       OptionToVariableMapping.end()) {
     return ALREADY_PRESENT;
   }
-  z3::expr Feature = Context.int_const(FeatureName.c_str());
+  z3::expr Feature = Solver.ctx().int_const(FeatureName.c_str());
   OptionToVariableMapping.insert(
       std::make_pair(FeatureName, std::make_unique<z3::expr>(Feature)));
 
   // Add the numeric values as constraints
-  z3::expr Constraint = Context.bool_val(false);
+  z3::expr Constraint = Solver.ctx().bool_val(false);
   for (int64_t Value : Values) {
-    Constraint = Constraint || (Feature == Context.int_val(Value));
+    Constraint = Constraint || (Feature == Solver.ctx().int_val(Value));
   }
   Solver.add(Constraint);
 
@@ -155,22 +155,22 @@ Z3Solver::getAllValidConfigurations() {
 Result<SolverErrorCode>
 Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature) {
   // Add constraint to parent
-  Solver.add(!*OptionToVariableMapping[Feature.getName()] ||
-             *OptionToVariableMapping[Feature.getParentFeature()->getName()]);
+  Solver.add(z3::implies(*OptionToVariableMapping[Feature.getName()],
+             *OptionToVariableMapping[Feature.getParentFeature()->getName()]));
 
   if (!Feature.isOptional()) {
-    Solver.add(
-        *OptionToVariableMapping[Feature.getName()] ||
-        !*OptionToVariableMapping[Feature.getParentFeature()->getName()]);
+    Solver.add(z3::implies(
+        *OptionToVariableMapping[Feature.getParentFeature()->getName()],
+        *OptionToVariableMapping[Feature.getName()]));
   }
 
-  // Process excludes
-  for (const auto *C : Feature.excludes()) {
-  }
-
-  // Process implications
-  for (const auto *C : Feature.implications()) {
-  }
+  //  // Process excludes
+  //  for (const auto *C : Feature.excludes()) {
+  //  }
+  //
+  //  // Process implications
+  //  for (const auto *C : Feature.implications()) {
+  //  }
   return Ok();
 }
 
