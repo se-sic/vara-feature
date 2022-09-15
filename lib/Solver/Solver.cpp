@@ -23,6 +23,9 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
   case feature::Feature::FeatureKind::FK_NUMERIC: {
     const auto *F =
         llvm::dyn_cast<vara::feature::NumericFeature>(&FeatureToAdd);
+    if (!F) {
+      return NOT_SUPPORTED;
+    }
     const auto Values = F->getValues();
     if (std::holds_alternative<vara::feature::NumericFeature::ValueListType>(
             Values)) {
@@ -39,15 +42,19 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
     }
     break;
   }
-  case feature::Feature::FeatureKind::FK_BINARY:
+  case feature::Feature::FeatureKind::FK_BINARY: {
     addFeature(FeatureToAdd.getName().str());
     // Add all constraints (i.e., implications, exclusions, parent feature)
-    if (auto R = setBinaryFeatureConstraints(
-            *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd));
-        !R) {
+    if (!llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd)) {
+      return NOT_SUPPORTED;
+    }
+    auto R = setBinaryFeatureConstraints(
+        *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd));
+    if (!R) {
       return R;
     }
     break;
+  }
   case feature::Feature::FeatureKind::FK_ROOT:
     addFeature(FeatureToAdd.getName().str());
     // Add root as a constraint; root is mandatory
@@ -144,10 +151,18 @@ Z3Solver::getNumberValidConfigurations() {
   return Count;
 }
 
-Result<SolverErrorCode,
-       std::vector<std::unique_ptr<vara::feature::Configuration>> *>
+Result<
+    SolverErrorCode,
+    std::unique_ptr<std::vector<std::unique_ptr<vara::feature::Configuration>>>>
 Z3Solver::getAllValidConfigurations() {
-  return NOT_IMPLEMENTED;
+  std::unique_ptr<std::vector<std::unique_ptr<vara::feature::Configuration>>>
+      Vector;
+  while ((*Solver).check() == z3::sat) {
+    (*Vector).insert((*Vector).begin(),
+                     getCurrentConfiguration().extractValue());
+    excludeCurrentConfiguration();
+  }
+  return Vector;
 }
 
 Result<SolverErrorCode>

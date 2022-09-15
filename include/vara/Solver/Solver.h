@@ -95,8 +95,8 @@ public:
   /// instead of a number of configurations.
   /// \return an error if an error occurs while retrieving the configurations.
   /// Otherwise, it will return the configurations.
-  virtual Result<SolverErrorCode,
-                 std::vector<std::unique_ptr<vara::feature::Configuration>> *>
+  virtual Result<SolverErrorCode, std::unique_ptr<std::vector<std::unique_ptr<
+                                      vara::feature::Configuration>>>>
   getAllValidConfigurations() = 0;
 };
 
@@ -148,8 +148,8 @@ public:
 
   Result<SolverErrorCode> resetConfigurationIterator() override;
 
-  Result<SolverErrorCode,
-         std::vector<std::unique_ptr<vara::feature::Configuration>> *>
+  Result<SolverErrorCode, std::unique_ptr<std::vector<
+                              std::unique_ptr<vara::feature::Configuration>>>>
   getAllValidConfigurations() override;
 
 private:
