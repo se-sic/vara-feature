@@ -41,8 +41,6 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
   }
   case feature::Feature::FeatureKind::FK_BINARY:
     addFeature(FeatureToAdd.getName().str());
-    (*Solver).add(!*OptionToVariableMapping[FeatureToAdd.getName()] ||
-                  *OptionToVariableMapping[FeatureToAdd.getName()]);
     // Add all constraints (i.e., implications, exclusions, parent feature)
     if (auto R = setBinaryFeatureConstraints(
             *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd));
