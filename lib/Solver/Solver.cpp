@@ -128,11 +128,17 @@ Z3Solver::hasValidConfigurations() {
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getNextConfiguration() {
+  auto Config = getCurrentConfiguration();
+
+  if (!Config) {
+    return Config;
+  }
+
   // Add previous configuration as a constraint
   excludeCurrentConfiguration();
 
   // Retrieve the next configuration
-  return getCurrentConfiguration();
+  return Config;
 }
 
 Result<SolverErrorCode> Z3Solver::resetConfigurationIterator() {
@@ -155,6 +161,7 @@ Result<
     SolverErrorCode,
     std::unique_ptr<std::vector<std::unique_ptr<vara::feature::Configuration>>>>
 Z3Solver::getAllValidConfigurations() {
+  Solver->push();
   std::unique_ptr<std::vector<std::unique_ptr<vara::feature::Configuration>>>
       Vector(new std::vector<std::unique_ptr<vara::feature::Configuration>>);
   while (Solver->check() == z3::sat) {
@@ -162,6 +169,7 @@ Z3Solver::getAllValidConfigurations() {
     Vector->insert(Vector->begin(), std::move(Config));
     excludeCurrentConfiguration();
   }
+  Solver->pop();
   return Vector;
 }
 

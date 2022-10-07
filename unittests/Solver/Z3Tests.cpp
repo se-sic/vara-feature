@@ -82,7 +82,7 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   EXPECT_EQ(6, *Enumerate.extractValue());
 }
 
-TEST(Z3Solver, TestConfigurationObjects) {
+TEST(Z3Solver, TestAllValidConfigurations) {
   Z3Solver S = Z3Solver::create();
   vara::feature::FeatureModelBuilder B;
   B.makeRoot("root");
@@ -99,6 +99,32 @@ TEST(Z3Solver, TestConfigurationObjects) {
   auto C = S.getAllValidConfigurations();
   EXPECT_TRUE(C);
   EXPECT_EQ(C.extractValue()->size(), 4);
+}
+
+TEST(Z3Solver, TestGetNextConfiguration) {
+  Z3Solver S = Z3Solver::create();
+  vara::feature::FeatureModelBuilder B;
+  B.makeRoot("root");
+  B.makeFeature<vara::feature::BinaryFeature>("Foo", true);
+  B.addEdge("root", "Foo");
+  std::vector<int64_t> Values{0, 1};
+  B.makeFeature<vara::feature::NumericFeature>("Num1", Values);
+  auto FM = B.buildFeatureModel();
+
+  S.addFeature(*FM->getFeature("root"));
+  S.addFeature(*FM->getFeature("Foo"));
+  S.addFeature(*FM->getFeature("Num1"));
+
+  for (int Count = 0; Count < 4; Count++) {
+    auto C = S.getNextConfiguration();
+    EXPECT_TRUE(C);
+    auto Config = C.extractValue();
+    EXPECT_TRUE(Config->configurationOptionValue("root").hasValue());
+    EXPECT_TRUE(Config->configurationOptionValue("Foo").hasValue());
+    EXPECT_TRUE(Config->configurationOptionValue("Num1").hasValue());
+  }
+  auto E = S.getNextConfiguration();
+  EXPECT_FALSE(E);
 }
 
 } // namespace vara::solver
