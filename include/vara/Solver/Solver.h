@@ -79,6 +79,12 @@ public:
   virtual Result<SolverErrorCode, std::unique_ptr<uint64_t>>
   getNumberValidConfigurations() = 0;
 
+  /// Returns the current configuration.
+  /// \return the current configuration found by the solver an error code in
+  /// case of error.
+  virtual Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
+  getCurrentConfiguration() = 0;
+
   /// This method returns the next configuration or an error in case of an
   /// error. \return the next configuration or an error (e.g., if it is
   /// unsatisfiable).
@@ -140,6 +146,9 @@ public:
   Result<SolverErrorCode, std::unique_ptr<bool>>
   hasValidConfigurations() override;
 
+  Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
+  getCurrentConfiguration() override;
+
   Result<SolverErrorCode, std::unique_ptr<uint64_t>>
   getNumberValidConfigurations() override;
 
@@ -153,12 +162,6 @@ public:
   getAllValidConfigurations() override;
 
 private:
-  /// Returns the current configuration.
-  /// \return the current configuration found by z3; an error code in case of
-  /// error.
-  Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
-  getCurrentConfiguration();
-
   /// Exclude the current configuration by adding it as a constraint
   /// \return an error code in case of error.
   Result<SolverErrorCode> excludeCurrentConfiguration();

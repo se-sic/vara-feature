@@ -128,17 +128,11 @@ Z3Solver::hasValidConfigurations() {
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getNextConfiguration() {
-  auto Config = getCurrentConfiguration();
-
-  if (!Config) {
-    return Config;
-  }
-
   // Add previous configuration as a constraint
   excludeCurrentConfiguration();
 
   // Retrieve the next configuration
-  return Config;
+  return getCurrentConfiguration();
 }
 
 Result<SolverErrorCode> Z3Solver::resetConfigurationIterator() {
