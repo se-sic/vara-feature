@@ -162,6 +162,10 @@ public:
   getAllValidConfigurations() override;
 
 private:
+  // The SolverConstraintVisitor is a friend class to access the solver and the
+  // context.
+  friend class SolverConstraintVisitor;
+
   /// Exclude the current configuration by adding it as a constraint
   /// \return an error code in case of error.
   Result<SolverErrorCode> excludeCurrentConfiguration();
@@ -186,6 +190,56 @@ private:
   /// The instance of the Z3 solver needed for caching the constraints and
   /// variables.
   std::unique_ptr<z3::solver> Solver;
+};
+
+/// \brief This class is a visitor to convert the constraints from the
+/// feature model into constraints for Z3.
+class SolverConstraintVisitor : public vara::feature::ConstraintVisitor {
+public:
+  /// Constructs a new solver constraint visitor by using the reference to
+  /// the solver. This reference is needed to retrieve the context and reuse
+  /// it in the visitor.
+  /// \param S The Z3Solver instance that uses this visitor.
+  SolverConstraintVisitor(Z3Solver *S)
+      : Z3ConstraintExpression(S->Context), S(S){};
+
+  /// This method adds the constraint after visiting the constraint and
+  /// constructing it while visiting.
+  /// \param C The constraint to visit
+  /// \return \c true if adding the constraint was successfull; \c false
+  /// otherwise.
+  bool addConstraint(vara::feature::Constraint *C);
+
+  /// Visits the binary constraint. Thereby, it constructs the z3 constraint
+  /// by first executing the first part of the binary operator and afterwards
+  /// the second (right) part.
+  /// \param C the binary constraint to be converted
+  /// \return \c true if adding the constraint was successfull; \c false
+  /// otherwise.
+  bool visit(vara::feature::BinaryConstraint *C) override;
+
+  /// Visits the unary constraints. Thereby, it visits the operand and creates
+  /// a new z3 constraint by preceeding it with the according expression.
+  /// \param C the unary constraint to visit
+  /// \return \c true if adding the constraint was successfull; \c false
+  /// otherwise.
+  bool visit(vara::feature::UnaryConstraint *C) override;
+
+  /// Visits the feature in the constraint. This method creates the according
+  /// z3 constant.
+  /// \param C
+  /// \return \c true if adding the constraint was successfull; \c false
+  /// otherwise.
+  bool visit(vara::feature::PrimaryFeatureConstraint *C) override;
+
+private:
+  /// The z3 constraint will be adjusted while visiting the given constraint
+  z3::expr Z3ConstraintExpression;
+
+  /// The reference to the solver, which is basically needed for the context.
+  /// Note that the context can not be copied or references, which is why we
+  /// do not hold a direct reference to the context here.
+  Z3Solver *S;
 };
 
 } // namespace vara::solver

@@ -180,13 +180,17 @@ Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature) {
         *OptionToVariableMapping[Feature.getName()]));
   }
 
-  //  // Process excludes
-  //  for (const auto *C : Feature.excludes()) {
-  //  }
-  //
-  //  // Process implications
-  //  for (const auto *C : Feature.implications()) {
-  //  }
+  SolverConstraintVisitor SCV(this);
+
+  // Process excludes
+  for (feature::BinaryConstraint *C : Feature.excludes()) {
+    SCV.addConstraint(C);
+  }
+
+  // Process implications
+  for (feature::BinaryConstraint *C : Feature.implications()) {
+    SCV.addConstraint(C);
+  }
   return Ok();
 }
 
@@ -228,6 +232,110 @@ Z3Solver::getCurrentConfiguration() {
     Config->setConfigurationOption(Option, llvm::StringRef(Value.to_string()));
   }
   return Config;
+}
+
+// Class SolverConstraintVisitor
+bool SolverConstraintVisitor::addConstraint(vara::feature::Constraint *C) {
+  if (C->accept(*this)) {
+    S->Solver->add(Z3ConstraintExpression);
+    return true;
+  }
+  return false;
+}
+
+bool SolverConstraintVisitor::visit(vara::feature::BinaryConstraint *C) {
+
+  bool LHS = C->getLeftOperand()->accept(*this);
+  z3::expr Left = Z3ConstraintExpression;
+  bool RHS = C->getRightOperand()->accept(*this);
+  if (!LHS || !RHS) {
+    return false;
+  }
+  switch (C->getKind()) {
+  case feature::Constraint::ConstraintKind::CK_ADDITION:
+    Z3ConstraintExpression = Left + Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_AND:
+    Z3ConstraintExpression = Left && Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_DIVISION:
+    Z3ConstraintExpression = Left / Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_EQUAL:
+    Z3ConstraintExpression = Left == Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_EQUIVALENCE:
+    Z3ConstraintExpression = z3::implies(Left, Z3ConstraintExpression) &&
+                             z3::implies(Z3ConstraintExpression, Left);
+    break;
+  case feature::Constraint::ConstraintKind::CK_EXCLUDES:
+    Z3ConstraintExpression = z3::implies(Left, !Z3ConstraintExpression);
+    break;
+  case feature::Constraint::ConstraintKind::CK_GREATER:
+    Z3ConstraintExpression = Left > Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_GREATER_EQUAL:
+    Z3ConstraintExpression = Left >= Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_IMPLIES:
+    Z3ConstraintExpression = z3::implies(Left, Z3ConstraintExpression);
+    break;
+  case feature::Constraint::ConstraintKind::CK_LESS:
+    Z3ConstraintExpression = Left < Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_LESS_EQUAL:
+    Z3ConstraintExpression = Left <= Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_MULTIPLICATION:
+    Z3ConstraintExpression = Left * Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_NOT_EQUAL:
+    Z3ConstraintExpression = Left != Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_OR:
+    Z3ConstraintExpression = Left || Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_SUBTRACTION:
+    Z3ConstraintExpression = Left - Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_XOR:
+    Z3ConstraintExpression = z3::implies(Left, !Z3ConstraintExpression) &&
+                             z3::implies(Z3ConstraintExpression, !Left);
+    break;
+  default:
+    return false;
+  }
+  return true;
+}
+
+bool SolverConstraintVisitor::visit(vara::feature::UnaryConstraint *C) {
+  if (C->getOperand()->accept(*this)) {
+    return false;
+  }
+  switch (C->getKind()) {
+  case feature::Constraint::ConstraintKind::CK_NEG:
+    Z3ConstraintExpression = -Z3ConstraintExpression;
+    break;
+  case feature::Constraint::ConstraintKind::CK_NOT:
+    Z3ConstraintExpression = !Z3ConstraintExpression;
+    break;
+  default:
+    return false;
+  }
+  return true;
+}
+
+bool SolverConstraintVisitor::visit(
+    vara::feature::PrimaryFeatureConstraint *C) {
+  if (C->getFeature()->getKind() ==
+      vara::feature::Feature::FeatureKind::FK_NUMERIC) {
+    Z3ConstraintExpression =
+        S->Context.int_const(C->getFeature()->getName().str().c_str());
+  } else {
+    Z3ConstraintExpression =
+        S->Context.bool_const(C->getFeature()->getName().str().c_str());
+  }
+  return true;
 }
 
 } // namespace vara::solver
