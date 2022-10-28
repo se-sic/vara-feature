@@ -55,7 +55,7 @@ if (CMAKE_BUILD_TYPE)
   string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 endif()
 if (BUILD_TYPE MATCHES "^(DEBUG)")
-  add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
+  add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter -Wimplicit-fallthrough)
 endif ()
 
 # Enable coverage tracking
