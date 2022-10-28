@@ -57,6 +57,14 @@ public:
 
   [[nodiscard]] RootFeature *getRoot() const { return Root; }
 
+  [[nodiscard]] Feature *getFeature(llvm::StringRef F) const {
+    auto SearchFeature = Features.find(F);
+    if (SearchFeature != Features.end()) {
+      return SearchFeature->getValue().get();
+    }
+    return nullptr;
+  }
+
   //===--------------------------------------------------------------------===//
   // DFS feature iterator
 
@@ -240,18 +248,43 @@ public:
     return llvm::make_range(Constraints.begin(), Constraints.end());
   }
 
+  Constraint *addConstraint(std::unique_ptr<Constraint> Constraint) {
+    Constraints.push_back(std::move(Constraint));
+    return Constraints.back().get();
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Relationships
+
+  using relationship_iterator = typename RelationshipContainerTy::iterator;
+  using const_relationship_iterator =
+      typename RelationshipContainerTy::const_iterator;
+
+  [[nodiscard]] llvm::iterator_range<relationship_iterator> relationships() {
+    return llvm::make_range(Relationships.begin(), Relationships.end());
+  }
+  [[nodiscard]] llvm::iterator_range<const_relationship_iterator>
+  relationships() const {
+    return llvm::make_range(Relationships.begin(), Relationships.end());
+  }
+
+  Relationship *addRelationship(std::unique_ptr<Relationship> Relationship) {
+    Relationships.push_back(std::move(Relationship));
+    return Relationships.back().get();
+  }
+
+  void removeRelationship(Relationship *R) {
+    Relationships.erase(
+        std::find_if(Relationships.begin(), Relationships.end(),
+                     [R](const std::unique_ptr<Relationship> &UniR) {
+                       return UniR.get() == R;
+                     }));
+  }
+
   //===--------------------------------------------------------------------===//
   // Utility
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
-
-  [[nodiscard]] Feature *getFeature(llvm::StringRef F) const {
-    auto SearchFeature = Features.find(F);
-    if (SearchFeature != Features.end()) {
-      return SearchFeature->getValue().get();
-    }
-    return nullptr;
-  }
 
   /// Create deep clone of whole data structure.
   ///
@@ -268,24 +301,6 @@ private:
   ///
   /// \returns ptr to inserted \a Feature
   Feature *addFeature(std::unique_ptr<Feature> Feature);
-
-  Relationship *addRelationship(std::unique_ptr<Relationship> Relationship) {
-    Relationships.push_back(std::move(Relationship));
-    return Relationships.back().get();
-  }
-
-  void removeRelationship(Relationship *R) {
-    Relationships.erase(
-        std::find_if(Relationships.begin(), Relationships.end(),
-                     [R](const std::unique_ptr<Relationship> &UniR) {
-                       return UniR.get() == R;
-                     }));
-  }
-
-  Constraint *addConstraint(std::unique_ptr<Constraint> Constraint) {
-    Constraints.push_back(std::move(Constraint));
-    return Constraints.back().get();
-  }
 
   /// Delete a \a Feature.
   void removeFeature(Feature &Feature);
