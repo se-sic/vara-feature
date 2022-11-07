@@ -3,6 +3,7 @@ set(LLVM_LINK_COMPONENTS
         Demangle
         Core
         )
+set(CMAKE_AUTOMOC ON)
 
 add_vara_executable(fm-editor
         main.cpp

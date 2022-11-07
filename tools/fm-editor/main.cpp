@@ -12,7 +12,7 @@
 int main(int argc, char **argv)
 {
   QApplication App(argc, argv);
-  auto Model =  vara::feature::loadFeatureModel("test_children.xml");
+  auto Model =  vara::feature::loadFeatureModel("/home/simon/Workspace/vara-feature/tools/fm-editor/test_children.xml");
   auto *Widget = new FeatureModelGraph(Model.get());
 
   QMainWindow MainWindow;

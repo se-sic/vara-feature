@@ -14,9 +14,7 @@
 #include <QRandomGenerator>
 FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
                                      QWidget *Parent)
-    : QGraphicsView(Parent) {
-  Edges = std::set<std::unique_ptr<FeatureEdge>>{};
-  Nodes = std::set<std::unique_ptr<FeatureNode>>{};
+    : QGraphicsView(Parent), EntryNode(new FeatureNode(this, FeatureModel->getRoot())) {
   auto *Scene = new QGraphicsScene(this);
   Scene->setItemIndexMethod(QGraphicsScene::NoIndex);
   Scene->setSceneRect(-200, -200, 400, 400);
@@ -27,12 +25,9 @@ FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
   setTransformationAnchor(AnchorUnderMouse);
   scale(qreal(0.8), qreal(0.8));
   setMinimumSize(400, 400);
-  setWindowTitle(tr("Elastic Nodes"));
-  auto EntryNodeUnique = std::make_unique<FeatureNode>(this, FeatureModel->getRoot());
-  EntryNode = EntryNodeUnique.get();
+
   Scene->addItem(EntryNode);
   buildRec(EntryNode);
-  Nodes.insert(std::move(EntryNodeUnique));
   auto NextChildren =std::vector<FeatureNode*>(EntryNode->children().size());
   auto CurrentChildren = EntryNode->children();
   std::transform(CurrentChildren.begin(),CurrentChildren.end(),NextChildren.begin(),[](FeatureEdge* Edge){return Edge->targetNode();});
@@ -44,13 +39,11 @@ void FeatureModelGraph::buildRec(FeatureNode *CurrentFeatureNode) {
   for (auto *Feature :
        CurrentFeatureNode->getFeature()->getChildren<vara::feature::Feature>(
            1)) {
-    auto Node = std::make_unique<FeatureNode>(this, Feature);
-    auto Edge = std::make_unique<FeatureEdge>(CurrentFeatureNode, Node.get());
-    scene()->addItem(Edge.get());
-    scene()->addItem(Node.get());
-    buildRec(Node.get());
-    Nodes.insert(std::move(Node));
-    Edges.insert(std::move(Edge));
+    auto *Node = new FeatureNode(this, Feature);
+    auto *Edge = new FeatureEdge(CurrentFeatureNode, Node);
+    scene()->addItem(Edge);
+    scene()->addItem(Node);
+    buildRec(Node);
   }
 }
 
@@ -91,25 +84,6 @@ void FeatureModelGraph::keyPressEvent(QKeyEvent *Event) {
     QGraphicsView::keyPressEvent(Event);
   }
 }
-void FeatureModelGraph::timerEvent(QTimerEvent *Event) {
-  Q_UNUSED(Event);
-
-  for (const std::unique_ptr<FeatureNode> &Node : Nodes) {
-    Node->calculateForces();
-  }
-
-  bool ItemsMoved = false;
-  for (const std::unique_ptr<FeatureNode> &Node : Nodes) {
-    if (Node->advancePosition()) {
-      ItemsMoved = true;
-    }
-  }
-
-  if (!ItemsMoved) {
-    killTimer(TimerId);
-    TimerId = 0;
-  }
-}
 #if QT_CONFIG(wheelevent)
 void FeatureModelGraph::wheelEvent(QWheelEvent *Event) {
   scaleView(pow(2., -Event->angleDelta().y() / 240.0));
@@ -140,20 +114,12 @@ void FeatureModelGraph::drawBackground(QPainter *Painter, const QRectF &Rect) {
   Painter->setBrush(Qt::NoBrush);
   Painter->drawRect(SceneRect);
 
-  // Text
-  QRectF TextRect(SceneRect.left() + 4, SceneRect.top() + 4,
-                  SceneRect.width() - 4, SceneRect.height() - 4);
-  QString Message(tr("Click and drag the nodes around, and zoom with the mouse "
-                     "wheel or the '+' and '-' keys"));
-
   QFont Font = Painter->font();
   Font.setBold(true);
   Font.setPointSize(14);
   Painter->setFont(Font);
   Painter->setPen(Qt::lightGray);
-  Painter->drawText(TextRect.translated(2, 2), Message);
   Painter->setPen(Qt::black);
-  Painter->drawText(TextRect, Message);
 }
 void FeatureModelGraph::scaleView(qreal ScaleFactor) {
   qreal Factor = transform()

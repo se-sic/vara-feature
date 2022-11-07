@@ -88,7 +88,10 @@ QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
   case ItemPositionHasChanged:
     for (FeatureEdge *Edge : std::as_const(ChildEdges)) {
       Edge->adjust();
-}
+    }
+    if (ParentEdge) {
+      ParentEdge->adjust();
+    }
     Graph->itemMoved();
     break;
   default:
