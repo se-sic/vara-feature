@@ -1,5 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classvara_1_1feature_1_1FeatureModelParser.html" title="Base class for parsers with different input formats." alt="" coords="5,39,208,80"/>
-<area shape="rect" id="node2" href="$classvara_1_1feature_1_1FeatureModelSxfmParser.html" title="Parsers for feature models in SXFM." alt="" coords="256,5,459,47"/>
-<area shape="rect" id="node3" href="$classvara_1_1feature_1_1FeatureModelXmlParser.html" title="Parsers for feature models in XML." alt="" coords="256,71,459,112"/>
+<area shape="rect" id="node1" href="$classvara_1_1feature_1_1FeatureModelConsistencyChecker.html" title=" " alt="" coords="5,5,224,47"/>
 </map>

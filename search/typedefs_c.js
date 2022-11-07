@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['valuelisttype_893',['ValueListType',['../classvara_1_1feature_1_1NumericFeature.html#a8206efafce30a95884be9b7423de1bb4',1,'vara::feature::NumericFeature']]],
-  ['valuerangetype_894',['ValueRangeType',['../classvara_1_1feature_1_1NumericFeature.html#a60917c0f7be36d11d4fbef3927a06754',1,'vara::feature::NumericFeature']]],
-  ['valuesvarianttype_895',['ValuesVariantType',['../classvara_1_1feature_1_1NumericFeature.html#ac338edaaaf82ca883d727faa1c2b4cd9',1,'vara::feature::NumericFeature']]]
+  ['uniquexmlchar_898',['UniqueXmlChar',['../classvara_1_1feature_1_1FeatureModelParser.html#a276e2a7b18383a0eb3aa1cf165e70d88',1,'vara::feature::FeatureModelParser']]],
+  ['uniquexmldoc_899',['UniqueXmlDoc',['../classvara_1_1feature_1_1FeatureModelParser.html#a24e7368fb47466534f8c7259baa48673',1,'vara::feature::FeatureModelParser']]],
+  ['uniquexmldtd_900',['UniqueXmlDtd',['../classvara_1_1feature_1_1FeatureModelParser.html#a6e3f21d20e40a296ed8b450a52072795',1,'vara::feature::FeatureModelParser']]],
+  ['unordered_5ffeature_5fiterator_901',['unordered_feature_iterator',['../classvara_1_1feature_1_1FeatureModel.html#a3dd33907ee9f39f55a7aaa3903127c96',1,'vara::feature::FeatureModel']]]
 ];

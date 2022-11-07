@@ -2,7 +2,7 @@ var searchData=
 [
   ['calcprecedence_36',['calcPrecedence',['../classvara_1_1feature_1_1ConstraintToken.html#ae6be1ccc6d0bc8c9f76d9d79a43923de',1,'vara::feature::ConstraintToken']]],
   ['canbedeletedrecursively_37',['canBeDeletedRecursively',['../namespacevara_1_1feature.html#a76545a310ce24f0c914739ed6202c5ef',1,'vara::feature']]],
-  ['category_38',['Category',['../classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2',1,'vara::feature::FeatureSourceRange::Category()'],['../classvara_1_1feature_1_1XmlConstants.html#a8f755e1423176d59938deee823e719f9',1,'vara::feature::XmlConstants::CATEGORY()']]],
+  ['category_38',['CATEGORY',['../classvara_1_1feature_1_1XmlConstants.html#a8f755e1423176d59938deee823e719f9',1,'vara::feature::XmlConstants::CATEGORY()'],['../classvara_1_1feature_1_1FeatureSourceRange.html#a1fa2512235786db9fc20b9644a9911d2',1,'vara::feature::FeatureSourceRange::Category()']]],
   ['chartouchar_39',['charToUChar',['../namespacevara_1_1feature.html#a7c5049fad466ba21796451818ab9d72b',1,'vara::feature']]],
   ['check_40',['check',['../structvara_1_1feature_1_1EveryFeatureRequiresParent.html#aa9d3fb3f1366039b671db5b469d01380',1,'vara::feature::EveryFeatureRequiresParent::check()'],['../structvara_1_1feature_1_1CheckFeatureParentChildRelationShip.html#a4241c467c3d6647df4ba52fa7e65c281',1,'vara::feature::CheckFeatureParentChildRelationShip::check()'],['../structvara_1_1feature_1_1ExactlyOneRootNode.html#a6543146d723b6516108717c98c9b7b68',1,'vara::feature::ExactlyOneRootNode::check()']]],
   ['check_5frc_41',['CHECK_RC',['../FeatureModelWriter_8cpp.html#a1b8496fd13cbfc603c6c7b7a5ae5f6c2',1,'FeatureModelWriter.cpp']]],

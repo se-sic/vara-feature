@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['ordered_5ffeature_5fiterator_885',['ordered_feature_iterator',['../classvara_1_1feature_1_1FeatureModel.html#a91b1388b6e91749b64c5d44fda4dfe15',1,'vara::feature::FeatureModel::ordered_feature_iterator()'],['../classvara_1_1feature_1_1deprecated_1_1OrderedFeatureVector.html#aa6cf328ea0542fa5409661ddeaaf6a2d',1,'vara::feature::deprecated::OrderedFeatureVector::ordered_feature_iterator()']]]
+  ['noderef_890',['NodeRef',['../structllvm_1_1GraphWriter_3_01vara_1_1feature_1_1FeatureModel_01_5_01_4.html#aa6648156bdb4254d7038ede2e0f22cd7',1,'llvm::GraphWriter&lt; vara::feature::FeatureModel * &gt;']]],
+  ['nodesettype_891',['NodeSetType',['../classvara_1_1feature_1_1FeatureTreeNode.html#a5edab5e4f918fca917d265e7b6eccec6',1,'vara::feature::FeatureTreeNode']]]
 ];
