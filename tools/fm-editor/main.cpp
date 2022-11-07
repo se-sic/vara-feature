@@ -3,6 +3,7 @@
 //
 
 #include "FeatureModelGraph.h"
+#include "vara/Feature/FeatureModel.h"
 
 #include <QApplication>
 #include <QTime>
@@ -10,13 +11,13 @@
 
 int main(int argc, char **argv)
 {
-  QApplication app(argc, argv);
+  QApplication App(argc, argv);
+  auto Model =  vara::feature::loadFeatureModel("test_children.xml");
+  auto *Widget = new FeatureModelGraph(Model.get());
 
-  GraphWidget *widget = new FeatureModelGraph();
+  QMainWindow MainWindow;
+  MainWindow.setCentralWidget(Widget);
 
-  QMainWindow mainWindow;
-  mainWindow.setCentralWidget(widget);
-
-  mainWindow.show();
-  return app.exec();
+  MainWindow.show();
+  return App.exec();
 }

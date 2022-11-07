@@ -11,20 +11,30 @@
 #include <QPainter>
 #include <QStyleOption>
 
-FeatureNode::FeatureNode(FeatureModelGraph *Parent, vara::feature::Feature *Feature) : Parent(Parent),Feature(Feature) {
+FeatureNode::FeatureNode(FeatureModelGraph *Graph, vara::feature::Feature *Feature) : Graph(Graph),Feature(Feature) {
   setFlag(ItemIsMovable);
   setFlag(ItemSendsGeometryChanges);
   setCacheMode(DeviceCoordinateCache);
   setZValue(-1);
 }
 
-void FeatureNode::addEdge(FeatureEdge *Edge) {
-  EdgeList << Edge;
+void FeatureNode::addChildEdge(FeatureEdge *Edge) {
+  ChildEdges.push_back(Edge);
   Edge->adjust();
 }
-QList<FeatureEdge *> FeatureNode::edges() const {
-  return EdgeList;
+void FeatureNode::setParentEdge(FeatureEdge *Edge) {
+  ParentEdge = Edge;
+  Edge->adjust();
 }
+
+std::vector<FeatureEdge *> FeatureNode::children() const {
+  return ChildEdges;
+}
+
+FeatureEdge * FeatureNode::parent() const {
+  return ParentEdge;
+}
+
 void FeatureNode::calculateForces() {
   if (!scene() || scene()->mouseGrabberItem() == this) {
     NewPos = pos();
@@ -57,17 +67,17 @@ void FeatureNode::paint(QPainter *Painter,
   Painter->setBrush(Qt::darkGray);
   Painter->drawEllipse(-7, -7, 20, 20);
 
-  QRadialGradient gradient(-3, -3, 10);
+  QRadialGradient Gradient(-3, -3, 10);
   if (Option->state & QStyle::State_Sunken) {
-    gradient.setCenter(3, 3);
-    gradient.setFocalPoint(3, 3);
-    gradient.setColorAt(1, QColor(Qt::yellow).lighter(120));
-    gradient.setColorAt(0, QColor(Qt::darkYellow).lighter(120));
+    Gradient.setCenter(3, 3);
+    Gradient.setFocalPoint(3, 3);
+    Gradient.setColorAt(1, QColor(Qt::yellow).lighter(120));
+    Gradient.setColorAt(0, QColor(Qt::darkYellow).lighter(120));
   } else {
-    gradient.setColorAt(0, Qt::yellow);
-    gradient.setColorAt(1, Qt::darkYellow);
+    Gradient.setColorAt(0, Qt::yellow);
+    Gradient.setColorAt(1, Qt::darkYellow);
   }
-  Painter->setBrush(gradient);
+  Painter->setBrush(Gradient);
 
   Painter->setPen(QPen(Qt::black, 0));
   Painter->drawEllipse(-10, -10, 20, 20);
@@ -76,14 +86,14 @@ QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
                                  const QVariant &Value) {
   switch (Change) {
   case ItemPositionHasChanged:
-    for (FeatureEdge *Edge : std::as_const(EdgeList)) {
+    for (FeatureEdge *Edge : std::as_const(ChildEdges)) {
       Edge->adjust();
 }
-    Parent->itemMoved();
+    Graph->itemMoved();
     break;
   default:
     break;
-  };
+  }
 
   return QGraphicsItem::itemChange(Change, Value);
 }

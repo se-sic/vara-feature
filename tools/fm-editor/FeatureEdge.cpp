@@ -11,8 +11,8 @@
 FeatureEdge::FeatureEdge(FeatureNode *SourceNode, FeatureNode *TargetNode)
     : Source(SourceNode), Target(TargetNode) {
   setAcceptedMouseButtons(Qt::NoButton);
-  Source->addEdge(this);
-  Target->addEdge(this);
+  Source->addChildEdge(this);
+  TargetNode->setParentEdge(this);
   adjust();
 }
 FeatureNode *FeatureEdge::sourceNode() const { return Source; }

@@ -10,7 +10,7 @@ class FeatureModelGraph : public QGraphicsView {
   Q_OBJECT
 
 public:
-  FeatureModelGraph(vara::feature::FeatureModel &FeatureModel,
+  FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
                     QWidget *Parent = nullptr);
 
   void itemMoved();
@@ -32,8 +32,13 @@ protected:
 private:
   void buildRec(FeatureNode *CurrentFeatureNode);
   int TimerId = 0;
-  std::set<std::unique_ptr<FeatureNode>> Nodes{};
-  std::set<std::unique_ptr<FeatureEdge>> Edges{};
+  FeatureNode* EntryNode;
+  std::set<std::unique_ptr<FeatureNode>> Nodes;
+  std::set<std::unique_ptr<FeatureEdge>> Edges;
+  int positionRec(int CurrentDepth, const std::vector<FeatureNode *>& Children,
+                  unsigned long Width, unsigned long Offset);
+  const int HEIGHT = 600;
+  const int WIDTH = 600;
 };
 
 #endif // VARA_FEATURE_FEATUREMODELGRAPH_H
