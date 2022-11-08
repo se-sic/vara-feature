@@ -13,20 +13,14 @@ jobs:
       fail-fast: true
       matrix:
         build: [ Debug, Release ]
-        llvm-major: [ 14, 15 ]
+        llvm-major: [ 14 ]
         compiler: [ clang++-14, clang++-15, g++-9 ]
         include:
           - llvm-major: 14
             llvm-minor: 0
-          - llvm-major: 15
-            llvm-minor: 0
         exclude:
           - llvm-major: 14
             compiler: clang++-15
-          - llvm-major: 15
-            compiler: clang++-14
-          - llvm-major: 15
-            compiler: g++-9
 
     continue-on-error: false
     steps:
