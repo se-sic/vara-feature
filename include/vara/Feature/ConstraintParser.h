@@ -343,14 +343,14 @@ private:
       case ConstraintToken::ConstraintTokenKind::EQUIVALENT:
       case ConstraintToken::ConstraintTokenKind::GREATER:
       case ConstraintToken::ConstraintTokenKind::GREATER_EQUAL:
-      case ConstraintToken::ConstraintTokenKind::IMPLIES: {
+      case ConstraintToken::ConstraintTokenKind::IMPLIES:
       case ConstraintToken::ConstraintTokenKind::LESS:
       case ConstraintToken::ConstraintTokenKind::LESS_EQUAL:
       case ConstraintToken::ConstraintTokenKind::MINUS:
       case ConstraintToken::ConstraintTokenKind::NOT_EQUAL:
       case ConstraintToken::ConstraintTokenKind::OR:
       case ConstraintToken::ConstraintTokenKind::PLUS:
-      case ConstraintToken::ConstraintTokenKind::STAR:
+      case ConstraintToken::ConstraintTokenKind::STAR: {
         auto NextPrecedence = peek().calcPrecedence();
         if (NextPrecedence >= Precedence) {
           return LHS;
