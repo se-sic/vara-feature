@@ -343,7 +343,7 @@ $(function() {
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="comment">/// Parse 64-bit integer in decimal or scientific notation.</span></div>
 <div class="line"><a name="l00266"></a><span class="lineno"><a class="line" href="namespacevara_1_1feature.html#aacd1d1412d7ec37be06a2276df667b87">  266</a></span>&#160;<span class="comment"></span><span class="keyword">static</span> int64_t <a class="code" href="namespacevara_1_1feature.html#aacd1d1412d7ec37be06a2276df667b87">parseInteger</a>(llvm::StringRef Str,</div>
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;                            llvm::Optional&lt;unsigned int&gt; Line = llvm::None) {</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="keywordflow">if</span> (Str.contains_lower(<span class="charliteral">&#39;e&#39;</span>)) {</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="keywordflow">if</span> (Str.contains_insensitive(<span class="charliteral">&#39;e&#39;</span>)) {</div>
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    <span class="comment">// If we encounter scientific notation we try to parse the number as double.</span></div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    <span class="keywordflow">if</span> (<span class="keywordtype">double</span> Double; !Str.getAsDouble(Double)) {</div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="namespacevara_1_1feature.html#aacd1d1412d7ec37be06a2276df667b87">parseInteger</a>(llvm::formatv(<span class="stringliteral">&quot;{0:0}&quot;</span>, Double).str());</div>
@@ -662,7 +662,7 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1feature_1_1ConstraintToken_html_a4fc8d285432b0b9fd4adc0aa610eba74affc0d9b54a1fe677c4c9e6b050e67c81"><div class="ttname"><a href="classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74affc0d9b54a1fe677c4c9e6b050e67c81">vara::feature::ConstraintToken::ConstraintTokenKind::MINUS</a></div><div class="ttdeci">@ MINUS</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Nov 8 2022 19:49:03 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 9 2022 09:20:28 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
