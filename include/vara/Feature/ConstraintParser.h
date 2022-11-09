@@ -265,7 +265,7 @@ private:
 /// Parse 64-bit integer in decimal or scientific notation.
 static int64_t parseInteger(llvm::StringRef Str,
                             llvm::Optional<unsigned int> Line = llvm::None) {
-  if (Str.contains_lower('e')) {
+  if (Str.contains_insensitive('e')) {
     // If we encounter scientific notation we try to parse the number as double.
     if (double Double; !Str.getAsDouble(Double)) {
       return parseInteger(llvm::formatv("{0:0}", Double).str());

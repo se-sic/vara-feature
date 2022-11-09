@@ -28,9 +28,9 @@ Adhere to the output of
 ```bash
   llvm-config --version
 ```
-To set the version to version 10.0, for instance, you can use the following command:
+To set the version to version 16.0, for instance, you can use the following command:
 ```bash
-CC=clang CXX=clang++ cmake -DLLVM_REQUESTED_VERSION=10.0 ..
+CC=clang CXX=clang++ cmake -DLLVM_REQUESTED_VERSION=16.0 ..
 ```
 
 
