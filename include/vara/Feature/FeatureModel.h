@@ -315,6 +315,15 @@ private:
     return Constraints.back().get();
   }
 
+  using constraint_iterator = typename ConstraintContainerTy::iterator;
+
+  [[nodiscard]] llvm::iterator_range<constraint_iterator> constraints() {
+    return llvm::make_range(Constraints.begin(), Constraints.end());
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Relationships
+
   Relationship *addRelationship(std::unique_ptr<Relationship> Relationship) {
     Relationships.push_back(std::move(Relationship));
     return Relationships.back().get();
@@ -327,15 +336,6 @@ private:
                        return UniR.get() == R;
                      }));
   }
-
-  using constraint_iterator = typename ConstraintContainerTy::iterator;
-
-  [[nodiscard]] llvm::iterator_range<constraint_iterator> constraints() {
-    return llvm::make_range(Constraints.begin(), Constraints.end());
-  }
-
-  //===--------------------------------------------------------------------===//
-  // Relationships
 
   using relationship_iterator = typename RelationshipContainerTy::iterator;
 
