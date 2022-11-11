@@ -71,10 +71,15 @@ public:
   //===--------------------------------------------------------------------===//
   // DFS feature iterator
 
-  class DFSIterator : public std::iterator<std::forward_iterator_tag, Feature *,
-                                           ptrdiff_t, Feature **, Feature *> {
+  class DFSIterator {
 
   public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = Feature *;
+    using difference_type = ptrdiff_t;
+    using pointer = Feature **;
+    using reference = Feature *;
+
     using const_pointer = const Feature *const *;
     using const_reference = const Feature *;
 
@@ -169,11 +174,15 @@ public:
   //===--------------------------------------------------------------------===//
   // Unordered feature iterator
 
-  class FeatureMapIterator
-      : public std::iterator<std::forward_iterator_tag, Feature *, ptrdiff_t,
-                             Feature *, Feature *> {
+  class FeatureMapIterator {
 
   public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = Feature *;
+    using difference_type = ptrdiff_t;
+    using pointer = Feature *;
+    using reference = Feature *;
+
     using const_pointer = const Feature *;
     using const_reference = const Feature *;
 

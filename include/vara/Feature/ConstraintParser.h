@@ -265,7 +265,7 @@ private:
 /// Parse 64-bit integer in decimal or scientific notation.
 static int64_t parseInteger(llvm::StringRef Str,
                             llvm::Optional<unsigned int> Line = llvm::None) {
-  if (Str.contains_lower('e')) {
+  if (Str.contains_insensitive('e')) {
     // If we encounter scientific notation we try to parse the number as double.
     if (double Double; !Str.getAsDouble(Double)) {
       return parseInteger(llvm::formatv("{0:0}", Double).str());
@@ -343,14 +343,14 @@ private:
       case ConstraintToken::ConstraintTokenKind::EQUIVALENT:
       case ConstraintToken::ConstraintTokenKind::GREATER:
       case ConstraintToken::ConstraintTokenKind::GREATER_EQUAL:
-      case ConstraintToken::ConstraintTokenKind::IMPLIES: {
+      case ConstraintToken::ConstraintTokenKind::IMPLIES:
       case ConstraintToken::ConstraintTokenKind::LESS:
       case ConstraintToken::ConstraintTokenKind::LESS_EQUAL:
       case ConstraintToken::ConstraintTokenKind::MINUS:
       case ConstraintToken::ConstraintTokenKind::NOT_EQUAL:
       case ConstraintToken::ConstraintTokenKind::OR:
       case ConstraintToken::ConstraintTokenKind::PLUS:
-      case ConstraintToken::ConstraintTokenKind::STAR:
+      case ConstraintToken::ConstraintTokenKind::STAR: {
         auto NextPrecedence = peek().calcPrecedence();
         if (NextPrecedence >= Precedence) {
           return LHS;

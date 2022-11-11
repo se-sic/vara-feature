@@ -53,7 +53,7 @@ if (CMAKE_BUILD_TYPE)
   string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
 endif()
 if (BUILD_TYPE MATCHES "^(DEBUG)")
-  add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
+  add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter -Wimplicit-fallthrough)
 endif ()
 
 # Enable coverage tracking
@@ -111,7 +111,7 @@ include("vara_feature_macros")
 
 # Include external dependencies
 if (NOT VARA_FEATURE_IN_TREE)
-  set(MIN_LLVM_REQUIRED 10)
+  set(MIN_LLVM_REQUIRED 14)
 
   # Only search for LLVM if we build out of tree
   if (DEFINED LLVM_REQUESTED_VERSION)

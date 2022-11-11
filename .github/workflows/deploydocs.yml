@@ -27,16 +27,15 @@ jobs:
         shell: bash
         run: |
           sudo apt-key adv --fetch-keys https://apt.llvm.org/llvm-snapshot.gpg.key
-          sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
-          sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-11 main'
+          sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main'
           sudo apt-get update
-          sudo apt-get -y install --no-install-recommends clang-11 llvm-11-dev
+          sudo apt-get -y install --no-install-recommends clang-14 llvm-14-dev
 
       - name: Build docs
         env:
           BUILD_TYPE: Release
-          LLVM_VERSION: 11.1
-          CXX: clang++-11
+          LLVM_VERSION: 14.0
+          CXX: clang++-14
         shell: bash
         run: |
           mkdir build
