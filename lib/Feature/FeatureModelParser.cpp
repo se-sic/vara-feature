@@ -289,7 +289,8 @@ bool detectExclude(const Feature *A, const Feature *B) {
 Result<FTErrorCode>
 FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
   auto Transactions = FeatureModelModifyTransaction::openTransaction(FM);
-  for (auto *F : FM) {
+  const auto &FMConstRef = FM;
+  for (auto *F : FMConstRef) {
     auto Children = F->getChildren<Feature>();
     if (Children.size() > 1 &&
         std::all_of(Children.begin(), Children.end(), [Children](auto *F) {

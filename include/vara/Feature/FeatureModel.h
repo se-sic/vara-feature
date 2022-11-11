@@ -55,6 +55,9 @@ public:
 
   [[nodiscard]] llvm::StringRef getCommit() const { return Commit; }
 
+  //===--------------------------------------------------------------------===//
+  // Features
+
   [[nodiscard]] RootFeature *getRoot() const { return Root; }
 
   [[nodiscard]] Feature *getFeature(llvm::StringRef F) const {
@@ -151,22 +154,13 @@ public:
     std::set<Feature *> Visited;
   };
 
-  using ordered_feature_iterator = DFSIterator;
   using const_ordered_feature_iterator = DFSIterator;
 
-  ordered_feature_iterator begin() { return {Root}; }
   [[nodiscard]] const_ordered_feature_iterator begin() const { return {Root}; }
-
-  ordered_feature_iterator end() {
-    return {Root ? Root->getParentFeature() : nullptr};
-  }
   [[nodiscard]] const_ordered_feature_iterator end() const {
     return {Root ? Root->getParentFeature() : nullptr};
   }
 
-  llvm::iterator_range<ordered_feature_iterator> features() {
-    return llvm::make_range(begin(), end());
-  }
   [[nodiscard]] llvm::iterator_range<const_ordered_feature_iterator>
   features() const {
     return llvm::make_range(begin(), end());
@@ -220,13 +214,8 @@ public:
     FeatureMapTy::const_iterator MapIter;
   };
 
-  using unordered_feature_iterator = FeatureMapIterator;
   using const_unordered_feature_iterator = FeatureMapIterator;
 
-  llvm::iterator_range<unordered_feature_iterator> unorderedFeatures() {
-    return llvm::make_range(FeatureMapIterator(Features.begin()),
-                            FeatureMapIterator(Features.end()));
-  }
   [[nodiscard]] llvm::iterator_range<const_unordered_feature_iterator>
   unorderedFeatures() const {
     return llvm::make_range(FeatureMapIterator(Features.begin()),
@@ -236,49 +225,23 @@ public:
   //===--------------------------------------------------------------------===//
   // Constraints
 
-  using constraint_iterator = typename ConstraintContainerTy::iterator;
   using const_constraint_iterator =
       typename ConstraintContainerTy::const_iterator;
 
-  [[nodiscard]] llvm::iterator_range<constraint_iterator> constraints() {
-    return llvm::make_range(Constraints.begin(), Constraints.end());
-  }
   [[nodiscard]] llvm::iterator_range<const_constraint_iterator>
   constraints() const {
     return llvm::make_range(Constraints.begin(), Constraints.end());
   }
 
-  Constraint *addConstraint(std::unique_ptr<Constraint> Constraint) {
-    Constraints.push_back(std::move(Constraint));
-    return Constraints.back().get();
-  }
-
   //===--------------------------------------------------------------------===//
   // Relationships
 
-  using relationship_iterator = typename RelationshipContainerTy::iterator;
   using const_relationship_iterator =
       typename RelationshipContainerTy::const_iterator;
 
-  [[nodiscard]] llvm::iterator_range<relationship_iterator> relationships() {
-    return llvm::make_range(Relationships.begin(), Relationships.end());
-  }
   [[nodiscard]] llvm::iterator_range<const_relationship_iterator>
   relationships() const {
     return llvm::make_range(Relationships.begin(), Relationships.end());
-  }
-
-  Relationship *addRelationship(std::unique_ptr<Relationship> Relationship) {
-    Relationships.push_back(std::move(Relationship));
-    return Relationships.back().get();
-  }
-
-  void removeRelationship(Relationship *R) {
-    Relationships.erase(
-        std::find_if(Relationships.begin(), Relationships.end(),
-                     [R](const std::unique_ptr<Relationship> &UniR) {
-                       return UniR.get() == R;
-                     }));
   }
 
   //===--------------------------------------------------------------------===//
@@ -295,6 +258,15 @@ public:
   void dump() const;
 
 private:
+  void setName(std::string NewName) { Name = std::move(NewName); }
+
+  void setPath(fs::path NewPath) { Path = std::move(NewPath); }
+
+  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
+
+  //===--------------------------------------------------------------------===//
+  // Features
+
   /// Insert a \a Feature into existing model.
   ///
   /// \param[in] Feature feature to be inserted
@@ -307,11 +279,60 @@ private:
 
   RootFeature *setRoot(RootFeature &NewRoot);
 
-  void setName(std::string NewName) { Name = std::move(NewName); }
+  using ordered_feature_iterator = DFSIterator;
 
-  void setPath(fs::path NewPath) { Path = std::move(NewPath); }
+  [[nodiscard]] ordered_feature_iterator begin() { return {Root}; }
+  [[nodiscard]] ordered_feature_iterator end() {
+    return {Root ? Root->getParentFeature() : nullptr};
+  }
 
-  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
+  [[nodiscard]] llvm::iterator_range<ordered_feature_iterator> features() {
+    return llvm::make_range(begin(), end());
+  }
+
+  using unordered_feature_iterator = FeatureMapIterator;
+
+  [[nodiscard]] llvm::iterator_range<unordered_feature_iterator>
+  unorderedFeatures() {
+    return llvm::make_range(FeatureMapIterator(Features.begin()),
+                            FeatureMapIterator(Features.end()));
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Constraints
+
+  Constraint *addConstraint(std::unique_ptr<Constraint> Constraint) {
+    Constraints.push_back(std::move(Constraint));
+    return Constraints.back().get();
+  }
+
+  Relationship *addRelationship(std::unique_ptr<Relationship> Relationship) {
+    Relationships.push_back(std::move(Relationship));
+    return Relationships.back().get();
+  }
+
+  void removeRelationship(Relationship *R) {
+    Relationships.erase(
+        std::find_if(Relationships.begin(), Relationships.end(),
+                     [R](const std::unique_ptr<Relationship> &UniR) {
+                       return UniR.get() == R;
+                     }));
+  }
+
+  using constraint_iterator = typename ConstraintContainerTy::iterator;
+
+  [[nodiscard]] llvm::iterator_range<constraint_iterator> constraints() {
+    return llvm::make_range(Constraints.begin(), Constraints.end());
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Relationships
+
+  using relationship_iterator = typename RelationshipContainerTy::iterator;
+
+  [[nodiscard]] llvm::iterator_range<relationship_iterator> relationships() {
+    return llvm::make_range(Relationships.begin(), Relationships.end());
+  }
 
   std::string Name;
   RootFeature *Root;
@@ -507,7 +528,7 @@ namespace vara::feature {
 template <typename... Rules>
 class FeatureModelConsistencyChecker {
 public:
-  static Result<FTErrorCode> isFeatureModelValid(FeatureModel &FM) {
+  static Result<FTErrorCode> isFeatureModelValid(const FeatureModel &FM) {
     if (auto E = (Rules::check(FM) && ... && true); !E) {
       return Error(INCONSISTENT);
     }
@@ -516,7 +537,7 @@ public:
 };
 
 struct EveryFeatureRequiresParent {
-  static bool check(FeatureModel &FM) {
+  static bool check(const FeatureModel &FM) {
     if (std::all_of(FM.unorderedFeatures().begin(),
                     FM.unorderedFeatures().end(), [](Feature *F) {
                       return llvm::isa<RootFeature>(F) || F->getParentFeature();
@@ -529,7 +550,7 @@ struct EveryFeatureRequiresParent {
 };
 
 struct CheckFeatureParentChildRelationShip {
-  static bool check(FeatureModel &FM) {
+  static bool check(const FeatureModel &FM) {
     if (std::all_of(
             FM.unorderedFeatures().begin(), FM.unorderedFeatures().end(),
             [](Feature *F) {
@@ -548,7 +569,7 @@ struct CheckFeatureParentChildRelationShip {
 };
 
 struct ExactlyOneRootNode {
-  static bool check(FeatureModel &FM) {
+  static bool check(const FeatureModel &FM) {
     if (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
         1 == std::accumulate(FM.unorderedFeatures().begin(),
                              FM.unorderedFeatures().end(), 0,

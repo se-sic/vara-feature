@@ -20,13 +20,13 @@ TEST(FeatureModel, cloneUnique) {
   B.makeFeature<BinaryFeature>("a");
   B.makeFeature<BinaryFeature>("aa")->addEdge("a", "aa");
   B.makeFeature<BinaryFeature>("b");
-  auto FM = B.buildFeatureModel();
+  std::unique_ptr<const FeatureModel> FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
 
-  auto Clone = FM->clone();
+  auto const Clone = FM->clone();
 
   ASSERT_TRUE(Clone);
-  for (const auto &Feature : FM->features()) {
+  for (const auto &Feature : FM->unorderedFeatures()) {
     EXPECT_NE(Clone->getFeature(Feature->getName()), Feature);
   }
 }
@@ -107,7 +107,7 @@ protected:
     ASSERT_TRUE(FM);
   }
 
-  std::unique_ptr<FeatureModel> FM;
+  std::unique_ptr<const FeatureModel> FM;
 };
 
 TEST_F(FeatureModelTest, iter) {
@@ -244,7 +244,7 @@ protected:
   // Dummy method to fulfill the FeatureModelModification interface
   Result<FTErrorCode> exec(FeatureModel &_) override { return {ERROR}; }
 
-  std::unique_ptr<FeatureModel> FM;
+  std::unique_ptr<const FeatureModel> FM;
 };
 
 TEST_F(FeatureModelConsistencyCheckerTest, NoChecksIsTrue) {
@@ -284,25 +284,31 @@ TEST_F(FeatureModelConsistencyCheckerTest,
 }
 
 TEST_F(FeatureModelConsistencyCheckerTest, FMNoRoot) {
-  FeatureModel FM;
+  FeatureModelBuilder B;
+  FM = B.buildFeatureModel();
 
-  FeatureModelModification::removeFeature(FM, *FM.getRoot());
+  auto Mod = FM->clone();
+  FeatureModelModification::removeFeature(*Mod, *Mod->getRoot());
 
-  EXPECT_EQ(FM.size(), 0);
-  EXPECT_EQ(FM.begin(), FM.end());
+  EXPECT_EQ(Mod->size(), 0);
   EXPECT_FALSE(
       FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
-          FM));
+          *Mod));
+
+  const auto &FMConstRef = *Mod;
+  EXPECT_EQ(FMConstRef.begin(), FMConstRef.end());
 }
 
 TEST_F(FeatureModelConsistencyCheckerTest,
        EveryFMNeedsOneRootButMultiplePresent) {
+  auto Mod = FM->clone();
+
   ASSERT_TRUE(FeatureModelModification::addFeature(
-      *FM, std::make_unique<RootFeature>("z")));
+      *Mod, std::make_unique<RootFeature>("z")));
 
   EXPECT_FALSE(
       FeatureModelConsistencyChecker<ExactlyOneRootNode>::isFeatureModelValid(
-          *FM));
+          *Mod));
 }
 
 } // namespace vara::feature
