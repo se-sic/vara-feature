@@ -23,7 +23,7 @@ TEST(FeatureModel, cloneUnique) {
   std::unique_ptr<const FeatureModel> FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
 
-  auto const Clone = FM->clone();
+  auto Clone = FM->clone();
 
   ASSERT_TRUE(Clone);
   for (const auto &Feature : FM->unorderedFeatures()) {
