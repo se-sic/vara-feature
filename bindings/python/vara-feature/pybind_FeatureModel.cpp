@@ -96,7 +96,7 @@ void init_feature_model_module(py::module &M) {
       .def("__len__", &vf::FeatureModel::size)
       .def(
           "__iter__",
-          [](vf::FeatureModel &FM) {
+          [](const vf::FeatureModel &FM) {
             return py::make_iterator(FM.begin(), FM.end());
           },
           py::keep_alive<0, 1>());
