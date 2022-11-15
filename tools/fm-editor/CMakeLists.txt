@@ -4,7 +4,7 @@ set(LLVM_LINK_COMPONENTS
         Core
         )
 set(CMAKE_AUTOMOC ON)
-
+set(CMAKE_AUTOUIC ON)
 add_vara_executable(fm-editor
         main.cpp
         FeatureModelGraph.h
@@ -13,6 +13,8 @@ add_vara_executable(fm-editor
         FeatureNode.cpp
         FeatureEdge.h
         FeatureEdge.cpp
+        FeatureModelEditor.h FeatureModelEditor.cpp
+        FeatureModelEditor.ui
         )
 
 target_link_libraries(fm-editor

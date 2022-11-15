@@ -12,12 +12,12 @@
 
 #include <QKeyEvent>
 #include <QRandomGenerator>
-FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
+FeatureModelGraph::FeatureModelGraph(std::unique_ptr<vara::feature::FeatureModel> FeatureModel,
                                      QWidget *Parent)
-    : QGraphicsView(Parent), EntryNode(new FeatureNode(this, FeatureModel->getRoot())) {
+    : QGraphicsView(Parent), EntryNode(new FeatureNode(this, FeatureModel->getRoot())), FeatureModel(std::move(FeatureModel)) {
   auto *Scene = new QGraphicsScene(this);
   Scene->setItemIndexMethod(QGraphicsScene::NoIndex);
-  Scene->setSceneRect(-200, -200, 400, 400);
+  Scene->setSceneRect(0, 0, 600, 600);
   setScene(Scene);
   setCacheMode(CacheBackground);
   setViewportUpdateMode(BoundingRectViewportUpdate);
@@ -25,14 +25,14 @@ FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
   setTransformationAnchor(AnchorUnderMouse);
   scale(qreal(0.8), qreal(0.8));
   setMinimumSize(400, 400);
-
+  Nodes.insert(EntryNode);
   Scene->addItem(EntryNode);
   buildRec(EntryNode);
   auto NextChildren =std::vector<FeatureNode*>(EntryNode->children().size());
   auto CurrentChildren = EntryNode->children();
   std::transform(CurrentChildren.begin(),CurrentChildren.end(),NextChildren.begin(),[](FeatureEdge* Edge){return Edge->targetNode();});
-  positionRec(1,NextChildren,WIDTH,0);
-  EntryNode->setPos(WIDTH/2,0);
+  positionRec(1,NextChildren,WIDTH-10,0);
+  EntryNode->setPos(WIDTH/2,10);
 }
 
 void FeatureModelGraph::buildRec(FeatureNode *CurrentFeatureNode) {
@@ -41,6 +41,7 @@ void FeatureModelGraph::buildRec(FeatureNode *CurrentFeatureNode) {
            1)) {
     auto *Node = new FeatureNode(this, Feature);
     auto *Edge = new FeatureEdge(CurrentFeatureNode, Node);
+    Nodes.insert(Node);
     scene()->addItem(Edge);
     scene()->addItem(Node);
     buildRec(Node);
@@ -61,7 +62,7 @@ int FeatureModelGraph::positionRec(const int CurrentDepth, const std::vector<Fea
     auto CurrentChildren = Node->children();
     std::transform(CurrentChildren.begin(),CurrentChildren.end(),NextChildren.begin(),[](FeatureEdge* Edge){return Edge->targetNode();});
     int Depth = positionRec(CurrentDepth+1,NextChildren,ContainerSize,NextOffset);
-    Node->setPos(NextOffset+ContainerSize/2,(HEIGHT/Depth)*CurrentDepth);
+    Node->setPos(NextOffset+ContainerSize/2,(HEIGHT/(Depth+1))*CurrentDepth);
     MaxDepth = MaxDepth<Depth?Depth:MaxDepth;
   }
   return MaxDepth;

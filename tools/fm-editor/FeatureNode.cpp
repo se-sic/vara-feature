@@ -51,36 +51,32 @@ bool FeatureNode::advancePosition() {
 }
 QRectF FeatureNode::boundingRect() const {
   qreal Adjust = 2;
-  return { -10 - Adjust, -10 - Adjust, 23 + Adjust, 23 + Adjust};
+  int W = width();
+  return {-W / 2 - Adjust, -10 - Adjust, W + Adjust, 23 + Adjust};
 }
 
-QPainterPath FeatureNode::shape() const
-{
+QPainterPath FeatureNode::shape() const {
   QPainterPath Path;
-  Path.addEllipse(-10, -10, 20, 20);
+  int W = width();
+  Path.addRect(-W / 2, -10, W, 20);
   return Path;
 }
 void FeatureNode::paint(QPainter *Painter,
                         const QStyleOptionGraphicsItem *Option,
                         QWidget *Widget) {
-  Painter->setPen(Qt::NoPen);
-  Painter->setBrush(Qt::darkGray);
-  Painter->drawEllipse(-7, -7, 20, 20);
-
-  QRadialGradient Gradient(-3, -3, 10);
+  const auto Name = QString::fromStdString(Feature->getName().str());
+  QBrush Brush(Qt::darkYellow);
   if (Option->state & QStyle::State_Sunken) {
-    Gradient.setCenter(3, 3);
-    Gradient.setFocalPoint(3, 3);
-    Gradient.setColorAt(1, QColor(Qt::yellow).lighter(120));
-    Gradient.setColorAt(0, QColor(Qt::darkYellow).lighter(120));
+    Brush.setColor(QColor(Qt::yellow).lighter(120));
   } else {
-    Gradient.setColorAt(0, Qt::yellow);
-    Gradient.setColorAt(1, Qt::darkYellow);
   }
-  Painter->setBrush(Gradient);
+  Painter->setBrush(Brush);
 
   Painter->setPen(QPen(Qt::black, 0));
-  Painter->drawEllipse(-10, -10, 20, 20);
+  int W = width();
+  Painter->drawRect(-W / 2, -10, W, 20);
+  Painter->setPen(QPen(Qt::black, 1));
+  Painter->drawText(-W/2+5, 5, Name);
 }
 QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
                                  const QVariant &Value) {
@@ -101,8 +97,7 @@ QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
   return QGraphicsItem::itemChange(Change, Value);
 }
 
-void FeatureNode::mousePressEvent(QGraphicsSceneMouseEvent *Event)
-{
+void FeatureNode::mousePressEvent(QGraphicsSceneMouseEvent *Event) {
   update();
   QGraphicsItem::mousePressEvent(Event);
 }
@@ -110,4 +105,9 @@ void FeatureNode::mousePressEvent(QGraphicsSceneMouseEvent *Event)
 void FeatureNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) {
   update();
   QGraphicsItem::mouseReleaseEvent(Event);
+}
+
+int FeatureNode::width() const {
+  auto Name = Feature->getName();
+  return 15 + 5 * Name.str().length();
 }

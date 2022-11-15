@@ -10,9 +10,9 @@ class FeatureModelGraph : public QGraphicsView {
   Q_OBJECT
 
 public:
-  FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
+  FeatureModelGraph(std::unique_ptr<vara::feature::FeatureModel> FeatureModel,
                     QWidget *Parent = nullptr);
-
+  std::set<FeatureNode*> getNodes() {return Nodes;};
   void itemMoved();
 
 public slots:
@@ -35,6 +35,8 @@ private:
                   unsigned long Width, unsigned long Offset);
   const int HEIGHT = 600;
   const int WIDTH = 600;
+  std::unique_ptr<vara::feature::FeatureModel> FeatureModel;
+  std::set<FeatureNode*> Nodes;
 };
 
 #endif // VARA_FEATURE_FEATUREMODELGRAPH_H

@@ -2,22 +2,18 @@
 // Created by simon on 04.11.22.
 //
 
+#include "FeatureModelEditor.h"
 #include "FeatureModelGraph.h"
 #include "vara/Feature/FeatureModel.h"
 
 #include <QApplication>
-#include <QTime>
 #include <QMainWindow>
+#include <QTime>
 
 int main(int argc, char **argv)
 {
   QApplication App(argc, argv);
-  auto Model =  vara::feature::loadFeatureModel("/home/simon/Workspace/vara-feature/tools/fm-editor/test_children.xml");
-  auto *Widget = new FeatureModelGraph(Model.get());
-
-  QMainWindow MainWindow;
-  MainWindow.setCentralWidget(Widget);
-
-  MainWindow.show();
+  FeatureModelEditor W;
+  W.show();
   return App.exec();
 }
