@@ -19,7 +19,7 @@ class TestFeature(unittest.TestCase):
         self.assertEqual("Foo", test_feature.name.str())
 
     def test_string(self):
-        """ Checks if a feature is root. """
+        """ Checks output string. """
         test_feature = feature.BinaryFeature("Foo", False, [], "--foo")
         self.assertEqual("--foo", str(test_feature))
 

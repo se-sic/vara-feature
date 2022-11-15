@@ -90,9 +90,9 @@ void init_feature_module_binary_feature(py::module &M) {
       .def(py::init<std::string, bool>())
       .def(py::init<std::string, bool,
                     std::vector<vara::feature::FeatureSourceRange>>())
-      .def(
-          "to_string", &vf::BinaryFeature::toString,
-          R"pbdoc(Returns the string representation of a BinaryFeature.)pbdoc");
+      .def(py::init<std::string, bool,
+                    std::vector<vara::feature::FeatureSourceRange>,
+                    std::string>());
 }
 
 void init_feature_module_numeric_feature(py::module &M) {
@@ -100,16 +100,14 @@ void init_feature_module_numeric_feature(py::module &M) {
       .def(py::init<std::string, vf::NumericFeature::ValuesVariantType, bool>())
       .def(py::init<std::string, vf::NumericFeature::ValuesVariantType, bool,
                     std::vector<vara::feature::FeatureSourceRange>>())
-      .def(
-          "to_string", &vf::NumericFeature::toString,
-          R"pbdoc(Returns the string representation of a NumericFeature.)pbdoc");
+      .def(py::init<std::string, vf::NumericFeature::ValuesVariantType, bool,
+                    std::vector<vara::feature::FeatureSourceRange>,
+                    std::string>());
 }
 
 void init_feature_module_root_feature(py::module &M) {
   py::class_<vf::RootFeature, vf::Feature>(M, "RootFeature")
-      .def(py::init<std::string>())
-      .def("to_string", &vf::RootFeature::toString,
-           R"pbdoc(Returns the string representation of a RootFeature.)pbdoc");
+      .def(py::init<std::string>());
 }
 
 void init_feature_module(py::module &M) {
