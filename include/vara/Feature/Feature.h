@@ -18,8 +18,6 @@
 #include <utility>
 #include <variant>
 
-using std::string;
-
 namespace vara::feature {
 
 namespace detail {
@@ -55,6 +53,8 @@ public:
   [[nodiscard]] FeatureKind getKind() const { return Kind; }
 
   [[nodiscard]] llvm::StringRef getName() const { return Name; }
+
+  [[nodiscard]] llvm::StringRef getOutputString() const { return OutputString; }
 
   [[nodiscard]] bool isOptional() const { return Opt; }
 
@@ -171,21 +171,23 @@ public:
   //===--------------------------------------------------------------------===//
   // Utility
 
-  [[nodiscard]] virtual std::string toString() const;
+  [[nodiscard]] std::string toString() const { return getOutputString().str(); }
 
   LLVM_DUMP_METHOD
-  void dump() const { llvm::outs() << toString() << '\n'; }
+  virtual void dump() const;
 
   static bool classof(const FeatureTreeNode *N) {
     return N->getKind() == NodeKind::NK_FEATURE;
   }
 
 protected:
-  Feature(FeatureKind Kind, string Name, bool Opt,
+  Feature(FeatureKind Kind, std::string Name, bool Opt,
           std::vector<FeatureSourceRange> Locations,
-          FeatureTreeNode *Parent = nullptr, const NodeSetType &Children = {})
+          std::string OutputString = "", FeatureTreeNode *Parent = nullptr,
+          const NodeSetType &Children = {})
       : FeatureTreeNode(NodeKind::NK_FEATURE, Parent, Children), Kind(Kind),
-        Name(std::move(Name)), Locations(std::move(Locations)), Opt(Opt) {}
+        Name(std::move(Name)), OutputString(std::move(OutputString)),
+        Locations(std::move(Locations)), Opt(Opt) {}
 
 private:
   void addConstraint(Constraint *C) {
@@ -211,7 +213,8 @@ private:
   }
 
   const FeatureKind Kind;
-  string Name;
+  std::string Name;
+  std::string OutputString;
   std::vector<FeatureSourceRange> Locations;
   std::vector<Constraint *> Constraints;
   std::vector<ExcludesConstraint *> Excludes;
@@ -224,11 +227,14 @@ class BinaryFeature : public Feature {
 
 public:
   BinaryFeature(
-      string Name, bool Opt = false,
-      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>())
-      : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc)) {}
+      std::string Name, bool Opt = false,
+      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
+      std::string OutputString = "")
+      : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc),
+                std::move(OutputString)) {}
 
-  [[nodiscard]] string toString() const override;
+  LLVM_DUMP_METHOD
+  void dump() const override;
 
   static bool classof(const Feature *F) {
     return F->getKind() == FeatureKind::FK_BINARY;
@@ -244,14 +250,17 @@ public:
       typename std::variant<ValueRangeType, ValueListType>;
 
   NumericFeature(
-      string Name, ValuesVariantType Values, bool Opt = false,
-      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>())
-      : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc)),
+      std::string Name, ValuesVariantType Values, bool Opt = false,
+      std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
+      std::string OutputString = "")
+      : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc),
+                std::move(OutputString)),
         Values(std::move(Values)) {}
 
   [[nodiscard]] ValuesVariantType getValues() const { return Values; }
 
-  [[nodiscard]] string toString() const override;
+  LLVM_DUMP_METHOD
+  void dump() const override;
 
   static bool classof(const Feature *F) {
     return F->getKind() == FeatureKind::FK_NUMERIC;
@@ -267,7 +276,7 @@ private:
 
 class RootFeature : public Feature {
 public:
-  explicit RootFeature(string Name)
+  explicit RootFeature(std::string Name)
       : Feature(FeatureKind::FK_ROOT, std::move(Name), false, {}) {}
 
   static bool classof(const Feature *F) {

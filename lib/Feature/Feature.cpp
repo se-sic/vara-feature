@@ -4,7 +4,7 @@
 
 namespace vara::feature {
 
-std::string Feature::toString() const {
+void Feature::dump() const {
   std::stringstream StrS;
   StrS << "  name: \"" << Name
        << "\",\n  optional: " << (Opt ? "true" : "false") << ",\n  ";
@@ -26,12 +26,12 @@ std::string Feature::toString() const {
     }
   }
   StrS << "]";
-  return StrS.str();
+  llvm::outs() << StrS.str();
 }
 
-std::string NumericFeature::toString() const {
+void NumericFeature::dump() const {
+  Feature::dump();
   std::stringstream StrS;
-  StrS << Feature::toString();
   if (std::holds_alternative<ValueRangeType>(Values)) {
     auto Pair = std::get<ValueRangeType>(Values);
     StrS << ",\n  minValue: " << Pair.first << ",\n  maxValue: " << Pair.second;
@@ -42,10 +42,10 @@ std::string NumericFeature::toString() const {
     }
     StrS << "]";
   }
-  return StrS.str();
+  llvm::outs() << StrS.str();
 }
 
-std::string BinaryFeature::toString() const { return Feature::toString(); }
+void BinaryFeature::dump() const { Feature::dump(); }
 
 /// Find roots of subtrees containing either A (this) or B (Other) which have a
 /// common parent feature and compare them lexicographically. If no such node
