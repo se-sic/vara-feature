@@ -171,10 +171,10 @@ public:
   //===--------------------------------------------------------------------===//
   // Utility
 
-  [[nodiscard]] std::string toString() const { return getOutputString().str(); }
+  [[nodiscard]] virtual std::string toString() const;
 
   LLVM_DUMP_METHOD
-  virtual void dump() const;
+  void dump() const { llvm::outs() << toString() << '\n'; }
 
   static bool classof(const FeatureTreeNode *N) {
     return N->getKind() == NodeKind::NK_FEATURE;
@@ -233,8 +233,7 @@ public:
       : Feature(FeatureKind::FK_BINARY, std::move(Name), Opt, std::move(Loc),
                 std::move(OutputString)) {}
 
-  LLVM_DUMP_METHOD
-  void dump() const override;
+  [[nodiscard]] string toString() const override;
 
   static bool classof(const Feature *F) {
     return F->getKind() == FeatureKind::FK_BINARY;
@@ -259,8 +258,7 @@ public:
 
   [[nodiscard]] ValuesVariantType getValues() const { return Values; }
 
-  LLVM_DUMP_METHOD
-  void dump() const override;
+  [[nodiscard]] string toString() const override;
 
   static bool classof(const Feature *F) {
     return F->getKind() == FeatureKind::FK_NUMERIC;

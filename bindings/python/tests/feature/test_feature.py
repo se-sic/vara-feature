@@ -21,7 +21,7 @@ class TestFeature(unittest.TestCase):
     def test_string(self):
         """ Checks output string. """
         test_feature = feature.BinaryFeature("Foo", False, [], "--foo")
-        self.assertEqual("--foo", str(test_feature))
+        self.assertEqual("--foo", test_feature.output_string.str())
 
     def test_is_optinal(self):
         """ Checks if the Feature is optional.  """
