@@ -25,6 +25,7 @@ Result<FTErrorCode>
 FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                 bool Num = false) {
   std::string Name{"root"};
+  std::string OutputString;
   bool Opt = false;
   int64_t MinValue = 0;
   int64_t MaxValue = 0;
@@ -42,6 +43,8 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       // the input beforehand.
       if (!xmlStrcmp(Head->name, XmlConstants::NAME)) {
         Name = Cnt;
+      } else if (!xmlStrcmp(Head->name, XmlConstants::OUTPUTSTRING)) {
+        OutputString = Cnt;
       } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
         Opt = Cnt == "True";
       } else if (!xmlStrcmp(Head->name, XmlConstants::PARENT)) {
@@ -127,13 +130,15 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   } else if (Num) {
     if (Values.empty()) {
       FMB.makeFeature<NumericFeature>(Name, std::make_pair(MinValue, MaxValue),
-                                      Opt, std::move(SourceRanges));
+                                      Opt, std::move(SourceRanges),
+                                      OutputString);
     } else {
       FMB.makeFeature<NumericFeature>(Name, Values, Opt,
-                                      std::move(SourceRanges));
+                                      std::move(SourceRanges), OutputString);
     }
   } else {
-    FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges));
+    FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges),
+                                   OutputString);
   }
   return Ok();
 }

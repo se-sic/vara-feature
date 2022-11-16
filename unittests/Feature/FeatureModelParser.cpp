@@ -119,6 +119,14 @@ TEST(FeatureModelParser, memberOffset) {
   }
 }
 
+TEST(FeatureModelParser, outputString) {
+  auto FM = buildFeatureModel("test_output_string.xml");
+  ASSERT_TRUE(FM);
+
+  auto *F = FM->getFeature("A");
+  EXPECT_EQ(F->getOutputString(), "-a");
+}
+
 //===----------------------------------------------------------------------===//
 //                        XMLAlternatives
 //===----------------------------------------------------------------------===//

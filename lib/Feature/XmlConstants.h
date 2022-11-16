@@ -16,6 +16,7 @@ public:
 
   static constexpr xmlChar VM[] = "vm";
   static constexpr xmlChar NAME[] = "name";
+  static constexpr xmlChar OUTPUTSTRING[] = "outputString";
   static constexpr xmlChar COMMIT[] = "commit";
   static constexpr xmlChar OPTIONAL[] = "optional";
   static constexpr xmlChar PARENT[] = "parent";
