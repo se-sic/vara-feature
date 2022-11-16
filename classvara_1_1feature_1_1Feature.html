@@ -162,6 +162,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aeb5a3cb4727d7d080babb1d9e65fbde8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5f399ffd6aceebe13f45dd63896d655"><td class="memItemLeft" align="right" valign="top">llvm::StringRef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#aa5f399ffd6aceebe13f45dd63896d655">getName</a> () const</td></tr>
 <tr class="separator:aa5f399ffd6aceebe13f45dd63896d655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fd7c88efa406d896019fdf700e08fe3"><td class="memItemLeft" align="right" valign="top">llvm::StringRef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a1fd7c88efa406d896019fdf700e08fe3">getOutputString</a> () const</td></tr>
+<tr class="separator:a1fd7c88efa406d896019fdf700e08fe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0907218a25b3abc41a22d6007e5665d0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a0907218a25b3abc41a22d6007e5665d0">isOptional</a> () const</td></tr>
 <tr class="separator:a0907218a25b3abc41a22d6007e5665d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a753ea2066226f1b2aa68134d9dd38e4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a753ea2066226f1b2aa68134d9dd38e4a">getParentFeature</a> () const</td></tr>
@@ -255,8 +257,8 @@ Static Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a1c09a0226cbb7f41ec7bc16165f869da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a1c09a0226cbb7f41ec7bc16165f869da">Feature</a> (<a class="el" href="classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661">FeatureKind</a> Kind, string Name, bool Opt, std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt; Locations, <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> *Parent=nullptr, const <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#a5edab5e4f918fca917d265e7b6eccec6">NodeSetType</a> &amp;Children={})</td></tr>
-<tr class="separator:a1c09a0226cbb7f41ec7bc16165f869da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a908ecf8017c082a450f43ff3fba0ad25"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a908ecf8017c082a450f43ff3fba0ad25">Feature</a> (<a class="el" href="classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661">FeatureKind</a> Kind, std::string Name, bool Opt, std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt; Locations, std::string OutputString=&quot;&quot;, <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> *Parent=nullptr, const <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#a5edab5e4f918fca917d265e7b6eccec6">NodeSetType</a> &amp;Children={})</td></tr>
+<tr class="separator:a908ecf8017c082a450f43ff3fba0ad25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classvara_1_1feature_1_1FeatureTreeNode"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classvara_1_1feature_1_1FeatureTreeNode')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">vara::feature::FeatureTreeNode</a></td></tr>
 <tr class="memitem:ae39852e21720f5efab0164b59b317294 inherit pro_methods_classvara_1_1feature_1_1FeatureTreeNode"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#ae39852e21720f5efab0164b59b317294">FeatureTreeNode</a> (<a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#aed13fda25fe24e527286a7851cd009af">NodeKind</a> Kind, <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> *Parent, const llvm::SmallPtrSetImpl&lt; <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> * &gt; &amp;Children)</td></tr>
 <tr class="separator:ae39852e21720f5efab0164b59b317294 inherit pro_methods_classvara_1_1feature_1_1FeatureTreeNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -275,7 +277,7 @@ Friends</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for components of <em><a class="el" href="classvara_1_1feature_1_1FeatureModel.html" title="Tree like representation of features and dependencies.">FeatureModel</a></em>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00034">34</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00032">32</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="aa083c0c7c87f6147dbe7e9da9685fb02"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa083c0c7c87f6147dbe7e9da9685fb02">&#9670;&nbsp;</a></span>const_constraint_iterator</h2>
@@ -416,7 +418,7 @@ Friends</h2></td></tr>
 <tr><td class="fieldname"><a id="a4b99bea6ef873a9ee7ef378fffc2d661acb2cd563a57b52cc9d696c0ad7ee9dfb"></a>FK_UNKNOWN&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00040">40</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00038">38</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -445,7 +447,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00042">42</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00040">40</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -526,8 +528,8 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="a1c09a0226cbb7f41ec7bc16165f869da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c09a0226cbb7f41ec7bc16165f869da">&#9670;&nbsp;</a></span>Feature() <span class="overload">[4/4]</span></h2>
+<a id="a908ecf8017c082a450f43ff3fba0ad25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a908ecf8017c082a450f43ff3fba0ad25">&#9670;&nbsp;</a></span>Feature() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -544,7 +546,7 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">string&#160;</td>
+          <td class="paramtype">std::string&#160;</td>
           <td class="paramname"><em>Name</em>, </td>
         </tr>
         <tr>
@@ -558,6 +560,12 @@ Friends</h2></td></tr>
           <td></td>
           <td class="paramtype">std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt;&#160;</td>
           <td class="paramname"><em>Locations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>OutputString</em> = <code>&quot;&quot;</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -761,7 +769,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00148">148</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModelParser_8cpp_source.html#l00272">vara::feature::detectExclude()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModelParser_8cpp_source.html#l00277">vara::feature::detectExclude()</a>.</p>
 
 </div>
 </div>
@@ -815,9 +823,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00055">55</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00053">53</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="Feature_8h_source.html#l00233">vara::feature::BinaryFeature::classof()</a>, <a class="el" href="Feature_8h_source.html#l00256">vara::feature::NumericFeature::classof()</a>, <a class="el" href="Feature_8h_source.html#l00273">vara::feature::RootFeature::classof()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00228">vara::feature::compareProperties()</a>, and <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00205">vara::feature::featureCopy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="Feature_8h_source.html#l00238">vara::feature::BinaryFeature::classof()</a>, <a class="el" href="Feature_8h_source.html#l00263">vara::feature::NumericFeature::classof()</a>, <a class="el" href="Feature_8h_source.html#l00280">vara::feature::RootFeature::classof()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00228">vara::feature::compareProperties()</a>, and <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00205">vara::feature::featureCopy()</a>.</p>
 
 </div>
 </div>
@@ -931,9 +939,36 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00057">57</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00055">55</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="FeatureModel_8h_source.html#l00463">llvm::GraphWriter&lt; vara::feature::FeatureModel * &gt;::buildFeatureLabel()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00228">vara::feature::compareProperties()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00205">vara::feature::featureCopy()</a>, <a class="el" href="Feature_8h_source.html#l00051">hash()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00172">vara::feature::mergeSubtree()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00703">vara::feature::detail::SetRoot::operator()()</a>, <a class="el" href="Feature_8cpp_source.html#l00053">operator&lt;()</a>, <a class="el" href="Feature_8h_source.html#l00077">operator==()</a>, and <a class="el" href="Feature_8cpp_source.html#l00007">toString()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="FeatureModel_8h_source.html#l00463">llvm::GraphWriter&lt; vara::feature::FeatureModel * &gt;::buildFeatureLabel()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00228">vara::feature::compareProperties()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00205">vara::feature::featureCopy()</a>, <a class="el" href="Feature_8h_source.html#l00049">hash()</a>, <a class="el" href="FeatureModelTransaction_8cpp_source.html#l00172">vara::feature::mergeSubtree()</a>, <a class="el" href="FeatureModelTransaction_8h_source.html#l00703">vara::feature::detail::SetRoot::operator()()</a>, <a class="el" href="Feature_8cpp_source.html#l00053">operator&lt;()</a>, <a class="el" href="Feature_8h_source.html#l00077">operator==()</a>, and <a class="el" href="Feature_8cpp_source.html#l00007">toString()</a>.</p>
+
+</div>
+</div>
+<a id="a1fd7c88efa406d896019fdf700e08fe3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fd7c88efa406d896019fdf700e08fe3">&#9670;&nbsp;</a></span>getOutputString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">llvm::StringRef vara::feature::Feature::getOutputString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00057">57</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -993,9 +1028,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00051">51</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00049">49</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
-<p class="reference">References <a class="el" href="Feature_8h_source.html#l00057">getName()</a>.</p>
+<p class="reference">References <a class="el" href="Feature_8h_source.html#l00055">getName()</a>.</p>
 
 </div>
 </div>
@@ -1163,7 +1198,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="Feature_8cpp_source.html#l00053">53</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="Feature_8h_source.html#l00057">getName()</a>, and <a class="el" href="Feature_8h_source.html#l00063">getParentFeature()</a>.</p>
+<p class="reference">References <a class="el" href="Feature_8h_source.html#l00055">getName()</a>, and <a class="el" href="Feature_8h_source.html#l00063">getParentFeature()</a>.</p>
 
 </div>
 </div>
@@ -1247,7 +1282,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00077">77</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
-<p class="reference">References <a class="el" href="Feature_8h_source.html#l00057">getName()</a>.</p>
+<p class="reference">References <a class="el" href="Feature_8h_source.html#l00055">getName()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="Feature_8h_source.html#l00081">operator!=()</a>.</p>
 
@@ -1338,9 +1373,9 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="Feature_8cpp_source.html#l00007">7</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="FeatureTreeNode_8h_source.html#l00068">vara::feature::FeatureTreeNode::children()</a>, <a class="el" href="Feature_8h_source.html#l00057">getName()</a>, <a class="el" href="Feature_8h_source.html#l00063">getParentFeature()</a>, and <a class="el" href="Feature_8h_source.html#l00093">hasLocations()</a>.</p>
+<p class="reference">References <a class="el" href="FeatureTreeNode_8h_source.html#l00068">vara::feature::FeatureTreeNode::children()</a>, <a class="el" href="Feature_8h_source.html#l00055">getName()</a>, <a class="el" href="Feature_8h_source.html#l00063">getParentFeature()</a>, and <a class="el" href="Feature_8h_source.html#l00093">hasLocations()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="Feature_8h_source.html#l00177">dump()</a>, <a class="el" href="Feature_8h_source.html#l00280">operator&lt;&lt;()</a>, <a class="el" href="Feature_8cpp_source.html#l00048">vara::feature::BinaryFeature::toString()</a>, and <a class="el" href="Feature_8cpp_source.html#l00032">vara::feature::NumericFeature::toString()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="Feature_8h_source.html#l00177">dump()</a>, <a class="el" href="Feature_8h_source.html#l00287">operator&lt;&lt;()</a>, <a class="el" href="Feature_8cpp_source.html#l00048">vara::feature::BinaryFeature::toString()</a>, and <a class="el" href="Feature_8cpp_source.html#l00032">vara::feature::NumericFeature::toString()</a>.</p>
 
 </div>
 </div>
@@ -1403,7 +1438,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00037">37</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00035">35</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -1427,7 +1462,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00035">35</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00033">33</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -1451,7 +1486,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00036">36</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00034">34</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -1462,7 +1497,7 @@ Friends</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Nov 13 2022 18:10:49 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 16 2022 13:20:44 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

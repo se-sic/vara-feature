@@ -110,8 +110,8 @@ Collaboration diagram for vara::feature::BinaryFeature:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a21bbc17f863591741110e3ee9e12396f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1BinaryFeature.html#a21bbc17f863591741110e3ee9e12396f">BinaryFeature</a> (string Name, bool Opt=false, std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt; Loc=std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt;())</td></tr>
-<tr class="separator:a21bbc17f863591741110e3ee9e12396f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a860d0d060d37b301e1f2db0f4153851e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1BinaryFeature.html#a860d0d060d37b301e1f2db0f4153851e">BinaryFeature</a> (std::string Name, bool Opt=false, std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt; Loc=std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt;(), std::string OutputString=&quot;&quot;)</td></tr>
+<tr class="separator:a860d0d060d37b301e1f2db0f4153851e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a150a53c836e90eaa971d1e8d8cec0cc2"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1BinaryFeature.html#a150a53c836e90eaa971d1e8d8cec0cc2">toString</a> () const override</td></tr>
 <tr class="separator:a150a53c836e90eaa971d1e8d8cec0cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classvara_1_1feature_1_1Feature"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classvara_1_1feature_1_1Feature')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classvara_1_1feature_1_1Feature.html">vara::feature::Feature</a></td></tr>
@@ -133,6 +133,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aeb5a3cb4727d7d080babb1d9e65fbde8 inherit pub_methods_classvara_1_1feature_1_1Feature"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5f399ffd6aceebe13f45dd63896d655 inherit pub_methods_classvara_1_1feature_1_1Feature"><td class="memItemLeft" align="right" valign="top">llvm::StringRef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#aa5f399ffd6aceebe13f45dd63896d655">getName</a> () const</td></tr>
 <tr class="separator:aa5f399ffd6aceebe13f45dd63896d655 inherit pub_methods_classvara_1_1feature_1_1Feature"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fd7c88efa406d896019fdf700e08fe3 inherit pub_methods_classvara_1_1feature_1_1Feature"><td class="memItemLeft" align="right" valign="top">llvm::StringRef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a1fd7c88efa406d896019fdf700e08fe3">getOutputString</a> () const</td></tr>
+<tr class="separator:a1fd7c88efa406d896019fdf700e08fe3 inherit pub_methods_classvara_1_1feature_1_1Feature"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0907218a25b3abc41a22d6007e5665d0 inherit pub_methods_classvara_1_1feature_1_1Feature"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a0907218a25b3abc41a22d6007e5665d0">isOptional</a> () const</td></tr>
 <tr class="separator:a0907218a25b3abc41a22d6007e5665d0 inherit pub_methods_classvara_1_1feature_1_1Feature"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a753ea2066226f1b2aa68134d9dd38e4a inherit pub_methods_classvara_1_1feature_1_1Feature"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classvara_1_1feature_1_1Feature.html">Feature</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a753ea2066226f1b2aa68134d9dd38e4a">getParentFeature</a> () const</td></tr>
@@ -256,8 +258,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a5edab5e4f918fca917d265e7b6eccec6 inherit pub_types_classvara_1_1feature_1_1FeatureTreeNode"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#a5edab5e4f918fca917d265e7b6eccec6">NodeSetType</a> = typename llvm::SmallSet&lt; <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> *, 3 &gt;</td></tr>
 <tr class="separator:a5edab5e4f918fca917d265e7b6eccec6 inherit pub_types_classvara_1_1feature_1_1FeatureTreeNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classvara_1_1feature_1_1Feature"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classvara_1_1feature_1_1Feature')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classvara_1_1feature_1_1Feature.html">vara::feature::Feature</a></td></tr>
-<tr class="memitem:a1c09a0226cbb7f41ec7bc16165f869da inherit pro_methods_classvara_1_1feature_1_1Feature"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a1c09a0226cbb7f41ec7bc16165f869da">Feature</a> (<a class="el" href="classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661">FeatureKind</a> Kind, string Name, bool Opt, std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt; Locations, <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> *Parent=nullptr, const <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#a5edab5e4f918fca917d265e7b6eccec6">NodeSetType</a> &amp;Children={})</td></tr>
-<tr class="separator:a1c09a0226cbb7f41ec7bc16165f869da inherit pro_methods_classvara_1_1feature_1_1Feature"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a908ecf8017c082a450f43ff3fba0ad25 inherit pro_methods_classvara_1_1feature_1_1Feature"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Feature.html#a908ecf8017c082a450f43ff3fba0ad25">Feature</a> (<a class="el" href="classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661">FeatureKind</a> Kind, std::string Name, bool Opt, std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt; Locations, std::string OutputString=&quot;&quot;, <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> *Parent=nullptr, const <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#a5edab5e4f918fca917d265e7b6eccec6">NodeSetType</a> &amp;Children={})</td></tr>
+<tr class="separator:a908ecf8017c082a450f43ff3fba0ad25 inherit pro_methods_classvara_1_1feature_1_1Feature"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classvara_1_1feature_1_1FeatureTreeNode"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classvara_1_1feature_1_1FeatureTreeNode')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">vara::feature::FeatureTreeNode</a></td></tr>
 <tr class="memitem:ae39852e21720f5efab0164b59b317294 inherit pro_methods_classvara_1_1feature_1_1FeatureTreeNode"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#ae39852e21720f5efab0164b59b317294">FeatureTreeNode</a> (<a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html#aed13fda25fe24e527286a7851cd009af">NodeKind</a> Kind, <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> *Parent, const llvm::SmallPtrSetImpl&lt; <a class="el" href="classvara_1_1feature_1_1FeatureTreeNode.html">FeatureTreeNode</a> * &gt; &amp;Children)</td></tr>
 <tr class="separator:ae39852e21720f5efab0164b59b317294 inherit pro_methods_classvara_1_1feature_1_1FeatureTreeNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -267,10 +269,10 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Options without arguments. </p>
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00223">223</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00226">226</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a21bbc17f863591741110e3ee9e12396f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a21bbc17f863591741110e3ee9e12396f">&#9670;&nbsp;</a></span>BinaryFeature()</h2>
+<a id="a860d0d060d37b301e1f2db0f4153851e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a860d0d060d37b301e1f2db0f4153851e">&#9670;&nbsp;</a></span>BinaryFeature()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -281,7 +283,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">vara::feature::BinaryFeature::BinaryFeature </td>
           <td>(</td>
-          <td class="paramtype">string&#160;</td>
+          <td class="paramtype">std::string&#160;</td>
           <td class="paramname"><em>Name</em>, </td>
         </tr>
         <tr>
@@ -294,7 +296,13 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> &gt;&#160;</td>
-          <td class="paramname"><em>Loc</em> = <code>std::vector&lt;<a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a>&gt;()</code>&#160;</td>
+          <td class="paramname"><em>Loc</em> = <code>std::vector&lt;<a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a>&gt;()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>OutputString</em> = <code>&quot;&quot;</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -309,7 +317,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00226">226</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00229">229</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -338,9 +346,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00233">233</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Feature_8h_source.html#l00238">238</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
-<p class="reference">References <a class="el" href="classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661a62bdf4598ccbde09b15ae910ac7083af">vara::feature::Feature::FK_BINARY</a>, and <a class="el" href="Feature_8h_source.html#l00055">vara::feature::Feature::getKind()</a>.</p>
+<p class="reference">References <a class="el" href="classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661a62bdf4598ccbde09b15ae910ac7083af">vara::feature::Feature::FK_BINARY</a>, and <a class="el" href="Feature_8h_source.html#l00053">vara::feature::Feature::getKind()</a>.</p>
 
 </div>
 </div>
@@ -382,7 +390,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Nov 13 2022 18:10:49 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 16 2022 13:20:43 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
