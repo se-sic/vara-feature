@@ -30,8 +30,8 @@ std::string Feature::toString() const {
 }
 
 std::string NumericFeature::toString() const {
-  Feature::dump();
   std::stringstream StrS;
+  StrS << Feature::toString();
   if (std::holds_alternative<ValueRangeType>(Values)) {
     auto Pair = std::get<ValueRangeType>(Values);
     StrS << ",\n  minValue: " << Pair.first << ",\n  maxValue: " << Pair.second;
