@@ -15,6 +15,12 @@ TEST(Feature, equal) {
   EXPECT_NE(A0, B);
 }
 
+TEST(Feature, outputString) {
+  BinaryFeature F("Foo", false, {}, "--foo");
+
+  EXPECT_EQ(F.getOutputString(), "--foo");
+}
+
 TEST(Feature, locationAccessors) {
   FeatureSourceRange::FeatureSourceLocation Start(3, 4);
   FeatureSourceRange::FeatureSourceLocation End(3, 20);

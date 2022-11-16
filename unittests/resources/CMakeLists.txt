@@ -26,6 +26,7 @@ set(FEATURE_LIB_TEST_FILES
   xml/test_only_children.xml
   xml/test_only_parents.xml
   xml/test_out_of_order.xml
+  xml/test_output_string.xml
   xml/test_with_whitespaces.xml
   )
 
