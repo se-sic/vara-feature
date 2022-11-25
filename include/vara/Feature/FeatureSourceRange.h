@@ -29,6 +29,22 @@ class FeatureSourceRange {
 public:
   enum class Category { necessary, inessential };
 
+  class FeatureRevisionRange {
+  public:
+    FeatureRevisionRange(std::string Introduced, std::string Removed)
+        : Introduced(std::move(Introduced)), Removed(std::move(Removed)) {}
+    FeatureRevisionRange(std::string Introduced)
+        : FeatureRevisionRange(Introduced, std::move(Introduced)) {}
+
+    [[nodiscard]] llvm::StringRef introduced() const { return Introduced; }
+
+    [[nodiscard]] llvm::StringRef removed() const { return Removed; }
+
+  private:
+    std::string Introduced;
+    std::string Removed;
+  };
+
   class FeatureSourceLocation {
 
   public:
@@ -148,17 +164,20 @@ public:
       fs::path Path, llvm::Optional<FeatureSourceLocation> Start = llvm::None,
       llvm::Optional<FeatureSourceLocation> End = llvm::None,
       Category CategoryKind = Category::necessary,
-      llvm::Optional<FeatureMemberOffset> MemberOffset = llvm::None)
+      llvm::Optional<FeatureMemberOffset> MemberOffset = llvm::None,
+      llvm::Optional<FeatureRevisionRange> RevisionRange = llvm::None)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
-        CategoryKind(CategoryKind), MemberOffset(std::move(MemberOffset)) {}
+        CategoryKind(CategoryKind), MemberOffset(std::move(MemberOffset)),
+        RevisionRange(std::move(RevisionRange)) {}
 
   FeatureSourceRange(
       fs::path Path, FeatureSourceLocation Start, FeatureSourceLocation End,
       Category CategoryKind = Category::necessary,
-      llvm::Optional<FeatureMemberOffset> MemberOffset = llvm::None)
+      llvm::Optional<FeatureMemberOffset> MemberOffset = llvm::None,
+      llvm::Optional<FeatureRevisionRange> RevisionRange = llvm::None)
       : FeatureSourceRange(std::move(Path), llvm::Optional(std::move(Start)),
                            llvm::Optional(std::move(End)), CategoryKind,
-                           std::move(MemberOffset)) {}
+                           std::move(MemberOffset), std::move(RevisionRange)) {}
 
   FeatureSourceRange(const FeatureSourceRange &L) = default;
   FeatureSourceRange &operator=(const FeatureSourceRange &) = default;
@@ -188,6 +207,13 @@ public:
   [[nodiscard]] bool hasMemberOffset() const { return MemberOffset.hasValue(); }
   [[nodiscard]] FeatureMemberOffset *getMemberOffset() {
     return MemberOffset.hasValue() ? MemberOffset.getPointer() : nullptr;
+  }
+
+  [[nodiscard]] bool hasRevisionRange() const {
+    return RevisionRange.hasValue();
+  }
+  [[nodiscard]] FeatureRevisionRange *getRevisionRange() {
+    return RevisionRange.hasValue() ? RevisionRange.getPointer() : nullptr;
   }
 
   [[nodiscard]] std::string toString() const {
@@ -221,6 +247,7 @@ private:
   llvm::Optional<FeatureSourceLocation> End;
   Category CategoryKind;
   llvm::Optional<FeatureMemberOffset> MemberOffset;
+  llvm::Optional<FeatureRevisionRange> RevisionRange;
 };
 } // namespace vara::feature
 
