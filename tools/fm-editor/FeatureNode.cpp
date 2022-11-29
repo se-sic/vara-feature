@@ -100,6 +100,7 @@ QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
 void FeatureNode::mousePressEvent(QGraphicsSceneMouseEvent *Event) {
   update();
   QGraphicsItem::mousePressEvent(Event);
+  emit clicked(Feature);
 }
 
 void FeatureNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) {

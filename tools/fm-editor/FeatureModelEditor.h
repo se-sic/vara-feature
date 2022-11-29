@@ -17,8 +17,9 @@ public:
   ~FeatureModelEditor() override = default;
 private:
   Ui::FeatureModelEditor *Ui;
-private slots:
-  void loadFeature(vara::feature::Feature &Feature);
+public slots:
+  void loadFeature(vara::feature::Feature *Feature);
+  void loadGraph();
 };
 
 #endif // VARA_FEATURE_FEATUREMODELEDITOR_H

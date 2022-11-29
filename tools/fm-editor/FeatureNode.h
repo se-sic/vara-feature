@@ -5,10 +5,10 @@
 #include "vara/Feature/Feature.h"
 #include <QGraphicsItem>
 #include <QList>
-
+#include <QObject>
 class FeatureEdge;
 class FeatureModelGraph;
-class FeatureNode : public QGraphicsItem {
+class FeatureNode : public QObject,public QGraphicsItem{
   Q_OBJECT
 public:
   FeatureNode(FeatureModelGraph *Graph, vara::feature::Feature *Feature);
@@ -27,7 +27,7 @@ public:
   [[nodiscard]] QPainterPath shape() const override;
   void paint(QPainter *Painter, const QStyleOptionGraphicsItem *Option, QWidget *Widget) override;
 signals:
-  void clicked(vara::feature::Feature &Feature);
+  void clicked(vara::feature::Feature *Feature);
 protected:
   QVariant itemChange(GraphicsItemChange Change, const QVariant &Value) override;
 
@@ -35,7 +35,7 @@ protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) override;
 
 private:
-  int width() const;
+  [[nodiscard]] int width() const;
   std::vector<FeatureEdge *> ChildEdges;
   FeatureEdge * ParentEdge = nullptr;
   QPointF NewPos;
