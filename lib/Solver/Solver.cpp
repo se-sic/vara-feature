@@ -113,6 +113,14 @@ Z3Solver::addRelationship(const feature::Relationship &R) {
     const auto *ChildFeature = (const feature::Feature *)Child;
     V.push_back(Context.bool_const(ChildFeature->getName().str().c_str()));
   }
+  switch (R.getKind()) {
+  case feature::Relationship::RelationshipKind::RK_ALTERNATIVE:
+    //Solver->add(z3::implies(ParentOption, z3::atmost(V, 1) & z3::mk_or(V)));
+    break;
+  case feature::Relationship::RelationshipKind::RK_OR:
+    Solver->add(z3::implies(ParentOption, z3::mk_or(V)));
+    break;
+  }
   return Ok();
 }
 
