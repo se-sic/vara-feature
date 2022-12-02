@@ -7,6 +7,7 @@
 #include "vara/Solver/Error.h"
 #include "vara/Utils/Result.h"
 
+#include "vara/Feature/Relationship.h"
 #include "z3++.h"
 
 namespace vara::solver {
@@ -48,6 +49,13 @@ public:
   /// \return a possible error if removing the feature was not successful.
   virtual Result<SolverErrorCode>
   removeFeature(feature::Feature &FeatureToRemove) = 0;
+
+  /// Processes the given relationship. This can be either an ALTERNATIVE group
+  /// or an OR group.
+  /// \param R the relationship to add.
+  /// \return a possible error if adding the relationship could not be done.
+  virtual Result<SolverErrorCode>
+  addRelationship(const feature::Relationship &R) = 0;
 
   /// Adds the given constraint to the solver. In the case that the constraint
   /// includes features that were not included yet, a error is returned.
@@ -136,6 +144,9 @@ public:
 
   Result<SolverErrorCode>
   removeFeature(feature::Feature &FeatureToRemove) override;
+
+  Result<SolverErrorCode>
+  addRelationship(const feature::Relationship &R) override;
 
   Result<SolverErrorCode>
   addConstraint(feature::Constraint &ConstraintToAdd) override;

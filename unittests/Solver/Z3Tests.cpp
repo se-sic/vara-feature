@@ -164,7 +164,48 @@ TEST(Z3Solver, AddImpliesConstraint) {
 }
 
 TEST(Z3Solver, AddAlternative) {
+  Z3Solver S = Z3Solver::create();
+  vara::feature::FeatureModelBuilder B;
+  B.makeRoot("root");
+  B.makeFeature<vara::feature::BinaryFeature>("A", false)->addEdge("root", "A");
+  B.makeFeature<vara::feature::BinaryFeature>("A1", true)->addEdge("A", "A1");
+  B.makeFeature<vara::feature::BinaryFeature>("A2", true)->addEdge("A", "A2");
+  B.makeFeature<vara::feature::BinaryFeature>("A3", true)->addEdge("A", "A3");
+  B.emplaceRelationship(
+      vara::feature::Relationship::RelationshipKind::RK_ALTERNATIVE, "A");
+  B.makeFeature<vara::feature::BinaryFeature>("B", false)->addEdge("root", "B");
+  B.makeFeature<vara::feature::BinaryFeature>("B1", true)->addEdge("B", "B1");
+  B.makeFeature<vara::feature::BinaryFeature>("B2", true)->addEdge("B", "B2");
+  B.makeFeature<vara::feature::BinaryFeature>("B3", true)->addEdge("B", "B3");
+  B.emplaceRelationship(
+      vara::feature::Relationship::RelationshipKind::RK_ALTERNATIVE, "B");
+  B.makeFeature<vara::feature::BinaryFeature>("C", false)->addEdge("root", "C");
+  B.makeFeature<vara::feature::BinaryFeature>("C1", true)->addEdge("C", "C1");
+  B.makeFeature<vara::feature::BinaryFeature>("C2", true)->addEdge("C", "C2");
+  B.makeFeature<vara::feature::BinaryFeature>("C3", true)->addEdge("C", "C3");
+  B.emplaceRelationship(vara::feature::Relationship::RelationshipKind::RK_OR,
+                        "C");
+  std::unique_ptr<const feature::FeatureModel> FM = B.buildFeatureModel();
+  S.addFeature(*FM->getFeature("root"));
+  S.addFeature(*FM->getFeature("A"));
+  S.addFeature(*FM->getFeature("A1"));
+  S.addFeature(*FM->getFeature("A2"));
+  S.addFeature(*FM->getFeature("A3"));
+  S.addFeature(*FM->getFeature("B"));
+  S.addFeature(*FM->getFeature("B1"));
+  S.addFeature(*FM->getFeature("B2"));
+  S.addFeature(*FM->getFeature("B3"));
+  S.addFeature(*FM->getFeature("C"));
+  S.addFeature(*FM->getFeature("C1"));
+  S.addFeature(*FM->getFeature("C2"));
+  S.addFeature(*FM->getFeature("C3"));
 
+  for (const auto &R : FM->relationships()) {
+    S.addRelationship(*R);
+  }
+  auto E = S.getNumberValidConfigurations();
+  EXPECT_TRUE(E);
+  EXPECT_EQ(*E.extractValue(), 63);
 }
 
 } // namespace vara::solver

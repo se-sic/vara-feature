@@ -105,6 +105,26 @@ Z3Solver::removeFeature(feature::Feature &FeatureToRemove) {
 }
 
 Result<SolverErrorCode>
+Z3Solver::addRelationship(const feature::Relationship &R) {
+  const auto *Parent = (const feature::Feature *)R.getParent();
+  auto ParentOption = Context.bool_const(Parent->getName().str().c_str());
+  z3::expr_vector V(Context);
+  for (const auto &Child : R.children()) {
+    const auto *ChildFeature = (const feature::Feature *)Child;
+    V.push_back(Context.bool_const(ChildFeature->getName().str().c_str()));
+  }
+  switch (R.getKind()) {
+  case feature::Relationship::RelationshipKind::RK_ALTERNATIVE:
+    Solver->add(z3::implies(ParentOption, z3::atmost(V, 1) & z3::mk_or(V)));
+    break;
+  case feature::Relationship::RelationshipKind::RK_OR:
+    Solver->add(z3::implies(ParentOption, z3::mk_or(V)));
+    break;
+  }
+  return Ok();
+}
+
+Result<SolverErrorCode>
 Z3Solver::addConstraint(feature::Constraint &ConstraintToAdd) {
   SolverConstraintVisitor SCV(this);
   bool Succ = SCV.addConstraint(&ConstraintToAdd);
