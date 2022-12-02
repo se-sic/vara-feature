@@ -100,17 +100,22 @@ Z3Solver::addFeature(const string &FeatureName,
 }
 
 Result<SolverErrorCode>
-Z3Solver::removeFeature(const feature::Feature &FeatureToRemove) {
+Z3Solver::removeFeature(feature::Feature &FeatureToRemove) {
   return NOT_SUPPORTED;
 }
 
 Result<SolverErrorCode>
-Z3Solver::addConstraint(const feature::Constraint &ConstraintToAdd) {
-  return NOT_IMPLEMENTED;
+Z3Solver::addConstraint(feature::Constraint &ConstraintToAdd) {
+  SolverConstraintVisitor SCV(this);
+  bool Succ = SCV.addConstraint(&ConstraintToAdd);
+  if (!Succ) {
+    return SolverErrorCode::NOT_SUPPORTED;
+  }
+  return Ok();
 }
 
 Result<SolverErrorCode>
-Z3Solver::removeConstraint(const feature::Constraint &ConstraintToRemove) {
+Z3Solver::removeConstraint(feature::Constraint &ConstraintToRemove) {
   return NOT_SUPPORTED;
 }
 
@@ -309,7 +314,7 @@ bool SolverConstraintVisitor::visit(vara::feature::BinaryConstraint *C) {
 }
 
 bool SolverConstraintVisitor::visit(vara::feature::UnaryConstraint *C) {
-  if (C->getOperand()->accept(*this)) {
+  if (!C->getOperand()->accept(*this)) {
     return false;
   }
   switch (C->getKind()) {

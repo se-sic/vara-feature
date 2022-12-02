@@ -133,4 +133,38 @@ TEST(Z3Solver, TestGetNextConfiguration) {
   EXPECT_FALSE(E);
 }
 
+TEST(Z3Solver, AddImpliesConstraint) {
+  Z3Solver S = Z3Solver::create();
+  vara::feature::FeatureModelBuilder B;
+  B.makeRoot("root");
+  B.makeFeature<vara::feature::BinaryFeature>("Foo", true);
+  B.addEdge("root", "Foo");
+  B.makeFeature<vara::feature::BinaryFeature>("alt", false);
+  B.addEdge("root", "alt");
+  B.makeFeature<feature::BinaryFeature>("a", true);
+  B.makeFeature<feature::BinaryFeature>("b", true);
+  B.addEdge("alt", "a");
+  B.addEdge("alt", "b");
+  auto C = std::make_unique<feature::ImpliesConstraint>(
+      std::make_unique<feature::PrimaryFeatureConstraint>(
+          std::make_unique<feature::Feature>("a")),
+      std::make_unique<feature::NotConstraint>(
+          std::make_unique<feature::PrimaryFeatureConstraint>(
+              std::make_unique<feature::Feature>("b"))));
+  auto FM = B.buildFeatureModel();
+  S.addFeature(*FM->getFeature("root"));
+  S.addFeature(*FM->getFeature("Foo"));
+  S.addFeature(*FM->getFeature("alt"));
+  S.addFeature(*FM->getFeature("a"));
+  S.addFeature(*FM->getFeature("b"));
+  S.addConstraint(*C);
+  auto E = S.getNumberValidConfigurations();
+  EXPECT_TRUE(E);
+  EXPECT_EQ(*E.extractValue(), 6);
+}
+
+TEST(Z3Solver, AddAlternative) {
+
+}
+
 } // namespace vara::solver

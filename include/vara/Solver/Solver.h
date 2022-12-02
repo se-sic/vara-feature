@@ -47,20 +47,20 @@ public:
   /// is included in.
   /// \return a possible error if removing the feature was not successful.
   virtual Result<SolverErrorCode>
-  removeFeature(const feature::Feature &FeatureToRemove) = 0;
+  removeFeature(feature::Feature &FeatureToRemove) = 0;
 
   /// Adds the given constraint to the solver. In the case that the constraint
   /// includes features that were not included yet, a error is returned.
   /// So, make sure that all features are already added.
   /// \return a possible error if adding the constraint could not be done.
   virtual Result<SolverErrorCode>
-  addConstraint(const feature::Constraint &ConstraintToAdd) = 0;
+  addConstraint(feature::Constraint &ConstraintToAdd) = 0;
 
   /// Removes the given constraint from the solver.
   /// If the constraint is not found, an error is returned.
   /// \return a possible error if removing the constraint could not be done.
   virtual Result<SolverErrorCode>
-  removeConstraint(const feature::Constraint &ConstraintToRemove) = 0;
+  removeConstraint(feature::Constraint &ConstraintToRemove) = 0;
 
   /// Returns \c true if the current constraint system (i.e., its features and
   /// its constraints) has valid configurations.
@@ -135,13 +135,13 @@ public:
              const std::vector<int64_t> &Values) override;
 
   Result<SolverErrorCode>
-  removeFeature(const feature::Feature &FeatureToRemove) override;
+  removeFeature(feature::Feature &FeatureToRemove) override;
 
   Result<SolverErrorCode>
-  addConstraint(const feature::Constraint &ConstraintToAdd) override;
+  addConstraint(feature::Constraint &ConstraintToAdd) override;
 
   Result<SolverErrorCode>
-  removeConstraint(const feature::Constraint &ConstraintToRemove) override;
+  removeConstraint(feature::Constraint &ConstraintToRemove) override;
 
   Result<SolverErrorCode, std::unique_ptr<bool>>
   hasValidConfigurations() override;
