@@ -205,7 +205,7 @@ TEST(Z3Solver, AddAlternative) {
   }
   auto E = S.getNumberValidConfigurations();
   EXPECT_TRUE(E);
-  // EXPECT_EQ(*E.extractValue(), 63);
+  EXPECT_EQ(*E.extractValue(), 63);
 }
 
 } // namespace vara::solver

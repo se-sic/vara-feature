@@ -6,6 +6,7 @@
 namespace vara {
 namespace solver {
 
+/// Represents different error codes on which the solver could abort on.
 enum SolverErrorCode {
   NOT_IMPLEMENTED,
   NOT_SUPPORTED,
