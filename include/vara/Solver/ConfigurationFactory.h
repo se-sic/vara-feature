@@ -100,7 +100,8 @@ public:
               const vara::solver::SolverType Type = SolverType::Z3) {
     auto Iterator = getConfigIterator(Model, Type);
     std::unique_ptr<std::vector<std::unique_ptr<feature::Configuration>>> V =
-        std::make_unique<std::vector<std::unique_ptr<feature::Configuration>>>();
+        std::make_unique<
+            std::vector<std::unique_ptr<feature::Configuration>>>();
     if (N == 0) {
       return V;
     }
