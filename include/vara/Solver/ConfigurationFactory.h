@@ -32,28 +32,35 @@ public:
       return *this;
     }
 
-    bool operator==(Iterator other) const { return S == other.S; }
-    bool operator!=(Iterator other) const { return !(other == *this); }
+    bool operator==(Iterator Other) const { return S == Other.S; }
+    bool operator!=(Iterator Other) const { return !(Other == *this); }
 
   private:
     Solver *S;
   };
 
   explicit ConfigurationIterator(std::unique_ptr<Solver> Solver)
-      : Solver(std::move(Solver)) {}
+      : S(std::move(Solver)) {}
 
   virtual ~ConfigurationIterator() = default;
 
-  Iterator begin() { return Iterator{Solver.get()}; }
+  Iterator begin() { return Iterator{S.get()}; }
 
-  Iterator end() { return Iterator{}; }
+  static Iterator end() { return Iterator{}; }
 
 private:
-  std::unique_ptr<Solver> Solver;
+  std::unique_ptr<Solver> S;
 };
 
+/// This class is used to retrieve information about the feature model
+/// (i.e., how many configurations are there? is it valid?)
 class ConfigurationFactory {
 public:
+  /// This method returns an iterator. This iterator can be used to lazily
+  /// traverse over configurations retrieved by the solver.
+  /// \param Model the given model containing the features and constraints
+  /// \param Type the type of solver to use
+  /// \return A unique pointer to the configuration iterator
   static std::unique_ptr<ConfigurationIterator>
   getConfigIterator(feature::FeatureModel &Model,
                     const vara::solver::SolverType Type = SolverType::Z3) {
@@ -63,6 +70,12 @@ public:
     return Iterator;
   }
 
+  /// This method returns all configurations of the given feature model. Note
+  /// that retrieving all configurations might take some time or even be
+  /// infeasible, especially for larger feature models.
+  /// \param Model the given model containing the features and constraints
+  /// \param Type the type of solver to use
+  /// \return a unique pointer to the vector containing all configurations
   static Result<SolverErrorCode,
                 std::unique_ptr<
                     std::vector<std::unique_ptr<vara::feature::Configuration>>>>
@@ -72,14 +85,22 @@ public:
     return S->getAllValidConfigurations();
   }
 
+  /// This method returns not all but the specified amount of configurations.
+  /// Note that the vector can also contain less configurations if there
+  /// are not enough valid configurations.
+  /// \param Model the given model containing the features and constraints
+  /// \param N the number of configurations to retrieve
+  /// \param Type the type of the solver
+  /// \return a unique pointer to a vector containing the specified amount of
+  /// configurations.
   static Result<SolverErrorCode,
                 std::unique_ptr<
                     std::vector<std::unique_ptr<vara::feature::Configuration>>>>
-  getNConfigs(feature::FeatureModel &Model,
-              sampling::SamplingMethod &SamplingMethod, uint N,
+  getNConfigs(feature::FeatureModel &Model, uint N,
               const vara::solver::SolverType Type = SolverType::Z3) {
     auto Iterator = getConfigIterator(Model, Type);
-    std::unique_ptr<std::vector<std::unique_ptr<feature::Configuration>>> V;
+    std::unique_ptr<std::vector<std::unique_ptr<feature::Configuration>>> V =
+        std::make_unique<std::vector<std::unique_ptr<feature::Configuration>>>();
     if (N == 0) {
       return V;
     }
@@ -91,8 +112,14 @@ public:
         break;
       }
     }
+    return V;
   }
 
+  /// This method returns whether the given model has valid configurations or
+  /// not.
+  /// \param Model the model containing the features and constraints
+  /// \param Type the type of solver to use
+  /// \return true iff there is at least one valid configuration
   static bool isValid(feature::FeatureModel &Model,
                       const vara::solver::SolverType Type = SolverType::Z3) {
     auto S = SolverFactory::initializeSolver(Model, Type);

@@ -1,5 +1,6 @@
 set(SOLVER_LIB_SRC
   Solver.cpp
+  SolverFactory.cpp
 )
 
 set(LLVM_LINK_COMPONENTS

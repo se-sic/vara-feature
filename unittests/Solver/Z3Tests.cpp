@@ -8,30 +8,30 @@
 namespace vara::solver {
 
 TEST(Z3Solver, AddFeatureTest) {
-  Z3Solver S = Z3Solver::create();
-  Result E = S.addFeature("A");
+  std::unique_ptr<Z3Solver> S = Z3Solver::create();
+  Result E = S->addFeature("A");
   EXPECT_TRUE(E);
-  E = S.addFeature("B");
+  E = S->addFeature("B");
   EXPECT_TRUE(E);
 
   std::vector<int64_t> Vector{10, 20, 30};
-  S.addFeature("X", Vector);
+  S->addFeature("X", Vector);
   EXPECT_TRUE(E);
 
-  Result F = S.hasValidConfigurations();
+  Result F = S->hasValidConfigurations();
   EXPECT_TRUE(F);
 
-  E = S.addFeature("A");
+  E = S->addFeature("A");
   EXPECT_FALSE(E);
   EXPECT_EQ(ALREADY_PRESENT, E.getError());
 
-  E = S.addFeature("X", Vector);
+  E = S->addFeature("X", Vector);
   EXPECT_FALSE(E);
   EXPECT_EQ(ALREADY_PRESENT, E.getError());
 }
 
 TEST(Z3Solver, AddFeatureObjectTest) {
-  Z3Solver S = Z3Solver::create();
+  std::unique_ptr<Z3Solver> S = Z3Solver::create();
   // Construct a small feature model
   vara::feature::FeatureModelBuilder B;
   B.makeRoot("root");
@@ -44,46 +44,46 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   B.makeFeature<vara::feature::BinaryFeature>("C", false);
   B.addEdge("A", "C");
   auto FM = B.buildFeatureModel();
-  auto E = S.addFeature(*FM->getFeature("root"));
+  auto E = S->addFeature(*FM->getFeature("root"));
   EXPECT_TRUE(E);
-  auto V = S.hasValidConfigurations();
+  auto V = S->hasValidConfigurations();
   EXPECT_TRUE(V);
   EXPECT_TRUE(*V.extractValue());
-  E = S.addFeature(*FM->getFeature("A"));
+  E = S->addFeature(*FM->getFeature("A"));
   EXPECT_TRUE(E);
-  V = S.hasValidConfigurations();
+  V = S->hasValidConfigurations();
   EXPECT_TRUE(V);
   EXPECT_TRUE(*V.extractValue());
   // Enumerate the solutions
-  auto Enumerate = S.getNumberValidConfigurations();
+  auto Enumerate = S->getNumberValidConfigurations();
   EXPECT_TRUE(Enumerate);
   EXPECT_EQ(2, *Enumerate.extractValue());
 
-  E = S.addFeature(*FM->getFeature("B"));
+  E = S->addFeature(*FM->getFeature("B"));
   EXPECT_TRUE(E);
-  V = S.hasValidConfigurations();
+  V = S->hasValidConfigurations();
   EXPECT_TRUE(V);
   EXPECT_TRUE(*V.extractValue());
-  E = S.addFeature(*FM->getFeature("B"));
+  E = S->addFeature(*FM->getFeature("B"));
   EXPECT_FALSE(E);
   EXPECT_EQ(SolverErrorCode::ALREADY_PRESENT, E.getError());
 
   // Enumerate the solutions
-  Enumerate = S.getNumberValidConfigurations();
+  Enumerate = S->getNumberValidConfigurations();
   EXPECT_TRUE(Enumerate);
   EXPECT_EQ(6, *Enumerate.extractValue());
 
-  E = S.addFeature(*FM->getFeature("C"));
+  E = S->addFeature(*FM->getFeature("C"));
   EXPECT_TRUE(E);
-  V = S.hasValidConfigurations();
+  V = S->hasValidConfigurations();
   EXPECT_TRUE(*V.extractValue());
-  Enumerate = S.getNumberValidConfigurations();
+  Enumerate = S->getNumberValidConfigurations();
   EXPECT_TRUE(Enumerate);
   EXPECT_EQ(6, *Enumerate.extractValue());
 }
 
 TEST(Z3Solver, TestAllValidConfigurations) {
-  Z3Solver S = Z3Solver::create();
+  std::unique_ptr<Z3Solver> S = Z3Solver::create();
   vara::feature::FeatureModelBuilder B;
   B.makeRoot("root");
   B.makeFeature<vara::feature::BinaryFeature>("Foo", true);
@@ -92,17 +92,17 @@ TEST(Z3Solver, TestAllValidConfigurations) {
   B.makeFeature<vara::feature::NumericFeature>("Num1", Values);
   auto FM = B.buildFeatureModel();
 
-  S.addFeature(*FM->getFeature("root"));
-  S.addFeature(*FM->getFeature("Foo"));
-  S.addFeature(*FM->getFeature("Num1"));
+  S->addFeature(*FM->getFeature("root"));
+  S->addFeature(*FM->getFeature("Foo"));
+  S->addFeature(*FM->getFeature("Num1"));
 
-  auto C = S.getAllValidConfigurations();
+  auto C = S->getAllValidConfigurations();
   EXPECT_TRUE(C);
   EXPECT_EQ(C.extractValue()->size(), 4);
 }
 
 TEST(Z3Solver, TestGetNextConfiguration) {
-  Z3Solver S = Z3Solver::create();
+  std::unique_ptr<Z3Solver> S = Z3Solver::create();
   vara::feature::FeatureModelBuilder B;
   B.makeRoot("root");
   B.makeFeature<vara::feature::BinaryFeature>("Foo", true);
@@ -111,30 +111,30 @@ TEST(Z3Solver, TestGetNextConfiguration) {
   B.makeFeature<vara::feature::NumericFeature>("Num1", Values);
   auto FM = B.buildFeatureModel();
 
-  S.addFeature(*FM->getFeature("root"));
-  S.addFeature(*FM->getFeature("Foo"));
-  S.addFeature(*FM->getFeature("Num1"));
+  S->addFeature(*FM->getFeature("root"));
+  S->addFeature(*FM->getFeature("Foo"));
+  S->addFeature(*FM->getFeature("Num1"));
 
   for (int Count = 0; Count < 3; Count++) {
-    auto C = S.getNextConfiguration();
+    auto C = S->getNextConfiguration();
     EXPECT_TRUE(C);
     auto Config = C.extractValue();
     EXPECT_TRUE(Config->configurationOptionValue("root").hasValue());
     EXPECT_TRUE(Config->configurationOptionValue("Foo").hasValue());
     EXPECT_TRUE(Config->configurationOptionValue("Num1").hasValue());
   }
-  auto C = S.getCurrentConfiguration();
+  auto C = S->getCurrentConfiguration();
   EXPECT_TRUE(C);
   auto Config = C.extractValue();
   EXPECT_TRUE(Config->configurationOptionValue("root").hasValue());
   EXPECT_TRUE(Config->configurationOptionValue("Foo").hasValue());
   EXPECT_TRUE(Config->configurationOptionValue("Num1").hasValue());
-  auto E = S.getNextConfiguration();
+  auto E = S->getNextConfiguration();
   EXPECT_FALSE(E);
 }
 
 TEST(Z3Solver, AddImpliesConstraint) {
-  Z3Solver S = Z3Solver::create();
+  std::unique_ptr<Z3Solver> S = Z3Solver::create();
   vara::feature::FeatureModelBuilder B;
   B.makeRoot("root");
   B.makeFeature<vara::feature::BinaryFeature>("Foo", true);
@@ -152,19 +152,19 @@ TEST(Z3Solver, AddImpliesConstraint) {
           std::make_unique<feature::PrimaryFeatureConstraint>(
               std::make_unique<feature::Feature>("b"))));
   auto FM = B.buildFeatureModel();
-  S.addFeature(*FM->getFeature("root"));
-  S.addFeature(*FM->getFeature("Foo"));
-  S.addFeature(*FM->getFeature("alt"));
-  S.addFeature(*FM->getFeature("a"));
-  S.addFeature(*FM->getFeature("b"));
-  S.addConstraint(*C);
-  auto E = S.getNumberValidConfigurations();
+  S->addFeature(*FM->getFeature("root"));
+  S->addFeature(*FM->getFeature("Foo"));
+  S->addFeature(*FM->getFeature("alt"));
+  S->addFeature(*FM->getFeature("a"));
+  S->addFeature(*FM->getFeature("b"));
+  S->addConstraint(*C);
+  auto E = S->getNumberValidConfigurations();
   EXPECT_TRUE(E);
   EXPECT_EQ(*E.extractValue(), 6);
 }
 
 TEST(Z3Solver, AddAlternative) {
-  Z3Solver S = Z3Solver::create();
+  std::unique_ptr<Z3Solver> S = Z3Solver::create();
   vara::feature::FeatureModelBuilder B;
   B.makeRoot("root");
   B.makeFeature<vara::feature::BinaryFeature>("A", false)->addEdge("root", "A");
@@ -186,24 +186,24 @@ TEST(Z3Solver, AddAlternative) {
   B.emplaceRelationship(vara::feature::Relationship::RelationshipKind::RK_OR,
                         "C");
   std::unique_ptr<const feature::FeatureModel> FM = B.buildFeatureModel();
-  S.addFeature(*FM->getFeature("root"));
-  S.addFeature(*FM->getFeature("A"));
-  S.addFeature(*FM->getFeature("A1"));
-  S.addFeature(*FM->getFeature("A2"));
-  S.addFeature(*FM->getFeature("A3"));
-  S.addFeature(*FM->getFeature("B"));
-  S.addFeature(*FM->getFeature("B1"));
-  S.addFeature(*FM->getFeature("B2"));
-  S.addFeature(*FM->getFeature("B3"));
-  S.addFeature(*FM->getFeature("C"));
-  S.addFeature(*FM->getFeature("C1"));
-  S.addFeature(*FM->getFeature("C2"));
-  S.addFeature(*FM->getFeature("C3"));
+  S->addFeature(*FM->getFeature("root"));
+  S->addFeature(*FM->getFeature("A"));
+  S->addFeature(*FM->getFeature("A1"));
+  S->addFeature(*FM->getFeature("A2"));
+  S->addFeature(*FM->getFeature("A3"));
+  S->addFeature(*FM->getFeature("B"));
+  S->addFeature(*FM->getFeature("B1"));
+  S->addFeature(*FM->getFeature("B2"));
+  S->addFeature(*FM->getFeature("B3"));
+  S->addFeature(*FM->getFeature("C"));
+  S->addFeature(*FM->getFeature("C1"));
+  S->addFeature(*FM->getFeature("C2"));
+  S->addFeature(*FM->getFeature("C3"));
 
   for (const auto &R : FM->relationships()) {
-    S.addRelationship(*R);
+    S->addRelationship(*R);
   }
-  auto E = S.getNumberValidConfigurations();
+  auto E = S->getNumberValidConfigurations();
   EXPECT_TRUE(E);
   EXPECT_EQ(*E.extractValue(), 63);
 }

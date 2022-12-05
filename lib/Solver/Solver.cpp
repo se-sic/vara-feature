@@ -63,6 +63,7 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
   case feature::Feature::FeatureKind::FK_UNKNOWN:
     return NOT_SUPPORTED;
   }
+
   Solver->push();
   return Ok();
 }
@@ -207,15 +208,6 @@ Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature) {
 
   SolverConstraintVisitor SCV(this);
 
-  // Process excludes
-  for (feature::BinaryConstraint *C : Feature.excludes()) {
-    SCV.addConstraint(C);
-  }
-
-  // Process implications
-  for (feature::BinaryConstraint *C : Feature.implications()) {
-    SCV.addConstraint(C);
-  }
   return Ok();
 }
 

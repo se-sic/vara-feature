@@ -120,17 +120,17 @@ public:
 
 /// \brief The Z3 solver implementation for handling constraints
 class Z3Solver : public Solver {
+public:
   explicit Z3Solver(z3::config &Cfg) : Context(Cfg) {
     Solver = std::make_unique<z3::solver>(Context);
   }
 
-public:
-  static Z3Solver create() {
+  static std::unique_ptr<Z3Solver> create() {
     // The configuration of z3
     z3::config Cfg;
     Cfg.set("model", "true");
     Cfg.set("model-validate", "true");
-    return Z3Solver(Cfg);
+    return std::make_unique<Z3Solver>(Cfg);
   }
 
   Result<SolverErrorCode>

@@ -19,18 +19,20 @@ public:
   /// \param Model the model to use for the initialization of the solver
   /// \param Type the type of solver to use
   /// \return a unique pointer containing the initialized solver
-  static std::unique_ptr<Solver>
+  [[nodiscard]] static std::unique_ptr<Solver>
   initializeSolver(const feature::FeatureModel &Model, const SolverType Type) {
     switch (Type) {
     case Z3:
       return initializeZ3Solver(Model);
     }
+    return nullptr;
   }
 
   /// This method returns a pointer to an initialized solver.
   /// \param Type the type of solver to use
   /// \return a unique pointer containing the initialized solver
-  static std::unique_ptr<Solver> initializeSolver(const SolverType Type) {
+  [[nodiscard]] static std::unique_ptr<Solver>
+  initializeSolver(const SolverType Type) {
     vara::feature::FeatureModelBuilder B;
     std::unique_ptr<const feature::FeatureModel> FM = B.buildFeatureModel();
     return initializeSolver(*FM, Type);
