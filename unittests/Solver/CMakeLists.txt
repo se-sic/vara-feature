@@ -3,4 +3,5 @@ add_vara_unittest(VaRASolverUnitTests VaRASolverTests
   Z3Tests.cpp
   SolverFactory.cpp
   ConfigurationFactory.cpp
+  RealWorldCaseStudyTests.cpp
 )
