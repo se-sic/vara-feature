@@ -9,10 +9,8 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -23,7 +21,6 @@
       <postfix>
       </postfix>
       <parent>API</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>CUDA</options>
@@ -31,7 +28,6 @@
         <options>Linear2D</options>
         <options>Ldg</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -42,12 +38,10 @@
       <postfix>
       </postfix>
       <parent>API</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>OpenCL</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -59,10 +53,8 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -73,7 +65,6 @@
       <postfix>
       </postfix>
       <parent>TextureMemory</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>Linear2D</options>
@@ -81,7 +72,6 @@
         <options>Ldg</options>
         <options>OpenCL</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -92,7 +82,6 @@
       <postfix>
       </postfix>
       <parent>TextureMemory</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>Linear1D</options>
@@ -100,7 +89,6 @@
         <options>Ldg</options>
         <options>OpenCL</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -111,7 +99,6 @@
       <postfix>
       </postfix>
       <parent>TextureMemory</parent>
-      <children />
       <impliedOptions>
 	    <options>padding_0</options>
       </impliedOptions>
@@ -120,7 +107,6 @@
         <options>Linear2D</options>
         <options>Ldg</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -132,10 +118,8 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>True</optional>
     </configurationOption>
     <configurationOption>
@@ -147,10 +131,8 @@
       </postfix>
       <parent>
       </parent>
-      <children />
       <impliedOptions />
       <excludedOptions />
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -161,7 +143,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x8</options>
@@ -185,7 +166,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -196,7 +176,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -220,7 +199,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -231,7 +209,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -255,7 +232,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -266,7 +242,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -290,7 +265,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -301,7 +275,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -325,7 +298,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -336,7 +308,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -360,7 +331,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -371,7 +341,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -395,7 +364,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -406,7 +374,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -430,7 +397,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -441,7 +407,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -465,7 +430,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -476,7 +440,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -500,7 +463,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -511,7 +473,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -535,7 +496,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -546,7 +506,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -570,7 +529,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -581,7 +539,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -605,7 +562,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -616,7 +572,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -640,7 +595,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -651,7 +605,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -675,7 +628,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -686,7 +638,6 @@
       <postfix>
       </postfix>
       <parent>TextureMemory</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>Linear1D</options>
@@ -694,7 +645,6 @@
         <options>Array2D</options>
         <options>OpenCL</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -705,7 +655,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x1</options>
@@ -729,7 +678,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -740,7 +688,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x2</options>
@@ -764,7 +711,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -775,7 +721,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x2</options>
@@ -799,7 +744,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -810,7 +754,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x2</options>
@@ -834,7 +777,6 @@
         <options>bs_256x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -845,7 +787,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x2</options>
@@ -869,7 +810,6 @@
         <options>bs_1024x1</options>
         <options>bs_256x2</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
@@ -880,7 +820,6 @@
       <postfix>
       </postfix>
       <parent>Blocksize</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>bs_32x2</options>
@@ -904,7 +843,6 @@
         <options>bs_512x2</options>
         <options>bs_1024x1</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -915,10 +853,8 @@
       <postfix>
       </postfix>
       <parent></parent>
-      <children />
       <impliedOptions />
       <excludedOptions></excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -929,7 +865,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_32</options>
@@ -949,7 +884,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -960,7 +894,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -980,7 +913,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -991,7 +923,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1011,7 +942,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1022,7 +952,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1042,7 +971,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1053,7 +981,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1073,7 +1000,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1084,7 +1010,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1104,7 +1029,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1115,7 +1039,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1135,7 +1058,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1146,7 +1068,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1166,7 +1087,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1177,7 +1097,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1197,7 +1116,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1208,7 +1126,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1228,7 +1145,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1239,7 +1155,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1259,7 +1174,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1270,7 +1184,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1290,7 +1203,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1301,7 +1213,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1321,7 +1232,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1332,7 +1242,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1352,7 +1261,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1363,7 +1271,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1383,7 +1290,6 @@
         <options>padding_480</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1394,7 +1300,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1414,7 +1319,6 @@
         <options>padding_448</options>
 		<options>padding_512</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1425,7 +1329,6 @@
       <postfix>
       </postfix>
       <parent>padding</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>padding_0</options>
@@ -1445,7 +1348,6 @@
         <options>padding_448</options>
 		<options>padding_480</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1456,10 +1358,8 @@
       <postfix>
       </postfix>
       <parent></parent>
-      <children />
       <impliedOptions />
       <excludedOptions></excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1470,14 +1370,12 @@
       <postfix>
       </postfix>
       <parent>pixelPerThread</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>pixelPerThread_2</options>
         <options>pixelPerThread_3</options>
         <options>pixelPerThread_4</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1488,14 +1386,12 @@
       <postfix>
       </postfix>
       <parent>pixelPerThread</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>pixelPerThread_1</options>
         <options>pixelPerThread_3</options>
         <options>pixelPerThread_4</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1506,14 +1402,12 @@
       <postfix>
       </postfix>
       <parent>pixelPerThread</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>pixelPerThread_1</options>
         <options>pixelPerThread_2</options>
         <options>pixelPerThread_4</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
 	<configurationOption>
@@ -1524,14 +1418,12 @@
       <postfix>
       </postfix>
       <parent>pixelPerThread</parent>
-      <children />
       <impliedOptions />
       <excludedOptions>
         <options>pixelPerThread_1</options>
         <options>pixelPerThread_2</options>
         <options>pixelPerThread_3</options>
       </excludedOptions>
-      <defaultValue>Selected</defaultValue>
       <optional>False</optional>
     </configurationOption>
   </binaryOptions>

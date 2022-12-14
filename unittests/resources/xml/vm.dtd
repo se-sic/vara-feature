@@ -5,7 +5,7 @@
 <!ELEMENT booleanConstraints (constraint*)>
 <!ELEMENT nonBooleanConstraints (constraint*)>
 <!ELEMENT mixedConstraints (constraint*)>
-<!ELEMENT configurationOption (name, outputString?, (prefix | preFix)?, (postfix | postFix)?, parent?, children?, impliedOptions?, excludedOptions?, defaultValue?, optional?, ((minValue, maxValue) | values)?, stepFunction?, locations?)>
+<!ELEMENT configurationOption (name, outputString?, (prefix | preFix)?, (postfix | postFix)?, parent?, children?, impliedOptions?, excludedOptions?, optional?, ((minValue, maxValue) | values)?, stepFunction?, defaultValue?, locations?)>
 <!ELEMENT constraint (#PCDATA)>
 <!ATTLIST constraint req CDATA #IMPLIED exprKind CDATA #IMPLIED>
 <!ELEMENT name (#PCDATA)>
