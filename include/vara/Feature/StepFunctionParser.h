@@ -1,5 +1,5 @@
-#ifndef VARA_FEATURE_STEP_FUNCTION_PARSER_H
-#define VARA_FEATURE_STEP_FUNCTION_PARSER_H
+#ifndef VARA_FEATURE_STEPFUNCTIONPARSER_H
+#define VARA_FEATURE_STEPFUNCTIONPARSER_H
 
 #include "vara/Feature/StepFunction.h"
 
@@ -235,4 +235,4 @@ private:
 
 } // namespace vara::feature
 
-#endif // VARA_FEATURE_STEP_FUNCTION_PARSER_H
+#endif // VARA_FEATURE_STEPFUNCTIONPARSER_H

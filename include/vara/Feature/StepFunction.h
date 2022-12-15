@@ -1,5 +1,5 @@
-#ifndef VARA_FEATURE_STEP_FUNCTION_H
-#define VARA_FEATURE_STEP_FUNCTION_H
+#ifndef VARA_FEATURE_STEPFUNCTION_H
+#define VARA_FEATURE_STEPFUNCTION_H
 
 namespace vara::feature {
 
@@ -40,4 +40,4 @@ private:
 
 } // namespace vara::feature
 
-#endif // VARA_FEATURE_STEP_FUNCTION_H
+#endif // VARA_FEATURE_STEPFUNCTION_H
