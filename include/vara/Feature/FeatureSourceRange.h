@@ -34,15 +34,21 @@ public:
     FeatureRevisionRange(std::string Introduced, std::string Removed)
         : Introduced(std::move(Introduced)), Removed(std::move(Removed)) {}
     FeatureRevisionRange(std::string Introduced)
-        : FeatureRevisionRange(Introduced, std::move(Introduced)) {}
+        : Introduced(std::move(Introduced)) {}
 
-    [[nodiscard]] llvm::StringRef introduced() const { return Introduced; }
+    [[nodiscard]] llvm::StringRef getIntroducedCommit() const {
+      return Introduced;
+    }
 
-    [[nodiscard]] llvm::StringRef removed() const { return Removed; }
+    [[nodiscard]] bool hasRemovedCommit() const { return Removed.hasValue(); }
+    [[nodiscard]] llvm::StringRef getRemovedCommit() const {
+      return Removed.hasValue() ? llvm::StringRef(Removed.getValue())
+                                : llvm::StringRef();
+    }
 
   private:
     std::string Introduced;
-    std::string Removed;
+    llvm::Optional<std::string> Removed;
   };
 
   class FeatureSourceLocation {

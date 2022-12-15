@@ -26,6 +26,9 @@ public:
   static constexpr xmlChar OPTIONS[] = "options";
   static constexpr xmlChar LOCATIONS[] = "locations";
   static constexpr xmlChar SOURCERANGE[] = "sourceRange";
+  static constexpr xmlChar REVISIONRANGE[] = "revisionRange";
+  static constexpr xmlChar INTRODUCED[] = "introduced";
+  static constexpr xmlChar REMOVED[] = "removed";
   static constexpr xmlChar MEMBEROFFSET[] = "memberOffset";
   static constexpr xmlChar PATH[] = "path";
   static constexpr xmlChar START[] = "start";

@@ -18,7 +18,10 @@ TEST(FeatureSourceRange, full) {
       FeatureSourceRange::Category::inessential,
       FeatureSourceRange::FeatureMemberOffset::createFeatureMemberOffset(
           "class::memberOffset")
-          .getValue());
+          .getValue(),
+      FeatureSourceRange::FeatureRevisionRange(
+          "94fe792df46e64f438720295742b3b72c407cab6",
+          "1ed40f72e772adaa3adfcc94b9f038e4f3382339"));
 
   EXPECT_EQ(L.getPath(), fs::current_path());
   EXPECT_EQ(L.getStart()->getLineNumber(), 1);
@@ -26,7 +29,14 @@ TEST(FeatureSourceRange, full) {
   EXPECT_EQ(L.getEnd()->getLineNumber(), 3);
   EXPECT_EQ(L.getEnd()->getColumnOffset(), 5);
   EXPECT_EQ(L.getCategory(), FeatureSourceRange::Category::inessential);
+  ASSERT_TRUE(L.hasMemberOffset());
   EXPECT_EQ(L.getMemberOffset()->toString(), "class::memberOffset");
+  ASSERT_TRUE(L.hasRevisionRange());
+  EXPECT_EQ(L.getRevisionRange()->getIntroducedCommit(),
+            "94fe792df46e64f438720295742b3b72c407cab6");
+  ASSERT_TRUE(L.getRevisionRange()->hasRemovedCommit());
+  EXPECT_EQ(L.getRevisionRange()->getRemovedCommit(),
+            "1ed40f72e772adaa3adfcc94b9f038e4f3382339");
 }
 
 TEST(FeatureSourceRange, noMemberOffset) {

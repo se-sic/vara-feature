@@ -8,6 +8,7 @@ add_vara_unittest(VaRAFeatureUnitTests VaRAFeatureTests
   FeatureModelParser.cpp
   FeatureModelSxfm.cpp
   FeatureModelWriter.cpp
+  FeatureRevisionRange.cpp
   FeatureSourceRange.cpp
   FeatureTreeNode.cpp
   NumericFeature.cpp

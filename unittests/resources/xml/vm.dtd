@@ -26,8 +26,11 @@
 <!ELEMENT values (#PCDATA)>
 <!ELEMENT stepFunction (#PCDATA)>
 <!ELEMENT locations (sourceRange*)>
-<!ELEMENT sourceRange (path, start, end, memberOffset?)>
+<!ELEMENT sourceRange (revisionRange?, path, start, end, memberOffset?)>
 <!ATTLIST sourceRange category (necessary|inessential) "necessary">
+<!ELEMENT revisionRange (introduced, removed?)>
+<!ELEMENT introduced (#PCDATA)>
+<!ELEMENT removed (#PCDATA)>
 <!ELEMENT path (#PCDATA)>
 <!ELEMENT start (line, column)>
 <!ELEMENT end (line, column)>
