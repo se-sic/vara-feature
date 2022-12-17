@@ -33,7 +33,7 @@ void StepFunctionTest<double>::checkEqual(double V1, double V2) {
 }
 
 using types = ::testing::Types<double, float, long, int, unsigned int>;
-TYPED_TEST_SUITE(StepFunctionTest, types);
+TYPED_TEST_SUITE(StepFunctionTest, types, );
 
 TYPED_TEST(StepFunctionTest, addition) {
   auto S = StepFunction(StepFunction::StepOperation::ADDITION, 13.37);

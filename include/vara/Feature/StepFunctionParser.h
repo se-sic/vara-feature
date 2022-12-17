@@ -52,7 +52,7 @@ public:
 
   explicit StepFunctionLexer(std::string Cnt) : Cnt(std::move(Cnt)) {}
 
-  TokenListTy tokenize() {
+  [[nodiscard]] TokenListTy tokenize() {
     TokenListTy TokenList;
 
     for (llvm::StringRef Str = Cnt; !Str.empty();) {
@@ -147,7 +147,7 @@ public:
                               llvm::Optional<unsigned int> Line = llvm::None)
       : TokenList(StepFunctionLexer(std::move(Cnt)).tokenize()), Line(Line) {}
 
-  std::unique_ptr<StepFunction> buildStepFunction() {
+  [[nodiscard]] std::unique_ptr<StepFunction> buildStepFunction() {
     return parseStepFunction();
   }
 
