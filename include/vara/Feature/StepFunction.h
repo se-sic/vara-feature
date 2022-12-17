@@ -1,41 +1,89 @@
 #ifndef VARA_FEATURE_STEPFUNCTION_H
 #define VARA_FEATURE_STEPFUNCTION_H
 
+#include "llvm/Support/FormatVariadic.h"
+
+#include <cmath>
+#include <memory>
+#include <variant>
+
 namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
-//                               StepFunction
+//                             StepFunction Class
 //===----------------------------------------------------------------------===//
 
 class StepFunction {
 public:
-  enum class StepOperator { ADDITION, MULTIPLICATION };
+  enum class StepOperation { ADDITION, MULTIPLICATION, EXPONENTIATION };
 
-  StepFunction(std::string LHS, StepOperator Op, double RHS)
-      : LHS(std::move(LHS)), Op(Op), RHS(RHS) {}
+  using OperandVariantType = typename std::variant<std::string, double>;
 
-  double operator()(double Value) {
+  StepFunction(OperandVariantType LHS, StepOperation Op, OperandVariantType RHS)
+      : Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
+
+  StepFunction(StepOperation Op, double RHS) : StepFunction("x", Op, RHS) {}
+  StepFunction(double LHS, StepOperation Op) : StepFunction(LHS, Op, "x") {}
+
+  template <typename T = double>
+  [[nodiscard]] T next(T Value) {
+    if (std::holds_alternative<double>(RHS)) {
+      assert(std::holds_alternative<std::string>(LHS));
+      switch (Op) {
+      case StepOperation::ADDITION:
+        return Value + std::get<double>(RHS);
+      case StepOperation::MULTIPLICATION:
+        return Value * std::get<double>(RHS);
+      case StepOperation::EXPONENTIATION:
+        return std::pow(Value, std::get<double>(RHS));
+      }
+    }
+    assert(std::holds_alternative<double>(LHS));
     switch (Op) {
-    case StepOperator::ADDITION:
-      return Value + RHS;
-    case StepOperator::MULTIPLICATION:
-      return Value * RHS;
+    case StepOperation::ADDITION:
+      return std::get<double>(LHS) + Value;
+    case StepOperation::MULTIPLICATION:
+      return std::get<double>(LHS) * Value;
+    case StepOperation::EXPONENTIATION:
+      return std::pow(std::get<double>(LHS), Value);
     }
   }
 
+  [[nodiscard]] double operator()(double Value) { return next(Value); }
+
   [[nodiscard]] std::string toString() const {
+    if (std::holds_alternative<double>(RHS)) {
+      assert(std::holds_alternative<std::string>(LHS));
+      switch (Op) {
+      case StepOperation::ADDITION:
+        return llvm::formatv("{0} + {1}", std::get<std::string>(LHS),
+                             std::get<double>(RHS));
+      case StepOperation::MULTIPLICATION:
+        return llvm::formatv("{0} * {1}", std::get<std::string>(LHS),
+                             std::get<double>(RHS));
+      case StepOperation::EXPONENTIATION:
+        return llvm::formatv("{0} ^ {1}", std::get<std::string>(LHS),
+                             std::get<double>(RHS));
+      }
+    }
+    assert(std::holds_alternative<double>(LHS));
     switch (Op) {
-    case StepOperator::ADDITION:
-      return llvm::formatv("{0} + {1}", LHS, RHS);
-    case StepOperator::MULTIPLICATION:
-      return llvm::formatv("{0} * {1}", LHS, RHS);
+    case StepOperation::ADDITION:
+      return llvm::formatv("{0} + {1}", std::get<double>(LHS),
+                           std::get<std::string>(RHS));
+    case StepOperation::MULTIPLICATION:
+      return llvm::formatv("{0} * {1}", std::get<double>(LHS),
+                           std::get<std::string>(RHS));
+    case StepOperation::EXPONENTIATION:
+      return llvm::formatv("{0} ^ {1}", std::get<double>(LHS),
+                           std::get<std::string>(RHS));
     }
   }
 
 private:
-  std::string LHS;
-  StepOperator Op;
-  double RHS;
+  StepOperation Op;
+  OperandVariantType LHS;
+  OperandVariantType RHS;
 };
 
 } // namespace vara::feature
