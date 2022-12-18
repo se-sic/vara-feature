@@ -14,4 +14,6 @@ add_vara_unittest(VaRAFeatureUnitTests VaRAFeatureTests
   OrderedFeatureVector.cpp
   Relationship.cpp
   RootFeature.cpp
+  StepFunction.cpp
+  StepFunctionParser.cpp
   )
