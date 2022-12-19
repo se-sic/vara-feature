@@ -21,8 +21,7 @@ public:
   /// sample set.
   [[nodiscard]] static std::unique_ptr<
       std::vector<std::unique_ptr<vara::feature::Configuration>>>
-  readConfigurations(const feature::FeatureModel &Model,
-                     llvm::StringRef Csv);
+  readConfigurations(const feature::FeatureModel &Model, llvm::StringRef Csv);
 };
 
 } // namespace vara::sampling

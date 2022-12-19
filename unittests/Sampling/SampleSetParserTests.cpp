@@ -16,8 +16,8 @@ TEST(SampleSetParser, testCSVParsing) {
 
   // auto FMFS = llvm::MemoryBuffer::getFileAsStream(
   //     "../../../unittests/resources/xml/test_dune_num_explicit.xml");
-  auto FMFS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_dune_num.xml"));
+  auto FMFS =
+      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_dune_num.xml"));
   EXPECT_TRUE(FMFS);
   auto P = vara::feature::FeatureModelXmlParser(FMFS.get()->getBuffer().str());
   auto FM = P.buildFeatureModel();
