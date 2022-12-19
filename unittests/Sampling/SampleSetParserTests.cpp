@@ -1,9 +1,9 @@
+#include "Feature/UnittestHelper.h"
 #include "vara/Feature/FeatureModelParser.h"
 #include "vara/Sampling/SampleSetParser.h"
-#include "Feature/UnittestHelper.h"
 
-#include "gtest/gtest.h"
 #include "llvm/Support/MemoryBuffer.h"
+#include "gtest/gtest.h"
 
 namespace vara::sampling {
 TEST(SampleSetParser, testCSVParsing) {
