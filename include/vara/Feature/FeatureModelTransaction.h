@@ -704,26 +704,34 @@ public:
     if (FM.getRoot() && FM.getRoot()->getName() == Root->getName()) {
       for (auto *C : Root->children()) {
         setParent(*C, *FM.getRoot());
-        removeEdge(*Root, *C);
         addEdge(*FM.getRoot(), *C);
       }
-      return FM.getRoot();
-    }
-    if (auto *NewRoot = llvm::dyn_cast_or_null<RootFeature>(
-            addFeature(FM, std::move(Root)));
-        NewRoot) {
-      if (FM.getRoot()) {
-        for (auto *C : FM.getRoot()->children()) {
-          setParent(*C, *NewRoot);
-          removeEdge(*FM.getRoot(), *C);
-          addEdge(*NewRoot, *C);
+      for (auto *C : FM.getRoot()->children()) {
+        if (Root->hasEdgeTo(*C)) {
+          removeEdge(*Root, *C);
         }
-        removeFeature(FM, *FM.getRoot());
       }
-      setRoot(FM, *NewRoot);
       return FM.getRoot();
     }
-    return ALREADY_PRESENT;
+    auto *InsertedRoot =
+        llvm::dyn_cast_or_null<RootFeature>(addFeature(FM, std::move(Root)));
+    if (!InsertedRoot) {
+      return ALREADY_PRESENT;
+    }
+    if (FM.getRoot()) {
+      for (auto *C : FM.getRoot()->children()) {
+        setParent(*C, *InsertedRoot);
+        addEdge(*InsertedRoot, *C);
+      }
+      for (auto *C : InsertedRoot->children()) {
+        if (FM.getRoot()->hasEdgeTo(*C)) {
+          removeEdge(*FM.getRoot(), *C);
+        }
+      }
+      removeFeature(FM, *FM.getRoot());
+    }
+    setRoot(FM, *InsertedRoot);
+    return FM.getRoot();
   }
 
 private:
