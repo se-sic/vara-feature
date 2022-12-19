@@ -7,6 +7,7 @@ macro(add_test_file file_name)
 endmacro()
 
 set(FEATURE_LIB_TEST_FILES
+  csv/configs_dune.csv
   sxfm/sxfm_example.sxfm
   sxfm/test.sxfm
   sxfm/test_wrong_indentation.sxfm
@@ -20,6 +21,7 @@ set(FEATURE_LIB_TEST_FILES
   xml/error_root_root.xml
   xml/test.xml
   xml/test_children.xml
+  xml/test_dune_num.xml
   xml/test_excludes.xml
   xml/test_member_offset.xml
   xml/test_numbers.xml
