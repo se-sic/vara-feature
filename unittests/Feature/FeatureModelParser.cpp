@@ -126,13 +126,13 @@ TEST(FeatureModelParser, revisionRange) {
   auto *Feature = FM->getFeature("A");
   for (auto &Loc : Feature->getLocations()) {
     ASSERT_TRUE(Loc.hasRevisionRange());
-    if (Loc.getRevisionRange()->hasRemovedCommit()) {
-      EXPECT_EQ(Loc.getRevisionRange()->getIntroducedCommit(),
+    if (Loc.revisionRange()->hasRemovingCommit()) {
+      EXPECT_EQ(Loc.revisionRange()->introducingCommit(),
                 "94fe792df46e64f438720295742b3b72c407cab6");
-      EXPECT_EQ(Loc.getRevisionRange()->getRemovedCommit(),
+      EXPECT_EQ(Loc.revisionRange()->removingCommit(),
                 "1ed40f72e772adaa3adfcc94b9f038e4f3382339");
     } else {
-      EXPECT_EQ(Loc.getRevisionRange()->getIntroducedCommit(),
+      EXPECT_EQ(Loc.revisionRange()->introducingCommit(),
                 "a7fb445f986adb2c2972df337ea46930cfc3dbf2");
     }
   }

@@ -32,10 +32,10 @@ TEST(FeatureSourceRange, full) {
   ASSERT_TRUE(L.hasMemberOffset());
   EXPECT_EQ(L.getMemberOffset()->toString(), "class::memberOffset");
   ASSERT_TRUE(L.hasRevisionRange());
-  EXPECT_EQ(L.getRevisionRange()->getIntroducedCommit(),
+  EXPECT_EQ(L.revisionRange()->introducingCommit(),
             "94fe792df46e64f438720295742b3b72c407cab6");
-  ASSERT_TRUE(L.getRevisionRange()->hasRemovedCommit());
-  EXPECT_EQ(L.getRevisionRange()->getRemovedCommit(),
+  ASSERT_TRUE(L.revisionRange()->hasRemovingCommit());
+  EXPECT_EQ(L.revisionRange()->removingCommit(),
             "1ed40f72e772adaa3adfcc94b9f038e4f3382339");
 }
 

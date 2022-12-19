@@ -22,7 +22,7 @@ namespace fs = std::experimental::filesystem;
 namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
-//                               FeatureSourceRange Class
+//                          FeatureSourceRange Class
 //===----------------------------------------------------------------------===//
 
 class FeatureSourceRange {
@@ -36,12 +36,12 @@ public:
     FeatureRevisionRange(std::string Introduced)
         : Introduced(std::move(Introduced)) {}
 
-    [[nodiscard]] llvm::StringRef getIntroducedCommit() const {
+    [[nodiscard]] llvm::StringRef introducingCommit() const {
       return Introduced;
     }
 
-    [[nodiscard]] bool hasRemovedCommit() const { return Removed.hasValue(); }
-    [[nodiscard]] llvm::StringRef getRemovedCommit() const {
+    [[nodiscard]] bool hasRemovingCommit() const { return Removed.hasValue(); }
+    [[nodiscard]] llvm::StringRef removingCommit() const {
       return Removed.hasValue() ? llvm::StringRef(Removed.getValue())
                                 : llvm::StringRef();
     }
@@ -218,7 +218,7 @@ public:
   [[nodiscard]] bool hasRevisionRange() const {
     return RevisionRange.hasValue();
   }
-  [[nodiscard]] FeatureRevisionRange *getRevisionRange() {
+  [[nodiscard]] FeatureRevisionRange *revisionRange() {
     return RevisionRange.hasValue() ? RevisionRange.getPointer() : nullptr;
   }
 
