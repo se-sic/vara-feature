@@ -146,6 +146,20 @@ TEST(FeatureModelParser, outputString) {
   EXPECT_EQ(F->getOutputString(), "-a");
 }
 
+TEST(FeatureModelParser, stepFunction) {
+  auto FM = buildFeatureModel("test_step_function.xml");
+  ASSERT_TRUE(FM);
+
+  if (auto *F = llvm::dyn_cast_or_null<NumericFeature>(FM->getFeature("A"));
+      F) {
+    auto *S = F->getStepFunction();
+    ASSERT_TRUE(S);
+    EXPECT_DOUBLE_EQ((*S)(12.42), 54.42);
+  } else {
+    FAIL();
+  }
+}
+
 //===----------------------------------------------------------------------===//
 //                        XMLAlternatives
 //===----------------------------------------------------------------------===//

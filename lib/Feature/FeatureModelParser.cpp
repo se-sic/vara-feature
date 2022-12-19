@@ -2,6 +2,7 @@
 #include "vara/Feature/ConstraintParser.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureSourceRange.h"
+#include "vara/Feature/StepFunctionParser.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -31,6 +32,7 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   int64_t MaxValue = 0;
   std::vector<int64_t> Values;
   std::vector<FeatureSourceRange> SourceRanges;
+  std::unique_ptr<StepFunction> Step;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       std::string Cnt{trim(reinterpret_cast<char *>(
@@ -119,6 +121,8 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                Suffix = Matches.suffix()) {
             Values.emplace_back(parseInteger(Matches.str(), Head->line));
           }
+        } else if (!xmlStrcmp(Head->name, XmlConstants::STEPFUNCTION)) {
+          Step = StepFunctionParser(Cnt, Head->line).buildStepFunction();
         }
       }
     }
@@ -131,10 +135,11 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
     if (Values.empty()) {
       FMB.makeFeature<NumericFeature>(Name, std::make_pair(MinValue, MaxValue),
                                       Opt, std::move(SourceRanges),
-                                      OutputString);
+                                      OutputString, std::move(Step));
     } else {
       FMB.makeFeature<NumericFeature>(Name, Values, Opt,
-                                      std::move(SourceRanges), OutputString);
+                                      std::move(SourceRanges), OutputString,
+                                      std::move(Step));
     }
   } else {
     FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges),
