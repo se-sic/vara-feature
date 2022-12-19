@@ -70,7 +70,9 @@ private:
 
   static FeatureSourceRange::FeatureSourceLocation
   createFeatureSourceLocation(xmlNode *Node);
-  static FeatureSourceRange createFeatureSourceRange(xmlNode *Head);
+  static FeatureSourceRange::FeatureRevisionRange
+  createFeatureRevisionRange(xmlNode *Node);
+  static FeatureSourceRange createFeatureSourceRange(xmlNode *Node);
   static long parseNumber(llvm::StringRef Str);
 
   UniqueXmlDoc parseDoc();
