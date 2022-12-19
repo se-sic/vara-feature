@@ -26,6 +26,9 @@ public:
   static constexpr xmlChar OPTIONS[] = "options";
   static constexpr xmlChar LOCATIONS[] = "locations";
   static constexpr xmlChar SOURCERANGE[] = "sourceRange";
+  static constexpr xmlChar REVISIONRANGE[] = "revisionRange";
+  static constexpr xmlChar INTRODUCED[] = "introduced";
+  static constexpr xmlChar REMOVED[] = "removed";
   static constexpr xmlChar MEMBEROFFSET[] = "memberOffset";
   static constexpr xmlChar PATH[] = "path";
   static constexpr xmlChar START[] = "start";
@@ -82,8 +85,12 @@ public:
       "<!ELEMENT values (#PCDATA)>\n"
       "<!ELEMENT stepFunction (#PCDATA)>\n"
       "<!ELEMENT locations (sourceRange*)>\n"
-      "<!ELEMENT sourceRange (path, start, end, memberOffset?)>\n"
+      "<!ELEMENT sourceRange (revisionRange?, path, start, end, "
+      "memberOffset?)>\n"
       "<!ATTLIST sourceRange category (necessary|inessential) \"necessary\">\n"
+      "<!ELEMENT revisionRange (introduced, removed?)>\n"
+      "<!ELEMENT introduced (#PCDATA)>\n"
+      "<!ELEMENT removed (#PCDATA)>\n"
       "<!ELEMENT path (#PCDATA)>\n"
       "<!ELEMENT start (line, column)>\n"
       "<!ELEMENT end (line, column)>\n"
