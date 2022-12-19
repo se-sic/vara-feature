@@ -1,28 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classvara_1_1feature_1_1BooleanConstraint.html" title=" " alt="" coords="235,339,470,366"/>
-<area shape="rect" id="node2" href="$classvara_1_1feature_1_1AndConstraint.html" title=" " alt="" coords="535,289,742,315"/>
-<area shape="rect" id="node3" href="$classvara_1_1feature_1_1EqualConstraint.html" title=" " alt="" coords="530,339,747,366"/>
-<area shape="rect" id="node4" href="$classvara_1_1feature_1_1EquivalenceConstraint.html" title=" " alt="" coords="542,391,735,432"/>
-<area shape="rect" id="node5" href="$classvara_1_1feature_1_1ExcludesConstraint.html" title=" " alt="" coords="519,457,758,483"/>
-<area shape="rect" id="node6" href="$classvara_1_1feature_1_1ImpliesConstraint.html" title=" " alt="" coords="524,507,753,534"/>
-<area shape="rect" id="node7" href="$classvara_1_1feature_1_1NotConstraint.html" title=" " alt="" coords="537,558,741,585"/>
-<area shape="rect" id="node8" href="$classvara_1_1feature_1_1NotEqualConstraint.html" title=" " alt="" coords="519,137,759,163"/>
-<area shape="rect" id="node9" href="$classvara_1_1feature_1_1OrConstraint.html" title=" " alt="" coords="541,187,737,214"/>
-<area shape="rect" id="node10" href="$classvara_1_1feature_1_1XorConstraint.html" title=" " alt="" coords="537,238,740,265"/>
-<area shape="rect" id="node11" href="$classvara_1_1feature_1_1Constraint.html" title="Tree like representation of constraints between features." alt="" coords="5,507,187,534"/>
-<area shape="rect" id="node12" href="$classvara_1_1feature_1_1BinaryConstraint.html" title=" " alt="" coords="241,507,464,534"/>
-<area shape="rect" id="node21" href="$classvara_1_1feature_1_1PrimaryConstraint.html" title=" " alt="" coords="237,78,469,105"/>
-<area shape="rect" id="node24" href="$classvara_1_1feature_1_1UnaryConstraint.html" title=" " alt="" coords="243,558,463,585"/>
-<area shape="rect" id="node13" href="$classvara_1_1feature_1_1AdditionConstraint.html" title=" " alt="" coords="521,675,756,702"/>
-<area shape="rect" id="node14" href="$classvara_1_1feature_1_1DivisionConstraint.html" title=" " alt="" coords="521,726,756,753"/>
-<area shape="rect" id="node15" href="$classvara_1_1feature_1_1GreaterConstraint.html" title=" " alt="" coords="523,777,754,803"/>
-<area shape="rect" id="node16" href="$classvara_1_1feature_1_1GreaterEqualConstraint.html" title=" " alt="" coords="539,828,738,869"/>
-<area shape="rect" id="node17" href="$classvara_1_1feature_1_1LessConstraint.html" title=" " alt="" coords="533,894,744,921"/>
-<area shape="rect" id="node18" href="$classvara_1_1feature_1_1LessEqualConstraint.html" title=" " alt="" coords="549,945,728,987"/>
-<area shape="rect" id="node19" href="$classvara_1_1feature_1_1MultiplicationConstraint.html" title=" " alt="" coords="537,1011,740,1052"/>
-<area shape="rect" id="node20" href="$classvara_1_1feature_1_1SubtractionConstraint.html" title=" " alt="" coords="545,609,733,651"/>
-<area shape="rect" id="node22" href="$classvara_1_1feature_1_1PrimaryFeatureConstraint.html" title=" " alt="" coords="531,71,746,112"/>
-<area shape="rect" id="node23" href="$classvara_1_1feature_1_1PrimaryIntegerConstraint.html" title=" " alt="" coords="533,5,744,47"/>
-<area shape="rect" id="node25" href="$classvara_1_1feature_1_1NegConstraint.html" title=" " alt="" coords="535,1077,742,1103"/>
-<area shape="rect" id="node26" href="$classvara_1_1feature_1_1NumericConstraint.html" title=" " alt="" coords="235,835,471,862"/>
+<area shape="rect" id="node1" href="$classvara_1_1feature_1_1FeatureSourceRange_1_1FeatureRevisionRange.html" title=" " alt="" coords="5,5,223,47"/>
 </map>
