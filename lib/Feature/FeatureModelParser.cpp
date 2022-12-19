@@ -149,15 +149,16 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
 }
 
 FeatureSourceRange
-FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
+FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Node) {
   fs::path Path;
   llvm::Optional<FeatureSourceRange::FeatureSourceLocation> Start;
   llvm::Optional<FeatureSourceRange::FeatureSourceLocation> End;
   enum FeatureSourceRange::Category Category;
   llvm::Optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
+  llvm::Optional<FeatureSourceRange::FeatureRevisionRange> RevisionRange;
 
   std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
-      xmlGetProp(Head, XmlConstants::CATEGORY), xmlFree);
+      xmlGetProp(Node, XmlConstants::CATEGORY), xmlFree);
   if (Tmp) {
     if (xmlStrcmp(Tmp.get(), XmlConstants::NECESSARY) == 0) {
       Category = FeatureSourceRange::Category::necessary;
@@ -170,9 +171,11 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   } else {
     Category = FeatureSourceRange::Category::necessary;
   }
-  for (xmlNode *Child = Head->children; Child; Child = Child->next) {
+  for (xmlNode *Child = Node->children; Child; Child = Child->next) {
     if (Child->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
+      if (!xmlStrcmp(Child->name, XmlConstants::REVISIONRANGE)) {
+        RevisionRange = createFeatureRevisionRange(Child);
+      } else if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
         Path = fs::path(trim(reinterpret_cast<char *>(
             UniqueXmlChar(xmlNodeGetContent(Child), xmlFree).get())));
       } else if (!xmlStrcmp(Child->name, XmlConstants::START)) {
@@ -187,7 +190,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
       }
     }
   }
-  return {Path, Start, End, Category, MemberOffset};
+  return {Path, Start, End, Category, MemberOffset, RevisionRange};
 }
 
 Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
@@ -257,6 +260,27 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
     }
   }
   return Ok();
+}
+
+FeatureSourceRange::FeatureRevisionRange
+FeatureModelXmlParser::createFeatureRevisionRange(xmlNode *Node) {
+  std::string Introduced;
+  std::string Removed;
+  for (xmlNode *Head = Node->children; Head; Head = Head->next) {
+    if (Head->type == XML_ELEMENT_NODE) {
+      std::string Cnt{trim(reinterpret_cast<char *>(
+          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()))};
+      if (!xmlStrcmp(Head->name, XmlConstants::INTRODUCED)) {
+        Introduced = Cnt;
+      } else if (!xmlStrcmp(Head->name, XmlConstants::REMOVED)) {
+        Removed = Cnt;
+      }
+    }
+  }
+  if (Removed.empty()) {
+    return {Introduced};
+  }
+  return {Introduced, Removed};
 }
 
 FeatureSourceRange::FeatureSourceLocation
