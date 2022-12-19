@@ -114,6 +114,33 @@ TEST(FeatureModelBuilder, addBinaryFeatureRef) {
   EXPECT_TRUE(FM->getFeature("a")->hasEdgeTo(*FM->getFeature("aa")));
 }
 
+TEST(FeatureModelBuilder, addMultipleFeaturesWithEdges) {
+  FeatureModelBuilder B;
+
+  B.makeRoot("newRoot");
+  B.makeFeature<BinaryFeature>("a", true);
+  B.makeFeature<BinaryFeature>("b", true);
+  B.makeFeature<BinaryFeature>("c", true);
+
+  B.addEdge("newRoot", "a");
+  B.addEdge("newRoot", "b");
+  B.addEdge("newRoot", "c");
+
+  auto FM = B.buildFeatureModel();
+  ASSERT_TRUE(FM);
+
+  EXPECT_TRUE(FM->getFeature("a") != nullptr);
+  EXPECT_TRUE(FM->getFeature("b") != nullptr);
+  EXPECT_TRUE(FM->getFeature("c") != nullptr);
+
+  EXPECT_TRUE(FM->getRoot() != nullptr);
+  EXPECT_EQ(FM->getRoot(), FM->getFeature("newRoot"));
+
+  EXPECT_TRUE(FM->getRoot()->hasEdgeTo(*FM->getFeature("a")));
+  EXPECT_TRUE(FM->getRoot()->hasEdgeTo(*FM->getFeature("b")));
+  EXPECT_TRUE(FM->getRoot()->hasEdgeTo(*FM->getFeature("c")));
+}
+
 TEST(FeatureModelBuilder, addNumericFeatureRef) {
   FeatureModelBuilder B;
 
