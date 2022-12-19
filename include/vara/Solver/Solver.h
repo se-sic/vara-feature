@@ -25,9 +25,14 @@ public:
 
   /// Adds the given feature to the solver. That is, a new variable is created
   /// in the solver and all its constraints are included.
+  /// The second argument indicates whether the 'optional' constraint should
+  /// be considered or not -- note that this is needed since alternative
+  /// features are modelled as not optional, but are neither optional nor
+  /// mandatory.
   /// \return a possible error if adding the feature was not successful.
   virtual Result<SolverErrorCode>
-  addFeature(const feature::Feature &FeatureToAdd) = 0;
+  addFeature(const feature::Feature &FeatureToAdd,
+             bool IsInAlternativeGroup = false) = 0;
 
   /// This method adds a boolean feature with the given name. Please be aware
   /// that this method does only include a boolean feature with no constraints.
@@ -134,7 +139,8 @@ public:
   }
 
   Result<SolverErrorCode>
-  addFeature(const feature::Feature &FeatureToAdd) override;
+  addFeature(const feature::Feature &FeatureToAdd,
+             bool IsInAlternativeGroup = false) override;
 
   Result<SolverErrorCode> addFeature(const string &FeatureName) override;
 
@@ -181,10 +187,12 @@ private:
   /// \return an error code in case of error.
   Result<SolverErrorCode> excludeCurrentConfiguration();
 
-  /// Processes the constraints of the binary feature.
+  /// Processes the constraints of the binary feature and ignores the 'optional'
+  /// constraint if the feature is in an alternative group.
   /// \return an error code in case of error.
   Result<SolverErrorCode>
-  setBinaryFeatureConstraints(const feature::BinaryFeature &Feature);
+  setBinaryFeatureConstraints(const feature::BinaryFeature &Feature,
+                              bool IsInAlternativeGroup);
 
   /// This map contains the original feature names as key and maps it to the
   /// Z3 value.
@@ -238,10 +246,17 @@ public:
 
   /// Visits the feature in the constraint. This method creates the according
   /// z3 constant.
-  /// \param C
+  /// \param C the primary feature
   /// \return \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool visit(vara::feature::PrimaryFeatureConstraint *C) override;
+
+  /// Visits the feature in the integer constraints. This method creates the
+  /// according z3 constant.
+  /// \param C the integer constraint
+  /// \return \c true if adding the constraint was successfull; \c false
+  /// otherwise.
+  bool visit(feature::PrimaryIntegerConstraint *C) override;
 
 private:
   /// The z3 constraint will be adjusted while visiting the given constraint

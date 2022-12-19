@@ -21,6 +21,9 @@ set(FEATURE_LIB_TEST_FILES
   xml/test.xml
   xml/test_children.xml
   xml/test_excludes.xml
+  xml/test_dune_bin.xml
+  xml/test_dune_num.xml
+  xml/test_dune_num_explicit.xml
   xml/test_hipacc_bin.xml
   xml/test_hipacc_num.xml
   xml/test_member_offset.xml

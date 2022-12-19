@@ -5,7 +5,8 @@
 namespace vara::solver {
 
 Result<SolverErrorCode>
-Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
+Z3Solver::addFeature(const feature::Feature &FeatureToAdd,
+                     bool IsInAlternativeGroup) {
   // Check whether the parent feature is already added
   vara::feature::Feature *Parent = FeatureToAdd.getParentFeature();
   if (Parent != nullptr && OptionToVariableMapping.find(Parent->getName()) ==
@@ -49,7 +50,8 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd) {
       return NOT_SUPPORTED;
     }
     auto R = setBinaryFeatureConstraints(
-        *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd));
+        *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd),
+        IsInAlternativeGroup);
     if (!R) {
       return R;
     }
@@ -194,13 +196,14 @@ Z3Solver::getAllValidConfigurations() {
 }
 
 Result<SolverErrorCode>
-Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature) {
+Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature,
+                                      bool IsInAlternativeGroup) {
   // Add constraint to parent
   Solver->add(z3::implies(
       *OptionToVariableMapping[Feature.getName()],
       *OptionToVariableMapping[Feature.getParentFeature()->getName()]));
 
-  if (!Feature.isOptional()) {
+  if (!IsInAlternativeGroup && !Feature.isOptional()) {
     Solver->add(z3::implies(
         *OptionToVariableMapping[Feature.getParentFeature()->getName()],
         *OptionToVariableMapping[Feature.getName()]));
@@ -352,6 +355,12 @@ bool SolverConstraintVisitor::visit(
     Z3ConstraintExpression =
         S->Context.bool_const(C->getFeature()->getName().str().c_str());
   }
+  return true;
+}
+
+bool SolverConstraintVisitor::visit(
+    vara::feature::PrimaryIntegerConstraint *C) {
+  Z3ConstraintExpression = S->Context.int_val(C->getValue());
   return true;
 }
 

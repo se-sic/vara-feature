@@ -249,7 +249,9 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
         if (!parseOptions(H, true)) {
           return Error(ERROR);
         }
-      } else if (!xmlStrcmp(H->name, XmlConstants::BOOLEANCONSTRAINTS)) {
+      } else if (!xmlStrcmp(H->name, XmlConstants::BOOLEANCONSTRAINTS) ||
+                 !xmlStrcmp(H->name, XmlConstants::NONBOOLEANCONSTRAINTS) ||
+                 !xmlStrcmp(H->name, XmlConstants::MIXEDCONSTRAINTS)) {
         if (!parseConstraints(H)) {
           return Error(ERROR);
         }
