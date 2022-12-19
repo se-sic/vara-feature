@@ -37,9 +37,18 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd,
         return R;
       }
     } else {
-      // TODO: This has to be implemented on feature side using the constraint
-      // parser
-      return NOT_IMPLEMENTED;
+      auto Range =
+          std::get<vara::feature::NumericFeature::ValueRangeType>(Values);
+      auto *StepFunction = F->getStepFunction();
+      auto Step = Range.first;
+      std::vector<int64_t> Vals;
+      while (Step < Range.second) {
+        Vals.insert(Vals.begin(), Step);
+        Step = StepFunction->next(Step);
+      }
+      if (auto R = addFeature(F->getName().str(), Vals); !R) {
+        return R;
+      }
     }
     break;
   }
@@ -137,17 +146,8 @@ Z3Solver::addConstraint(feature::Constraint &ConstraintToAdd) {
   return Ok();
 }
 
-Result<SolverErrorCode>
-Z3Solver::removeConstraint(feature::Constraint &ConstraintToRemove) {
-  return NOT_SUPPORTED;
-}
-
 Result<SolverErrorCode, std::unique_ptr<bool>>
 Z3Solver::hasValidConfigurations() {
-  // TODO: Try to process the constraints first
-  if (!UnprocessedConstraints.empty()) {
-    return NOT_ALL_CONSTRAINTS_PROCESSED;
-  }
   if (Solver->check() == z3::sat) {
     return Ok(std::make_unique<bool>(true));
   }
@@ -161,10 +161,6 @@ Z3Solver::getNextConfiguration() {
 
   // Retrieve the next configuration
   return getCurrentConfiguration();
-}
-
-Result<SolverErrorCode> Z3Solver::resetConfigurationIterator() {
-  return NOT_IMPLEMENTED;
 }
 
 Result<SolverErrorCode, std::unique_ptr<uint64_t>>

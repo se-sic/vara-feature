@@ -16,7 +16,8 @@ SolverFactory::initializeZ3Solver(const feature::FeatureModel &Model) {
 
   // Iterate over all features first
   for (auto *F : Model.features()) {
-    S->addFeature(*F, std::find(V.begin(), V.end(), F->getName().str()) != V.end());
+    S->addFeature(*F,
+                  std::find(V.begin(), V.end(), F->getName().str()) != V.end());
   }
 
   // Iterate over all constraints

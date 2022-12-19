@@ -69,12 +69,6 @@ public:
   virtual Result<SolverErrorCode>
   addConstraint(feature::Constraint &ConstraintToAdd) = 0;
 
-  /// Removes the given constraint from the solver.
-  /// If the constraint is not found, an error is returned.
-  /// \return a possible error if removing the constraint could not be done.
-  virtual Result<SolverErrorCode>
-  removeConstraint(feature::Constraint &ConstraintToRemove) = 0;
-
   /// Returns \c true if the current constraint system (i.e., its features and
   /// its constraints) has valid configurations.
   /// \return an error if, for instance, not all constraints could be parsed yet
@@ -103,11 +97,6 @@ public:
   /// unsatisfiable).
   virtual Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getNextConfiguration() = 0;
-
-  /// This method resets the configuration iterator.
-  /// \return an error if resetting the configuration iterator should not be
-  /// successful.
-  virtual Result<SolverErrorCode> resetConfigurationIterator() = 0;
 
   /// Returns all valid configurations. In comparison to \c
   /// getNumberValidConfigurations, this method returns the configurations
@@ -157,9 +146,6 @@ public:
   Result<SolverErrorCode>
   addConstraint(feature::Constraint &ConstraintToAdd) override;
 
-  Result<SolverErrorCode>
-  removeConstraint(feature::Constraint &ConstraintToRemove) override;
-
   Result<SolverErrorCode, std::unique_ptr<bool>>
   hasValidConfigurations() override;
 
@@ -171,8 +157,6 @@ public:
 
   Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getNextConfiguration() override;
-
-  Result<SolverErrorCode> resetConfigurationIterator() override;
 
   Result<SolverErrorCode, std::unique_ptr<std::vector<
                               std::unique_ptr<vara::feature::Configuration>>>>
@@ -197,11 +181,6 @@ private:
   /// This map contains the original feature names as key and maps it to the
   /// Z3 value.
   llvm::StringMap<std::unique_ptr<z3::expr>> OptionToVariableMapping;
-
-  /// This vector contains the constraints that remain unprocessed because of
-  /// features/variables that are not included yet into the solver.
-  llvm::SmallVector<std::unique_ptr<feature::Constraint>, 10>
-      UnprocessedConstraints;
 
   /// The context of Z3 needed to initialize variables.
   z3::context Context;
