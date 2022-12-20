@@ -4,6 +4,7 @@
 #include "vara/Feature/Constraint.h"
 #include "vara/Feature/FeatureSourceRange.h"
 #include "vara/Feature/FeatureTreeNode.h"
+#include "vara/Feature/StepFunction.h"
 
 #include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/SetVector.h"
@@ -251,12 +252,15 @@ public:
   NumericFeature(
       std::string Name, ValuesVariantType Values, bool Opt = false,
       std::vector<FeatureSourceRange> Loc = std::vector<FeatureSourceRange>(),
-      std::string OutputString = "")
+      std::string OutputString = "",
+      std::unique_ptr<StepFunction> Step = nullptr)
       : Feature(FeatureKind::FK_NUMERIC, std::move(Name), Opt, std::move(Loc),
                 std::move(OutputString)),
-        Values(std::move(Values)) {}
+        Values(std::move(Values)), Step(std::move(Step)) {}
 
   [[nodiscard]] ValuesVariantType getValues() const { return Values; }
+
+  [[nodiscard]] StepFunction *getStepFunction() { return Step.get(); }
 
   [[nodiscard]] string toString() const override;
 
@@ -266,6 +270,7 @@ public:
 
 private:
   ValuesVariantType Values;
+  std::unique_ptr<StepFunction> Step;
 };
 
 //===----------------------------------------------------------------------===//

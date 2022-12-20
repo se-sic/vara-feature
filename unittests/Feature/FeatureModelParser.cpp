@@ -119,12 +119,45 @@ TEST(FeatureModelParser, memberOffset) {
   }
 }
 
+TEST(FeatureModelParser, revisionRange) {
+  auto FM = buildFeatureModel("test_revision_range.xml");
+  ASSERT_TRUE(FM);
+
+  auto *Feature = FM->getFeature("A");
+  for (auto &Loc : Feature->getLocations()) {
+    ASSERT_TRUE(Loc.hasRevisionRange());
+    if (Loc.revisionRange()->hasRemovingCommit()) {
+      EXPECT_EQ(Loc.revisionRange()->introducingCommit(),
+                "94fe792df46e64f438720295742b3b72c407cab6");
+      EXPECT_EQ(Loc.revisionRange()->removingCommit(),
+                "1ed40f72e772adaa3adfcc94b9f038e4f3382339");
+    } else {
+      EXPECT_EQ(Loc.revisionRange()->introducingCommit(),
+                "a7fb445f986adb2c2972df337ea46930cfc3dbf2");
+    }
+  }
+}
+
 TEST(FeatureModelParser, outputString) {
   auto FM = buildFeatureModel("test_output_string.xml");
   ASSERT_TRUE(FM);
 
   auto *F = FM->getFeature("A");
   EXPECT_EQ(F->getOutputString(), "-a");
+}
+
+TEST(FeatureModelParser, stepFunction) {
+  auto FM = buildFeatureModel("test_step_function.xml");
+  ASSERT_TRUE(FM);
+
+  if (auto *F = llvm::dyn_cast_or_null<NumericFeature>(FM->getFeature("A"));
+      F) {
+    auto *S = F->getStepFunction();
+    ASSERT_TRUE(S);
+    EXPECT_DOUBLE_EQ((*S)(12.42), 54.42);
+  } else {
+    FAIL();
+  }
 }
 
 //===----------------------------------------------------------------------===//
