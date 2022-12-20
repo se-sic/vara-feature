@@ -3,7 +3,7 @@
 //
 
 #include "FeatureModelEditor.h"
-#include "FeatureModelGraph.h"
+#include "graph/FeatureModelGraph.h"
 #include "vara/Feature/FeatureModel.h"
 
 #include <QApplication>

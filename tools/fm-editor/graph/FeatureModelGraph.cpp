@@ -7,14 +7,14 @@
 #include "FeatureNode.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureModel.h"
-
+#include "vara/Feature/FeatureModelTransaction.h"
 #include <cmath>
 
 #include <QKeyEvent>
 #include <QRandomGenerator>
-FeatureModelGraph::FeatureModelGraph(std::unique_ptr<vara::feature::FeatureModel> FeatureModel,
+FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel * FeatureModel,
                                      QWidget *Parent)
-    : QGraphicsView(Parent), EntryNode(new FeatureNode(this, FeatureModel->getRoot())), FeatureModel(std::move(FeatureModel)) {
+    : QGraphicsView(Parent), EntryNode(new FeatureNode(this, FeatureModel->getRoot())), FeatureModel(FeatureModel) {
   auto *Scene = new QGraphicsScene(this);
   Scene->setItemIndexMethod(QGraphicsScene::NoIndex);
   Scene->setSceneRect(0, 0, 600, 600);
@@ -25,7 +25,13 @@ FeatureModelGraph::FeatureModelGraph(std::unique_ptr<vara::feature::FeatureModel
   setTransformationAnchor(AnchorUnderMouse);
   scale(qreal(0.8), qreal(0.8));
   setMinimumSize(400, 400);
-  Nodes.insert(EntryNode);
+  reload();
+}
+
+void FeatureModelGraph::reload(){
+  Nodes.push_back(std::unique_ptr<FeatureNode>(EntryNode));
+  auto *Scene = this->scene();
+  Scene->clear();
   Scene->addItem(EntryNode);
   buildRec(EntryNode);
   auto NextChildren =std::vector<FeatureNode*>(EntryNode->children().size());
@@ -39,12 +45,12 @@ void FeatureModelGraph::buildRec(FeatureNode *CurrentFeatureNode) {
   for (auto *Feature :
        CurrentFeatureNode->getFeature()->getChildren<vara::feature::Feature>(
            1)) {
-    auto *Node = new FeatureNode(this, Feature);
-    auto *Edge = new FeatureEdge(CurrentFeatureNode, Node);
-    Nodes.insert(Node);
+    auto Node = std::make_unique<FeatureNode>(this, Feature);
+    auto *Edge = new FeatureEdge(CurrentFeatureNode, Node.get());
     scene()->addItem(Edge);
-    scene()->addItem(Node);
-    buildRec(Node);
+    scene()->addItem(Node.get());
+    buildRec(Node.get());
+    Nodes.push_back(std::move(Node));
   }
 }
 
@@ -135,3 +141,27 @@ void FeatureModelGraph::scaleView(qreal ScaleFactor) {
 }
 void FeatureModelGraph::zoomIn() { scaleView(qreal(1.2)); }
 void FeatureModelGraph::zoomOut() { scaleView(1 / qreal(1.2)); }
+void FeatureModelGraph::addFeature(const QString& Name, FeatureNode* Parent) {
+  auto Transaction = vara::feature::FeatureModelTransaction<vara::feature::detail::ModifyTransactionMode>::openTransaction(*FeatureModel);
+  auto NewFeature = std::make_unique<vara::feature::Feature>(Name.toStdString());
+  auto NewNode = std::make_unique<FeatureNode>(this,NewFeature.get());
+  Transaction.addFeature(std::move(NewFeature),FeatureModel->getFeature(Parent->getName()));
+  Transaction.commit();
+  auto * NewEdge = new FeatureEdge(Parent,NewNode.get());
+  scene()->addItem(NewEdge);
+  scene()->addItem(NewNode.get());
+  Nodes.push_back(std::move(NewNode));
+  auto NextChildren =std::vector<FeatureNode*>(EntryNode->children().size());
+  auto CurrentChildren = EntryNode->children();
+  std::transform(CurrentChildren.begin(),CurrentChildren.end(),NextChildren.begin(),[](FeatureEdge* Edge){return Edge->targetNode();});
+  positionRec(1,NextChildren,WIDTH-10,0);
+  EntryNode->setPos(WIDTH/2,10);
+}
+FeatureNode* FeatureModelGraph::getNode(std::string Name) {
+  auto It = std::find_if(Nodes.begin(),Nodes.end(),[&Name](auto const &Node){return Node->getName() == Name;});
+  if (It != Nodes.end()) {
+    return It->get();
+  }
+  return nullptr;
+
+}

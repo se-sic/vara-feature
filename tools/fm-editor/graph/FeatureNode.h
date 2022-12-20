@@ -20,12 +20,15 @@ public:
 
   enum { Type = UserType + 1 };
   [[nodiscard]] int type() const override { return Type; }
-  void calculateForces();
-  bool advancePosition();
   vara::feature::Feature* getFeature(){return Feature;};
   [[nodiscard]] QRectF boundingRect() const override;
   [[nodiscard]] QPainterPath shape() const override;
   void paint(QPainter *Painter, const QStyleOptionGraphicsItem *Option, QWidget *Widget) override;
+  bool isOptional() {return Feature->isOptional();}
+  [[nodiscard]] QString getQName() const {
+    return QString::fromStdString(Feature->getName().str());
+  };
+  [[nodiscard]] std::string getName() const {return Feature->getName().str();};
 signals:
   void clicked(vara::feature::Feature *Feature);
 protected:

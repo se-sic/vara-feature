@@ -98,11 +98,23 @@
      <x>0</x>
      <y>0</y>
      <width>915</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionAddFeature"/>
+   </widget>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAddFeature">
+   <property name="text">
+    <string>AddFeature</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

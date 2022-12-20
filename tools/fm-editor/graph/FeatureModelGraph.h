@@ -10,11 +10,12 @@ class FeatureModelGraph : public QGraphicsView {
   Q_OBJECT
 
 public:
-  FeatureModelGraph(std::unique_ptr<vara::feature::FeatureModel> FeatureModel,
+  FeatureModelGraph(vara::feature::FeatureModel * FeatureModel,
                     QWidget *Parent = nullptr);
-  std::set<FeatureNode*> getNodes() {return Nodes;};
+  auto getNodes() {return &Nodes;};
   void itemMoved();
-
+  FeatureNode* getNode(std::string Name);
+  void addFeature(const QString& Name,FeatureNode* Parent);
 public slots:
   void zoomIn();
   void zoomOut();
@@ -28,6 +29,7 @@ protected:
 
   void scaleView(qreal ScaleFactor);
 private:
+  void reload();
   void buildRec(FeatureNode *CurrentFeatureNode);
   int TimerId = 0;
   FeatureNode* EntryNode;
@@ -35,8 +37,8 @@ private:
                   unsigned long Width, unsigned long Offset);
   const int HEIGHT = 600;
   const int WIDTH = 600;
-  std::unique_ptr<vara::feature::FeatureModel> FeatureModel;
-  std::set<FeatureNode*> Nodes;
+  vara::feature::FeatureModel* FeatureModel;
+  std::vector<std::unique_ptr<FeatureNode>> Nodes;
 };
 
 #endif // VARA_FEATURE_FEATUREMODELGRAPH_H

@@ -35,20 +35,6 @@ FeatureEdge * FeatureNode::parent() const {
   return ParentEdge;
 }
 
-void FeatureNode::calculateForces() {
-  if (!scene() || scene()->mouseGrabberItem() == this) {
-    NewPos = pos();
-    return;
-  }
-}
-bool FeatureNode::advancePosition() {
-  if (NewPos == pos()) {
-    return false;
-}
-
-  setPos(NewPos);
-  return true;
-}
 QRectF FeatureNode::boundingRect() const {
   qreal Adjust = 2;
   int W = width();
@@ -61,10 +47,11 @@ QPainterPath FeatureNode::shape() const {
   Path.addRect(-W / 2, -10, W, 20);
   return Path;
 }
+
 void FeatureNode::paint(QPainter *Painter,
                         const QStyleOptionGraphicsItem *Option,
                         QWidget *Widget) {
-  const auto Name = QString::fromStdString(Feature->getName().str());
+  const auto Name = getQName();
   QBrush Brush(Qt::darkYellow);
   if (Option->state & QStyle::State_Sunken) {
     Brush.setColor(QColor(Qt::yellow).lighter(120));
@@ -78,6 +65,7 @@ void FeatureNode::paint(QPainter *Painter,
   Painter->setPen(QPen(Qt::black, 1));
   Painter->drawText(-W/2+5, 5, Name);
 }
+
 QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
                                  const QVariant &Value) {
   switch (Change) {

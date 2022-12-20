@@ -7,14 +7,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 add_vara_executable(fm-editor
         main.cpp
-        FeatureModelGraph.h
-        FeatureModelGraph.cpp
-        FeatureNode.h
-        FeatureNode.cpp
-        FeatureEdge.h
-        FeatureEdge.cpp
+        graph/FeatureModelGraph.h
+        graph/FeatureModelGraph.cpp
+        graph/FeatureNode.h
+        graph/FeatureNode.cpp
+        graph/FeatureEdge.h
+        graph/FeatureEdge.cpp
         FeatureModelEditor.h FeatureModelEditor.cpp
         FeatureModelEditor.ui
+        FeatureAddDialog.h FeatureAddDialog.cpp FeatureAddDialog.ui
         )
 
 target_link_libraries(fm-editor
