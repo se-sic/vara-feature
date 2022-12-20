@@ -92,7 +92,7 @@ public:
   }
 
   FeatureModelBuilder *makeRoot(const std::string &Name) {
-    ModelBuilder.setRoot(std::make_unique<RootFeature>(Name));
+    FeatureBuilder.setRoot(std::make_unique<RootFeature>(Name));
     return this;
   }
 
