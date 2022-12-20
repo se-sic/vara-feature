@@ -15,6 +15,9 @@ namespace py = pybind11;
 
 void init_feature_model_builder_module(py::module &M){
     py::class_<vf::FeatureModelBuilder>(M,  "FeatureModelBuilder")
+        .def(py::init([](){
+                      return vf::FeatureModelBuilder();
+                      }))
         .def(
             "make_binary_feature",
             [](vf::FeatureModelBuilder &FMB, std::string feature_name, bool Opt){

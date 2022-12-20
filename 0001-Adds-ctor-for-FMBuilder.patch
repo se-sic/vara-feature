@@ -1,0 +1,42 @@
+From dd3b0f936c64a3dcaebd4363de78adeae854299f Mon Sep 17 00:00:00 2001
+From: Florian Sattler <vuld3r@gmail.com>
+Date: Thu, 15 Dec 2022 16:00:41 +0100
+Subject: [PATCH] Adds ctor for FMBuilder
+
+---
+ bindings/python/vara-feature/pybind_FeatureModelBuilder.cpp | 3 +++
+ include/vara/Feature/FeatureModelBuilder.h                  | 4 ++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/bindings/python/vara-feature/pybind_FeatureModelBuilder.cpp b/bindings/python/vara-feature/pybind_FeatureModelBuilder.cpp
+index d8924769..8be2ba6f 100644
+--- a/bindings/python/vara-feature/pybind_FeatureModelBuilder.cpp
++++ b/bindings/python/vara-feature/pybind_FeatureModelBuilder.cpp
+@@ -15,6 +15,9 @@ namespace py = pybind11;
+ 
+ void init_feature_model_builder_module(py::module &M){
+     py::class_<vf::FeatureModelBuilder>(M,  "FeatureModelBuilder")
++        .def(py::init([](){
++                      return vf::FeatureModelBuilder();
++                      }))
+         .def(
+             "make_binary_feature",
+             [](vf::FeatureModelBuilder &FMB, std::string feature_name, bool Opt){
+diff --git a/include/vara/Feature/FeatureModelBuilder.h b/include/vara/Feature/FeatureModelBuilder.h
+index d44efe33..0b4e1b1f 100644
+--- a/include/vara/Feature/FeatureModelBuilder.h
++++ b/include/vara/Feature/FeatureModelBuilder.h
+@@ -23,8 +23,8 @@ public:
+ 
+   FeatureModelBuilder(const FeatureModelBuilder &) = delete;
+   FeatureModelBuilder &operator=(const FeatureModelBuilder &) = delete;
+-  FeatureModelBuilder(FeatureModelBuilder &&) noexcept = delete;
+-  FeatureModelBuilder &operator=(FeatureModelBuilder &&) noexcept = delete;
++  FeatureModelBuilder(FeatureModelBuilder &&) noexcept = default;
++  FeatureModelBuilder &operator=(FeatureModelBuilder &&) noexcept = default;
+ 
+   ~FeatureModelBuilder() {
+     FeatureBuilder.abort();
+-- 
+2.38.0
+
