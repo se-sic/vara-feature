@@ -17,7 +17,17 @@
    <item row="0" column="3">
     <widget class="QLineEdit" name="name"/>
    </item>
-   <item row="2" column="0" colspan="4">
+   <item row="2" column="3">
+    <widget class="QComboBox" name="Nodes"/>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="namelable">
+     <property name="text">
+      <string>Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="4">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -27,14 +37,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="namelable">
-     <property name="text">
-      <string>Name</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
+   <item row="2" column="1">
     <widget class="QLabel" name="parentLable">
      <property name="text">
       <string>Parent</string>
@@ -42,7 +45,11 @@
     </widget>
    </item>
    <item row="1" column="3">
-    <widget class="QComboBox" name="Nodes"/>
+    <widget class="QCheckBox" name="optinalCheck">
+     <property name="text">
+      <string>Optional</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

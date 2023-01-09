@@ -31,12 +31,13 @@ public:
   [[nodiscard]] std::string getName() const {return Feature->getName().str();};
 signals:
   void clicked(vara::feature::Feature *Feature);
+  void inspectSource(vara::feature::Feature *Feature);
 protected:
   QVariant itemChange(GraphicsItemChange Change, const QVariant &Value) override;
 
   void mousePressEvent(QGraphicsSceneMouseEvent *Event) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) override;
-
+  void contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) override;
 private:
   [[nodiscard]] int width() const;
   std::vector<FeatureEdge *> ChildEdges;
@@ -44,6 +45,8 @@ private:
   QPointF NewPos;
   FeatureModelGraph *Graph;
   vara::feature::Feature *Feature;
+
+  void inspect();
 };
 
 #endif // VARA_FEATURE_FEATURENODE_H

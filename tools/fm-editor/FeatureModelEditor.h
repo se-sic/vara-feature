@@ -25,12 +25,16 @@ private:
   FeatureModelGraph * Graph{};
   std::unique_ptr<vara::feature::FeatureModel> Model {};
   std::unique_ptr<vara::feature::FeatureModelTransaction<vara::feature::detail::ModifyTransactionMode>> Modification {};
+  QString Repository {};
+  vara::feature::Feature* CurrentFeature;
 public slots:
   void loadFeature(vara::feature::Feature *Feature);
+  void inspectFeature(vara::feature::Feature *Feature);
   void loadGraph();
   void featureAddDialog();
   //void addFeature(const QString& Name, FeatureNode *Parent);
-
+  void loadSource(const QString &RelativePath);
+  void findModel();
 };
 
 #endif // VARA_FEATURE_FEATUREMODELEDITOR_H

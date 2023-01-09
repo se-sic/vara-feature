@@ -10,6 +10,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QStyleOption>
+#include <QMenu>
 
 FeatureNode::FeatureNode(FeatureModelGraph *Graph, vara::feature::Feature *Feature) : Graph(Graph),Feature(Feature) {
   setFlag(ItemIsMovable);
@@ -90,7 +91,17 @@ void FeatureNode::mousePressEvent(QGraphicsSceneMouseEvent *Event) {
   QGraphicsItem::mousePressEvent(Event);
   emit clicked(Feature);
 }
-
+void FeatureNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) {
+  auto *Menu = new QMenu;
+  auto *Inspect = new QAction("Inspect Sources", this);
+  Menu->addAction(Inspect);
+  Menu->popup(Event->screenPos());
+  connect(Inspect, &QAction::triggered,
+          this, &FeatureNode::inspect);
+}
+void FeatureNode::inspect() {
+  emit(inspectSource(Feature));
+}
 void FeatureNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) {
   update();
   QGraphicsItem::mouseReleaseEvent(Event);

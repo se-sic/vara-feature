@@ -15,7 +15,7 @@ public:
   auto getNodes() {return &Nodes;};
   void itemMoved();
   FeatureNode* getNode(std::string Name);
-  void addFeature(const QString& Name,FeatureNode* Parent);
+  FeatureNode* addFeature(const QString& Name,FeatureNode* Parent);
 public slots:
   void zoomIn();
   void zoomOut();

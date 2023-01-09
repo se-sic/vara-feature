@@ -141,7 +141,9 @@ void FeatureModelGraph::scaleView(qreal ScaleFactor) {
 }
 void FeatureModelGraph::zoomIn() { scaleView(qreal(1.2)); }
 void FeatureModelGraph::zoomOut() { scaleView(1 / qreal(1.2)); }
-void FeatureModelGraph::addFeature(const QString& Name, FeatureNode* Parent) {
+
+
+FeatureNode* FeatureModelGraph::addFeature(const QString& Name, FeatureNode* Parent) {
   auto Transaction = vara::feature::FeatureModelTransaction<vara::feature::detail::ModifyTransactionMode>::openTransaction(*FeatureModel);
   auto NewFeature = std::make_unique<vara::feature::Feature>(Name.toStdString());
   auto NewNode = std::make_unique<FeatureNode>(this,NewFeature.get());
@@ -150,13 +152,17 @@ void FeatureModelGraph::addFeature(const QString& Name, FeatureNode* Parent) {
   auto * NewEdge = new FeatureEdge(Parent,NewNode.get());
   scene()->addItem(NewEdge);
   scene()->addItem(NewNode.get());
+  auto NewNodeRaw = NewNode.get();
   Nodes.push_back(std::move(NewNode));
   auto NextChildren =std::vector<FeatureNode*>(EntryNode->children().size());
   auto CurrentChildren = EntryNode->children();
   std::transform(CurrentChildren.begin(),CurrentChildren.end(),NextChildren.begin(),[](FeatureEdge* Edge){return Edge->targetNode();});
   positionRec(1,NextChildren,WIDTH-10,0);
   EntryNode->setPos(WIDTH/2,10);
+  return NewNodeRaw;
 }
+
+
 FeatureNode* FeatureModelGraph::getNode(std::string Name) {
   auto It = std::find_if(Nodes.begin(),Nodes.end(),[&Name](auto const &Node){return Node->getName() == Name;});
   if (It != Nodes.end()) {

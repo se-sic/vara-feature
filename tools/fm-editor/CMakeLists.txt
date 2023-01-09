@@ -16,8 +16,10 @@ add_vara_executable(fm-editor
         FeatureModelEditor.h FeatureModelEditor.cpp
         FeatureModelEditor.ui
         FeatureAddDialog.h FeatureAddDialog.cpp FeatureAddDialog.ui
+        fileview/syntaxHighlite/qsourcehighliter.h fileview/syntaxHighlite/qsourcehighliter.cpp
+        fileview/syntaxHighlite/languagedata.h fileview/syntaxHighlite/languagedata.cpp
+        fileview/syntaxHighlite/qsourcehighliterthemes.h fileview/syntaxHighlite/qsourcehighliterthemes.cpp
         )
-
 target_link_libraries(fm-editor
         LINK_PRIVATE
         VaRAFeature
