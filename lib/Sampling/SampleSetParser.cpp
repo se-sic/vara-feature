@@ -6,13 +6,14 @@ namespace vara::sampling {
 
 std::unique_ptr<std::vector<std::unique_ptr<vara::feature::Configuration>>>
 SampleSetParser::readConfigurations(const feature::FeatureModel &Model,
-                                    llvm::StringRef Csv) {
+                                    llvm::StringRef CsvPath) {
   csv::CSVFormat Format;
   Format.delimiter(';');
-  std::unique_ptr<std::vector<std::unique_ptr<vara::feature::Configuration>>> V;
-  csv::CSVReader Reader(Csv, Format);
-  for (csv::CSVRow &Row : Reader) {
-    std::unique_ptr<vara::feature::Configuration> Config;
+  auto V = std::make_unique<
+      std::vector<std::unique_ptr<vara::feature::Configuration>>>();
+  csv::CSVReader Reader(CsvPath, Format);
+  for (const csv::CSVRow &Row : Reader) {
+    auto Config = std::make_unique<vara::feature::Configuration>();
     auto ColumnNames = Row.get_col_names();
     for (auto *F : Model.features()) {
       if (std::find(ColumnNames.begin(), ColumnNames.end(), F->getName()) !=
