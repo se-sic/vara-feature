@@ -6,9 +6,13 @@
 
 #include "pybind11/detail/common.h"
 #include "pybind11/pybind11.h"
-
+#include <pybind11/stl.h>
+#include <pybind11/complex.h>
+#include <pybind11/functional.h>
+#include <pybind11/chrono.h>
 #include <filesystem>
 #include <iostream>
+#include <bits/stdc++.h>
 
 namespace vf = vara::feature;
 namespace py = pybind11;
@@ -37,24 +41,33 @@ void init_feature_model_builder_module(py::module &M){
             }    
         )
         .def(
-            "get_parents_name",
+            "get_parent_name",
             [](vf::FeatureModelBuilder &FMB, std::string feature_name){
-                return FMB.getParentName(feature_name);
+                return FMB.getParentName(feature_name).getValue();
             }    
         )
         .def(
             "emplace_relationship",
-            [](vf::FeatureModelBuilder &FMB, vf::Relationship::RelationshipKind RK,
-                                    std::string parent_name){
+            [](vf::FeatureModelBuilder &FMB, std::string parent_name, std::string relation) {
+ 
+                vf::Relationship::RelationshipKind RK;
+                if (relation == "OR"){
+                    RK = vf::Relationship::RelationshipKind::RK_OR;
+                }
+                else if (relation == "XOR"){
+                    RK = vf::Relationship::RelationshipKind::RK_ALTERNATIVE;
+                }
+                
                 return FMB.emplaceRelationship(RK, parent_name);
             }    
         )
-///        .def(
-///            "add_constraint",
-///            [](vf::FeatureModelBuilder &FMB, std::unique_ptr<vf::FeatureModel::ConstraintTy> C){
-///                return FMB.addConstraint(C);
-///            }    
-///        )                
+        .def(
+            "add_constraint",
+            [](vf::FeatureModelBuilder &FMB, std::string constraintStr){
+                std::unique_ptr<vf::FeatureModel::ConstraintTy> cnst = NULL;
+                return FMB.addConstraint(move(cnst));
+            }    
+        )
         .def(
             "set_vm_name",
             [](vf::FeatureModelBuilder &FMB, std::string name){
