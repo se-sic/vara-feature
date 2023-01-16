@@ -9,8 +9,9 @@ inline std::string getTestResource(llvm::StringRef ResourcePath = "") {
   return (llvm::Twine(BasePath) + ResourcePath).str();
 }
 
-inline void testConfigurationOption(const std::unique_ptr<vara::feature::Configuration> &Config,
-                                    llvm::StringRef Feature, llvm::StringRef ExpectedValue) {
+inline void testConfigurationOption(
+    const std::unique_ptr<vara::feature::Configuration> &Config,
+    llvm::StringRef Feature, llvm::StringRef ExpectedValue) {
   auto Value = Config->configurationOptionValue(Feature);
   EXPECT_TRUE(Value);
   EXPECT_EQ(Value.getValue(), ExpectedValue.str());
