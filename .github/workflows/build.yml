@@ -50,9 +50,9 @@ jobs:
       - name: Workaround for sanitizer
         shell: bash
         run: |
-          apt-get update
-          apt download libclang-rt-14-dev
-          dpkg --force-all -i libclang-rt-14-dev*
+          sudo apt-get update
+          sudo apt download libclang-rt-14-dev
+          sudo dpkg --force-all -i libclang-rt-14-dev*
 
       - name: Build ${{ matrix.build }} with LLVM ${{ matrix.llvm-major }}
         env:
