@@ -5,6 +5,7 @@ set(LLVM_LINK_COMPONENTS
         )
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 add_vara_executable(fm-editor
         main.cpp
         graph/FeatureModelGraph.h
@@ -23,8 +24,6 @@ add_vara_executable(fm-editor
 target_link_libraries(fm-editor
         LINK_PRIVATE
         VaRAFeature
-        Qt::Core
-        Qt::Gui
         Qt::Widgets
         ${STD_FS_LIB}
         )
@@ -33,5 +32,3 @@ add_custom_target(check-vara-fm-editor
         COMMAND fm-editor xml/test.xml -viewer cat | dot | grep . -q
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../unittests/resources
         )
-
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)

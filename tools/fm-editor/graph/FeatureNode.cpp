@@ -91,6 +91,12 @@ void FeatureNode::mousePressEvent(QGraphicsSceneMouseEvent *Event) {
   QGraphicsItem::mousePressEvent(Event);
   emit clicked(Feature);
 }
+
+void FeatureNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) {
+  update();
+  QGraphicsItem::mouseReleaseEvent(Event);
+}
+
 void FeatureNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) {
   auto *Menu = new QMenu;
   auto *Inspect = new QAction("Inspect Sources", this);
@@ -102,12 +108,33 @@ void FeatureNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) {
 void FeatureNode::inspect() {
   emit(inspectSource(Feature));
 }
-void FeatureNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) {
-  update();
-  QGraphicsItem::mouseReleaseEvent(Event);
-}
 
 int FeatureNode::width() const {
   auto Name = Feature->getName();
   return 15 + 5 * Name.str().length();
+}
+
+int FeatureNode::childrenWidth() const {
+  if(children().empty()){
+    return width();
+  }
+  int Result = 0;
+    for (auto *Child : children()){
+    Result +=Child->targetNode()->childrenWidth();
+    }
+    return std::max(Result,width());
+}
+
+int FeatureNode::childrenDepth() const{
+  if(children().empty()){
+    return 1;
+  }
+  int MaxDepth = 0;
+    for(auto *Child: children()){
+      int const ChildDepth = Child->targetNode()->childrenDepth();
+      if(ChildDepth +1> MaxDepth){
+      MaxDepth = ChildDepth +1;
+      }
+    }
+    return MaxDepth;
 }

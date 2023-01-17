@@ -33,10 +33,9 @@ private:
   void buildRec(FeatureNode *CurrentFeatureNode);
   int TimerId = 0;
   FeatureNode* EntryNode;
-  int positionRec(int CurrentDepth, const std::vector<FeatureNode *>& Children,
-                  unsigned long Width, unsigned long Offset);
+  int positionRec(int CurrentDepth, const std::vector<FeatureNode *>& Children,unsigned long Offset);
   const int HEIGHT = 600;
-  const int WIDTH = 600;
+  int WIDTH = 600;
   vara::feature::FeatureModel* FeatureModel;
   std::vector<std::unique_ptr<FeatureNode>> Nodes;
 };

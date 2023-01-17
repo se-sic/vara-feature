@@ -10,14 +10,17 @@ class FeatureEdge;
 class FeatureModelGraph;
 class FeatureNode : public QObject,public QGraphicsItem{
   Q_OBJECT
+
+
 public:
   FeatureNode(FeatureModelGraph *Graph, vara::feature::Feature *Feature);
-
+  [[nodiscard]] int width() const;
   void addChildEdge(FeatureEdge *Edge);
   void setParentEdge(FeatureEdge *Edge);
   [[nodiscard]] std::vector<FeatureEdge *> children() const;
   [[nodiscard]] FeatureEdge * parent() const;
-
+  [[nodiscard]] int childrenWidth() const;
+  [[nodiscard]] int childrenDepth() const;
   enum { Type = UserType + 1 };
   [[nodiscard]] int type() const override { return Type; }
   vara::feature::Feature* getFeature(){return Feature;};
@@ -39,10 +42,8 @@ protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) override;
   void contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) override;
 private:
-  [[nodiscard]] int width() const;
   std::vector<FeatureEdge *> ChildEdges;
   FeatureEdge * ParentEdge = nullptr;
-  QPointF NewPos;
   FeatureModelGraph *Graph;
   vara::feature::Feature *Feature;
 
