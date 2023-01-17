@@ -137,6 +137,21 @@ include(CheckCXXSourceCompiles)
 
 # Check whether std::filesystem or std::experimental::filesystem can be included
 check_std_filesystems(VARA_HAS_STD_FILESYSTEM)
+if (NOT VARA_HAS_STD_FILESYSTEM)
+  CHECK_CXX_SOURCE_COMPILES("#include <experimental/filesystem>
+    namespace fs = std::experimental::filesystem;
+    int main () { return 0; }"
+    HAS_STD_EXPERIMENTAL_FILESYSTEM
+    )
+  if (HAS_STD_EXPERIMENTAL_FILESYSTEM)
+    message(STATUS "Using std::experimental::filesystem")
+    add_compile_definitions(STD_EXPERIMENTAL_FILESYSTEM)
+  else ()
+    message(FATAL_ERROR "missing filesystem")
+  endif ()
+else ()
+  message(STATUS "Using std::filesystem")
+endif ()
 check_std_filesystem_flags(STD_FS_LIB)
 
 include_directories(include/)
