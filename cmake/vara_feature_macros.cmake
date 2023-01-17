@@ -74,7 +74,7 @@ endmacro(add_vara_library)
 
 function(check_std_filesystems varname)
   set(OLD_CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
-  set(CMAKE_REQUIRED_FLAGS "-std=c++17 ${CMAKE_REQUIRED_FLAGS}")
+  set(CMAKE_REQUIRED_FLAGS "-std=c++17 -lstdc++fs ${CMAKE_REQUIRED_FLAGS}")
   CHECK_CXX_SOURCE_COMPILES("
 #include <filesystem>
 namespace fs = std::filesystem;
