@@ -1,5 +1,5 @@
-#ifndef VARA_SAMPLING_SAMPLINGPARSER_H
-#define VARA_SAMPLING_SAMPLINGPARSER_H
+#ifndef VARA_SAMPLING_SAMPLESETPARSER_H
+#define VARA_SAMPLING_SAMPLESETPARSER_H
 
 #include "vara/Configuration/Configuration.h"
 #include "vara/Feature/FeatureModel.h"
@@ -26,4 +26,4 @@ public:
 
 } // namespace vara::sampling
 
-#endif // VARA_SAMPLING_SAMPLINGPARSER_H
+#endif // VARA_SAMPLING_SAMPLESETPARSER_H
