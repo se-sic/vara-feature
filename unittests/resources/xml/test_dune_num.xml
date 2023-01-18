@@ -2,7 +2,7 @@
     <binaryOptions>
         <configurationOption>
             <name>Precon</name>
-            <outputString>Precon</outputString>
+            <outputString>--Precon</outputString>
             <prefix>
             </prefix>
             <postfix>
@@ -16,7 +16,7 @@
         </configurationOption>
         <configurationOption>
             <name>Solver</name>
-            <outputString>Solver</outputString>
+            <outputString>--Solver</outputString>
             <prefix>
             </prefix>
             <postfix>
@@ -30,7 +30,7 @@
         </configurationOption>
         <configurationOption>
             <name>SeqGS</name>
-            <outputString>SeqGS</outputString>
+            <outputString>--SeqGS</outputString>
             <prefix>
             </prefix>
             <postfix>
@@ -45,7 +45,7 @@
         </configurationOption>
         <configurationOption>
             <name>SeqSOR</name>
-            <outputString>SeqSOR</outputString>
+            <outputString>--SeqSOR</outputString>
             <prefix>
             </prefix>
             <postfix>
@@ -60,7 +60,7 @@
         </configurationOption>
         <configurationOption>
             <name>CGSolver</name>
-            <outputString>CGSolver</outputString>
+            <outputString>--CGSolver</outputString>
             <prefix>
             </prefix>
             <postfix>
@@ -77,7 +77,7 @@
         </configurationOption>
         <configurationOption>
             <name>BiCGSTABSolver</name>
-            <outputString>BiCGSTABSolver</outputString>
+            <outputString>--BiCGSTABSolver</outputString>
             <prefix>
             </prefix>
             <postfix>
@@ -94,7 +94,7 @@
         </configurationOption>
         <configurationOption>
             <name>LoopSolver</name>
-            <outputString>LoopSolver</outputString>
+            <outputString>--LoopSolver</outputString>
             <prefix>
             </prefix>
             <postfix>
@@ -111,7 +111,7 @@
         </configurationOption>
         <configurationOption>
             <name>GradientSolver</name>
-            <outputString>GradientSolver</outputString>
+            <outputString>--GradientSolver</outputString>
             <prefix>
             </prefix>
             <postfix>
@@ -130,8 +130,7 @@
     <numericOptions>
         <configurationOption>
             <name>pre</name>
-            <outputString>
-            </outputString>
+            <outputString>--pre </outputString>
             <prefix>pre=</prefix>
             <postfix>
             </postfix>
@@ -146,8 +145,7 @@
         </configurationOption>
         <configurationOption>
             <name>post</name>
-            <outputString>
-            </outputString>
+            <outputString>--post </outputString>
             <prefix>post=</prefix>
             <postfix>
             </postfix>
@@ -162,8 +160,7 @@
         </configurationOption>
         <configurationOption>
             <name>cells</name>
-            <outputString>
-            </outputString>
+            <outputString>--cells=</outputString>
             <prefix>cells=</prefix>
             <postfix>
             </postfix>

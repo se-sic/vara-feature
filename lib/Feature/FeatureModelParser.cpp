@@ -46,7 +46,12 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       if (!xmlStrcmp(Head->name, XmlConstants::NAME)) {
         Name = Cnt;
       } else if (!xmlStrcmp(Head->name, XmlConstants::OUTPUTSTRING)) {
-        OutputString = Cnt;
+        OutputString =
+            llvm::StringRef(
+                reinterpret_cast<char *>(
+                    UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()))
+                .ltrim()
+                .str();
       } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
         Opt = Cnt == "True";
       } else if (!xmlStrcmp(Head->name, XmlConstants::PARENT)) {

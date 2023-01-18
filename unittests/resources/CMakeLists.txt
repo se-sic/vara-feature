@@ -32,6 +32,7 @@ set(FEATURE_LIB_TEST_FILES
   xml/test_revision_range.xml
   xml/test_step_function.xml
   xml/test_with_whitespaces.xml
+  yml/dune_configs.yml
   )
 
 foreach(file_name ${FEATURE_LIB_TEST_FILES})

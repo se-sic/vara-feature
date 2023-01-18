@@ -1,6 +1,7 @@
 set(SAMPLING_LIB_SRC
   SamplingMethods.cpp
   SampleSetParser.cpp
+  SampleSetWriter.cpp
 )
 
 set(LLVM_LINK_COMPONENTS
