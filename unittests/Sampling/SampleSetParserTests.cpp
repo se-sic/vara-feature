@@ -28,7 +28,7 @@ TEST(SampleSetParser, testCSVParsing) {
   auto FM = P.buildFeatureModel();
   auto Configs = SampleSetParser::readConfigurations(*FM, CsvPath);
   ASSERT_EQ(Configs->size(), 40);
-  
+
   // Check the configuration options of the first configuration
   const auto &FirstConfig = Configs->back();
   testConfigurationOption(FirstConfig, "root", "true");
