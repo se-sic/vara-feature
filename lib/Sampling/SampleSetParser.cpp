@@ -18,8 +18,9 @@ SampleSetParser::readConfigurations(const feature::FeatureModel &Model,
     for (auto *F : Model.features()) {
       if (std::find(ColumnNames.begin(), ColumnNames.end(), F->getName()) !=
           ColumnNames.end()) {
-        if (F->getKind() == feature::Feature::FeatureKind::FK_BINARY ||
-            F->getKind() == feature::Feature::FeatureKind::FK_ROOT) {
+        if (auto Kind = F->getKind();
+            Kind == feature::Feature::FeatureKind::FK_BINARY ||
+            Kind == feature::Feature::FeatureKind::FK_ROOT) {
           if (std::string(Row[F->getName().str()].get()) == "0") {
             Config->setConfigurationOption(F->getName(), "false");
           } else {
