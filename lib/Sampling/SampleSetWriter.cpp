@@ -9,7 +9,8 @@ namespace vara::sampling {
 
 std::string vara::sampling::SampleSetWriter::writeConfigurations(
     const vara::feature::FeatureModel &FM,
-    std::vector<std::unique_ptr<vara::feature::Configuration>> &Configurations) {
+    std::vector<std::unique_ptr<vara::feature::Configuration>>
+        &Configurations) {
 
   // Convert configurations into a map of string to string
   std::map<std::string, std::string> ConfigurationStringMap;
