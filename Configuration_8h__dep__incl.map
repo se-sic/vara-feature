@@ -1,4 +1,8 @@
 <map id="include/vara/Configuration/Configuration.h" name="include/vara/Configuration/Configuration.h">
-<area shape="rect" id="node1" title=" " alt="" coords="32,5,225,47"/>
-<area shape="rect" id="node2" href="$Configuration_8cpp.html" title=" " alt="" coords="5,95,252,121"/>
+<area shape="rect" id="node1" title=" " alt="" coords="277,5,470,47"/>
+<area shape="rect" id="node2" href="$SampleSetParser_8h.html" title=" " alt="" coords="62,95,229,136"/>
+<area shape="rect" id="node4" href="$SampleSetWriter_8h.html" title=" " alt="" coords="290,95,457,136"/>
+<area shape="rect" id="node6" href="$Configuration_8cpp.html" title=" " alt="" coords="481,102,727,129"/>
+<area shape="rect" id="node3" href="$SampleSetParser_8cpp.html" title=" " alt="" coords="5,184,248,211"/>
+<area shape="rect" id="node5" href="$SampleSetWriter_8cpp.html" title=" " alt="" coords="272,184,515,211"/>
 </map>

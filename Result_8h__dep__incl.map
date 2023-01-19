@@ -1,14 +1,18 @@
 <map id="include/vara/Utils/Result.h" name="include/vara/Utils/Result.h">
-<area shape="rect" id="node1" title=" " alt="" coords="252,5,388,47"/>
-<area shape="rect" id="node2" href="$Error_8h.html" title=" " alt="" coords="243,95,397,136"/>
-<area shape="rect" id="node3" href="$FeatureModel_8h.html" title=" " alt="" coords="128,184,283,225"/>
-<area shape="rect" id="node9" href="$FeatureModelTransaction_8h.html" title=" " alt="" coords="334,273,535,315"/>
-<area shape="rect" id="node4" href="$FeatureModelBuilder_8h.html" title=" " alt="" coords="230,363,402,404"/>
-<area shape="rect" id="node6" href="$FeatureModel_8cpp.html" title=" " alt="" coords="5,549,216,575"/>
-<area shape="rect" id="node11" href="$FeatureModelWriter_8h.html" title=" " alt="" coords="91,273,258,315"/>
-<area shape="rect" id="node12" href="$FeatureModelWriter_8cpp.html" title=" " alt="" coords="21,363,205,404"/>
-<area shape="rect" id="node5" href="$FeatureModelParser_8h.html" title=" " alt="" coords="357,452,523,493"/>
-<area shape="rect" id="node8" href="$FeatureModelBuilder_8cpp.html" title=" " alt="" coords="148,452,332,493"/>
-<area shape="rect" id="node7" href="$FeatureModelParser_8cpp.html" title=" " alt="" coords="348,541,532,583"/>
-<area shape="rect" id="node10" href="$FeatureModelTransaction_8cpp.html" title=" " alt="" coords="427,363,611,404"/>
+<area shape="rect" id="node1" title=" " alt="" coords="335,5,471,47"/>
+<area shape="rect" id="node2" href="$Error_8h.html" title=" " alt="" coords="325,95,480,136"/>
+<area shape="rect" id="node3" href="$FeatureModel_8h.html" title=" " alt="" coords="440,184,595,225"/>
+<area shape="rect" id="node9" href="$FeatureModelTransaction_8h.html" title=" " alt="" coords="187,273,389,315"/>
+<area shape="rect" id="node4" href="$FeatureModelBuilder_8h.html" title=" " alt="" coords="239,363,411,404"/>
+<area shape="rect" id="node6" href="$FeatureModel_8cpp.html" title=" " alt="" coords="321,549,532,575"/>
+<area shape="rect" id="node11" href="$FeatureModelWriter_8h.html" title=" " alt="" coords="566,273,733,315"/>
+<area shape="rect" id="node12" href="$FeatureModelWriter_8cpp.html" title=" " alt="" coords="515,363,699,404"/>
+<area shape="rect" id="node13" href="$SampleSetParser_8h.html" title=" " alt="" coords="758,273,925,315"/>
+<area shape="rect" id="node15" href="$SampleSetWriter_8h.html" title=" " alt="" coords="987,273,1154,315"/>
+<area shape="rect" id="node5" href="$FeatureModelParser_8h.html" title=" " alt="" coords="14,452,181,493"/>
+<area shape="rect" id="node8" href="$FeatureModelBuilder_8cpp.html" title=" " alt="" coords="205,452,389,493"/>
+<area shape="rect" id="node7" href="$FeatureModelParser_8cpp.html" title=" " alt="" coords="5,541,189,583"/>
+<area shape="rect" id="node10" href="$FeatureModelTransaction_8cpp.html" title=" " alt="" coords="31,363,215,404"/>
+<area shape="rect" id="node14" href="$SampleSetParser_8cpp.html" title=" " alt="" coords="723,370,965,397"/>
+<area shape="rect" id="node16" href="$SampleSetWriter_8cpp.html" title=" " alt="" coords="989,370,1232,397"/>
 </map>
