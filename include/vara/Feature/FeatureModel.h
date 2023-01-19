@@ -34,8 +34,6 @@ class FeatureModel {
 
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
-  using ConstraintTy = Constraint;
-  using ConstraintContainerTy = std::vector<std::unique_ptr<ConstraintTy>>;
   using RelationshipContainerTy = std::vector<std::unique_ptr<Relationship>>;
 
   FeatureModel(
@@ -234,12 +232,81 @@ public:
   //===--------------------------------------------------------------------===//
   // Constraints
 
-  using const_constraint_iterator =
-      typename ConstraintContainerTy::const_iterator;
+private:
+  class Constraint {
+  public:
+    Constraint(std::unique_ptr<vara::feature::Constraint> C)
+        : C(std::move(C)) {}
 
-  [[nodiscard]] llvm::iterator_range<const_constraint_iterator>
-  constraints() const {
-    return llvm::make_range(Constraints.begin(), Constraints.end());
+    [[nodiscard]] vara::feature::Constraint *constraint() { return C.get(); }
+
+    [[nodiscard]] vara::feature::Constraint *operator*() {
+      return constraint();
+    }
+
+  private:
+    std::unique_ptr<vara::feature::Constraint> C;
+  };
+
+public:
+  class BooleanConstraint : public Constraint {
+  public:
+    BooleanConstraint(std::unique_ptr<vara::feature::Constraint> C)
+        : Constraint(std::move(C)) {}
+  };
+
+  using BooleanConstraintContainerTy =
+      std::vector<std::unique_ptr<BooleanConstraint>>;
+  using const_boolean_constraint_iterator =
+      typename BooleanConstraintContainerTy::const_iterator;
+
+  [[nodiscard]] llvm::iterator_range<const_boolean_constraint_iterator>
+  booleanConstraints() const {
+    return llvm::make_range(BooleanConstraints.begin(),
+                            BooleanConstraints.end());
+  }
+
+  class NonBooleanConstraint : public Constraint {
+  public:
+    NonBooleanConstraint(std::unique_ptr<vara::feature::Constraint> C)
+        : Constraint(std::move(C)) {}
+  };
+
+  using NonBooleanConstraintContainerTy =
+      std::vector<std::unique_ptr<NonBooleanConstraint>>;
+  using const_non_boolean_constraint_iterator =
+      typename NonBooleanConstraintContainerTy::const_iterator;
+
+  [[nodiscard]] llvm::iterator_range<const_non_boolean_constraint_iterator>
+  nonBooleanConstraints() const {
+    return llvm::make_range(NonBooleanConstraints.begin(),
+                            NonBooleanConstraints.end());
+  }
+
+  class MixedConstraint : public Constraint {
+  public:
+    MixedConstraint(std::unique_ptr<vara::feature::Constraint> C,
+                    std::string Req, std::string ExprKind)
+        : Constraint(std::move(C)), Req(std::move(Req)),
+          ExprKind(std::move(ExprKind)) {}
+
+    [[nodiscard]] llvm::StringRef req() { return Req; }
+
+    [[nodiscard]] llvm::StringRef exprKind() { return ExprKind; }
+
+  private:
+    std::string Req;
+    std::string ExprKind;
+  };
+
+  using MixedConstraintContainerTy =
+      std::vector<std::unique_ptr<MixedConstraint>>;
+  using const_mixed_constraint_iterator =
+      typename MixedConstraintContainerTy::const_iterator;
+
+  [[nodiscard]] llvm::iterator_range<const_mixed_constraint_iterator>
+  mixedConstraints() const {
+    return llvm::make_range(MixedConstraints.begin(), MixedConstraints.end());
   }
 
   //===--------------------------------------------------------------------===//
@@ -310,15 +377,54 @@ private:
   //===--------------------------------------------------------------------===//
   // Constraints
 
-  Constraint *addConstraint(std::unique_ptr<Constraint> Constraint) {
-    Constraints.push_back(std::move(Constraint));
-    return Constraints.back().get();
+  template <class ConstraintTy>
+  vara::feature::Constraint *addConstraint(std::unique_ptr<ConstraintTy> C);
+
+  template <>
+  vara::feature::Constraint *
+  addConstraint<BooleanConstraint>(std::unique_ptr<BooleanConstraint> C) {
+    BooleanConstraints.push_back(std::move(C));
+    return **BooleanConstraints.back();
   }
 
-  using constraint_iterator = typename ConstraintContainerTy::iterator;
+  template <>
+  vara::feature::Constraint *
+  addConstraint<NonBooleanConstraint>(std::unique_ptr<NonBooleanConstraint> C) {
+    NonBooleanConstraints.push_back(std::move(C));
+    return **NonBooleanConstraints.back();
+  }
 
-  [[nodiscard]] llvm::iterator_range<constraint_iterator> constraints() {
-    return llvm::make_range(Constraints.begin(), Constraints.end());
+  template <>
+  vara::feature::Constraint *
+  addConstraint<MixedConstraint>(std::unique_ptr<MixedConstraint> C) {
+    MixedConstraints.push_back(std::move(C));
+    return **MixedConstraints.back();
+  }
+
+  using boolean_constraint_iterator =
+      typename BooleanConstraintContainerTy::iterator;
+
+  [[nodiscard]] llvm::iterator_range<boolean_constraint_iterator>
+  booleanConstraints() {
+    return llvm::make_range(BooleanConstraints.begin(),
+                            BooleanConstraints.end());
+  }
+
+  using non_boolean_constraint_iterator =
+      typename NonBooleanConstraintContainerTy ::iterator;
+
+  [[nodiscard]] llvm::iterator_range<non_boolean_constraint_iterator>
+  nonBooleanConstraints() {
+    return llvm::make_range(NonBooleanConstraints.begin(),
+                            NonBooleanConstraints.end());
+  }
+
+  using mixed_constraint_iterator =
+      typename MixedConstraintContainerTy ::iterator;
+
+  [[nodiscard]] llvm::iterator_range<mixed_constraint_iterator>
+  mixedConstraints() {
+    return llvm::make_range(MixedConstraints.begin(), MixedConstraints.end());
   }
 
   //===--------------------------------------------------------------------===//
@@ -348,7 +454,9 @@ private:
   fs::path Path;
   std::string Commit;
   FeatureMapTy Features;
-  ConstraintContainerTy Constraints;
+  BooleanConstraintContainerTy BooleanConstraints;
+  NonBooleanConstraintContainerTy NonBooleanConstraints;
+  MixedConstraintContainerTy MixedConstraints;
   RelationshipContainerTy Relationships;
 };
 

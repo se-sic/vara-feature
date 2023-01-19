@@ -195,8 +195,8 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
     CHECK_RC
   }
 
-  for (const auto &Constraint : Fm.constraints()) {
-    if (auto *Implies = llvm::dyn_cast<ImpliesConstraint>(Constraint.get())) {
+  for (const auto &Constraint : Fm.booleanConstraints()) {
+    if (auto *Implies = llvm::dyn_cast<ImpliesConstraint>(**Constraint)) {
       if (llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
               Implies->getLeftOperand()) &&
           llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
@@ -205,7 +205,7 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
         continue;
       }
     }
-    if (auto *Excludes = llvm::dyn_cast<ExcludesConstraint>(Constraint.get())) {
+    if (auto *Excludes = llvm::dyn_cast<ExcludesConstraint>(**Constraint)) {
       if (llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
               Excludes->getLeftOperand()) &&
           llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
@@ -217,8 +217,8 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
 
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
     CHECK_RC
-    RC = xmlTextWriterWriteString(Writer,
-                                  charToUChar(Constraint->toString().data()));
+    RC = xmlTextWriterWriteString(
+        Writer, charToUChar((**Constraint)->toString().data()));
     CHECK_RC
     RC = xmlTextWriterEndElement(Writer); // CONSTRAINT
     CHECK_RC

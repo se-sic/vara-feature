@@ -70,8 +70,8 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *
-  addConstraint(std::unique_ptr<FeatureModel::ConstraintTy> C) {
+  template <class ConstraintTy>
+  FeatureModelBuilder *addConstraint(std::unique_ptr<ConstraintTy> C) {
     RelationBuilder.addConstraint(std::move(C));
     return this;
   }

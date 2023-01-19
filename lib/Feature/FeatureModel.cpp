@@ -90,8 +90,19 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() const {
   // builder to update pointers into the feature model correctly if invoked
   // afterwards.
   // TODO(s9latimm): Add unittests for cloned Constraints
-  for (const auto &C : this->Constraints) {
-    FMB.addConstraint(C->clone());
+  for (const auto &C : this->booleanConstraints()) {
+    FMB.addConstraint(
+        std::make_unique<FeatureModel::BooleanConstraint>((**C)->clone()));
+  }
+
+  for (const auto &C : this->nonBooleanConstraints()) {
+    FMB.addConstraint(
+        std::make_unique<FeatureModel::NonBooleanConstraint>((**C)->clone()));
+  }
+
+  for (const auto &C : this->mixedConstraints()) {
+    FMB.addConstraint(std::make_unique<FeatureModel::MixedConstraint>(
+        (**C)->clone(), C->req().str(), C->exprKind().str()));
   }
 
   // Build clone of FM which is supposed to work, as the original FM should be

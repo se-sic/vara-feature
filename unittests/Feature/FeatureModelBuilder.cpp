@@ -58,7 +58,8 @@ TEST(FeatureModelBuilder, addImpliedExcludeConstraint) {
               std::make_unique<Feature>("b"))));
   auto Expected = C->toString();
 
-  B.addConstraint(std::move(C));
+  B.addConstraint(
+      std::make_unique<FeatureModel::BooleanConstraint>(std::move(C)));
 
   auto FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
@@ -74,7 +75,7 @@ TEST(FeatureModelBuilder, addImpliesConstraint) {
   B.makeFeature<BinaryFeature>("a");
   B.makeFeature<BinaryFeature>("b");
   auto C = createBinaryConstraint<ImpliesConstraint>("a", "b");
-  auto Expected = C->toString();
+  auto Expected = C->constraint()->toString();
 
   B.addConstraint(std::move(C));
   auto FM = B.buildFeatureModel();
@@ -91,7 +92,7 @@ TEST(FeatureModelBuilder, addOrConstraint) {
   B.makeFeature<BinaryFeature>("a");
   B.makeFeature<BinaryFeature>("b");
   auto C = createBinaryConstraint<OrConstraint>("a", "b");
-  auto Expected = C->toString();
+  auto Expected = C->constraint()->toString();
 
   B.addConstraint(std::move(C));
   auto FM = B.buildFeatureModel();
