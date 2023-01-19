@@ -377,26 +377,19 @@ private:
   //===--------------------------------------------------------------------===//
   // Constraints
 
-  template <class ConstraintTy>
-  vara::feature::Constraint *addConstraint(std::unique_ptr<ConstraintTy> C);
-
-  template <>
   vara::feature::Constraint *
-  addConstraint<BooleanConstraint>(std::unique_ptr<BooleanConstraint> C) {
+  addConstraint(std::unique_ptr<BooleanConstraint> C) {
     BooleanConstraints.push_back(std::move(C));
     return **BooleanConstraints.back();
   }
 
-  template <>
   vara::feature::Constraint *
-  addConstraint<NonBooleanConstraint>(std::unique_ptr<NonBooleanConstraint> C) {
+  addConstraint(std::unique_ptr<NonBooleanConstraint> C) {
     NonBooleanConstraints.push_back(std::move(C));
     return **NonBooleanConstraints.back();
   }
 
-  template <>
-  vara::feature::Constraint *
-  addConstraint<MixedConstraint>(std::unique_ptr<MixedConstraint> C) {
+  vara::feature::Constraint *addConstraint(std::unique_ptr<MixedConstraint> C) {
     MixedConstraints.push_back(std::move(C));
     return **MixedConstraints.back();
   }
