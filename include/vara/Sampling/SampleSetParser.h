@@ -19,7 +19,7 @@ public:
   /// \param Model the corresponding feature model
   /// \param csv the path to the csv file as a string
   ///
-  /// \return a pointer to a vector containing the configurations from the
+  /// \returns a pointer to a vector containing the configurations from the
   /// sample set.
   [[nodiscard]] static std::unique_ptr<
       std::vector<std::unique_ptr<vara::feature::Configuration>>>

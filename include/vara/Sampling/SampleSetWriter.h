@@ -16,7 +16,7 @@ public:
   /// \param FM the corresponding feature model
   /// \param Configurations the configurations to print into the file
   ///
-  /// \return the string containing the output in YAML format
+  /// \returns the string containing the output in YAML format
   [[nodiscard]] static std::string
   writeConfigurations(const vara::feature::FeatureModel &FM,
                       std::vector<std::unique_ptr<vara::feature::Configuration>>
