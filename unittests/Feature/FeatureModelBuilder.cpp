@@ -95,9 +95,67 @@ TEST(FeatureModelBuilder, addOrConstraint) {
   auto Expected = C->constraint()->toString();
 
   B.addConstraint(std::move(C));
-  auto FM = B.buildFeatureModel();
+  std::unique_ptr<const FeatureModel> FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
 
+  EXPECT_EQ(
+      (*FM->booleanConstraints().begin())->constraint()->getRoot()->toString(),
+      Expected);
+  EXPECT_EQ(
+      (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
+      Expected);
+}
+
+TEST(FeatureModelBuilder, addNonBooleanConstraint) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a");
+  B.makeFeature<BinaryFeature>("b");
+  auto C = std::make_unique<FeatureModel::NonBooleanConstraint>(
+      std::make_unique<AdditionConstraint>(
+          std::make_unique<PrimaryFeatureConstraint>(
+              std::make_unique<BinaryFeature>("a")),
+          std::make_unique<PrimaryFeatureConstraint>(
+              std::make_unique<BinaryFeature>("b"))));
+  auto Expected = C->constraint()->toString();
+
+  B.addConstraint(std::move(C));
+  std::unique_ptr<const FeatureModel> FM = B.buildFeatureModel();
+  ASSERT_TRUE(FM);
+
+  EXPECT_EQ((*FM->nonBooleanConstraints().begin())
+                ->constraint()
+                ->getRoot()
+                ->toString(),
+            Expected);
+  EXPECT_EQ(
+      (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
+      Expected);
+}
+
+TEST(FeatureModelBuilder, addMixedConstraint) {
+  FeatureModelBuilder B;
+  B.makeFeature<BinaryFeature>("a");
+  B.makeFeature<BinaryFeature>("b");
+  auto C = std::make_unique<FeatureModel::MixedConstraint>(
+      std::make_unique<EqualConstraint>(
+          std::make_unique<MultiplicationConstraint>(
+              std::make_unique<PrimaryFeatureConstraint>(
+                  std::make_unique<BinaryFeature>("a")),
+              std::make_unique<PrimaryFeatureConstraint>(
+                  std::make_unique<BinaryFeature>("b"))),
+          std::make_unique<PrimaryIntegerConstraint>(0)),
+      "all", "pos");
+  auto Expected = C->constraint()->toString();
+
+  B.addConstraint(std::move(C));
+  std::unique_ptr<const FeatureModel> FM = B.buildFeatureModel();
+  ASSERT_TRUE(FM);
+
+  EXPECT_EQ(
+      (*FM->mixedConstraints().begin())->constraint()->getRoot()->toString(),
+      Expected);
+  EXPECT_EQ((*FM->mixedConstraints().begin())->req(), "all");
+  EXPECT_EQ((*FM->mixedConstraints().begin())->exprKind(), "pos");
   EXPECT_EQ(
       (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
       Expected);

@@ -296,6 +296,14 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
         if (!parseConstraints<FeatureModel::BooleanConstraint>(H)) {
           return Error(ERROR);
         }
+      } else if (!xmlStrcmp(H->name, XmlConstants::NONBOOLEANCONSTRAINTS)) {
+        if (!parseConstraints<FeatureModel::NonBooleanConstraint>(H)) {
+          return Error(ERROR);
+        }
+      } else if (!xmlStrcmp(H->name, XmlConstants::MIXEDCONSTRAINTS)) {
+        if (!parseConstraints<FeatureModel::MixedConstraint>(H)) {
+          return Error(ERROR);
+        }
       }
     }
   }

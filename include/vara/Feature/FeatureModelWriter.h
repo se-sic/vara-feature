@@ -37,7 +37,7 @@ public:
 /// \brief Parsers for feature models in XML.
 class FeatureModelXmlWriter : public FeatureModelWriter {
 public:
-  explicit FeatureModelXmlWriter(const FeatureModel &Fm) : Fm{Fm} {}
+  explicit FeatureModelXmlWriter(const FeatureModel &FM) : FM{FM} {}
 
   int writeFeatureModel(std::string Path) override;
   llvm::Optional<std::string> writeFeatureModel() override;
@@ -48,11 +48,13 @@ private:
   int writeBinaryFeatures(xmlTextWriterPtr Writer);
   int writeNumericFeatures(xmlTextWriterPtr Writer);
   int writeBooleanConstraints(xmlTextWriterPtr Writer);
+  int writeNonBooleanConstraints(xmlTextWriterPtr Writer);
+  int writeMixedConstraints(xmlTextWriterPtr Writer);
   static int writeFeature(xmlTextWriterPtr Writer, Feature &Feature1);
   static int writeSourceRange(xmlTextWriterPtr Writer,
                               FeatureSourceRange &Location);
 
-  const FeatureModel &Fm;
+  const FeatureModel &FM;
 };
 
 } // namespace vara::feature
