@@ -186,7 +186,7 @@ TEST(FeatureSourceRange, onlyStart) {
 }
 
 TEST(FeatureSourceRange, onlyEnd) {
-  auto L = FeatureSourceRange(fs::current_path(), llvm::None,
+  auto L = FeatureSourceRange(fs::current_path(), std::nullopt,
                               FeatureSourceRange::FeatureSourceLocation(3, 5));
 
   EXPECT_FALSE(L.hasStart());

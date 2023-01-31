@@ -156,11 +156,11 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
 FeatureSourceRange
 FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Node) {
   fs::path Path;
-  llvm::Optional<FeatureSourceRange::FeatureSourceLocation> Start;
-  llvm::Optional<FeatureSourceRange::FeatureSourceLocation> End;
+  std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
+  std::optional<FeatureSourceRange::FeatureSourceLocation> End;
   enum FeatureSourceRange::Category Category;
-  llvm::Optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
-  llvm::Optional<FeatureSourceRange::FeatureRevisionRange> RevisionRange;
+  std::optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
+  std::optional<FeatureSourceRange::FeatureRevisionRange> RevisionRange;
 
   std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
       xmlGetProp(Node, XmlConstants::CATEGORY), xmlFree);
@@ -560,7 +560,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       // the feature (m for mandatory, o for optional, a for alternative)
       std::string::size_type Pos =
           CurrentIndentationLevel * Indentation.length() + 2;
-      llvm::Optional<std::tuple<int, int>> Cardinalities;
+      std::optional<std::tuple<int, int>> Cardinalities;
 
       switch (To.at(Pos - 1)) {
       case 'r':
@@ -577,7 +577,7 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
         Opt = false;
         // Extract the cardinality
         Cardinalities = extractCardinality(To);
-        if (!Cardinalities.hasValue()) {
+        if (!Cardinalities.has_value()) {
           return false;
         }
         break;
@@ -674,10 +674,10 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
       }
 
       // Remember the new or group parent if there is one
-      if (Cardinalities.hasValue()) {
+      if (Cardinalities.has_value()) {
         Relationship::RelationshipKind GroupKind =
             Relationship::RelationshipKind::RK_ALTERNATIVE;
-        if (std::get<1>(Cardinalities.getValue()) == SxfmConstants::WILDCARD) {
+        if (std::get<1>(Cardinalities.value()) == SxfmConstants::WILDCARD) {
           GroupKind = Relationship::RelationshipKind::RK_OR;
         }
         OrGroupMapping[CurrentIndentationLevel] =
@@ -772,10 +772,10 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
   return true;
 }
 
-llvm::Optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
+std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
     llvm::StringRef StringToExtractFrom) {
-  llvm::Optional<int> MinCardinality;
-  llvm::Optional<int> MaxCardinality;
+  std::optional<int> MinCardinality;
+  std::optional<int> MaxCardinality;
 
   // Search for the first occurrence of '['; then read in the min cardinality
   // until the comma. Afterwards, read in the max cardinality until ']'
@@ -794,26 +794,25 @@ llvm::Optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
           .substr(Pos + 1, CardinalityString.find(']', Pos + 1) - Pos - 1)
           .str());
 
-  if (!MinCardinality.hasValue() || !MaxCardinality.hasValue()) {
+  if (!MinCardinality.has_value() || !MaxCardinality.has_value()) {
     llvm::errs() << "No parsable cardinality!\n";
     return {};
   }
 
-  if (MinCardinality.getValue() != 1 ||
-      (MaxCardinality.getValue() != 1 &&
-       MaxCardinality.getValue() != SxfmConstants::WILDCARD)) {
+  if (MinCardinality.value() != 1 ||
+      (MaxCardinality.value() != 1 &&
+       MaxCardinality.value() != SxfmConstants::WILDCARD)) {
     llvm::errs() << "Cardinality unsupported. We support cardinalities [1,1] "
                     "(alternative) or [1, *] (or group).\n";
     return {};
   }
 
-  return {std::tuple<int, int>{MinCardinality.getValue(),
-                               MaxCardinality.getValue()}};
+  return {std::tuple<int, int>{MinCardinality.value(), MaxCardinality.value()}};
 }
 
-llvm::Optional<int>
+std::optional<int>
 FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {
-  llvm::Optional<int> Result;
+  std::optional<int> Result;
   if (CardinalityString == "*") {
     // We use -1 as our magic integer to indicate that the cardinality is a
     // wildcard.

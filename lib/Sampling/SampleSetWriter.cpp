@@ -20,8 +20,7 @@ std::string vara::sampling::SampleSetWriter::writeConfigurations(
     auto &Configuration = Configurations.at(ConfigurationCount);
     for (auto *F : FM.features()) {
       if (auto Value = Configuration->configurationOptionValue(F->getName());
-          Value && Value.getValue() != "false" &&
-          !F->getOutputString().empty()) {
+          Value && Value.value() != "false" && !F->getOutputString().empty()) {
         if (ConfigurationStringFlags.size() != 1) {
           ConfigurationStringFlags.append(", ");
         }
@@ -29,7 +28,8 @@ std::string vara::sampling::SampleSetWriter::writeConfigurations(
         ConfigurationStringFlags.append(F->getOutputString().str());
         if (F->getKind() == feature::Feature::FeatureKind::FK_NUMERIC) {
           ConfigurationStringFlags.append(
-              Configuration->configurationOptionValue(F->getName()).getValue());
+              // TODO: insert check if optional is empty
+              Configuration->configurationOptionValue(F->getName()).value());
         }
         ConfigurationStringFlags.append("\"");
       }
