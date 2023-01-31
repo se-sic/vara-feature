@@ -80,7 +80,9 @@ int main(int Argc, char **Argv) {
             Viewer.empty() ? llvm::errc::invalid_argument
                            : llvm::sys::findProgramByName(Viewer)) {
       llvm::errs() << "Trying '" << *P << "' program... \n";
-      llvm::sys::ExecuteNoWait(*P, {*P, Filename}, std::nullopt);
+      llvm::sys::ExecuteNoWait(
+          *P, {*P, Filename},
+          std::optional<llvm::ArrayRef<llvm::StringRef>>{std::nullopt});
     } else {
       llvm::DisplayGraph(Filename);
     }
