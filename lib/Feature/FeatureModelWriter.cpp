@@ -124,8 +124,6 @@ int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr Writer) {
     CHECK_RC
   }
 
-  // TODO mixed and nonNumeric constraints when supported
-
   RC = xmlTextWriterEndDocument(Writer); // VM
   return RC;
 }
