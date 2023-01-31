@@ -57,18 +57,22 @@ public:
   }
 
   /// This method returns the value as string no matter what the real type is.
+  ///
   /// \returns the value as string
   [[nodiscard]] std::string asString() const {
     std::string ConvertedValue;
     if (isString()) {
-      // TODO: double check
-      ConvertedValue = stringValue().value();
+      auto ParsedValue = stringValue();
+      assert(ParsedValue.has_value() && "Parsing <string> failed.");
+      ConvertedValue = ParsedValue.value();
     } else if (isBool()) {
-      // TODO: double check
-      ConvertedValue = boolValue().value() ? "true" : "false";
+      auto ParsedValue = boolValue();
+      assert(ParsedValue.has_value() && "Parsing <bool> failed.");
+      ConvertedValue = ParsedValue.value() ? "true" : "false";
     } else {
-      // TODO: double check
-      ConvertedValue = std::to_string(intValue().value());
+      auto ParsedValue = intValue();
+      assert(ParsedValue.has_value() && "Parsing <int> failed.");
+      ConvertedValue = std::to_string(ParsedValue.value());
     }
     return ConvertedValue;
   }
