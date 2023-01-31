@@ -27,9 +27,12 @@ std::string vara::sampling::SampleSetWriter::writeConfigurations(
         ConfigurationStringFlags.append("\"");
         ConfigurationStringFlags.append(F->getOutputString().str());
         if (F->getKind() == feature::Feature::FeatureKind::FK_NUMERIC) {
-          ConfigurationStringFlags.append(
-              // TODO: insert check if optional is empty
-              Configuration->configurationOptionValue(F->getName()).value());
+          auto OptionValue =
+              Configuration->configurationOptionValue(F->getName());
+          assert(
+              OptionValue.has_value() &&
+              "Could not retrieve option value, broken configuration option.");
+          ConfigurationStringFlags.append(OptionValue.value());
         }
         ConfigurationStringFlags.append("\"");
       }
