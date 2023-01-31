@@ -233,26 +233,24 @@ public:
   // Constraints
 
 private:
-  class Constraint {
+  /// \brief Base for different constraint kinds (boolean, non-boolean, etc.).
+  class FeatureModelConstraint {
   public:
-    Constraint(std::unique_ptr<vara::feature::Constraint> C)
-        : C(std::move(C)) {}
+    FeatureModelConstraint(std::unique_ptr<Constraint> C) : C(std::move(C)) {}
 
-    [[nodiscard]] vara::feature::Constraint *constraint() { return C.get(); }
+    [[nodiscard]] Constraint *constraint() { return C.get(); }
 
-    [[nodiscard]] vara::feature::Constraint *operator*() {
-      return constraint();
-    }
+    [[nodiscard]] Constraint *operator*() { return C.get(); }
 
   private:
-    std::unique_ptr<vara::feature::Constraint> C;
+    std::unique_ptr<Constraint> C;
   };
 
 public:
-  class BooleanConstraint : public Constraint {
+  class BooleanConstraint : public FeatureModelConstraint {
   public:
-    BooleanConstraint(std::unique_ptr<vara::feature::Constraint> C)
-        : Constraint(std::move(C)) {}
+    BooleanConstraint(std::unique_ptr<Constraint> C)
+        : FeatureModelConstraint(std::move(C)) {}
   };
 
   using BooleanConstraintContainerTy =
@@ -266,10 +264,10 @@ public:
                             BooleanConstraints.end());
   }
 
-  class NonBooleanConstraint : public Constraint {
+  class NonBooleanConstraint : public FeatureModelConstraint {
   public:
-    NonBooleanConstraint(std::unique_ptr<vara::feature::Constraint> C)
-        : Constraint(std::move(C)) {}
+    NonBooleanConstraint(std::unique_ptr<Constraint> C)
+        : FeatureModelConstraint(std::move(C)) {}
   };
 
   using NonBooleanConstraintContainerTy =
@@ -283,20 +281,22 @@ public:
                             NonBooleanConstraints.end());
   }
 
-  class MixedConstraint : public Constraint {
+  class MixedConstraint : public FeatureModelConstraint {
   public:
-    MixedConstraint(std::unique_ptr<vara::feature::Constraint> C,
-                    std::string Req, std::string ExprKind)
-        : Constraint(std::move(C)), Req(std::move(Req)),
-          ExprKind(std::move(ExprKind)) {}
+    enum Req { ALL, NONE };
 
-    [[nodiscard]] llvm::StringRef req() { return Req; }
+    enum ExprKind { POS, NEG };
 
-    [[nodiscard]] llvm::StringRef exprKind() { return ExprKind; }
+    MixedConstraint(std::unique_ptr<Constraint> C, Req R, ExprKind E)
+        : FeatureModelConstraint(std::move(C)), R(R), E(E) {}
+
+    [[nodiscard]] Req req() { return R; }
+
+    [[nodiscard]] ExprKind exprKind() { return E; }
 
   private:
-    std::string Req;
-    std::string ExprKind;
+    Req R;
+    ExprKind E;
   };
 
   using MixedConstraintContainerTy =
@@ -383,17 +383,6 @@ private:
     return **BooleanConstraints.back();
   }
 
-  vara::feature::Constraint *
-  addConstraint(std::unique_ptr<NonBooleanConstraint> C) {
-    NonBooleanConstraints.push_back(std::move(C));
-    return **NonBooleanConstraints.back();
-  }
-
-  vara::feature::Constraint *addConstraint(std::unique_ptr<MixedConstraint> C) {
-    MixedConstraints.push_back(std::move(C));
-    return **MixedConstraints.back();
-  }
-
   using boolean_constraint_iterator =
       typename BooleanConstraintContainerTy::iterator;
 
@@ -403,8 +392,14 @@ private:
                             BooleanConstraints.end());
   }
 
+  vara::feature::Constraint *
+  addConstraint(std::unique_ptr<NonBooleanConstraint> C) {
+    NonBooleanConstraints.push_back(std::move(C));
+    return **NonBooleanConstraints.back();
+  }
+
   using non_boolean_constraint_iterator =
-      typename NonBooleanConstraintContainerTy ::iterator;
+      typename NonBooleanConstraintContainerTy::iterator;
 
   [[nodiscard]] llvm::iterator_range<non_boolean_constraint_iterator>
   nonBooleanConstraints() {
@@ -412,8 +407,13 @@ private:
                             NonBooleanConstraints.end());
   }
 
+  vara::feature::Constraint *addConstraint(std::unique_ptr<MixedConstraint> C) {
+    MixedConstraints.push_back(std::move(C));
+    return **MixedConstraints.back();
+  }
+
   using mixed_constraint_iterator =
-      typename MixedConstraintContainerTy ::iterator;
+      typename MixedConstraintContainerTy::iterator;
 
   [[nodiscard]] llvm::iterator_range<mixed_constraint_iterator>
   mixedConstraints() {

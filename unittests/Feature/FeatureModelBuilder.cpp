@@ -144,7 +144,8 @@ TEST(FeatureModelBuilder, addMixedConstraint) {
               std::make_unique<PrimaryFeatureConstraint>(
                   std::make_unique<BinaryFeature>("b"))),
           std::make_unique<PrimaryIntegerConstraint>(0)),
-      "all", "pos");
+      FeatureModel::MixedConstraint::Req::ALL,
+      FeatureModel::MixedConstraint::ExprKind::POS);
   auto Expected = C->constraint()->toString();
 
   B.addConstraint(std::move(C));
@@ -154,8 +155,10 @@ TEST(FeatureModelBuilder, addMixedConstraint) {
   EXPECT_EQ(
       (*FM->mixedConstraints().begin())->constraint()->getRoot()->toString(),
       Expected);
-  EXPECT_EQ((*FM->mixedConstraints().begin())->req(), "all");
-  EXPECT_EQ((*FM->mixedConstraints().begin())->exprKind(), "pos");
+  EXPECT_EQ((*FM->mixedConstraints().begin())->req(),
+            FeatureModel::MixedConstraint::Req::ALL);
+  EXPECT_EQ((*FM->mixedConstraints().begin())->exprKind(),
+            FeatureModel::MixedConstraint::ExprKind::POS);
   EXPECT_EQ(
       (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
       Expected);

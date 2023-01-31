@@ -102,7 +102,7 @@ std::unique_ptr<FeatureModel> FeatureModel::clone() const {
 
   for (const auto &C : this->mixedConstraints()) {
     FMB.addConstraint(std::make_unique<FeatureModel::MixedConstraint>(
-        (**C)->clone(), C->req().str(), C->exprKind().str()));
+        C->constraint()->clone(), C->req(), C->exprKind()));
   }
 
   // Build clone of FM which is supposed to work, as the original FM should be

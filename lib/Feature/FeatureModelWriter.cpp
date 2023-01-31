@@ -268,12 +268,27 @@ int FeatureModelXmlWriter::writeMixedConstraints(xmlTextWriterPtr Writer) {
   for (const auto &Constraint : FM.mixedConstraints()) {
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
     CHECK_RC
-    RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::REQ,
-                                     charToUChar(Constraint->req().data()));
+    switch (Constraint->req()) {
+    case FeatureModel::MixedConstraint::Req::ALL:
+      RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::REQ,
+                                       charToUChar("all"));
+      break;
+    case FeatureModel::MixedConstraint::Req::NONE:
+      RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::REQ,
+                                       charToUChar("none"));
+      break;
+    }
     CHECK_RC
-    RC =
-        xmlTextWriterWriteAttribute(Writer, XmlConstants::EXPRKIND,
-                                    charToUChar(Constraint->exprKind().data()));
+    switch (Constraint->exprKind()) {
+    case FeatureModel::MixedConstraint::ExprKind::POS:
+      RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::EXPRKIND,
+                                       charToUChar("pos"));
+      break;
+    case FeatureModel::MixedConstraint::ExprKind::NEG:
+      RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::EXPRKIND,
+                                       charToUChar("neg"));
+      break;
+    }
     CHECK_RC
     RC = xmlTextWriterWriteString(
         Writer, charToUChar(Constraint->constraint()->toString().data()));

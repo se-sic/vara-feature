@@ -151,8 +151,10 @@ TEST(FeatureModelParser, mixedConstraint) {
   EXPECT_EQ(
       (*FM->mixedConstraints().begin())->constraint()->getRoot()->toString(),
       C.toString());
-  EXPECT_EQ((*FM->mixedConstraints().begin())->req(), "all");
-  EXPECT_EQ((*FM->mixedConstraints().begin())->exprKind(), "pos");
+  EXPECT_EQ((*FM->mixedConstraints().begin())->req(),
+            FeatureModel::MixedConstraint::Req::ALL);
+  EXPECT_EQ((*FM->mixedConstraints().begin())->exprKind(),
+            FeatureModel::MixedConstraint::ExprKind::POS);
 }
 
 TEST(FeatureModelParser, memberOffset) {

@@ -251,13 +251,17 @@ FeatureModelXmlParser::parseConstraints<FeatureModel::MixedConstraint>(
                     std::string(reinterpret_cast<char *>(Cnt.get())),
                     Node->line)
                     .buildConstraint()) {
-          UniqueXmlChar Req(xmlGetProp(H, XmlConstants::REQ), xmlFree);
-          UniqueXmlChar ExprKind(xmlGetProp(H, XmlConstants::EXPRKIND),
-                                 xmlFree);
+          UniqueXmlChar R(xmlGetProp(H, XmlConstants::REQ), xmlFree);
+          UniqueXmlChar E(xmlGetProp(H, XmlConstants::EXPRKIND), xmlFree);
+
           FMB.addConstraint(std::make_unique<FeatureModel::MixedConstraint>(
               std::move(Constraint),
-              std::string(reinterpret_cast<char *>(Req.get())),
-              std::string(reinterpret_cast<char *>(ExprKind.get()))));
+              std::string(reinterpret_cast<char *>(R.get())) == "none"
+                  ? FeatureModel::MixedConstraint::Req::NONE
+                  : FeatureModel::MixedConstraint::Req::ALL,
+              std::string(reinterpret_cast<char *>(E.get())) == "neg"
+                  ? FeatureModel::MixedConstraint::ExprKind::NEG
+                  : FeatureModel::MixedConstraint::ExprKind::POS));
         } else {
           return Error(ERROR);
         }
