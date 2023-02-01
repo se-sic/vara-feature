@@ -98,33 +98,36 @@ $(function() {
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">auto</span> &amp;Configuration = Configurations.at(ConfigurationCount);</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> *F : FM.<a class="code" href="classvara_1_1feature_1_1FeatureModel.html#afb81c6a0ff0493688081740442aec3f8">features</a>()) {</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      <span class="keywordflow">if</span> (<span class="keyword">auto</span> Value = Configuration-&gt;configurationOptionValue(F-&gt;getName());</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;          Value &amp;&amp; Value.getValue() != <span class="stringliteral">&quot;false&quot;</span> &amp;&amp;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;          !F-&gt;getOutputString().empty()) {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <span class="keywordflow">if</span> (ConfigurationStringFlags.size() != 1) {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;          ConfigurationStringFlags.append(<span class="stringliteral">&quot;, &quot;</span>);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        }</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        ConfigurationStringFlags.append(<span class="stringliteral">&quot;\&quot;&quot;</span>);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        ConfigurationStringFlags.append(F-&gt;getOutputString().str());</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <span class="keywordflow">if</span> (F-&gt;getKind() == <a class="code" href="classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661a00980f19ff8cdfbc471d858271f03302">feature::Feature::FeatureKind::FK_NUMERIC</a>) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;          ConfigurationStringFlags.append(</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;              Configuration-&gt;configurationOptionValue(F-&gt;getName()).getValue());</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        }</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        ConfigurationStringFlags.append(<span class="stringliteral">&quot;\&quot;&quot;</span>);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      }</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    ConfigurationStringFlags.append(<span class="stringliteral">&quot;]&quot;</span>);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    ConfigurationStringMap[std::to_string(ConfigurationCount)] =</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        ConfigurationStringFlags;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="comment">// Write configurations to a string in YAML format</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  std::string Str;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  llvm::raw_string_ostream OutputString(Str);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  llvm::yaml::Output Output(OutputString);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  Output &lt;&lt; ConfigurationStringMap;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordflow">return</span> Str;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;} <span class="comment">// namespace vara::sampling</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;          Value &amp;&amp; Value.value() != <span class="stringliteral">&quot;false&quot;</span> &amp;&amp; !F-&gt;getOutputString().empty()) {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keywordflow">if</span> (ConfigurationStringFlags.size() != 1) {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;          ConfigurationStringFlags.append(<span class="stringliteral">&quot;, &quot;</span>);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        }</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        ConfigurationStringFlags.append(<span class="stringliteral">&quot;\&quot;&quot;</span>);</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        ConfigurationStringFlags.append(F-&gt;getOutputString().str());</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keywordflow">if</span> (F-&gt;getKind() == <a class="code" href="classvara_1_1feature_1_1Feature.html#a4b99bea6ef873a9ee7ef378fffc2d661a00980f19ff8cdfbc471d858271f03302">feature::Feature::FeatureKind::FK_NUMERIC</a>) {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;          <span class="keyword">auto</span> OptionValue =</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;              Configuration-&gt;configurationOptionValue(F-&gt;getName());</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;          assert(</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;              OptionValue.has_value() &amp;&amp;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;              <span class="stringliteral">&quot;Could not retrieve option value, broken configuration option.&quot;</span>);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;          ConfigurationStringFlags.append(OptionValue.value());</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        }</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        ConfigurationStringFlags.append(<span class="stringliteral">&quot;\&quot;&quot;</span>);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    ConfigurationStringFlags.append(<span class="stringliteral">&quot;]&quot;</span>);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    ConfigurationStringMap[std::to_string(ConfigurationCount)] =</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        ConfigurationStringFlags;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// Write configurations to a string in YAML format</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  std::string Str;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  llvm::raw_string_ostream OutputString(Str);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  llvm::yaml::Output Output(OutputString);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  Output &lt;&lt; ConfigurationStringMap;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordflow">return</span> Str;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;} <span class="comment">// namespace vara::sampling</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacevara_1_1sampling_html"><div class="ttname"><a href="namespacevara_1_1sampling.html">vara::sampling</a></div><div class="ttdef"><b>Definition:</b> <a href="SampleSetParser_8h_source.html#l00012">SampleSetParser.h:12</a></div></div>
 <div class="ttc" id="aSampleSetWriter_8h_html"><div class="ttname"><a href="SampleSetWriter_8h.html">SampleSetWriter.h</a></div></div>
@@ -134,7 +137,7 @@ $(function() {
 <div class="ttc" id="aclassvara_1_1sampling_1_1SampleSetWriter_html_a6dbe62069b8b5bca060042eab4f78096"><div class="ttname"><a href="classvara_1_1sampling_1_1SampleSetWriter.html#a6dbe62069b8b5bca060042eab4f78096">vara::sampling::SampleSetWriter::writeConfigurations</a></div><div class="ttdeci">static std::string writeConfigurations(const vara::feature::FeatureModel &amp;FM, std::vector&lt; std::unique_ptr&lt; vara::feature::Configuration &gt;&gt; &amp;Configurations)</div><div class="ttdoc">This method writes the given configurations to a yml file.</div><div class="ttdef"><b>Definition:</b> <a href="SampleSetWriter_8cpp_source.html#l00010">SampleSetWriter.cpp:10</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 19 2023 15:30:22 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Feb 1 2023 10:07:57 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

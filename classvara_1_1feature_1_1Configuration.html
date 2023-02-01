@@ -106,9 +106,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9558d9d2af45768ea29319ae0e421827"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Configuration.html#a9558d9d2af45768ea29319ae0e421827">setConfigurationOption</a> (llvm::StringRef Name, llvm::StringRef Value)</td></tr>
 <tr class="memdesc:a9558d9d2af45768ea29319ae0e421827"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method sets a configuration option by using the provided name and value.  <a href="classvara_1_1feature_1_1Configuration.html#a9558d9d2af45768ea29319ae0e421827">More...</a><br /></td></tr>
 <tr class="separator:a9558d9d2af45768ea29319ae0e421827"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41d80269d205bec8201639a1b6cfc274"><td class="memItemLeft" align="right" valign="top">llvm::Optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Configuration.html#a41d80269d205bec8201639a1b6cfc274">configurationOptionValue</a> (llvm::StringRef Name)</td></tr>
-<tr class="memdesc:a41d80269d205bec8201639a1b6cfc274"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method returns the value of the configuration option.  <a href="classvara_1_1feature_1_1Configuration.html#a41d80269d205bec8201639a1b6cfc274">More...</a><br /></td></tr>
-<tr class="separator:a41d80269d205bec8201639a1b6cfc274"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72050744b381dab6b6b7ee8db032c85b"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Configuration.html#a72050744b381dab6b6b7ee8db032c85b">configurationOptionValue</a> (llvm::StringRef Name)</td></tr>
+<tr class="memdesc:a72050744b381dab6b6b7ee8db032c85b"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method returns the value of the configuration option.  <a href="classvara_1_1feature_1_1Configuration.html#a72050744b381dab6b6b7ee8db032c85b">More...</a><br /></td></tr>
+<tr class="separator:a72050744b381dab6b6b7ee8db032c85b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54f2b66f012e9cba7d52ed4658dd5068"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1Configuration.html#a54f2b66f012e9cba7d52ed4658dd5068">dumpToString</a> ()</td></tr>
 <tr class="memdesc:a54f2b66f012e9cba7d52ed4658dd5068"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method dumps the current configuration to a json string.  <a href="classvara_1_1feature_1_1Configuration.html#a54f2b66f012e9cba7d52ed4658dd5068">More...</a><br /></td></tr>
 <tr class="separator:a54f2b66f012e9cba7d52ed4658dd5068"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,7 +123,7 @@ Static Public Member Functions</h2></td></tr>
 <div class="textblock"><p>This class represents a configuration. </p>
 <p>The configuration is represented by using a json format of the form <code><code>{name:</code> value, name2: value2}</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00127">127</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00133">133</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a30c19d3ba3a50daa2d941e7bb3254ac3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a30c19d3ba3a50daa2d941e7bb3254ac3">&#9670;&nbsp;</a></span>Configuration()</h2>
@@ -223,7 +223,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00133">133</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00139">139</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
 
 </div>
 </div>
@@ -250,18 +250,18 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00138">138</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00144">144</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
 
 </div>
 </div>
-<a id="a41d80269d205bec8201639a1b6cfc274"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a41d80269d205bec8201639a1b6cfc274">&#9670;&nbsp;</a></span>configurationOptionValue()</h2>
+<a id="a72050744b381dab6b6b7ee8db032c85b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72050744b381dab6b6b7ee8db032c85b">&#9670;&nbsp;</a></span>configurationOptionValue()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">llvm::Optional&lt; std::string &gt; vara::feature::Configuration::configurationOptionValue </td>
+          <td class="memname">std::optional&lt; std::string &gt; vara::feature::Configuration::configurationOptionValue </td>
           <td>(</td>
           <td class="paramtype">llvm::StringRef&#160;</td>
           <td class="paramname"><em>Name</em></td><td>)</td>
@@ -352,7 +352,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00143">143</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00149">149</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
 
 </div>
 </div>
@@ -379,7 +379,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00148">148</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Configuration_8h_source.html#l00154">154</a> of file <a class="el" href="Configuration_8h_source.html">Configuration.h</a>.</p>
 
 </div>
 </div>
@@ -424,7 +424,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 19 2023 15:30:22 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Feb 1 2023 10:07:57 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
