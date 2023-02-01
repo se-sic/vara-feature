@@ -14,7 +14,7 @@ inline void testConfigurationOption(
     llvm::StringRef Feature, llvm::StringRef ExpectedValue) {
   auto Value = Config->configurationOptionValue(Feature);
   EXPECT_TRUE(Value);
-  EXPECT_EQ(Value.getValue(), ExpectedValue.str());
+  EXPECT_EQ(Value.value(), ExpectedValue.str());
 }
 
 namespace vara::sampling {

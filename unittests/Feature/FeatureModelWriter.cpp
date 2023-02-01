@@ -19,8 +19,8 @@ TEST(XmlWriter, children) {
 
   FeatureModelXmlWriter FMX = FeatureModelXmlWriter(*FM);
   auto Output = FMX.writeFeatureModel();
-  EXPECT_TRUE(Output.hasValue());
-  std::string ActualOutput = Output.getValue();
+  EXPECT_TRUE(Output.has_value());
+  std::string ActualOutput = Output.value();
   EXPECT_FALSE(ActualOutput.empty());
 
   std::string ExpectedOutput = FS.get()->getBuffer().str();
@@ -37,8 +37,8 @@ TEST(XmlWriter, constraints) {
   FeatureModelXmlWriter FMX = FeatureModelXmlWriter(*FM);
   auto Output = FMX.writeFeatureModel();
 
-  EXPECT_TRUE(Output.hasValue());
-  std::string ActualOutput = Output.getValue();
+  EXPECT_TRUE(Output.has_value());
+  std::string ActualOutput = Output.value();
   EXPECT_FALSE(ActualOutput.empty());
 
   std::string ExpectedOutput = FS.get()->getBuffer().str();
@@ -54,8 +54,8 @@ TEST(XmlWriter, excludes) {
 
   FeatureModelXmlWriter FMX = FeatureModelXmlWriter(*FM);
   auto Output = FMX.writeFeatureModel();
-  EXPECT_TRUE(Output.hasValue());
-  std::string ActualOutput = Output.getValue();
+  EXPECT_TRUE(Output.has_value());
+  std::string ActualOutput = Output.value();
   EXPECT_FALSE(ActualOutput.empty());
 
   std::string ExpectedOutput = FS.get()->getBuffer().str();
@@ -70,8 +70,8 @@ TEST(XmlWriter, test) {
 
   FeatureModelXmlWriter FMX = FeatureModelXmlWriter(*FM);
   auto Output = FMX.writeFeatureModel();
-  EXPECT_TRUE(Output.hasValue());
-  std::string ActualOutput = Output.getValue();
+  EXPECT_TRUE(Output.has_value());
+  std::string ActualOutput = Output.value();
   EXPECT_FALSE(ActualOutput.empty());
 
   FS = llvm::MemoryBuffer::getFileAsStream(getTestResource("test.xml"));

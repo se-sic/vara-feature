@@ -53,7 +53,7 @@ public:
 
   [[nodiscard]] ConstraintTokenKind getKind() const { return Kind; };
 
-  [[nodiscard]] llvm::Optional<const std::string> getValue() const {
+  [[nodiscard]] std::optional<const std::string> getValue() const {
     return Value;
   }
 
@@ -89,7 +89,7 @@ public:
 
 private:
   const ConstraintTokenKind Kind;
-  const llvm::Optional<const std::string> Value{llvm::None};
+  const std::optional<const std::string> Value{std::nullopt};
 };
 
 //===----------------------------------------------------------------------===//
@@ -264,7 +264,7 @@ private:
 
 /// Parse 64-bit integer in decimal or scientific notation.
 static int64_t parseInteger(llvm::StringRef Str,
-                            llvm::Optional<unsigned int> Line = llvm::None) {
+                            std::optional<unsigned int> Line = std::nullopt) {
   if (Str.contains_insensitive('e')) {
     // If we encounter scientific notation we try to parse the number as double.
     if (double Double; !Str.getAsDouble(Double)) {
@@ -274,9 +274,9 @@ static int64_t parseInteger(llvm::StringRef Str,
     return Integer;
   }
 
-  if (Line.hasValue()) {
+  if (Line.has_value()) {
     llvm::errs() << "Failed to parse integer '" << Str << "' in line "
-                 << Line.hasValue() << ".\n";
+                 << Line.has_value() << ".\n";
   } else {
     llvm::errs() << "Failed to parse integer '" << Str << "'.\n";
   }
@@ -291,7 +291,7 @@ static int64_t parseInteger(llvm::StringRef Str,
 class ConstraintParser {
 public:
   explicit ConstraintParser(std::string Cnt,
-                            llvm::Optional<unsigned int> Line = llvm::None)
+                            std::optional<unsigned int> Line = std::nullopt)
       : TokenList(ConstraintLexer(std::move(Cnt)).tokenize()), Line(Line) {}
 
   std::unique_ptr<Constraint> buildConstraint() { return parseConstraint(); }
@@ -323,7 +323,7 @@ private:
     while (LHS) {
       switch (peek().getKind()) {
       case ConstraintToken::ConstraintTokenKind::ERROR:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Lexical error: Unexpected character '"
                      << *peek().getValue() << "'\n";
         return nullptr;
@@ -393,7 +393,7 @@ private:
     while (true) {
       switch (peek().getKind()) {
       case ConstraintToken::ConstraintTokenKind::ERROR:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Lexical error: Unexpected character '"
                      << *peek().getValue() << "'\n";
         return nullptr;
@@ -472,7 +472,7 @@ private:
     while (true) {
       switch (peek().getKind()) {
       case ConstraintToken::ConstraintTokenKind::ERROR:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Lexical error: Unexpected character '"
                      << *peek().getValue() << "'\n";
         return nullptr;
@@ -502,11 +502,11 @@ private:
         llvm::errs() << "Syntax error: Unexpected closing parenthesis.\n";
         return nullptr;
       case ConstraintToken::ConstraintTokenKind::IDENTIFIER:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         return std::make_unique<PrimaryFeatureConstraint>(
             std::make_unique<Feature>(*next().getValue()));
       case ConstraintToken::ConstraintTokenKind::NUMBER:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         return std::make_unique<PrimaryIntegerConstraint>(
             parseInteger(*next().getValue(), Line));
       case ConstraintToken::ConstraintTokenKind::NOT:
@@ -530,7 +530,7 @@ private:
   }
 
   ConstraintLexer::TokenListTy TokenList;
-  llvm::Optional<unsigned int> Line;
+  std::optional<unsigned int> Line;
 };
 
 } // namespace vara::feature

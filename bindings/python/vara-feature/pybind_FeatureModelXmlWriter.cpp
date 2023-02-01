@@ -15,7 +15,7 @@ void init_xml_writer(py::module &M) {
       .def(
           "get_feature_model_as_string",
           [](vf::FeatureModelXmlWriter &Fmxw) {
-            return Fmxw.writeFeatureModel().getValueOr("");
+            return Fmxw.writeFeatureModel().value_or("");
           },
           R"pbdoc(Return the xml representation as string)pbdoc")
       .def(
