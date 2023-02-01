@@ -36,8 +36,8 @@ TEST(Configuration, dumpTest) {
   EXPECT_EQ(ConfigurationString, Dump);
   Config.setConfigurationOption("foo_baz", "2");
   EXPECT_EQ(R"({"baz":"1","foo":"true","foo_baz":"2"})", Config.dumpToString());
-  EXPECT_EQ("2", Config.configurationOptionValue("foo_baz").getValue());
-  EXPECT_FALSE(Config.configurationOptionValue("a").hasValue());
+  EXPECT_EQ("2", Config.configurationOptionValue("foo_baz").value());
+  EXPECT_FALSE(Config.configurationOptionValue("a").has_value());
   EXPECT_EQ(R"({"baz":"1","foo":"true","foo_baz":"2"})", Config.dumpToString());
 }
 
@@ -45,7 +45,7 @@ TEST(Configuration, addConfigurationMultipleTimes) {
   Configuration Config{};
   Config.setConfigurationOption("foo", "1");
   Config.setConfigurationOption("foo", "true");
-  EXPECT_EQ("true", Config.configurationOptionValue("foo").getValue());
+  EXPECT_EQ("true", Config.configurationOptionValue("foo").value());
 }
 
 TEST(Configuration, iteratorTest) {

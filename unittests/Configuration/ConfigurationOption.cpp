@@ -9,7 +9,7 @@ TEST(ConfigurationOption, basicAccessors) {
   EXPECT_TRUE(FalseOption.isBool());
   EXPECT_FALSE(FalseOption.isInt());
   EXPECT_FALSE(FalseOption.isString());
-  EXPECT_FALSE(FalseOption.boolValue().getValue());
+  EXPECT_FALSE(FalseOption.boolValue().value());
   EXPECT_EQ("false", FalseOption.asString());
   EXPECT_EQ("foo: false", FalseOption.toString());
 
@@ -18,7 +18,7 @@ TEST(ConfigurationOption, basicAccessors) {
   EXPECT_TRUE(Option.isBool());
   EXPECT_FALSE(Option.isInt());
   EXPECT_FALSE(Option.isString());
-  EXPECT_TRUE(Option.boolValue().getValue());
+  EXPECT_TRUE(Option.boolValue().value());
   EXPECT_EQ("true", Option.asString());
   EXPECT_EQ("foo: true", Option.toString());
 
@@ -27,7 +27,7 @@ TEST(ConfigurationOption, basicAccessors) {
   EXPECT_TRUE(Option2.isInt());
   EXPECT_FALSE(Option2.isString());
   EXPECT_FALSE(Option2.isBool());
-  EXPECT_EQ(1, Option2.intValue().getValue());
+  EXPECT_EQ(1, Option2.intValue().value());
   EXPECT_EQ("1", Option2.asString());
   EXPECT_EQ("baz: 1", Option2.toString());
 
@@ -36,25 +36,25 @@ TEST(ConfigurationOption, basicAccessors) {
   EXPECT_TRUE(UnparseableOption.isString());
   EXPECT_FALSE(UnparseableOption.isBool());
   EXPECT_FALSE(UnparseableOption.isInt());
-  EXPECT_EQ("test", UnparseableOption.stringValue().getValue());
+  EXPECT_EQ("test", UnparseableOption.stringValue().value());
   EXPECT_EQ("test", UnparseableOption.asString());
   EXPECT_EQ("foobar: test", UnparseableOption.toString());
 }
 
 TEST(ConfigurationOption, negativeTests) {
   ConfigurationOption TrueOption("o", "false");
-  EXPECT_FALSE(TrueOption.stringValue().hasValue());
-  EXPECT_FALSE(TrueOption.intValue().hasValue());
-  EXPECT_FALSE(TrueOption.boolValue().getValue());
+  EXPECT_FALSE(TrueOption.stringValue().has_value());
+  EXPECT_FALSE(TrueOption.intValue().has_value());
+  EXPECT_FALSE(TrueOption.boolValue().value());
 
   ConfigurationOption IntOption("p", "42");
-  EXPECT_EQ(42, IntOption.intValue().getValue());
-  EXPECT_FALSE(IntOption.stringValue().hasValue());
-  EXPECT_FALSE(IntOption.boolValue().hasValue());
+  EXPECT_EQ(42, IntOption.intValue().value());
+  EXPECT_FALSE(IntOption.stringValue().has_value());
+  EXPECT_FALSE(IntOption.boolValue().has_value());
 
   ConfigurationOption StringOption("q", "test");
-  EXPECT_EQ("test", StringOption.stringValue().getValue());
-  EXPECT_FALSE(StringOption.intValue().hasValue());
-  EXPECT_FALSE(StringOption.boolValue().hasValue());
+  EXPECT_EQ("test", StringOption.stringValue().value());
+  EXPECT_FALSE(StringOption.intValue().has_value());
+  EXPECT_FALSE(StringOption.boolValue().has_value());
 }
 } // namespace vara::feature
