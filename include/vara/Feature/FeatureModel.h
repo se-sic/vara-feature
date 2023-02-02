@@ -283,9 +283,9 @@ public:
 
   class MixedConstraint : public FeatureModelConstraint {
   public:
-    enum Req { ALL, NONE };
+    enum class Req { ALL, NONE };
 
-    enum ExprKind { POS, NEG };
+    enum class ExprKind { POS, NEG };
 
     MixedConstraint(std::unique_ptr<Constraint> C, Req R, ExprKind E)
         : FeatureModelConstraint(std::move(C)), R(R), E(E) {}
