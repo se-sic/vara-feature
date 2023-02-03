@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE vm SYSTEM "vm.dtd">
-<vm name="Children" root="test/path/to/root/">
+<vm name="AB" root="test">
   <binaryOptions>
     <configurationOption>
       <name>root</name>
       <children>
         <options>A</options>
         <options>B</options>
-        <options>C</options>
       </children>
       <optional>False</optional>
     </configurationOption>
     <configurationOption>
       <name>A</name>
       <parent>root</parent>
-      <optional>True</optional>
+      <optional>False</optional>
     </configurationOption>
+  </binaryOptions>
+  <numericOptions>
     <configurationOption>
       <name>B</name>
       <parent>root</parent>
-      <optional>True</optional>
+      <optional>False</optional>
+      <minValue>0</minValue>
+      <maxValue>100</maxValue>
     </configurationOption>
-    <configurationOption>
-      <name>C</name>
-      <parent>root</parent>
-      <optional>True</optional>
-    </configurationOption>
-  </binaryOptions>
-  <numericOptions/>
+  </numericOptions>
+  <booleanConstraints>
+    <constraint>(A | B)</constraint>
+  </booleanConstraints>
+  <nonBooleanConstraints>
+    <constraint>(A + B)</constraint>
+  </nonBooleanConstraints>
+  <mixedConstraints>
+    <constraint req="all" exprKind="pos">((A * B) = 0)</constraint>
+  </mixedConstraints>
 </vm>

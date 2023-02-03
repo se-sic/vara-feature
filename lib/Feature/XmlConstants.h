@@ -42,6 +42,8 @@ public:
   static constexpr xmlChar VALUES[] = "values";
   static constexpr xmlChar CONFIGURATIONOPTION[] = "configurationOption";
   static constexpr xmlChar CONSTRAINT[] = "constraint";
+  static constexpr xmlChar REQ[] = "req";
+  static constexpr xmlChar EXPRKIND[] = "exprKind";
   static constexpr xmlChar ROOT[] = "root";
   static constexpr xmlChar BINARYOPTIONS[] = "binaryOptions";
   static constexpr xmlChar NUMERICOPTIONS[] = "numericOptions";
