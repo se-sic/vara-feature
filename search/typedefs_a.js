@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['reference_967',['reference',['../classvara_1_1feature_1_1FeatureModel_1_1DFSIterator.html#a4a286e8f3c0ee94257f1d2fdbf3d73c3',1,'vara::feature::FeatureModel::DFSIterator::reference()'],['../classvara_1_1feature_1_1FeatureModel_1_1FeatureMapIterator.html#a1526236ba697958e85f2fc11e0878fe3',1,'vara::feature::FeatureModel::FeatureMapIterator::reference()']]],
-  ['relationshipcontainerty_968',['RelationshipContainerTy',['../classvara_1_1feature_1_1FeatureModel.html#a7c4042464443c2b81a1217b4bd8924aa',1,'vara::feature::FeatureModel']]]
+  ['operandvarianttype_992',['OperandVariantType',['../classvara_1_1feature_1_1StepFunction.html#ae8d8a1d548f7f40b3b54e222e3539eba',1,'vara::feature::StepFunction']]],
+  ['ordered_5ffeature_5fiterator_993',['ordered_feature_iterator',['../classvara_1_1feature_1_1deprecated_1_1OrderedFeatureVector.html#aa6cf328ea0542fa5409661ddeaaf6a2d',1,'vara::feature::deprecated::OrderedFeatureVector']]]
 ];

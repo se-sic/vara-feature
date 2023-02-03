@@ -133,8 +133,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa25334b76b2ea873d7b1d7d1acf3145d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89a695bc93ac858689625d3aba0c1c6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#a89a695bc93ac858689625d3aba0c1c6c">removeLocation</a> (<a class="el" href="namespacevara_1_1feature_1_1detail.html#a38459238c23e7deeb1388e2d66311ad3">detail::FeatureVariantTy</a> &amp;F, <a class="el" href="classvara_1_1feature_1_1FeatureSourceRange.html">FeatureSourceRange</a> FSR)</td></tr>
 <tr class="separator:a89a695bc93ac858689625d3aba0c1c6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fbca34a3c08cf425fd814a105bd43bf"><td class="memItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#a7fbca34a3c08cf425fd814a105bd43bf">addConstraint</a> (std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1Constraint.html">Constraint</a> &gt; <a class="el" href="classvara_1_1feature_1_1Constraint.html">Constraint</a>)</td></tr>
-<tr class="separator:a7fbca34a3c08cf425fd814a105bd43bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad462efeb0c7aea31f043aa77587bdd45"><td class="memTemplParams" colspan="2">template&lt;class ConstraintTy &gt; </td></tr>
+<tr class="memitem:ad462efeb0c7aea31f043aa77587bdd45"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#ad462efeb0c7aea31f043aa77587bdd45">addConstraint</a> (std::unique_ptr&lt; ConstraintTy &gt; <a class="el" href="classvara_1_1feature_1_1Constraint.html">Constraint</a>)</td></tr>
+<tr class="separator:ad462efeb0c7aea31f043aa77587bdd45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7b7d559660818c1eb64742146d50d49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#ac7b7d559660818c1eb64742146d50d49">setName</a> (std::string Name)</td></tr>
 <tr class="separator:ac7b7d559660818c1eb64742146d50d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8785d36a043f451b3295cdd33c43c230"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html#a8785d36a043f451b3295cdd33c43c230">setCommit</a> (std::string Commit)</td></tr>
@@ -314,17 +315,19 @@ template&lt;typename CopyMode &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00157">157</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00158">158</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
 </div>
 </div>
-<a id="a7fbca34a3c08cf425fd814a105bd43bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7fbca34a3c08cf425fd814a105bd43bf">&#9670;&nbsp;</a></span>addConstraint()</h2>
+<a id="ad462efeb0c7aea31f043aa77587bdd45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad462efeb0c7aea31f043aa77587bdd45">&#9670;&nbsp;</a></span>addConstraint()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename CopyMode &gt; </div>
+<div class="memtemplate">
+template&lt;class ConstraintTy &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -332,7 +335,7 @@ template&lt;typename CopyMode &gt; </div>
         <tr>
           <td class="memname">decltype(auto) <a class="el" href="classvara_1_1feature_1_1FeatureModelTransaction.html">vara::feature::FeatureModelTransaction</a>&lt; CopyMode &gt;::addConstraint </td>
           <td>(</td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1Constraint.html">Constraint</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; ConstraintTy &gt;&#160;</td>
           <td class="paramname"><em>Constraint</em></td><td>)</td>
           <td></td>
         </tr>
@@ -344,7 +347,7 @@ template&lt;typename CopyMode &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00133">133</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00134">134</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
 </div>
 </div>
@@ -737,7 +740,7 @@ template&lt;typename CopyMode &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00143">143</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00144">144</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
 </div>
 </div>
@@ -767,7 +770,7 @@ template&lt;typename CopyMode &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00141">141</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00142">142</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
 </div>
 </div>
@@ -797,7 +800,7 @@ template&lt;typename CopyMode &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00147">147</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00148">148</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
 </div>
 </div>
@@ -827,7 +830,7 @@ template&lt;typename CopyMode &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00149">149</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FeatureModelTransaction_8h_source.html#l00150">150</a> of file <a class="el" href="FeatureModelTransaction_8h_source.html">FeatureModelTransaction.h</a>.</p>
 
 </div>
 </div>
@@ -837,7 +840,7 @@ template&lt;typename CopyMode &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 1 2023 10:07:57 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Feb 3 2023 12:33:23 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

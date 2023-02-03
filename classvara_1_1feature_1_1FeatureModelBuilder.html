@@ -109,8 +109,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac57686bf143b714cfcf61a7bed76b3e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85ddb96eddba6970d115c042e6e9c971"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html#a85ddb96eddba6970d115c042e6e9c971">emplaceRelationship</a> (<a class="el" href="classvara_1_1feature_1_1Relationship.html#a81d167870625ca1ce69f088c19bc95c7">Relationship::RelationshipKind</a> RK, const std::string &amp;ParentName)</td></tr>
 <tr class="separator:a85ddb96eddba6970d115c042e6e9c971"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1b297901cc8c7134565203fbe3283d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ab1b297901cc8c7134565203fbe3283d6">addConstraint</a> (std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a5cc5d7eb16a708824108c10933594227">FeatureModel::ConstraintTy</a> &gt; C)</td></tr>
-<tr class="separator:ab1b297901cc8c7134565203fbe3283d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0264e46d3ab4b50214fe2864584b28f"><td class="memTemplParams" colspan="2">template&lt;class ConstraintTy &gt; </td></tr>
+<tr class="memitem:ac0264e46d3ab4b50214fe2864584b28f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ac0264e46d3ab4b50214fe2864584b28f">addConstraint</a> (std::unique_ptr&lt; ConstraintTy &gt; C)</td></tr>
+<tr class="separator:ac0264e46d3ab4b50214fe2864584b28f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4afba52e780dd6d550250defd38f763"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html#aa4afba52e780dd6d550250defd38f763">setVmName</a> (std::string Name)</td></tr>
 <tr class="separator:aa4afba52e780dd6d550250defd38f763"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade65bb80ef9e7d79e8c41727360a12e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html#ade65bb80ef9e7d79e8c41727360a12e8">setPath</a> (const fs::path &amp;Path)</td></tr>
@@ -235,11 +236,13 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab1b297901cc8c7134565203fbe3283d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab1b297901cc8c7134565203fbe3283d6">&#9670;&nbsp;</a></span>addConstraint()</h2>
+<a id="ac0264e46d3ab4b50214fe2864584b28f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0264e46d3ab4b50214fe2864584b28f">&#9670;&nbsp;</a></span>addConstraint()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;class ConstraintTy &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -247,7 +250,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="classvara_1_1feature_1_1FeatureModelBuilder.html">FeatureModelBuilder</a>* vara::feature::FeatureModelBuilder::addConstraint </td>
           <td>(</td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1FeatureModel.html#a5cc5d7eb16a708824108c10933594227">FeatureModel::ConstraintTy</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; ConstraintTy &gt;&#160;</td>
           <td class="paramname"><em>C</em></td><td>)</td>
           <td></td>
         </tr>
@@ -628,7 +631,7 @@ template&lt;typename FeatureTy , typename... Args, std::enable_if_t&lt; std::is_
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 1 2023 10:07:57 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Feb 3 2023 12:33:23 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

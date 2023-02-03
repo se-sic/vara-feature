@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['tokenlistty_969',['TokenListTy',['../classvara_1_1feature_1_1ConstraintLexer.html#a7b5fa92aba207bec46ea6785e05902fd',1,'vara::feature::ConstraintLexer::TokenListTy()'],['../classvara_1_1feature_1_1StepFunctionLexer.html#a8db21a56c0fc3fd67d1db698ad7f6513',1,'vara::feature::StepFunctionLexer::TokenListTy()']]]
+  ['pointer_994',['pointer',['../classvara_1_1feature_1_1FeatureModel_1_1DFSIterator.html#a5fbd5e56aef690db5e4d4745fe3870ca',1,'vara::feature::FeatureModel::DFSIterator::pointer()'],['../classvara_1_1feature_1_1FeatureModel_1_1FeatureMapIterator.html#a6465437a47f1944e329e5ae0b6f20aa6',1,'vara::feature::FeatureModel::FeatureMapIterator::pointer()']]],
+  ['precedencety_995',['PrecedenceTy',['../classvara_1_1feature_1_1ConstraintToken.html#ac300a05a9605d30af0ecbff78001a500',1,'vara::feature::ConstraintToken']]]
 ];
