@@ -21,6 +21,7 @@ set(FEATURE_LIB_TEST_FILES
   xml/error_root_root.xml
   xml/test.xml
   xml/test_children.xml
+  xml/test_constraints.xml
   xml/test_dune_num.xml
   xml/test_excludes.xml
   xml/test_member_offset.xml
