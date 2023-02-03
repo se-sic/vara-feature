@@ -1,4 +1,5 @@
 #include "vara/Feature/FeatureModelParser.h"
+#include "vara/Feature/ConstraintBuilder.h"
 #include "vara/Feature/ConstraintParser.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureSourceRange.h"
@@ -85,11 +86,10 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
-              FMB.addConstraint(make_unique<ExcludesConstraint>(
-                  make_unique<PrimaryFeatureConstraint>(
-                      make_unique<Feature>(Name)),
-                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
-                      trim(reinterpret_cast<char *>(CCnt.get()))))));
+              ConstraintBuilder CB;
+              CB.feature(Name).excludes().feature(
+                  trim(reinterpret_cast<char *>(CCnt.get())));
+              FMB.addConstraint(CB.build());
             }
           }
         }
@@ -98,11 +98,10 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
-              FMB.addConstraint(make_unique<ImpliesConstraint>(
-                  make_unique<PrimaryFeatureConstraint>(
-                      make_unique<Feature>(Name)),
-                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
-                      trim(reinterpret_cast<char *>(CCnt.get()))))));
+              ConstraintBuilder CB;
+              CB.feature(Name).implies().feature(
+                  trim(reinterpret_cast<char *>(CCnt.get())));
+              FMB.addConstraint(CB.build());
             }
           }
         }
