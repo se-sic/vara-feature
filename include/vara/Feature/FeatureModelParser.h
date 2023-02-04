@@ -65,6 +65,7 @@ private:
 
   Result<FTErrorCode> parseConfigurationOption(xmlNode *Node, bool Num);
   Result<FTErrorCode> parseOptions(xmlNode *Node, bool Num);
+  template <class ConstraintTy>
   Result<FTErrorCode> parseConstraints(xmlNode *Node);
   Result<FTErrorCode> parseVm(xmlNode *Node);
 

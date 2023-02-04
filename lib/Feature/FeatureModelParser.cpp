@@ -16,8 +16,6 @@
 #include <iostream>
 #include <regex>
 
-using std::make_unique;
-
 namespace vara::feature {
 
 std::string trim(llvm::StringRef S) { return llvm::StringRef(S).trim().str(); }
@@ -85,11 +83,14 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
-              FMB.addConstraint(make_unique<ExcludesConstraint>(
-                  make_unique<PrimaryFeatureConstraint>(
-                      make_unique<Feature>(Name)),
-                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
-                      trim(reinterpret_cast<char *>(CCnt.get()))))));
+              FMB.addConstraint(
+                  std::make_unique<FeatureModel::BooleanConstraint>(
+                      std::make_unique<ExcludesConstraint>(
+                          std::make_unique<PrimaryFeatureConstraint>(
+                              std::make_unique<Feature>(Name)),
+                          std::make_unique<PrimaryFeatureConstraint>(
+                              std::make_unique<Feature>(trim(
+                                  reinterpret_cast<char *>(CCnt.get())))))));
             }
           }
         }
@@ -98,11 +99,14 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
-              FMB.addConstraint(make_unique<ImpliesConstraint>(
-                  make_unique<PrimaryFeatureConstraint>(
-                      make_unique<Feature>(Name)),
-                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
-                      trim(reinterpret_cast<char *>(CCnt.get()))))));
+              FMB.addConstraint(
+                  std::make_unique<FeatureModel::BooleanConstraint>(
+                      std::make_unique<ImpliesConstraint>(
+                          std::make_unique<PrimaryFeatureConstraint>(
+                              std::make_unique<Feature>(Name)),
+                          std::make_unique<PrimaryFeatureConstraint>(
+                              std::make_unique<Feature>(trim(
+                                  reinterpret_cast<char *>(CCnt.get())))))));
             }
           }
         }
@@ -212,6 +216,7 @@ Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
   return Ok();
 }
 
+template <class ConstraintTy>
 Result<FTErrorCode> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
@@ -222,7 +227,41 @@ Result<FTErrorCode> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
                     std::string(reinterpret_cast<char *>(Cnt.get())),
                     Node->line)
                     .buildConstraint()) {
-          FMB.addConstraint(std::move(Constraint));
+          FMB.addConstraint(
+              std::make_unique<ConstraintTy>(std::move(Constraint)));
+        } else {
+          return Error(ERROR);
+        }
+      }
+    }
+  }
+  return Ok();
+}
+
+template <>
+Result<FTErrorCode>
+FeatureModelXmlParser::parseConstraints<FeatureModel::MixedConstraint>(
+    xmlNode *Node) {
+  for (xmlNode *H = Node->children; H; H = H->next) {
+    if (H->type == XML_ELEMENT_NODE) {
+      if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
+        UniqueXmlChar Cnt(xmlNodeGetContent(H), xmlFree);
+        if (auto Constraint =
+                ConstraintParser(
+                    std::string(reinterpret_cast<char *>(Cnt.get())),
+                    Node->line)
+                    .buildConstraint()) {
+          UniqueXmlChar R(xmlGetProp(H, XmlConstants::REQ), xmlFree);
+          UniqueXmlChar E(xmlGetProp(H, XmlConstants::EXPRKIND), xmlFree);
+
+          FMB.addConstraint(std::make_unique<FeatureModel::MixedConstraint>(
+              std::move(Constraint),
+              std::string(reinterpret_cast<char *>(R.get())) == "none"
+                  ? FeatureModel::MixedConstraint::Req::NONE
+                  : FeatureModel::MixedConstraint::Req::ALL,
+              std::string(reinterpret_cast<char *>(E.get())) == "neg"
+                  ? FeatureModel::MixedConstraint::ExprKind::NEG
+                  : FeatureModel::MixedConstraint::ExprKind::POS));
         } else {
           return Error(ERROR);
         }
@@ -258,7 +297,15 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
           return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::BOOLEANCONSTRAINTS)) {
-        if (!parseConstraints(H)) {
+        if (!parseConstraints<FeatureModel::BooleanConstraint>(H)) {
+          return Error(ERROR);
+        }
+      } else if (!xmlStrcmp(H->name, XmlConstants::NONBOOLEANCONSTRAINTS)) {
+        if (!parseConstraints<FeatureModel::NonBooleanConstraint>(H)) {
+          return Error(ERROR);
+        }
+      } else if (!xmlStrcmp(H->name, XmlConstants::MIXEDCONSTRAINTS)) {
+        if (!parseConstraints<FeatureModel::MixedConstraint>(H)) {
           return Error(ERROR);
         }
       }
@@ -765,7 +812,8 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
     }
 
     if (auto Constraint = ConstraintParser(CnfFormula).buildConstraint()) {
-      FMB.addConstraint(std::move(Constraint));
+      FMB.addConstraint(std::make_unique<FeatureModel::BooleanConstraint>(
+          std::move(Constraint)));
     }
   }
 
