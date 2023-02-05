@@ -5,3 +5,8 @@ add_vara_unittest(VaRASolverUnitTests VaRASolverTests
   ConfigurationFactory.cpp
   RealWorldCaseStudyTests.cpp
 )
+
+target_link_libraries(VaRASolverTests
+  PUBLIC
+  Z3_opt
+)

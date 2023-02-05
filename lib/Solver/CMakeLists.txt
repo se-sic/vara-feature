@@ -14,3 +14,8 @@ target_link_libraries(VaRASolver
   LINK_PUBLIC
   VaRAConfiguration
 )
+
+target_link_libraries(VaRASolver
+  PUBLIC
+  Z3_opt
+)
