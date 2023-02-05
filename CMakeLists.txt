@@ -173,8 +173,11 @@ if (${VARA_FEATURE_BUILD_SOLVER_Z3})
   else()
     add_subdirectory(external/z3)
 
-    include(${PROJECT_BINARY_DIR}/external/z3/Z3Config.cmake)
-    include_directories(${Z3_CXX_INCLUDE_DIRS})
+    include_directories(
+      "${PROJECT_BINARY_DIR}/external/z3/src/api"
+      "${PROJECT_SOURCE_DIR}/external/z3/src/api"
+      "${PROJECT_SOURCE_DIR}/external/z3/src/api/c++"
+      )
   endif()
 endif ()
 
