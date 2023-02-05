@@ -34,7 +34,7 @@ int FeatureModelXmlWriter::writeFeatureModel(std::string Path) {
   return RC;
 }
 
-llvm::Optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
+std::optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
   int RC;
 
   std::unique_ptr<xmlDocPtr, void (*)(xmlDocPtr *)> DocPtrPtr(
@@ -48,11 +48,11 @@ llvm::Optional<std::string> FeatureModelXmlWriter::writeFeatureModel() {
   std::unique_ptr<xmlTextWriter, void (*)(xmlTextWriterPtr)> Writer(
       xmlNewTextWriterDoc(DocPtrPtr.get(), 0), &xmlFreeTextWriter);
   if (!Writer) {
-    return llvm::None;
+    return std::nullopt;
   }
   RC = writeFeatureModel(Writer.get());
   if (RC < 0) {
-    return llvm::None;
+    return std::nullopt;
   }
 
   std::unique_ptr<xmlChar *, void (*)(xmlChar **)> XmlBuffPtr(
@@ -93,14 +93,14 @@ int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr Writer) {
   RC = xmlTextWriterStartElement(Writer, XmlConstants::VM);
   CHECK_RC
   RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::NAME,
-                                   charToUChar(Fm.getName().data()));
+                                   charToUChar(FM.getName().data()));
   CHECK_RC
   RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::ROOT,
-                                   charToUChar(Fm.getPath().string().data()));
+                                   charToUChar(FM.getPath().string().data()));
   CHECK_RC
-  if (!Fm.getCommit().empty()) {
+  if (!FM.getCommit().empty()) {
     RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::COMMIT,
-                                     charToUChar(Fm.getCommit().data()));
+                                     charToUChar(FM.getCommit().data()));
   }
   CHECK_RC
   RC = writeBinaryFeatures(Writer);
@@ -109,10 +109,20 @@ int FeatureModelXmlWriter::writeVm(xmlTextWriterPtr Writer) {
   RC = writeNumericFeatures(Writer);
   CHECK_RC
 
-  RC = writeBooleanConstraints(Writer);
-  CHECK_RC
+  if (!FM.booleanConstraints().empty()) {
+    RC = writeBooleanConstraints(Writer);
+    CHECK_RC
+  }
 
-  // TODO mixed and nonNumeric constraints when supported
+  if (!FM.nonBooleanConstraints().empty()) {
+    RC = writeNonBooleanConstraints(Writer);
+    CHECK_RC
+  }
+
+  if (!FM.mixedConstraints().empty()) {
+    RC = writeMixedConstraints(Writer);
+    CHECK_RC
+  }
 
   RC = xmlTextWriterEndDocument(Writer); // VM
   return RC;
@@ -124,7 +134,7 @@ int FeatureModelXmlWriter::writeBinaryFeatures(xmlTextWriterPtr Writer) {
   RC = xmlTextWriterStartElement(Writer, XmlConstants::BINARYOPTIONS);
   CHECK_RC
 
-  for (Feature *F : Fm.features()) {
+  for (Feature *F : FM.features()) {
     if (llvm::isa<RootFeature>(F) || llvm::isa<BinaryFeature>(F)) {
       RC = writeFeature(Writer, *F);
       CHECK_RC
@@ -141,7 +151,7 @@ int FeatureModelXmlWriter::writeNumericFeatures(xmlTextWriterPtr Writer) {
   RC = xmlTextWriterStartElement(Writer, XmlConstants::NUMERICOPTIONS);
   CHECK_RC
 
-  for (auto *F : Fm.features()) {
+  for (auto *F : FM.features()) {
     if (llvm::isa<NumericFeature>(F)) {
       RC = writeFeature(Writer, *F);
       CHECK_RC
@@ -152,8 +162,7 @@ int FeatureModelXmlWriter::writeNumericFeatures(xmlTextWriterPtr Writer) {
   return RC;
 }
 
-int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
-    xmlTextWriterPtr Writer) {                      // NOLINT
+int FeatureModelXmlWriter::writeBooleanConstraints(xmlTextWriterPtr Writer) {
   int RC;
 
   RC = xmlTextWriterStartElement(Writer, XmlConstants::BOOLEANCONSTRAINTS);
@@ -195,8 +204,8 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
     CHECK_RC
   }
 
-  for (const auto &Constraint : Fm.constraints()) {
-    if (auto *Implies = llvm::dyn_cast<ImpliesConstraint>(Constraint.get())) {
+  for (const auto &Constraint : FM.booleanConstraints()) {
+    if (auto *Implies = llvm::dyn_cast<ImpliesConstraint>(**Constraint)) {
       if (llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
               Implies->getLeftOperand()) &&
           llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
@@ -205,7 +214,7 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
         continue;
       }
     }
-    if (auto *Excludes = llvm::dyn_cast<ExcludesConstraint>(Constraint.get())) {
+    if (auto *Excludes = llvm::dyn_cast<ExcludesConstraint>(**Constraint)) {
       if (llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
               Excludes->getLeftOperand()) &&
           llvm::isa_and_nonnull<PrimaryFeatureConstraint>(
@@ -217,14 +226,76 @@ int FeatureModelXmlWriter::writeBooleanConstraints( // NOLINT
 
     RC = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
     CHECK_RC
-    RC = xmlTextWriterWriteString(Writer,
-                                  charToUChar(Constraint->toString().data()));
+    RC = xmlTextWriterWriteString(
+        Writer, charToUChar(Constraint->constraint()->toString().data()));
     CHECK_RC
     RC = xmlTextWriterEndElement(Writer); // CONSTRAINT
     CHECK_RC
   }
 
   RC = xmlTextWriterEndElement(Writer); // BOOLEANCONSTRAINT
+  return RC;
+}
+
+int FeatureModelXmlWriter::writeNonBooleanConstraints(xmlTextWriterPtr Writer) {
+  int RC;
+
+  RC = xmlTextWriterStartElement(Writer, XmlConstants::NONBOOLEANCONSTRAINTS);
+  CHECK_RC
+
+  for (const auto &Constraint : FM.nonBooleanConstraints()) {
+    RC = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
+    CHECK_RC
+    RC = xmlTextWriterWriteString(
+        Writer, charToUChar(Constraint->constraint()->toString().data()));
+    CHECK_RC
+    RC = xmlTextWriterEndElement(Writer); // CONSTRAINT
+    CHECK_RC
+  }
+
+  RC = xmlTextWriterEndElement(Writer); // NONBOOLEANCONSTRAINT
+  return RC;
+}
+
+int FeatureModelXmlWriter::writeMixedConstraints(xmlTextWriterPtr Writer) {
+  int RC;
+
+  RC = xmlTextWriterStartElement(Writer, XmlConstants::MIXEDCONSTRAINTS);
+  CHECK_RC
+
+  for (const auto &Constraint : FM.mixedConstraints()) {
+    RC = xmlTextWriterStartElement(Writer, XmlConstants::CONSTRAINT);
+    CHECK_RC
+    switch (Constraint->req()) {
+    case FeatureModel::MixedConstraint::Req::ALL:
+      RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::REQ,
+                                       charToUChar("all"));
+      break;
+    case FeatureModel::MixedConstraint::Req::NONE:
+      RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::REQ,
+                                       charToUChar("none"));
+      break;
+    }
+    CHECK_RC
+    switch (Constraint->exprKind()) {
+    case FeatureModel::MixedConstraint::ExprKind::POS:
+      RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::EXPRKIND,
+                                       charToUChar("pos"));
+      break;
+    case FeatureModel::MixedConstraint::ExprKind::NEG:
+      RC = xmlTextWriterWriteAttribute(Writer, XmlConstants::EXPRKIND,
+                                       charToUChar("neg"));
+      break;
+    }
+    CHECK_RC
+    RC = xmlTextWriterWriteString(
+        Writer, charToUChar(Constraint->constraint()->toString().data()));
+    CHECK_RC
+    RC = xmlTextWriterEndElement(Writer); // CONSTRAINT
+    CHECK_RC
+  }
+
+  RC = xmlTextWriterEndElement(Writer); // MIXEDCONSTRAINT
   return RC;
 }
 

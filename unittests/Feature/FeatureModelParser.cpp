@@ -9,7 +9,7 @@
 
 namespace vara::feature {
 
-std::unique_ptr<FeatureModel> buildFeatureModel(llvm::StringRef Path) {
+std::unique_ptr<const FeatureModel> buildFeatureModel(llvm::StringRef Path) {
   auto FS = llvm::MemoryBuffer::getFileAsStream(getTestResource(Path));
   assert(FS);
   auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
@@ -105,6 +105,56 @@ TEST(FeatureModelParser, scientific) {
   } else {
     FAIL();
   }
+}
+
+TEST(FeatureModelParser, booleanConstraint) {
+  auto C = OrConstraint(std::make_unique<PrimaryFeatureConstraint>(
+                            std::make_unique<BinaryFeature>("A")),
+                        std::make_unique<PrimaryFeatureConstraint>(
+                            std::make_unique<BinaryFeature>("B")));
+
+  auto FM = buildFeatureModel("test_constraints.xml");
+  ASSERT_TRUE(FM);
+
+  EXPECT_EQ(
+      (*FM->booleanConstraints().begin())->constraint()->getRoot()->toString(),
+      C.toString());
+}
+
+TEST(FeatureModelParser, nonBooleanConstraint) {
+  auto C = AdditionConstraint(std::make_unique<PrimaryFeatureConstraint>(
+                                  std::make_unique<BinaryFeature>("A")),
+                              std::make_unique<PrimaryFeatureConstraint>(
+                                  std::make_unique<BinaryFeature>("B")));
+
+  auto FM = buildFeatureModel("test_constraints.xml");
+  ASSERT_TRUE(FM);
+
+  EXPECT_EQ((*FM->nonBooleanConstraints().begin())
+                ->constraint()
+                ->getRoot()
+                ->toString(),
+            C.toString());
+}
+
+TEST(FeatureModelParser, mixedConstraint) {
+  auto C = EqualConstraint(std::make_unique<MultiplicationConstraint>(
+                               std::make_unique<PrimaryFeatureConstraint>(
+                                   std::make_unique<BinaryFeature>("A")),
+                               std::make_unique<PrimaryFeatureConstraint>(
+                                   std::make_unique<BinaryFeature>("B"))),
+                           std::make_unique<PrimaryIntegerConstraint>(0));
+
+  auto FM = buildFeatureModel("test_constraints.xml");
+  ASSERT_TRUE(FM);
+
+  EXPECT_EQ(
+      (*FM->mixedConstraints().begin())->constraint()->getRoot()->toString(),
+      C.toString());
+  EXPECT_EQ((*FM->mixedConstraints().begin())->req(),
+            FeatureModel::MixedConstraint::Req::ALL);
+  EXPECT_EQ((*FM->mixedConstraints().begin())->exprKind(),
+            FeatureModel::MixedConstraint::ExprKind::POS);
 }
 
 TEST(FeatureModelParser, memberOffset) {

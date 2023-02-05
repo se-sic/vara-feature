@@ -164,6 +164,9 @@ include_directories(${LIBXML2_INCLUDE_DIR})
 include_directories(external/stats/include)
 include_directories(external/gcem/include/)
 
+add_subdirectory(external/csv-parser)
+include_directories(external/csv-parser/include/)
+
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
