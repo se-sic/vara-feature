@@ -50,6 +50,11 @@ public:
   Result<SolverErrorCode>
   addConstraint(feature::Constraint &ConstraintToAdd) override;
 
+  Result<SolverErrorCode>
+  addMixedConstraint(feature::Constraint &ConstraintToAdd,
+                     feature::FeatureModel::MixedConstraint::ExprKind ExprKind,
+                     feature::FeatureModel::MixedConstraint::Req Req) override;
+
   Result<SolverErrorCode, bool> hasValidConfigurations() override;
 
   Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
@@ -100,49 +105,75 @@ public:
   /// Constructs a new solver constraint visitor by using the reference to
   /// the solver. This reference is needed to retrieve the context and reuse
   /// it in the visitor.
+
   /// \param S The Z3Solver instance that uses this visitor.
-  Z3SolverConstraintVisitor(Z3Solver *S)
-      : Z3ConstraintExpression(S->Context), S(S){};
+  Z3SolverConstraintVisitor(Z3Solver *S, bool MixedConstraint = false)
+      : Z3ConstraintExpression(S->Context),
+        VariableConstraint(S->Context.bool_val(false)),
+        MixedConstraint(MixedConstraint), S(S){};
 
   /// This method adds the constraint after visiting the constraint and
   /// constructing it while visiting.
+
   /// \param C The constraint to visit
-  /// \return \c true if adding the constraint was successfull; \c false
+  /// \param NegateExpr Whether the expression should be evaluated as is or
+  /// negated \param RequireAll Whether all binary features have to be selected
+  /// in order to evaluate the mixed constraint or not
+
+  /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
-  bool addConstraint(vara::feature::Constraint *C);
+  bool addConstraint(vara::feature::Constraint *C, bool NegateExpr = false,
+                     bool RequireAll = true);
 
   /// Visits the binary constraint. Thereby, it constructs the z3 constraint
   /// by first executing the first part of the binary operator and afterwards
   /// the second (right) part.
+
   /// \param C the binary constraint to be converted
-  /// \return \c true if adding the constraint was successfull; \c false
+
+  /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool visit(vara::feature::BinaryConstraint *C) override;
 
   /// Visits the unary constraints. Thereby, it visits the operand and creates
   /// a new z3 constraint by preceeding it with the according expression.
+
   /// \param C the unary constraint to visit
-  /// \return \c true if adding the constraint was successfull; \c false
+
+  /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool visit(vara::feature::UnaryConstraint *C) override;
 
   /// Visits the feature in the constraint. This method creates the according
   /// z3 constant.
+
   /// \param C the primary feature
-  /// \return \c true if adding the constraint was successfull; \c false
+
+  /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool visit(vara::feature::PrimaryFeatureConstraint *C) override;
 
   /// Visits the feature in the integer constraints. This method creates the
   /// according z3 constant.
+
   /// \param C the integer constraint
-  /// \return \c true if adding the constraint was successfull; \c false
+
+  /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool visit(feature::PrimaryIntegerConstraint *C) override;
 
 private:
   /// The z3 constraint will be adjusted while visiting the given constraint
   z3::expr Z3ConstraintExpression;
+
+  /// This expression variable is used to store an or expression including
+  /// binary variables. This is needed for the 'req=all' attribute in
+  /// mixed constraints.
+  z3::expr VariableConstraint;
+
+  /// This boolean is used to distinguish whether the visitor is used for
+  /// a mixed constraint or not.
+  bool MixedConstraint;
 
   /// The reference to the solver, which is basically needed for the context.
   /// Note that the context can not be copied or references, which is why we

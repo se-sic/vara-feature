@@ -4,6 +4,7 @@
 #include "vara/Configuration/Configuration.h"
 #include "vara/Feature/Constraint.h"
 #include "vara/Feature/Feature.h"
+#include "vara/Feature/FeatureModel.h"
 #include "vara/Solver/Error.h"
 #include "vara/Utils/Result.h"
 
@@ -76,6 +77,17 @@ public:
   /// \returns a possible error if adding the constraint could not be done.
   virtual Result<SolverErrorCode>
   addConstraint(feature::Constraint &ConstraintToAdd) = 0;
+
+  /// Adds the given mixedconstraint to the solver. In the case that the
+  /// constraint includes features that were not included yet, a error is
+  /// returned. So, make sure that all features are already added.
+  /// Note that the difference to a normal constraint is that
+
+  /// \returns a possible error if adding the constraint could not be done.
+  virtual Result<SolverErrorCode>
+  addMixedConstraint(feature::Constraint &ConstraintToAdd,
+                     feature::FeatureModel::MixedConstraint::ExprKind ExprKind,
+                     feature::FeatureModel::MixedConstraint::Req Req) = 0;
 
   /// Returns \c true if the current constraint system (i.e., its features and
   /// its constraints) has valid configurations.

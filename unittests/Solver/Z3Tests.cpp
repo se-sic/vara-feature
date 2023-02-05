@@ -1,4 +1,4 @@
-#include "vara/Solver/Solver.h"
+#include "vara/Solver/Z3Solver.h"
 
 #include "z3++.h"
 
@@ -48,12 +48,12 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   EXPECT_TRUE(E);
   auto V = S->hasValidConfigurations();
   EXPECT_TRUE(V);
-  EXPECT_TRUE(*V.extractValue());
+  EXPECT_TRUE(V.extractValue());
   E = S->addFeature(*FM->getFeature("A"));
   EXPECT_TRUE(E);
   V = S->hasValidConfigurations();
   EXPECT_TRUE(V);
-  EXPECT_TRUE(*V.extractValue());
+  EXPECT_TRUE(V.extractValue());
   // Enumerate the solutions
   auto Enumerate = S->getNumberValidConfigurations();
   EXPECT_TRUE(Enumerate);
@@ -63,7 +63,7 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   EXPECT_TRUE(E);
   V = S->hasValidConfigurations();
   EXPECT_TRUE(V);
-  EXPECT_TRUE(*V.extractValue());
+  EXPECT_TRUE(V.extractValue());
   E = S->addFeature(*FM->getFeature("B"));
   EXPECT_FALSE(E);
   EXPECT_EQ(SolverErrorCode::ALREADY_PRESENT, E.getError());
@@ -76,7 +76,7 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   E = S->addFeature(*FM->getFeature("C"));
   EXPECT_TRUE(E);
   V = S->hasValidConfigurations();
-  EXPECT_TRUE(*V.extractValue());
+  EXPECT_TRUE(V.extractValue());
   Enumerate = S->getNumberValidConfigurations();
   EXPECT_TRUE(Enumerate);
   EXPECT_EQ(6, *Enumerate.extractValue());
@@ -98,7 +98,7 @@ TEST(Z3Solver, TestAllValidConfigurations) {
 
   auto C = S->getAllValidConfigurations();
   EXPECT_TRUE(C);
-  EXPECT_EQ(C.extractValue()->size(), 4);
+  EXPECT_EQ(C.extractValue().size(), 4);
 }
 
 TEST(Z3Solver, TestGetNextConfiguration) {
@@ -119,16 +119,16 @@ TEST(Z3Solver, TestGetNextConfiguration) {
     auto C = S->getNextConfiguration();
     EXPECT_TRUE(C);
     auto Config = C.extractValue();
-    EXPECT_TRUE(Config->configurationOptionValue("root").hasValue());
-    EXPECT_TRUE(Config->configurationOptionValue("Foo").hasValue());
-    EXPECT_TRUE(Config->configurationOptionValue("Num1").hasValue());
+    EXPECT_TRUE(Config->configurationOptionValue("root").has_value());
+    EXPECT_TRUE(Config->configurationOptionValue("Foo").has_value());
+    EXPECT_TRUE(Config->configurationOptionValue("Num1").has_value());
   }
   auto C = S->getCurrentConfiguration();
   EXPECT_TRUE(C);
   auto Config = C.extractValue();
-  EXPECT_TRUE(Config->configurationOptionValue("root").hasValue());
-  EXPECT_TRUE(Config->configurationOptionValue("Foo").hasValue());
-  EXPECT_TRUE(Config->configurationOptionValue("Num1").hasValue());
+  EXPECT_TRUE(Config->configurationOptionValue("root").has_value());
+  EXPECT_TRUE(Config->configurationOptionValue("Foo").has_value());
+  EXPECT_TRUE(Config->configurationOptionValue("Num1").has_value());
   auto E = S->getNextConfiguration();
   EXPECT_FALSE(E);
 }

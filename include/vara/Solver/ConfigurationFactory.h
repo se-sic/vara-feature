@@ -80,8 +80,7 @@ public:
 
   /// \returns a unique pointer to the vector containing all configurations
   static Result<SolverErrorCode,
-                std::unique_ptr<
-                    std::vector<std::unique_ptr<vara::feature::Configuration>>>>
+                std::vector<std::unique_ptr<vara::feature::Configuration>>>
   getAllConfigs(feature::FeatureModel &Model,
                 const vara::solver::SolverType Type = SolverType::Z3) {
     auto S = SolverFactory::initializeSolver(Model, Type);

@@ -27,8 +27,14 @@ SolverFactory::applyModelOnSolver(const feature::FeatureModel &Model,
   }
 
   // Iterate over all constraints
-  for (const auto &C : Model.constraints()) {
-    S->addConstraint(*C);
+  for (const auto &C : Model.booleanConstraints()) {
+    S->addConstraint(***C);
+  }
+  for (const auto &C : Model.nonBooleanConstraints()) {
+    S->addConstraint(***C);
+  }
+  for (const auto &C : Model.mixedConstraints()) {
+    S->addMixedConstraint(***C, C->exprKind(), C->req());
   }
 
   // Iterate over all relationships

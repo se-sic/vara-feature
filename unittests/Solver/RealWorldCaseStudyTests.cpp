@@ -24,19 +24,19 @@ TEST(SolverAPI, TestDuneConfigurations) {
   auto FMBin = buildFeatureModel("test_dune_bin.xml");
   auto ConfigResultBin = ConfigurationFactory::getAllConfigs(*FMBin);
   EXPECT_TRUE(ConfigResultBin);
-  EXPECT_EQ(ConfigResultBin.extractValue()->size(), 2304);
+  EXPECT_EQ(ConfigResultBin.extractValue().size(), 2304);
 
   // Perform a test on Dune with numeric features without step functions
   auto FMNumExp = buildFeatureModel("test_dune_num_explicit.xml");
   auto ConfigResultNumExp = ConfigurationFactory::getAllConfigs(*FMNumExp);
   EXPECT_TRUE(ConfigResultNumExp);
-  EXPECT_EQ(ConfigResultNumExp.extractValue()->size(), 2304);
+  EXPECT_EQ(ConfigResultNumExp.extractValue().size(), 2304);
 
   // Perform a test on Dune with numeric features with step functions
   auto FMNumStep = buildFeatureModel("test_dune_num_explicit.xml");
   auto ConfigResultNumStep = ConfigurationFactory::getAllConfigs(*FMNumStep);
   EXPECT_TRUE(ConfigResultNumStep);
-  EXPECT_EQ(ConfigResultNumStep.extractValue()->size(), 2304);
+  EXPECT_EQ(ConfigResultNumStep.extractValue().size(), 2304);
 }
 
 TEST(SolverAPI, TestHipaccConfigurations) {
@@ -51,12 +51,12 @@ TEST(SolverAPI, TestHipaccConfigurations) {
   EXPECT_TRUE(FmNum);
   auto ConfigResult = ConfigurationFactory::getAllConfigs(*FmNum);
   EXPECT_TRUE(ConfigResult);
-  EXPECT_EQ(ConfigResult.extractValue()->size(), 13485);
+  EXPECT_EQ(ConfigResult.extractValue().size(), 13485);
   auto FMBin =
       buildFeatureModel("../../../unittests/resources/xml/test_hipacc_bin.xml");
   auto ConfigResultBin = ConfigurationFactory::getAllConfigs(*FMBin);
   EXPECT_TRUE(ConfigResultBin);
-  EXPECT_EQ(ConfigResultBin.extractValue()->size(), 13485);
+  EXPECT_EQ(ConfigResultBin.extractValue().size(), 13485);
 }
 
 } // namespace vara::solver

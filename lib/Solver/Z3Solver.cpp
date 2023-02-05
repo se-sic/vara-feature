@@ -121,11 +121,13 @@ Z3Solver::removeFeature(feature::Feature &FeatureToRemove) {
 
 Result<SolverErrorCode>
 Z3Solver::addRelationship(const feature::Relationship &R) {
-  const auto *Parent = *llvm::dyn_cast<const feature::Feature *>(R.getParent());
+  const auto *Parent =
+      reinterpret_cast<const feature::Feature *>(R.getParent());
   auto ParentOption = Context.bool_const(Parent->getName().str().c_str());
   z3::expr_vector V(Context);
   for (const auto &Child : R.children()) {
-    const auto *ChildFeature = (const feature::Feature *)Child;
+    const auto *ChildFeature =
+        reinterpret_cast<const feature::Feature *>(&Child);
     V.push_back(Context.bool_const(ChildFeature->getName().str().c_str()));
   }
   switch (R.getKind()) {
@@ -143,6 +145,21 @@ Result<SolverErrorCode>
 Z3Solver::addConstraint(feature::Constraint &ConstraintToAdd) {
   Z3SolverConstraintVisitor SCV(this);
   bool Succ = SCV.addConstraint(&ConstraintToAdd);
+  if (!Succ) {
+    return SolverErrorCode::NOT_SUPPORTED;
+  }
+  return Ok();
+}
+
+Result<SolverErrorCode> Z3Solver::addMixedConstraint(
+    feature::Constraint &ConstraintToAdd,
+    feature::FeatureModel::MixedConstraint::ExprKind ExprKind,
+    feature::FeatureModel::MixedConstraint::Req Req) {
+  Z3SolverConstraintVisitor SCV(this, true);
+  bool Succ = SCV.addConstraint(
+      &ConstraintToAdd,
+      ExprKind == feature::FeatureModel::MixedConstraint::ExprKind::NEG,
+      Req == feature::FeatureModel::MixedConstraint::Req::ALL);
   if (!Succ) {
     return SolverErrorCode::NOT_SUPPORTED;
   }
@@ -253,9 +270,18 @@ Z3Solver::getCurrentConfiguration() {
 }
 
 // Class Z3SolverConstraintVisitor
-bool Z3SolverConstraintVisitor::addConstraint(vara::feature::Constraint *C) {
+bool Z3SolverConstraintVisitor::addConstraint(vara::feature::Constraint *C,
+                                              bool NegateExpr,
+                                              bool RequireAll) {
   if (C->accept(*this)) {
-    S->Solver->add(Z3ConstraintExpression);
+    if (NegateExpr) {
+      Z3ConstraintExpression = !Z3ConstraintExpression;
+    }
+    if (MixedConstraint && RequireAll) {
+      S->Solver->add(VariableConstraint || Z3ConstraintExpression);
+    } else {
+      S->Solver->add(Z3ConstraintExpression);
+    }
     return true;
   }
   return false;
@@ -355,6 +381,12 @@ bool Z3SolverConstraintVisitor::visit(
   } else {
     Z3ConstraintExpression =
         S->Context.bool_const(C->getFeature()->getName().str().c_str());
+    if (MixedConstraint) {
+      VariableConstraint = VariableConstraint || !Z3ConstraintExpression;
+      Z3ConstraintExpression = z3::to_expr(
+          S->Context, Z3_mk_ite(S->Context, Z3ConstraintExpression,
+                                S->Context.int_val(1), S->Context.int_val(0)));
+    }
   }
   return true;
 }

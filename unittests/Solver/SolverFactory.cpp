@@ -23,13 +23,14 @@ TEST(SolverFactory, GeneralZ3Test) {
   B.makeFeature<feature::BinaryFeature>("b", true);
   B.addEdge("alt", "a");
   B.addEdge("alt", "b");
-  std::unique_ptr<feature::Constraint> C =
-      std::make_unique<feature::ImpliesConstraint>(
-          std::make_unique<feature::PrimaryFeatureConstraint>(
-              std::make_unique<feature::BinaryFeature>("a")),
-          std::make_unique<feature::NotConstraint>(
+  std::unique_ptr<feature::FeatureModel::BooleanConstraint> C =
+      std::make_unique<feature::FeatureModel::BooleanConstraint>(
+          std::make_unique<feature::ImpliesConstraint>(
               std::make_unique<feature::PrimaryFeatureConstraint>(
-                  std::make_unique<feature::BinaryFeature>("b"))));
+                  std::make_unique<feature::BinaryFeature>("a")),
+              std::make_unique<feature::NotConstraint>(
+                  std::make_unique<feature::PrimaryFeatureConstraint>(
+                      std::make_unique<feature::BinaryFeature>("b")))));
   B.addConstraint(std::move(C));
 
   B.makeFeature<vara::feature::BinaryFeature>("A", false)->addEdge("root", "A");
