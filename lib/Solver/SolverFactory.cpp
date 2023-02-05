@@ -9,7 +9,8 @@ std::unique_ptr<Solver> SolverFactory::initializeZ3Solver() {
 }
 
 std::unique_ptr<Solver>
-SolverFactory::applyModelOnSolver(const feature::FeatureModel &Model, std::unique_ptr<Solver> S) {
+SolverFactory::applyModelOnSolver(const feature::FeatureModel &Model,
+                                  std::unique_ptr<Solver> S) {
   // Check which feature is in an alternative group and save it for 'addFeature'
   std::vector<string> V;
   for (const auto &R : Model.relationships()) {
