@@ -560,7 +560,8 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
     // Each entry represents an or group as a tuple where the first value is
     // the name of the parent, the second is the relationship kind, and the
     // third a vector consisting of the name of the children
-    std::unordered_map<int, std::tuple<std::string, Relationship::RelationshipKind>>
+    std::unordered_map<int,
+                       std::tuple<std::string, Relationship::RelationshipKind>>
         OrGroupMapping;
 
     if (FeatureTree == nullptr) {
