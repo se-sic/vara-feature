@@ -37,7 +37,6 @@ jobs:
           sudo apt-add-repository -y 'deb https://apt.kitware.com/ubuntu/ focal main'
           sudo apt-get update
           sudo apt-get -y install --no-install-recommends cmake libstdc++6 libxml2-dev python3-dev graphviz gcc-9 g++-9
-          sudo apt-get -y install --no-install-recommends libz3-dev
 
       - name: Install Strategy Dependencies
         shell: bash
