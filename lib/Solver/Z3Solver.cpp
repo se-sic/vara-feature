@@ -1,4 +1,4 @@
-#include "vara/Solver/Solver.h"
+#include "vara/Solver/Z3Solver.h"
 
 #include "z3++.h"
 
@@ -53,11 +53,11 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd,
     break;
   }
   case feature::Feature::FeatureKind::FK_BINARY: {
-    addFeature(FeatureToAdd.getName().str());
     // Add all constraints (i.e., implications, exclusions, parent feature)
-    if (!llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd)) {
+    if (!llvm::isa<vara::feature::BinaryFeature>(&FeatureToAdd)) {
       return NOT_SUPPORTED;
     }
+    addFeature(FeatureToAdd.getName().str());
     auto R = setBinaryFeatureConstraints(
         *llvm::dyn_cast<vara::feature::BinaryFeature>(&FeatureToAdd),
         IsInAlternativeGroup);
@@ -67,8 +67,11 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd,
     break;
   }
   case feature::Feature::FeatureKind::FK_ROOT:
-    addFeature(FeatureToAdd.getName().str());
     // Add root as a constraint; root is mandatory
+    addFeature(FeatureToAdd.getName().str());
+    assert(OptionToVariableMapping.find(FeatureToAdd.getName()) !=
+               OptionToVariableMapping.end() &&
+           "No OptionToVariableMapping was defined for the given feature.");
     Solver->add(*OptionToVariableMapping[FeatureToAdd.getName()]);
     break;
   case feature::Feature::FeatureKind::FK_UNKNOWN:
@@ -118,7 +121,7 @@ Z3Solver::removeFeature(feature::Feature &FeatureToRemove) {
 
 Result<SolverErrorCode>
 Z3Solver::addRelationship(const feature::Relationship &R) {
-  const auto *Parent = (const feature::Feature *)R.getParent();
+  const auto *Parent = *llvm::dyn_cast<const feature::Feature *>(R.getParent());
   auto ParentOption = Context.bool_const(Parent->getName().str().c_str());
   z3::expr_vector V(Context);
   for (const auto &Child : R.children()) {
@@ -138,7 +141,7 @@ Z3Solver::addRelationship(const feature::Relationship &R) {
 
 Result<SolverErrorCode>
 Z3Solver::addConstraint(feature::Constraint &ConstraintToAdd) {
-  SolverConstraintVisitor SCV(this);
+  Z3SolverConstraintVisitor SCV(this);
   bool Succ = SCV.addConstraint(&ConstraintToAdd);
   if (!Succ) {
     return SolverErrorCode::NOT_SUPPORTED;
@@ -146,12 +149,11 @@ Z3Solver::addConstraint(feature::Constraint &ConstraintToAdd) {
   return Ok();
 }
 
-Result<SolverErrorCode, std::unique_ptr<bool>>
-Z3Solver::hasValidConfigurations() {
+Result<SolverErrorCode, bool> Z3Solver::hasValidConfigurations() {
   if (Solver->check() == z3::sat) {
-    return Ok(std::make_unique<bool>(true));
+    return Ok(true);
   }
-  return Ok(std::make_unique<bool>(false));
+  return Ok(false);
 }
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
@@ -175,16 +177,14 @@ Z3Solver::getNumberValidConfigurations() {
   return Count;
 }
 
-Result<
-    SolverErrorCode,
-    std::unique_ptr<std::vector<std::unique_ptr<vara::feature::Configuration>>>>
+Result<SolverErrorCode,
+       std::vector<std::unique_ptr<vara::feature::Configuration>>>
 Z3Solver::getAllValidConfigurations() {
   Solver->push();
-  std::unique_ptr<std::vector<std::unique_ptr<vara::feature::Configuration>>>
-      Vector(new std::vector<std::unique_ptr<vara::feature::Configuration>>);
+  auto Vector = std::vector<std::unique_ptr<vara::feature::Configuration>>();
   while (Solver->check() == z3::sat) {
     auto Config = getCurrentConfiguration().extractValue();
-    Vector->insert(Vector->begin(), std::move(Config));
+    Vector.insert(Vector.begin(), std::move(Config));
     excludeCurrentConfiguration();
   }
   Solver->pop();
@@ -205,7 +205,7 @@ Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature,
         *OptionToVariableMapping[Feature.getName()]));
   }
 
-  SolverConstraintVisitor SCV(this);
+  Z3SolverConstraintVisitor SCV(this);
 
   return Ok();
 }
@@ -216,17 +216,18 @@ Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
   }
   z3::model M = Solver->get_model();
   z3::expr Expr = Context.bool_val(false);
-  for (auto Option : OptionToVariableMapping.keys()) {
-    z3::expr OptionExpr = *OptionToVariableMapping[Option];
+  for (auto Iterator = OptionToVariableMapping.begin();
+       Iterator != OptionToVariableMapping.end(); Iterator++) {
+    z3::expr OptionExpr = *Iterator->getValue();
     z3::expr Value = M.eval(OptionExpr, true);
     if (Value.is_bool()) {
       if (Value.is_true()) {
-        Expr = Expr || !*OptionToVariableMapping[Option];
+        Expr = Expr || !*Iterator->getValue();
       } else {
-        Expr = Expr || *OptionToVariableMapping[Option];
+        Expr = Expr || *Iterator->getValue();
       }
     } else {
-      Expr = Expr || (*OptionToVariableMapping[Option] != Value);
+      Expr = Expr || (*Iterator->getValue() != Value);
     }
   }
   Solver->add(Expr);
@@ -239,19 +240,20 @@ Z3Solver::getCurrentConfiguration() {
     return UNSAT;
   }
   z3::model M = Solver->get_model();
-  std::unique_ptr<vara::feature::Configuration> Config(
-      new vara::feature::Configuration());
+  auto Config = std::make_unique<vara::feature::Configuration>();
 
-  for (auto Option : OptionToVariableMapping.keys()) {
-    z3::expr OptionExpr = *OptionToVariableMapping[Option];
+  for (auto Iterator = OptionToVariableMapping.begin();
+       Iterator != OptionToVariableMapping.end(); Iterator++) {
+    z3::expr OptionExpr = *Iterator->getValue();
     z3::expr Value = M.eval(OptionExpr, true);
-    Config->setConfigurationOption(Option, llvm::StringRef(Value.to_string()));
+    Config->setConfigurationOption(Iterator->getKey(),
+                                   llvm::StringRef(Value.to_string()));
   }
   return Config;
 }
 
-// Class SolverConstraintVisitor
-bool SolverConstraintVisitor::addConstraint(vara::feature::Constraint *C) {
+// Class Z3SolverConstraintVisitor
+bool Z3SolverConstraintVisitor::addConstraint(vara::feature::Constraint *C) {
   if (C->accept(*this)) {
     S->Solver->add(Z3ConstraintExpression);
     return true;
@@ -259,7 +261,7 @@ bool SolverConstraintVisitor::addConstraint(vara::feature::Constraint *C) {
   return false;
 }
 
-bool SolverConstraintVisitor::visit(vara::feature::BinaryConstraint *C) {
+bool Z3SolverConstraintVisitor::visit(vara::feature::BinaryConstraint *C) {
 
   bool LHS = C->getLeftOperand()->accept(*this);
   z3::expr Left = Z3ConstraintExpression;
@@ -319,12 +321,15 @@ bool SolverConstraintVisitor::visit(vara::feature::BinaryConstraint *C) {
                              z3::implies(Z3ConstraintExpression, !Left);
     break;
   default:
+    static_assert(
+        "Unimplemented binary constraint in Z3SolverConstraintVisitor "
+        "detected!");
     return false;
   }
   return true;
 }
 
-bool SolverConstraintVisitor::visit(vara::feature::UnaryConstraint *C) {
+bool Z3SolverConstraintVisitor::visit(vara::feature::UnaryConstraint *C) {
   if (!C->getOperand()->accept(*this)) {
     return false;
   }
@@ -341,7 +346,7 @@ bool SolverConstraintVisitor::visit(vara::feature::UnaryConstraint *C) {
   return true;
 }
 
-bool SolverConstraintVisitor::visit(
+bool Z3SolverConstraintVisitor::visit(
     vara::feature::PrimaryFeatureConstraint *C) {
   if (C->getFeature()->getKind() ==
       vara::feature::Feature::FeatureKind::FK_NUMERIC) {
@@ -354,7 +359,7 @@ bool SolverConstraintVisitor::visit(
   return true;
 }
 
-bool SolverConstraintVisitor::visit(
+bool Z3SolverConstraintVisitor::visit(
     vara::feature::PrimaryIntegerConstraint *C) {
   Z3ConstraintExpression = S->Context.int_val(C->getValue());
   return true;

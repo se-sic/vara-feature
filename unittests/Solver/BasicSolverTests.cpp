@@ -31,7 +31,7 @@ TEST(Solver, RetrieveSatisfyingModel) {
   z3::expr C = Con.bool_const("C");
   z3::expr D = Con.bool_const("D");
 
-  z3::expr Expression = A && B && !C;
+  z3::expr Expression = A && B && !C && D;
 
   z3::solver S(Con);
 
@@ -44,28 +44,10 @@ TEST(Solver, RetrieveSatisfyingModel) {
   EXPECT_TRUE(M.get_const_interp(A.decl()));
   EXPECT_TRUE(M.get_const_interp(B.decl()));
   EXPECT_FALSE(M.get_const_interp(C.decl()));
+  EXPECT_TRUE(M.get_const_interp(D.decl()));
 
   // Add the current configuration as a constraint
-  if (M.get_const_interp(D.decl())) {
-    S.add(!(A && B && !C && D));
-  } else {
-    S.add(!(A && B && !C && !D));
-  }
-
-  EXPECT_EQ(S.check(), z3::sat);
-
-  M = S.get_model();
-
-  // Retrieve the model by using the declaration function of each expression
-  EXPECT_TRUE(M.get_const_interp(A.decl()));
-  EXPECT_TRUE(M.get_const_interp(B.decl()));
-  EXPECT_FALSE(M.get_const_interp(C.decl()));
-
-  if (M.get_const_interp(D.decl())) {
-    S.add(!(A && B && !C && D));
-  } else {
-    S.add(!(A && B && !C && !D));
-  }
+  S.add(!(A && B && !C && D));
 
   EXPECT_EQ(S.check(), z3::unsat);
 }

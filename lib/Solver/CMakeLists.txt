@@ -1,5 +1,5 @@
 set(SOLVER_LIB_SRC
-  Solver.cpp
+        Z3Solver.cpp
   SolverFactory.cpp
 )
 

@@ -13,8 +13,7 @@ namespace vara::solver {
 
 std::unique_ptr<vara::feature::FeatureModel>
 buildFeatureModel(llvm::StringRef Path) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(Path);
-  // auto FS = llvm::MemoryBuffer::getFileAsStream(getTestResource(Path));
+  auto FS = llvm::MemoryBuffer::getFileAsStream(getTestResource(Path));
   assert(FS);
   auto P = vara::feature::FeatureModelXmlParser(FS.get()->getBuffer().str());
   assert(P.verifyFeatureModel());
@@ -22,23 +21,19 @@ buildFeatureModel(llvm::StringRef Path) {
 }
 
 TEST(SolverAPI, TestDuneConfigurations) {
-  auto FMBin =
-      buildFeatureModel("../../../unittests/resources/xml/test_dune_bin.xml");
-  // auto FMBin = buildFeatureModel("test_dune_bin.xml");
+  auto FMBin = buildFeatureModel("test_dune_bin.xml");
   auto ConfigResultBin = ConfigurationFactory::getAllConfigs(*FMBin);
   EXPECT_TRUE(ConfigResultBin);
   EXPECT_EQ(ConfigResultBin.extractValue()->size(), 2304);
 
   // Perform a test on Dune with numeric features without step functions
-  auto FMNumExp = buildFeatureModel(
-      "../../../unittests/resources/xml/test_dune_num_explicit.xml");
+  auto FMNumExp = buildFeatureModel("test_dune_num_explicit.xml");
   auto ConfigResultNumExp = ConfigurationFactory::getAllConfigs(*FMNumExp);
   EXPECT_TRUE(ConfigResultNumExp);
   EXPECT_EQ(ConfigResultNumExp.extractValue()->size(), 2304);
 
   // Perform a test on Dune with numeric features with step functions
-  auto FMNumStep = buildFeatureModel(
-      "../../../unittests/resources/xml/test_dune_num_explicit.xml");
+  auto FMNumStep = buildFeatureModel("test_dune_num_explicit.xml");
   auto ConfigResultNumStep = ConfigurationFactory::getAllConfigs(*FMNumStep);
   EXPECT_TRUE(ConfigResultNumStep);
   EXPECT_EQ(ConfigResultNumStep.extractValue()->size(), 2304);

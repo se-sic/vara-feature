@@ -1,10 +1,15 @@
 #include "vara/Solver/SolverFactory.h"
+#include "vara/Solver/Z3Solver.h"
 
 namespace vara::solver {
 
-std::unique_ptr<Solver>
-SolverFactory::initializeZ3Solver(const feature::FeatureModel &Model) {
+std::unique_ptr<Solver> SolverFactory::initializeZ3Solver() {
   std::unique_ptr<Z3Solver> S = Z3Solver::create();
+  return S;
+}
+
+std::unique_ptr<Solver>
+SolverFactory::applyModelOnSolver(const feature::FeatureModel &Model, std::unique_ptr<Solver> S) {
   // Check which feature is in an alternative group and save it for 'addFeature'
   std::vector<string> V;
   for (const auto &R : Model.relationships()) {
