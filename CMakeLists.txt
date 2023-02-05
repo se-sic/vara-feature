@@ -171,6 +171,9 @@ if (${VARA_FEATURE_BUILD_SOLVER_Z3})
   if (VARA_FEATURE_IN_TREE)
     # Currently, we don't build the solver part when part of LLVM
   else()
+    set(ORIG_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+
     add_subdirectory(external/z3)
 
     include_directories(
@@ -178,6 +181,7 @@ if (${VARA_FEATURE_BUILD_SOLVER_Z3})
       "${PROJECT_SOURCE_DIR}/external/z3/src/api"
       "${PROJECT_SOURCE_DIR}/external/z3/src/api/c++"
       )
+    set(CMAKE_CXX_FLAGS "${ORIG_CXX_FLAGS}")
   endif()
 endif ()
 
