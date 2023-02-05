@@ -11,6 +11,6 @@ add_vara_library(VaRASolver
 )
 
 target_link_libraries(VaRASolver
-        LINK_PUBLIC
-        VaRAConfiguration
-        )
+  LINK_PUBLIC
+  VaRAConfiguration
+)
