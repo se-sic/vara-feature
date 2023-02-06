@@ -70,7 +70,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=$CXX \
             -DVARA_FEATURE_SANITIZE=True \
             -DVARA_FEATURE_BUILD_PYTHON_BINDINGS=False \
-            -DVARA_FEATURE_USE_Z3_Solver=True \
+            -DVARA_FEATURE_USE_Z3_SOLVER=True \
             -DVARA_FEATURE_BUILD_Z3_SOLVER=False \
             -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
