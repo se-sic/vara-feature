@@ -86,12 +86,13 @@ private:
   setBinaryFeatureConstraints(const feature::BinaryFeature &Feature,
                               bool IsInAlternativeGroup);
 
-  /// This map contains the original feature names as key and maps it to the
-  /// Z3 value.
-  llvm::StringMap<std::unique_ptr<z3::expr>> OptionToVariableMapping;
 
   /// The context of Z3 needed to initialize variables.
   z3::context Context;
+
+  /// This map contains the original feature names as key and maps it to the
+  /// Z3 value.
+  llvm::StringMap<std::unique_ptr<z3::expr>> OptionToVariableMapping;
 
   /// The instance of the Z3 solver needed for caching the constraints and
   /// variables.
