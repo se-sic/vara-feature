@@ -14,6 +14,10 @@ add_vara_executable(fm-editor
         graph/FeatureNode.cpp
         graph/FeatureEdge.h
         graph/FeatureEdge.cpp
+        tree/FeatureTreeViewModel.h
+        tree/FeatureTreeViewModel.cpp
+        tree/FeatureTreeItem.h
+        tree/FeatureTreeItem.cpp
         FeatureModelEditor.h FeatureModelEditor.cpp
         FeatureModelEditor.ui
         FeatureAddDialog.h FeatureAddDialog.cpp FeatureAddDialog.ui

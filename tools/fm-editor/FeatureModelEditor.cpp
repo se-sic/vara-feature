@@ -46,10 +46,12 @@ void FeatureModelEditor::loadGraph() {
     //Return if no model at Path
     return;
   }
-  Graph = new FeatureModelGraph{Model.get(), Ui->centralwidget};
-  Ui->featureGraph = Graph;
-  Ui->featureGraph->setObjectName(QString::fromUtf8("featureGraph"));
-  Ui->gridLayout_3->addWidget(Ui->featureGraph, 1, 2, 1, 1);
+  Graph = new FeatureModelGraph{Model.get()};
+
+  Ui->tabWidget->addTab(Graph,"GraphView");
+  TreeView = new QTreeView();
+  TreeView->setModel(new FeatureTreeViewModel(Model.get(),TreeView));
+  Ui->tabWidget->addTab(TreeView,"TreeView");
   for (auto &Node : *Graph->getNodes()) {
     QObject::connect(Node.get(), &FeatureNode::clicked, this,
                      &FeatureModelEditor::loadFeature);

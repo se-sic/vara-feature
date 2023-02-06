@@ -24,7 +24,6 @@ FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel * FeatureModel,
   setRenderHint(QPainter::Antialiasing);
   setTransformationAnchor(AnchorUnderMouse);
   scale(qreal(0.8), qreal(0.8));
-  setMinimumSize(400, 400);
   reload();
   Scene->setSceneRect(0, 0, EntryNode->childrenWidth()+100, 100*EntryNode->childrenDepth()+100);
 }
