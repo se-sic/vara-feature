@@ -86,7 +86,6 @@ private:
   setBinaryFeatureConstraints(const feature::BinaryFeature &Feature,
                               bool IsInAlternativeGroup);
 
-
   /// The context of Z3 needed to initialize variables.
   z3::context Context;
 
