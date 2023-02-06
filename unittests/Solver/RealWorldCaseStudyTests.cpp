@@ -1,3 +1,4 @@
+#include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelBuilder.h"
 #include "vara/Feature/FeatureModelParser.h"
 #include "vara/Solver/ConfigurationFactory.h"
@@ -11,29 +12,22 @@
 
 namespace vara::solver {
 
-std::unique_ptr<vara::feature::FeatureModel>
-buildFeatureModel(llvm::StringRef Path) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(getTestResource(Path));
-  assert(FS);
-  auto P = vara::feature::FeatureModelXmlParser(FS.get()->getBuffer().str());
-  assert(P.verifyFeatureModel());
-  return P.buildFeatureModel();
-}
-
 TEST(SolverAPI, TestDuneConfigurations) {
-  auto FMBin = buildFeatureModel("test_dune_bin.xml");
+  auto FMBin = feature::loadFeatureModel(getTestResource("test_dune_bin.xml"));
   auto ConfigResultBin = ConfigurationFactory::getAllConfigs(*FMBin);
   EXPECT_TRUE(ConfigResultBin);
   EXPECT_EQ(ConfigResultBin.extractValue().size(), 2304);
 
   // Perform a test on Dune with numeric features without step functions
-  auto FMNumExp = buildFeatureModel("test_dune_num_explicit.xml");
+  auto FMNumExp =
+      feature::loadFeatureModel(getTestResource("test_dune_num_explicit.xml"));
   auto ConfigResultNumExp = ConfigurationFactory::getAllConfigs(*FMNumExp);
   EXPECT_TRUE(ConfigResultNumExp);
   EXPECT_EQ(ConfigResultNumExp.extractValue().size(), 2304);
 
   // Perform a test on Dune with numeric features with step functions
-  auto FMNumStep = buildFeatureModel("test_dune_num_explicit.xml");
+  auto FMNumStep =
+      feature::loadFeatureModel(getTestResource("test_dune_num_explicit.xml"));
   auto ConfigResultNumStep = ConfigurationFactory::getAllConfigs(*FMNumStep);
   EXPECT_TRUE(ConfigResultNumStep);
   EXPECT_EQ(ConfigResultNumStep.extractValue().size(), 2304);
@@ -47,13 +41,13 @@ TEST(SolverAPI, TestHipaccConfigurations) {
   //  but also with its discretized counterpart (i.e., every numeric feature
   //  is converted into multiple binary features)
   auto FmNum =
-      buildFeatureModel("../../../unittests/resources/xml/test_hipacc_num.xml");
+      feature::loadFeatureModel(getTestResource("test_hipacc_num.xml"));
   EXPECT_TRUE(FmNum);
   auto ConfigResult = ConfigurationFactory::getAllConfigs(*FmNum);
   EXPECT_TRUE(ConfigResult);
   EXPECT_EQ(ConfigResult.extractValue().size(), 13485);
   auto FMBin =
-      buildFeatureModel("../../../unittests/resources/xml/test_hipacc_bin.xml");
+      feature::loadFeatureModel(getTestResource("test_hipacc_bin.xml"));
   auto ConfigResultBin = ConfigurationFactory::getAllConfigs(*FMBin);
   EXPECT_TRUE(ConfigResultBin);
   EXPECT_EQ(ConfigResultBin.extractValue().size(), 13485);
