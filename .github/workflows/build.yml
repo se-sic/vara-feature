@@ -12,9 +12,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        build: [Debug]
+        build: [Debug, Release]
         llvm-major: [14]
-        compiler: [clang++-14, clang++-15]
+        compiler: [clang++-14, clang++-15, g++-9]
         include:
           - llvm-major: 14
             llvm-minor: 0
