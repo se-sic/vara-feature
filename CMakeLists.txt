@@ -179,11 +179,15 @@ if (${VARA_FEATURE_USE_Z3_SOLVER})
 
       add_subdirectory(external/z3)
 
-      include_directories(
+      # Set Z3 vars similar to find package
+      set(Z3_INCLUDE_DIR
         "${PROJECT_BINARY_DIR}/external/z3/src/api"
         "${PROJECT_SOURCE_DIR}/external/z3/src/api"
         "${PROJECT_SOURCE_DIR}/external/z3/src/api/c++"
-        )
+      )
+      set(Z3_LIBRARIES
+        libz3
+      )
 
       # Reset old CXX flags to enable warnings again
       set(CMAKE_CXX_FLAGS "${ORIG_CXX_FLAGS}")
@@ -192,11 +196,9 @@ if (${VARA_FEATURE_USE_Z3_SOLVER})
       if (NOT Z3_FOUND)
         message(FATAL_ERROR "Z3 library not found!")
       endif ()
-
-      message(STATUS "=incl=> ${Z3_INCLUDE_DIR}")
-      message(STATUS "=libs=> ${Z3_LIBRARIES}")
-      include_directories(${Z3_INCLUDE_DIR})
     endif ()
+
+    include_directories(${Z3_INCLUDE_DIR})
   endif()
 endif ()
 

@@ -8,5 +8,5 @@ add_vara_unittest(VaRASolverUnitTests VaRASolverTests
 
 target_link_libraries(VaRASolverTests
   PUBLIC
-  libz3
+  ${Z3_LIBRARIES}
 )

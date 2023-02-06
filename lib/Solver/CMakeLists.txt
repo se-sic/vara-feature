@@ -17,5 +17,5 @@ target_link_libraries(VaRASolver
 
 target_link_libraries(VaRASolver
   PUBLIC
-  libz3
+  ${Z3_LIBRARIES}
 )
