@@ -127,7 +127,7 @@ Z3Solver::addRelationship(const feature::Relationship &R) {
   z3::expr_vector V(Context);
   for (const auto &Child : R.children()) {
     const auto *ChildFeature =
-        reinterpret_cast<const feature::Feature *>(&Child);
+        reinterpret_cast<const feature::Feature *>(Child);
     V.push_back(Context.bool_const(ChildFeature->getName().str().c_str()));
   }
   switch (R.getKind()) {

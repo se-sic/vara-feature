@@ -185,7 +185,7 @@ TEST(Z3Solver, AddAlternative) {
   B.makeFeature<vara::feature::BinaryFeature>("C3", true)->addEdge("C", "C3");
   B.emplaceRelationship(vara::feature::Relationship::RelationshipKind::RK_OR,
                         "C");
-  std::unique_ptr<const feature::FeatureModel> FM = B.buildFeatureModel();
+  const std::unique_ptr<const feature::FeatureModel> FM = B.buildFeatureModel();
   S->addFeature(*FM->getFeature("root"));
   S->addFeature(*FM->getFeature("A"));
   S->addFeature(*FM->getFeature("A1"));
