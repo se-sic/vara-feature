@@ -1,5 +1,5 @@
-#ifndef VARA_FEATURE_SOLVERFACTORY_H
-#define VARA_FEATURE_SOLVERFACTORY_H
+#ifndef VARA_SOLVER_SOLVERFACTORY_H
+#define VARA_SOLVER_SOLVERFACTORY_H
 
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelBuilder.h"
@@ -60,4 +60,4 @@ private:
 
 } // namespace vara::solver
 
-#endif // VARA_FEATURE_SOLVERFACTORY_H
+#endif // VARA_SOLVER_SOLVERFACTORY_H
