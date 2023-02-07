@@ -61,7 +61,7 @@ QVariant FeatureTreeItemFeature::data(int Column) const {
   case 2: return numericValue(Item);
   case 3: return locationString(Item);
   case 4: return crossTreeConstraintString(Item);
-  case 5: return Item.
+  case 5: return QString::fromStdString(Item->getOutputString().str());
   default:
     return {};
   }

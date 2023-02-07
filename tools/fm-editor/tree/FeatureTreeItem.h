@@ -64,7 +64,7 @@ public:
 virtual ~FeatureTreeItemFeature() = default;
   FeatureTreeItemFeature(vara::feature::Feature* Item,FeatureTreeItem* Parent): FeatureTreeItem(Item,Parent), Item(Item) {}
   [[nodiscard]] QVariant data(int Column) const override;
-  [[nodiscard]] int columnCount() const override {return 5;}
+  [[nodiscard]] int columnCount() const override {return 6;}
   bool booleanColumn(int Column) {return Column==1;}
 private:
   vara::feature::Feature* Item;
@@ -79,6 +79,7 @@ FeatureTreeItemRelation(vara::feature::Relationship* Item,FeatureTreeItem* Paren
     if(Column==0) {
         return QString::fromStdString(relationType());
 }
+return {};
 }
 [[nodiscard]] int columnCount() const override {return 1;}
 private:
