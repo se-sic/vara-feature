@@ -46,7 +46,7 @@ public:
 
   Iterator begin() { return Iterator{S.get()}; }
 
-  Iterator end() { return Iterator{}; }
+  Iterator end() { return Iterator{}; } // NOLINT
 
 private:
   std::unique_ptr<Solver> S;
