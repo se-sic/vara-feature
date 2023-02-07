@@ -15,8 +15,10 @@ public:
   FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent);
   QString getName();
   string getParent();
+public slots:
+  void featureType(int index);
 private:
-  FeatureModelGraph *Graph;
+
   QStringList NodeNames;
 
 };
