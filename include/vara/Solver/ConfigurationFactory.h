@@ -46,7 +46,7 @@ public:
 
   Iterator begin() { return Iterator{S.get()}; }
 
-  static Iterator end() { return Iterator{}; }
+  Iterator end() { return Iterator{}; }
 
 private:
   std::unique_ptr<Solver> S;
@@ -63,12 +63,11 @@ public:
   /// \param Type the type of solver to use
 
   /// \returns A unique pointer to the configuration iterator
-  static std::unique_ptr<ConfigurationIterator>
+  static ConfigurationIterator
   getConfigIterator(feature::FeatureModel &Model,
                     const vara::solver::SolverType Type = SolverType::Z3) {
     auto S = SolverFactory::initializeSolver(Model, Type);
-    auto Iterator = std::make_unique<ConfigurationIterator>(std::move(S));
-    return Iterator;
+    return ConfigurationIterator(std::move(S));
   }
 
   /// This method returns all configurations of the given feature model. Note
@@ -106,7 +105,7 @@ public:
       return V;
     }
     auto Iterator = ConfigurationFactory::getConfigIterator(Model, Type);
-    for (auto R : (*Iterator)) {
+    for (auto R : Iterator) {
       if (R) {
         V.insert(V.begin(), R.extractValue());
       }

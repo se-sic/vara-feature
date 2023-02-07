@@ -72,7 +72,7 @@ TEST(ConfigurationFactory, UseIterator) {
   auto FM = getFeatureModel();
   auto Iterator = ConfigurationFactory::getConfigIterator(*FM);
   int Count = 100;
-  for (auto ConfigurationResult : *Iterator) {
+  for (auto ConfigurationResult : Iterator) {
     EXPECT_TRUE(ConfigurationResult);
     Count--;
     if (Count == 0) {
