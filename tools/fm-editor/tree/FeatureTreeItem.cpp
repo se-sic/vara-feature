@@ -2,6 +2,7 @@
 // Created by simon on 02.02.23.
 //
 #include "FeatureTreeItem.h"
+#include <QMenu>
 QVariant numericValue(vara::feature::Feature* Item) {
   if(Item->getKind()==vara::feature::Feature::FeatureKind::FK_NUMERIC){
     auto *NumItem = dynamic_cast<vara::feature::NumericFeature*>(Item);
@@ -67,3 +68,14 @@ QVariant FeatureTreeItemFeature::data(int Column) const {
   }
 }
 
+void FeatureTreeItemFeature::inspect() {
+  emit(inspectSource(Item));
+}
+void FeatureTreeItemFeature::contextMenu(QPoint Pos) {
+  auto *Menu = new QMenu;
+  auto *Inspect = new QAction("Inspect Sources", this);
+  Menu->addAction(Inspect);
+  Menu->popup(Pos);
+  connect(Inspect, &QAction::triggered,
+          this, &FeatureTreeItemFeature::inspect);
+}

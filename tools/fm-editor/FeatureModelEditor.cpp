@@ -46,18 +46,22 @@ void FeatureModelEditor::loadGraph() {
     //Return if no model at Path
     return;
   }
+  //create Graph view
   Graph = new FeatureModelGraph{Model.get()};
-
   Ui->tabWidget->addTab(Graph,"GraphView");
-  TreeView = new QTreeView();
-  TreeView->setModel(new FeatureTreeViewModel(Model.get(),TreeView));
-  Ui->tabWidget->addTab(TreeView,"TreeView");
   for (auto &Node : *Graph->getNodes()) {
     QObject::connect(Node.get(), &FeatureNode::clicked, this,
                      &FeatureModelEditor::loadFeature);
     QObject::connect(Node.get(), &FeatureNode::inspectSource, this,
                      &FeatureModelEditor::inspectFeature);
   }
+  //create Tree View
+  TreeView = new QTreeView();
+  TreeView->setModel(new FeatureTreeViewModel(Model.get(),TreeView));
+  TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(TreeView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenu(const QPoint &)));
+  Ui->tabWidget->addTab(TreeView,"TreeView");
+
 }
 void FeatureModelEditor::featureAddDialog() {
    FeatureAddDialog AddDialog(Graph,this);
@@ -80,13 +84,20 @@ void FeatureModelEditor::inspectFeature(vara::feature::Feature *Feature) {
     Repository = QFileDialog::getExistingDirectory();
     }
     Ui->sources->clear();
+
     for(const auto& Source : Feature->getLocations()){
       Ui->sources->addItem(QString::fromStdString(Source.getPath().string()));
     }
-    connect(Ui->sources,&QComboBox::textActivated, this,&FeatureModelEditor::loadSource);
+    connect(Ui->sources,&QComboBox::currentTextChanged, this,&FeatureModelEditor::loadSource);
+    if(Ui->sources->count() == 1){
+      loadSource(Ui->sources->itemText(0));
+    } else {
+      Ui->sources->setPlaceholderText("Select File");
+    }
 }
 void FeatureModelEditor::loadSource(const QString &RelativePath){
-  auto SourcePath = Repository.append("/").append(RelativePath);
+  Ui->textEdit->clear();
+  auto SourcePath = Repository + "/" + RelativePath;
   std::cout << Repository.toStdString();
   QFile File(SourcePath);
   if(File.exists()){
@@ -118,6 +129,16 @@ void FeatureModelEditor::loadSource(const QString &RelativePath){
                             Location.getEnd()->getColumnOffset()-1);
         Cursor.setCharFormat(Fmt);
       }
+  }
+
+}
+void FeatureModelEditor::onCustomContextMenu(const QPoint &Pos) {
+  auto Index = TreeView->indexAt(Pos);
+  if(Index.isValid()){
+      FeatureTreeItem* Item = static_cast<FeatureTreeItem*>(Index.internalPointer());
+      connect(Item, &FeatureTreeItem::inspectSource, this,&FeatureModelEditor::inspectFeature);
+      Item->contextMenu(TreeView->mapToGlobal(Pos));
+
   }
 
 }

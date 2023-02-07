@@ -38,6 +38,7 @@ public slots:
   //void addFeature(const QString& Name, FeatureNode *Parent);
   void loadSource(const QString &RelativePath);
   void findModel();
+  void onCustomContextMenu(const QPoint &Pos);
 };
 
 #endif // VARA_FEATURE_FEATUREMODELEDITOR_H

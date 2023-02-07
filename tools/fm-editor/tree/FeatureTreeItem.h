@@ -6,9 +6,11 @@
 #define VARA_FEATURE_FEATURETREEITEM_H
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
+#include <QPoint>
 #include <QVariant>
 #include <vector>
-class FeatureTreeItem {
+class FeatureTreeItem: public QObject  {
+  Q_OBJECT
 public:
   virtual ~FeatureTreeItem() {
     std::destroy(Children.begin(), Children.end());
@@ -41,6 +43,9 @@ public:
   FeatureTreeItem static *createFeatureTreeItem(vara::feature::Relationship* Item,FeatureTreeItem* Parent);
   FeatureTreeItem static *createFeatureTreeItem(vara::feature::Feature* Item,FeatureTreeItem* Parent);
   bool booleanColumn(int Column) {return false;}
+  virtual void contextMenu(QPoint Pos) = 0;
+signals:
+  void inspectSource(vara::feature::Feature *Feature);
 protected:
   FeatureTreeItem(vara::feature::FeatureTreeNode* Item ,FeatureTreeItem* Parent): Parent(Parent) {
     for(auto *Child : Item->children()){
@@ -59,15 +64,20 @@ private:
 };
 
 
-class FeatureTreeItemFeature: public FeatureTreeItem {
+class FeatureTreeItemFeature: public FeatureTreeItem{
+  Q_OBJECT
 public:
 virtual ~FeatureTreeItemFeature() = default;
   FeatureTreeItemFeature(vara::feature::Feature* Item,FeatureTreeItem* Parent): FeatureTreeItem(Item,Parent), Item(Item) {}
   [[nodiscard]] QVariant data(int Column) const override;
   [[nodiscard]] int columnCount() const override {return 6;}
   bool booleanColumn(int Column) {return Column==1;}
+  void contextMenu(QPoint Pos) override;
+public slots:
+  void inspect() ;
 private:
   vara::feature::Feature* Item;
+
 };
 
 
@@ -82,6 +92,7 @@ FeatureTreeItemRelation(vara::feature::Relationship* Item,FeatureTreeItem* Paren
 return {};
 }
 [[nodiscard]] int columnCount() const override {return 1;}
+void contextMenu(QPoint Pos) override{}
 private:
   vara::feature::Relationship* Item;
   [[nodiscard]] std::string relationType() const {
