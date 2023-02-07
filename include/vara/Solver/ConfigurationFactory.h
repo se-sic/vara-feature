@@ -1,5 +1,5 @@
-#ifndef VARA_FEATURE_CONFIGURATIONFACTORY_H
-#define VARA_FEATURE_CONFIGURATIONFACTORY_H
+#ifndef VARA_SOLVER_CONFIGURATIONFACTORY_H
+#define VARA_SOLVER_CONFIGURATIONFACTORY_H
 
 #include "vara/Configuration/Configuration.h"
 #include "vara/Feature/FeatureModel.h"
@@ -101,11 +101,11 @@ public:
                 std::vector<std::unique_ptr<vara::feature::Configuration>>>
   getNConfigs(feature::FeatureModel &Model, uint N,
               const vara::solver::SolverType Type = SolverType::Z3) {
-    auto Iterator = getConfigIterator(Model, Type);
     auto V = std::vector<std::unique_ptr<feature::Configuration>>();
     if (N == 0) {
       return V;
     }
+    auto Iterator = ConfigurationFactory::getConfigIterator(Model, Type);
     for (auto R : (*Iterator)) {
       if (R) {
         V.insert(V.begin(), R.extractValue());
@@ -133,4 +133,4 @@ public:
 
 } // namespace vara::solver
 
-#endif // VARA_FEATURE_CONFIGURATIONFACTORY_H
+#endif // VARA_SOLVER_CONFIGURATIONFACTORY_H
