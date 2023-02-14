@@ -36,3 +36,6 @@ void FeatureAddDialog::featureType(int index) {
     NumericFeature->setVisible(false);
   }
 }
+vara::feature::Feature::FeatureKind FeatureAddDialog::getFeatureKind() {
+  return vara::feature::Feature::FeatureKind(FeatureKind->currentIndex());
+}

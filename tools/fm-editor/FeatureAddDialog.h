@@ -15,6 +15,7 @@ public:
   FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent);
   QString getName();
   string getParent();
+  vara::feature::Feature::FeatureKind getFeatureKind();
 public slots:
   void featureType(int index);
 private:
