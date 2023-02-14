@@ -26,11 +26,13 @@ private:
   Ui::FeatureModelEditor *Ui;
   FeatureModelGraph * Graph{};
   QTreeView* TreeView;
+  FeatureTreeViewModel *TreeModel;
   std::unique_ptr<vara::feature::FeatureModel> Model {};
   std::unique_ptr<vara::feature::FeatureModelTransaction<vara::feature::detail::ModifyTransactionMode>> Modification {};
   QString Repository {};
   vara::feature::Feature* CurrentFeature;
 public slots:
+  void addSource();
   void loadFeature(vara::feature::Feature *Feature);
   void inspectFeature(vara::feature::Feature *Feature);
   void loadGraph();
@@ -39,6 +41,8 @@ public slots:
   void loadSource(const QString &RelativePath);
   void findModel();
   void onCustomContextMenu(const QPoint &Pos);
+  void addSourceFile();
+private:
 };
 
 #endif // VARA_FEATURE_FEATUREMODELEDITOR_H

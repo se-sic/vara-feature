@@ -3,6 +3,7 @@
 //
 #include "FeatureTreeItem.h"
 #include <QMenu>
+#include <unordered_set>
 QVariant numericValue(vara::feature::Feature* Item) {
   if(Item->getKind()==vara::feature::Feature::FeatureKind::FK_NUMERIC){
     auto *NumItem = dynamic_cast<vara::feature::NumericFeature*>(Item);
@@ -53,6 +54,17 @@ FeatureTreeItem*  FeatureTreeItem::createFeatureTreeItem(
 FeatureTreeItem*  FeatureTreeItem::createFeatureTreeItem(
     vara::feature::Feature *Item, FeatureTreeItem *Parent)  {
   return new FeatureTreeItemFeature(Item, Parent);
+}
+void FeatureTreeItem::addChild(FeatureTreeItem* Child) {
+  Children.push_back(Child);
+}
+std::vector<FeatureTreeItem *> FeatureTreeItem::getChildrenRecursive() {
+  auto Nodes = std::vector<FeatureTreeItem*>{Children};
+  for(auto Child: Children){
+    auto ChildNodes = Child->getChildrenRecursive();
+    Nodes.insert(Nodes.end(),ChildNodes.begin(), ChildNodes.end());
+  }
+  return Nodes;
 }
 
 QVariant FeatureTreeItemFeature::data(int Column) const {

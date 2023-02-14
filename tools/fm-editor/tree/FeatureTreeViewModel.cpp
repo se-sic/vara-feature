@@ -79,3 +79,6 @@ QVariant FeatureTreeViewModel::headerData(int Section,
 }
 return  {};
 }
+std::vector<FeatureTreeItem *> FeatureTreeViewModel::getItems() {
+return Items;
+}

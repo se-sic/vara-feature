@@ -21,6 +21,7 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
     : QMainWindow(Parent), Ui(new Ui::FeatureModelEditor) {
 
   Ui->setupUi(this);
+  Ui->textEdit->setReadOnly(true);
   auto *Highliter = new QSourceHighlite::QSourceHighliter(Ui->textEdit->document());
   Highliter->setCurrentLanguage(QSourceHighlite::QSourceHighliter::CodeCpp);
   QObject::connect(Ui->loadModel, &QPushButton::pressed, this,
@@ -30,6 +31,8 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
   QObject::connect(Ui->actionAddFeature,&QAction::triggered, this,
                    &FeatureModelEditor::featureAddDialog);
 
+  connect(Ui->addSource,&QPushButton::pressed, this,&FeatureModelEditor::addSource);
+  connect(Ui->addSourceFile,&QPushButton::pressed, this,&FeatureModelEditor::addSourceFile);
 }
 void FeatureModelEditor::loadFeature(vara::feature::Feature *Feature) {
   auto FeatureString =
@@ -57,11 +60,16 @@ void FeatureModelEditor::loadGraph() {
   }
   //create Tree View
   TreeView = new QTreeView();
-  TreeView->setModel(new FeatureTreeViewModel(Model.get(),TreeView));
+  TreeModel = new FeatureTreeViewModel(Model.get(),TreeView);
+  for(auto Item:TreeModel->getItems()){
+    QObject::connect(Item, &FeatureTreeItem::inspectSource, this,
+                     &FeatureModelEditor::inspectFeature);
+  }
+  TreeView->setModel(TreeModel);
   TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(TreeView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenu(const QPoint &)));
   Ui->tabWidget->addTab(TreeView,"TreeView");
-
+  connect(Ui->sources,&QComboBox::currentTextChanged, this,&FeatureModelEditor::loadSource);
 }
 void FeatureModelEditor::featureAddDialog() {
    FeatureAddDialog AddDialog(Graph,this);
@@ -84,28 +92,28 @@ void FeatureModelEditor::inspectFeature(vara::feature::Feature *Feature) {
     Repository = QFileDialog::getExistingDirectory();
     }
     Ui->sources->clear();
-
     for(const auto& Source : Feature->getLocations()){
       Ui->sources->addItem(QString::fromStdString(Source.getPath().string()));
     }
-    connect(Ui->sources,&QComboBox::currentTextChanged, this,&FeatureModelEditor::loadSource);
     if(Ui->sources->count() == 1){
       loadSource(Ui->sources->itemText(0));
     } else {
       Ui->sources->setPlaceholderText("Select File");
     }
 }
+
+
+
 void FeatureModelEditor::loadSource(const QString &RelativePath){
   Ui->textEdit->clear();
   auto SourcePath = Repository + "/" + RelativePath;
-  std::cout << Repository.toStdString();
   QFile File(SourcePath);
   if(File.exists()){
       File.open(QFile::ReadOnly | QFile::Text);
       QTextStream ReadFile(&File);
       Ui->textEdit->setText(ReadFile.readAll());
       QTextCharFormat Fmt;
-      Fmt.setBackground(Qt::yellow);
+      Fmt.setBackground(Qt::darkYellow);
       QTextCursor Cursor(Ui->textEdit->document());
       std::cout << CurrentFeature->toString();
       std::vector<vara::feature::FeatureSourceRange> Locations{};
@@ -126,7 +134,7 @@ void FeatureModelEditor::loadSource(const QString &RelativePath){
                             QTextCursor::MoveMode::KeepAnchor);
         Cursor.movePosition(QTextCursor::MoveOperation::NextCharacter,
                             QTextCursor::MoveMode::KeepAnchor,
-                            Location.getEnd()->getColumnOffset()-1);
+                            Location.getEnd()->getColumnOffset());
         Cursor.setCharFormat(Fmt);
       }
   }
@@ -136,9 +144,38 @@ void FeatureModelEditor::onCustomContextMenu(const QPoint &Pos) {
   auto Index = TreeView->indexAt(Pos);
   if(Index.isValid()){
       FeatureTreeItem* Item = static_cast<FeatureTreeItem*>(Index.internalPointer());
-      connect(Item, &FeatureTreeItem::inspectSource, this,&FeatureModelEditor::inspectFeature);
       Item->contextMenu(TreeView->mapToGlobal(Pos));
-
   }
 
+}
+void FeatureModelEditor::addSourceFile(){
+  if(!Repository.isEmpty()) {
+      QString const Path = QFileDialog::getOpenFileName(
+          this, tr("Select Source File"), Repository,
+          tr("C Files (*.c *c++ *.h)"));
+      Ui->sources->addItem(Path.sliced(Repository.length()));
+  }
+}
+
+void FeatureModelEditor::addSource() {
+  auto TextEdit = Ui->textEdit;
+  auto Cursor = TextEdit->textCursor();
+  int start = Cursor.selectionStart();
+  int end = Cursor.selectionEnd();
+  Cursor.movePosition(QTextCursor::MoveOperation::StartOfLine);
+  int lineStart = Cursor.position();
+  int lines = 1;
+  auto Block = Cursor.block();
+  while (Cursor.position() > Block.position()) {
+      Cursor.movePosition(QTextCursor::MoveOperation::Up);
+      lines++;
+  }
+  Block = Block.previous();
+  while(Block.isValid()){
+      lines+=Block.lineCount();
+      Block = Block.previous();
+  }
+  auto Range = vara::feature::FeatureSourceRange(Ui->sources->currentText().toStdString(),vara::feature::FeatureSourceRange::FeatureSourceLocation(lines,start-lineStart+1),vara::feature::FeatureSourceRange::FeatureSourceLocation(lines,end-lineStart));
+  CurrentFeature->addLocation(Range);
+  loadSource(Ui->sources->currentText());
 }

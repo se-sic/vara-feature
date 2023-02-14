@@ -12,10 +12,6 @@
 class FeatureTreeItem: public QObject  {
   Q_OBJECT
 public:
-  virtual ~FeatureTreeItem() {
-    std::destroy(Children.begin(), Children.end());
-  }
-
   FeatureTreeItem *child(int Row) {
     if(Row<0||Row>Children.size()) {
       return nullptr;
@@ -25,7 +21,7 @@ public:
   int childCount() {
     return Children.size();
   }
-
+  std::vector<FeatureTreeItem *> getChildrenRecursive();
   int row() {
     if(Parent) {
       auto pos =std::find(Parent->Children.begin(), Parent->Children.end(), this);
@@ -38,6 +34,7 @@ public:
   FeatureTreeItem* parent() {
     return Parent;
   }
+  void addChild(FeatureTreeItem* Child);
   [[nodiscard]] virtual int columnCount() const = 0;
   [[nodiscard]] virtual QVariant data(int Column) const = 0;
   FeatureTreeItem static *createFeatureTreeItem(vara::feature::Relationship* Item,FeatureTreeItem* Parent);
@@ -74,7 +71,7 @@ virtual ~FeatureTreeItemFeature() = default;
   bool booleanColumn(int Column) {return Column==1;}
   void contextMenu(QPoint Pos) override;
 public slots:
-  void inspect() ;
+  void inspect();
 private:
   vara::feature::Feature* Item;
 
