@@ -33,7 +33,7 @@ public:
   };
   [[nodiscard]] std::string getName() const {return Feature->getName().str();};
 signals:
-  void clicked(vara::feature::Feature *Feature);
+  void clicked(const vara::feature::Feature *Feature);
   void inspectSource(vara::feature::Feature *Feature);
 protected:
   QVariant itemChange(GraphicsItemChange Change, const QVariant &Value) override;

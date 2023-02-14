@@ -34,10 +34,19 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
   connect(Ui->addSource,&QPushButton::pressed, this,&FeatureModelEditor::addSource);
   connect(Ui->addSourceFile,&QPushButton::pressed, this,&FeatureModelEditor::addSourceFile);
 }
-void FeatureModelEditor::loadFeature(vara::feature::Feature *Feature) {
+void FeatureModelEditor::loadFeature(const vara::feature::Feature *Feature) {
   auto FeatureString =
       Feature->toString();
   Ui->featureInfo->setText(QString::fromStdString(FeatureString));
+}
+void FeatureModelEditor::loadFeaturefromIndex(const QModelIndex &Index) {
+  if(Index.isValid()){
+      auto Item =
+          static_cast<FeatureTreeItem *>(Index.internalPointer());
+      if(Item->getKind()  == vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE){
+        loadFeature(static_cast<FeatureTreeItemFeature*>(Item)->getItem());
+      }
+  }
 }
 void FeatureModelEditor::loadGraph() {
   if(!Repository.isEmpty()){
@@ -65,6 +74,7 @@ void FeatureModelEditor::loadGraph() {
     QObject::connect(Item, &FeatureTreeItem::inspectSource, this,
                      &FeatureModelEditor::inspectFeature);
   }
+  connect(TreeView,&QTreeView::pressed,this,&FeatureModelEditor::loadFeaturefromIndex);
   TreeView->setModel(TreeModel);
   TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(TreeView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenu(const QPoint &)));

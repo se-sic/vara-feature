@@ -72,8 +72,7 @@ QVariant FeatureTreeViewModel::headerData(int Section,
     case 1:return QString("Optional");
     case 2:return QString("NumericValues");
     case 3:return QString("Locations");
-    case 4:return QString("Constraints");
-    case 5:return QString("ConfigurationOption");
+    case 4:return QString("ConfigurationOption");
     default:return QString("Todo");
     }
 }

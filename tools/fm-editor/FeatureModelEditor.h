@@ -33,7 +33,7 @@ private:
   vara::feature::Feature* CurrentFeature;
 public slots:
   void addSource();
-  void loadFeature(vara::feature::Feature *Feature);
+  void loadFeature(const vara::feature::Feature *Feature);
   void inspectFeature(vara::feature::Feature *Feature);
   void loadGraph();
   void featureAddDialog();
@@ -42,7 +42,9 @@ public slots:
   void findModel();
   void onCustomContextMenu(const QPoint &Pos);
   void addSourceFile();
+  void loadFeaturefromIndex(const QModelIndex &Index);
 private:
+
 };
 
 #endif // VARA_FEATURE_FEATUREMODELEDITOR_H

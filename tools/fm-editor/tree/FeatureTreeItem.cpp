@@ -73,8 +73,7 @@ QVariant FeatureTreeItemFeature::data(int Column) const {
   case 1: return Item->isOptional()? QVariant("✓"):QVariant("x");
   case 2: return numericValue(Item);
   case 3: return locationString(Item);
-  case 4: return crossTreeConstraintString(Item);
-  case 5: return QString::fromStdString(Item->getOutputString().str());
+  case 4: return QString::fromStdString(Item->getOutputString().str());
   default:
     return {};
   }
@@ -88,6 +87,5 @@ void FeatureTreeItemFeature::contextMenu(QPoint Pos) {
   auto *Inspect = new QAction("Inspect Sources", this);
   Menu->addAction(Inspect);
   Menu->popup(Pos);
-  connect(Inspect, &QAction::triggered,
-          this, &FeatureTreeItemFeature::inspect);
+  connect(Inspect, &QAction::triggered, this, &FeatureTreeItemFeature::inspect);
 }
