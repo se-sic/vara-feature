@@ -23,26 +23,23 @@ TEST(ConstraintBuilder, error) {
 class ConstraintBuilderTest : public ::testing::Test {
 protected:
   void TearDown() override {
-    auto Expected = ConstraintParser(Input).buildConstraint();
-    ASSERT_TRUE(Expected);
-
     auto Actual = CB.build();
     ASSERT_TRUE(Actual);
 
-    EXPECT_EQ(Actual->toString(), Expected->toString());
+    EXPECT_EQ(Actual->toString(), Expected);
   }
 
-  std::string Input;
+  std::string Expected;
   ConstraintBuilder CB;
 };
 
 TEST_F(ConstraintBuilderTest, parenthesizeUnary) {
-  Input = "!((!!A) => B)";
+  Expected = "!(!!A => B)";
   CB.lNot().left().lNot().lNot().feature("A").right().implies().feature("B");
 }
 
 TEST_F(ConstraintBuilderTest, parenthesizeBinary) {
-  Input = "((A => B) => (C => D))";
+  Expected = "((A => B) => (C => D))";
   CB.left()
       .feature("A")
       .implies()
@@ -55,7 +52,7 @@ TEST_F(ConstraintBuilderTest, parenthesizeBinary) {
 }
 
 TEST_F(ConstraintBuilderTest, parenthesizeFull) {
-  Input = "((A => ((!!B) => (!((!C) => !!D)))) => E)";
+  Expected = "((A => (!!B => !(!C => !!D))) => E)";
   CB.left()
       .left()
       .feature("A")
@@ -85,6 +82,106 @@ TEST_F(ConstraintBuilderTest, parenthesizeFull) {
       .implies()
       .feature("E")
       .right();
+}
+
+TEST_F(ConstraintBuilderTest, constant) {
+  Expected = "42";
+  CB.constant(42);
+}
+
+TEST_F(ConstraintBuilderTest, feature) {
+  Expected = "Foo";
+  CB.feature("Foo");
+}
+
+TEST_F(ConstraintBuilderTest, lNot) {
+  Expected = "!Foo";
+  CB.lNot().feature("Foo");
+}
+
+TEST_F(ConstraintBuilderTest, lOr) {
+  Expected = "(Foo | Bar)";
+  CB.feature("Foo").lOr().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, lXor) {
+  Expected = "(Foo ^ Bar)";
+  CB.feature("Foo").lXor().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, lAnd) {
+  Expected = "(Foo & Bar)";
+  CB.feature("Foo").lAnd().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, implies) {
+  Expected = "(Foo => Bar)";
+  CB.feature("Foo").implies().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, excludes) {
+  Expected = "(Foo => !Bar)";
+  CB.feature("Foo").excludes().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, equivalent) {
+  Expected = "(Foo <=> Bar)";
+  CB.feature("Foo").equivalent().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, equal) {
+  Expected = "(Foo = Bar)";
+  CB.feature("Foo").equal().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, notEqual) {
+  Expected = "(Foo != Bar)";
+  CB.feature("Foo").notEqual().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, less) {
+  Expected = "(Foo < Bar)";
+  CB.feature("Foo").less().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, greater) {
+  Expected = "(Foo > Bar)";
+  CB.feature("Foo").greater().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, lessEqual) {
+  Expected = "(Foo <= Bar)";
+  CB.feature("Foo").lessEqual().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, greaterEqual) {
+  Expected = "(Foo >= Bar)";
+  CB.feature("Foo").greaterEqual().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, neg) {
+  Expected = "~Foo";
+  CB.neg().feature("Foo");
+}
+
+TEST_F(ConstraintBuilderTest, add) {
+  Expected = "(Foo + Bar)";
+  CB.feature("Foo").add().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, subtract) {
+  Expected = "(Foo - Bar)";
+  CB.feature("Foo").subtract().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, multiply) {
+  Expected = "(Foo * Bar)";
+  CB.feature("Foo").multiply().feature("Bar");
+}
+
+TEST_F(ConstraintBuilderTest, divide) {
+  Expected = "(Foo / Bar)";
+  CB.feature("Foo").divide().feature("Bar");
 }
 
 } // namespace vara::feature
