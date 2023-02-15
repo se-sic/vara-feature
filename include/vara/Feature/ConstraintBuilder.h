@@ -82,8 +82,9 @@ private:
 
   template <class ConstraintTy>
   ConstraintBuilder &unary() {
-    if (!Head) {
-      llvm::errs() << "Unrecognized unary constraint.\n";
+    if (!Head || *Head) {
+      llvm::errs() << "Syntax error: Unrecognized unary constraint.\n";
+      Head = nullptr;
       return *this;
     }
     *Head = std::make_unique<UnaryBuilderImpl<ConstraintTy>>();
@@ -94,7 +95,7 @@ private:
   template <class ConstraintTy>
   ConstraintBuilder &binary() {
     if (!Head || !*Head) {
-      llvm::errs() << "Unrecognized binary constraint.\n";
+      llvm::errs() << "Syntax error: Unrecognized binary constraint.\n";
       Head = nullptr;
       return *this;
     }
@@ -104,28 +105,75 @@ private:
   }
 
 public:
+  /// Builds constraint.
+  ///
+  /// \return unique pointer for built constraint
   [[nodiscard]] std::unique_ptr<Constraint> build() {
-    if (!Head || !*Head || !Root) {
-      llvm::errs() << "Incomplete constraint.\n";
+    if (!Head || !*Head || !Root || !Parentheses.empty()) {
+      llvm::errs() << "Syntax error: Incomplete constraint.\n";
       return nullptr;
     }
     return Root->build();
   }
 
-  /// Parenthesizes constraint.
+  /// Parenthesizes intermediate constraint.
   ///
   /// Example:
-  ///   The snippet
-  ///     CB.constant(1).implies().feature("Foo")().implies()
-  ///     CB.constant(4).implies().feature("Bar")()
+  ///     feature("A").implies().feature("B")()
+  ///      .implies().feature("C").implies().feature("D")
   ///   produces the constraint
-  ///     ((1 => Foo) => (4 => Bar))
+  ///     '((A => B) => (C => D))'
   ConstraintBuilder &operator()() {
-    if (!Head) {
-      llvm::errs() << "Unrecognized constraint.\n";
+    if (!Head || !*Head || !Parentheses.empty()) {
+      llvm::errs() << "Syntax error: Unrecognized parentheses.\n";
+      Head = nullptr;
       return *this;
     }
     Head = &Root;
+    return *this;
+  }
+
+  /// Open parenthesis. Allows to add more precise parentheses.
+  ///
+  /// Example:
+  ///     left().feature("A").implies().feature("B").right()
+  ///      .implies().feature("C").implies().feature("D")
+  ///   produces the constraint
+  ///     '((A => B) => (C => D))'
+  ///
+  /// CAVE: These may be required for unary operators.
+  ///
+  /// Example:
+  ///     lNot().left().lNot().feature("A").right().implies().feature("B")
+  ///   produces the constraint
+  ///     '!(!A => B)'
+  ConstraintBuilder &left() {
+    if (!Head || *Head) {
+      llvm::errs() << "Syntax error: Unrecognized left parenthesis.\n";
+      Head = nullptr;
+      return *this;
+    }
+    Parentheses.push(Head);
+    return *this;
+  }
+
+  /// Close parenthesis. See \a left.
+  ///
+  /// CAVE: If used without a succeeding operator or in conjunction with unary
+  ///  expressions, this may not yield the desired result.
+  ///
+  /// Example:
+  ///     lNot().left().lNot().feature("A").implies().feature("B").right()
+  ///   produces the constraint
+  ///     '!!(A => B)'
+  ConstraintBuilder &right() {
+    if (!Head || !*Head || Parentheses.empty()) {
+      llvm::errs() << "Syntax error: Unrecognized right parenthesis.\n";
+      Head = nullptr;
+      return *this;
+    }
+    Head = Parentheses.top();
+    Parentheses.pop();
     return *this;
   }
 
@@ -133,13 +181,13 @@ public:
   // Constant
 
   /// Example:
-  ///   The snippet
-  ///     CB.constant(1)
+  ///     constant(42)
   ///   produces the constraint
-  ///     (1)
+  ///     42
   ConstraintBuilder &constant(int V) {
-    if (!Head) {
-      llvm::errs() << "Unrecognized constant constraint.\n";
+    if (!Head || *Head) {
+      llvm::errs() << "Syntax error: Unrecognized constant constraint.\n";
+      Head = nullptr;
       return *this;
     }
     *Head =
@@ -151,13 +199,13 @@ public:
   // Feature
 
   /// Example:
-  ///   The snippet
-  ///     CB.feature("Foo")
+  ///     feature("Foo")
   ///   produces the constraint
-  ///     (Foo)
+  ///     'Foo'
   ConstraintBuilder &feature(const std::string &Name) {
-    if (!Head) {
-      llvm::errs() << "Unrecognized feature constraint.\n";
+    if (!Head || *Head) {
+      llvm::errs() << "Syntax error: Unrecognized feature constraint.\n";
+      Head = nullptr;
       return *this;
     }
     *Head = std::make_unique<
@@ -170,70 +218,123 @@ public:
   // Logical
 
   /// Example:
-  ///   The snippet
-  ///     CB.lNot().feature("Foo")
+  ///     lNot().feature("Foo")
   ///   produces the constraint
-  ///     (!Foo)
+  ///     '!Foo'
   ConstraintBuilder &lNot() { return unary<NotConstraint>(); }
 
   /// Example:
-  ///   The snippet
-  ///     CB.feature("Foo").lOr().feature("Bar")
+  ///     feature("Foo").lOr().feature("Bar")
   ///   produces the constraint
-  ///     (Foo || Bar)
+  ///     '(Foo | Bar)'
   ConstraintBuilder &lOr() { return binary<OrConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").lXor().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo ^ Bar)'
   ConstraintBuilder &lXor() { return binary<XorConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").lAnd().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo & Bar)'
   ConstraintBuilder &lAnd() { return binary<AndConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").implies().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo => Bar)'
   ConstraintBuilder &implies() { return binary<ImpliesConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").excludes().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo => !Bar)'
   ConstraintBuilder &excludes() { return binary<ExcludesConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").equivalent().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo <=> Bar)'
   ConstraintBuilder &equivalent() { return binary<EquivalenceConstraint>(); }
 
   //===--------------------------------------------------------------------===//
   // Comparison
 
+  /// Example:
+  ///     feature("Foo").equal().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo = Bar)'
   ConstraintBuilder &equal() { return binary<EqualConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").notEqual().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo != Bar)'
   ConstraintBuilder &notEqual() { return binary<NotEqualConstraint>(); }
 
   /// Example:
-  ///   The snippet
-  ///     CB.feature("Foo").less().feature("Bar")
+  ///     feature("Foo").less().feature("Bar")
   ///   produces the constraint
-  ///     (Foo < Bar)
+  ///     '(Foo < Bar)'
   ConstraintBuilder &less() { return binary<LessConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").greater().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo > Bar)'
   ConstraintBuilder &greater() { return binary<GreaterConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").lessEqual().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo <= Bar)'
   ConstraintBuilder &lessEqual() { return binary<LessEqualConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").greaterEqual().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo >= Bar)'
   ConstraintBuilder &greaterEqual() { return binary<GreaterEqualConstraint>(); }
 
   //===--------------------------------------------------------------------===//
   // Arithmetic
 
   /// Example:
-  ///   The snippet
-  ///     CB.neg().feature("Foo")
+  ///     neg().feature("Foo")
   ///   produces the constraint
-  ///     (-Foo)
+  ///     '~Foo'
   ConstraintBuilder &neg() { return unary<NegConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").add().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo + Bar)'
   ConstraintBuilder &add() { return binary<AdditionConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").subtract().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo - Bar)'
   ConstraintBuilder &subtract() { return binary<SubtractionConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").multiply().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo * Bar)'
   ConstraintBuilder &multiply() { return binary<MultiplicationConstraint>(); }
 
+  /// Example:
+  ///     feature("Foo").divide().feature("Bar")
+  ///   produces the constraint
+  ///     '(Foo / Bar)'
   ConstraintBuilder &divide() { return binary<DivisionConstraint>(); }
 
 private:
   std::unique_ptr<ConstraintBuilderImpl> Root;
   std::unique_ptr<ConstraintBuilderImpl> *Head;
+  std::stack<std::unique_ptr<ConstraintBuilderImpl> *> Parentheses;
 };
 
 } // namespace vara::feature

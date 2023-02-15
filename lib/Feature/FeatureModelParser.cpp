@@ -17,8 +17,6 @@
 #include <iostream>
 #include <regex>
 
-using std::make_unique;
-
 namespace vara::feature {
 
 std::string trim(llvm::StringRef S) { return llvm::StringRef(S).trim().str(); }
