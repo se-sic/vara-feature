@@ -8,6 +8,7 @@
 #include "vara/Feature/Relationship.h"
 #include <QPoint>
 #include <QVariant>
+#include <llvm/ADT/StringMap.h>
 #include <vector>
 class FeatureTreeItem: public QObject  {
   Q_OBJECT
@@ -42,10 +43,11 @@ public:
   bool booleanColumn(int Column) {return false;}
   virtual void contextMenu(QPoint Pos) = 0;
   vara::feature::FeatureTreeNode::NodeKind getKind() {return Kind;}
+  virtual string getName() {return "";};
 signals:
   void inspectSource(vara::feature::Feature *Feature);
 protected:
-  FeatureTreeItem(vara::feature::FeatureTreeNode* Item ,FeatureTreeItem* Parent,vara::feature::FeatureTreeNode::NodeKind Kind): Parent(Parent), Kind(Kind) {
+  FeatureTreeItem(vara::feature::FeatureTreeNode* Item ,FeatureTreeItem* Parent,vara::feature::FeatureTreeNode::NodeKind Kind): Kind(Kind),Parent(Parent) {
     for(auto *Child : Item->children()){
       if(vara::feature::Relationship::classof(Child)) {
         Children.push_back(createFeatureTreeItem(dynamic_cast<vara::feature::Relationship*>(Child), this));
@@ -71,8 +73,8 @@ virtual ~FeatureTreeItemFeature() = default;
   [[nodiscard]] int columnCount() const override {return 5;}
   bool booleanColumn(int Column) {return Column==1;}
   void contextMenu(QPoint Pos) override;
-   const vara::feature::Feature* getItem() const {return Item;}
-
+  const vara::feature::Feature* getItem() const {return Item;}
+  string getName() {return Item->getName().str();}
 public slots:
   void inspect();
 private:

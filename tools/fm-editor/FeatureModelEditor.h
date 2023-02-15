@@ -9,6 +9,7 @@
 #include "vara/Feature/FeatureModelTransaction.h"
 #include <QDialog>
 #include <QMainWindow>
+#include <QTextCharFormat>
 #include <QTreeView>
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,27 +25,33 @@ public:
 
 private:
   Ui::FeatureModelEditor *Ui;
-  FeatureModelGraph * Graph{};
+  std::unique_ptr<FeatureModelGraph> Graph{};
   QTreeView* TreeView;
-  FeatureTreeViewModel *TreeModel;
-  std::unique_ptr<vara::feature::FeatureModel> Model {};
-  std::unique_ptr<vara::feature::FeatureModelTransaction<vara::feature::detail::ModifyTransactionMode>> Modification {};
+  std::unique_ptr<FeatureTreeViewModel> TreeModel{};
+  std::unique_ptr<vara::feature::FeatureModel> FeatureModel{};
   QString Repository {};
   vara::feature::Feature* CurrentFeature;
+  QString SavePath {};
+  QString ModelPath {};
 public slots:
   void addSource();
   void loadFeature(const vara::feature::Feature *Feature);
-  void inspectFeature(vara::feature::Feature *Feature);
+  void inspectFeatureSources(vara::feature::Feature *Feature);
   void loadGraph();
   void featureAddDialog();
-  //void addFeature(const QString& Name, FeatureNode *Parent);
+  //void addNode(const QString& Name, FeatureNode *Parent);
   void loadSource(const QString &RelativePath);
   void findModel();
-  void onCustomContextMenu(const QPoint &Pos);
+  void createTreeContextMenu(const QPoint &Pos);
   void addSourceFile();
   void loadFeaturefromIndex(const QModelIndex &Index);
+  void save();
 private:
-
+  void clean();
+  void buildGraph();
+  void buildTree();
+  void markLocation(const QTextCharFormat &Fmt, QTextCursor &Cursor,
+                    vara::feature::FeatureSourceRange &Location) const;
 };
 
 #endif // VARA_FEATURE_FEATUREMODELEDITOR_H

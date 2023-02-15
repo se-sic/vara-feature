@@ -3,6 +3,7 @@
 #define VARA_FEATURE_FEATURENODE_H
 
 #include "vara/Feature/Feature.h"
+#include "FeatureNode.h"
 #include <QGraphicsItem>
 #include <QList>
 #include <QObject>
@@ -13,7 +14,7 @@ class FeatureNode : public QObject,public QGraphicsItem{
 
 
 public:
-  FeatureNode(FeatureModelGraph *Graph, vara::feature::Feature *Feature);
+  FeatureNode( vara::feature::Feature *Feature);
   [[nodiscard]] int width() const;
   void addChildEdge(FeatureEdge *Edge);
   void setParentEdge(FeatureEdge *Edge);
@@ -32,6 +33,7 @@ public:
     return QString::fromStdString(Feature->getName().str());
   };
   [[nodiscard]] std::string getName() const {return Feature->getName().str();};
+  ~FeatureNode() {std::destroy(ChildEdges.begin(), ChildEdges.end());}
 signals:
   void clicked(const vara::feature::Feature *Feature);
   void inspectSource(vara::feature::Feature *Feature);
@@ -44,7 +46,6 @@ protected:
 private:
   std::vector<FeatureEdge *> ChildEdges;
   FeatureEdge * ParentEdge = nullptr;
-  FeatureModelGraph *Graph;
   vara::feature::Feature *Feature;
 
   void inspect();

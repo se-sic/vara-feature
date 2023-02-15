@@ -10,12 +10,15 @@
 #include "ui_FeatureModelEditor.h"
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelTransaction.h"
+#include "vara/Feature/FeatureModelWriter.h"
 #include <QDir>
 #include <QFileDialog>
 namespace fs = std::filesystem;
 using vara::feature::FeatureModel;
 using Transaction = vara::feature::FeatureModelTransaction<vara::feature::detail::ModifyTransactionMode>;
 using vara::feature::Feature;
+
+
 
 FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
     : QMainWindow(Parent), Ui(new Ui::FeatureModelEditor) {
@@ -30,15 +33,19 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
                    &FeatureModelEditor::findModel);
   QObject::connect(Ui->actionAddFeature,&QAction::triggered, this,
                    &FeatureModelEditor::featureAddDialog);
-
+  connect(Ui->actionSave,&QAction::triggered,this,&FeatureModelEditor::save);
   connect(Ui->addSource,&QPushButton::pressed, this,&FeatureModelEditor::addSource);
   connect(Ui->addSourceFile,&QPushButton::pressed, this,&FeatureModelEditor::addSourceFile);
 }
+
+///Display the information of a Feature
 void FeatureModelEditor::loadFeature(const vara::feature::Feature *Feature) {
   auto FeatureString =
       Feature->toString();
   Ui->featureInfo->setText(QString::fromStdString(FeatureString));
 }
+
+///Get a Feature from an Index of the TreeView and display its information.
 void FeatureModelEditor::loadFeaturefromIndex(const QModelIndex &Index) {
   if(Index.isValid()){
       auto Item =
@@ -48,55 +55,104 @@ void FeatureModelEditor::loadFeaturefromIndex(const QModelIndex &Index) {
       }
   }
 }
+///Clear all Fields that should be emptied when loading a new Model
+void FeatureModelEditor::clean() {
+  SavePath.clear();
+  Repository.clear();
+  Ui->tabWidget->clear();
+  Ui->sources->clear();
+  Ui->textEdit->clear();
+  Ui->sourcesLable->setText("Sources for: ");
+  Ui->featureInfo->clear();
+}
+
+///Load the Feature Model at the Path in ModelFile field and build the Views
 void FeatureModelEditor::loadGraph() {
-  if(!Repository.isEmpty()){
-    Repository.clear();
-  }
-  auto Path = Ui->ModelFile->text().toStdString();
-  Model = vara::feature::loadFeatureModel(Path);
-  if(!Model){
+  clean();
+  ModelPath = Ui->ModelFile->text();
+  FeatureModel = vara::feature::loadFeatureModel(ModelPath.toStdString());
+  if(!FeatureModel){
     //Return if no model at Path
     return;
   }
   //create Graph view
-  Graph = new FeatureModelGraph{Model.get()};
-  Ui->tabWidget->addTab(Graph,"GraphView");
+  buildGraph();
+  // create Tree View
+  buildTree();
+  Ui->tabWidget->addTab(Graph.get(),"GraphView");
+  Ui->tabWidget->addTab(TreeView,"TreeView");
+  connect(Ui->sources,&QComboBox::currentTextChanged, this,&FeatureModelEditor::loadSource);
+  Ui->actionSave->setEnabled(true);
+  Ui->actionAddFeature->setEnabled(true);
+}
+
+///Build the Treeview
+void FeatureModelEditor::buildTree() {
+  TreeView = new QTreeView();
+  TreeModel =std::make_unique<FeatureTreeViewModel>(FeatureModel.get(), TreeView);
+  for(auto Item: TreeModel->getItems()){
+    connect(Item, &FeatureTreeItem::inspectSource, this,
+            &FeatureModelEditor::inspectFeatureSources);
+  }
+  connect(TreeView,&QTreeView::pressed,this,&FeatureModelEditor::loadFeaturefromIndex);
+  TreeView->setModel(TreeModel.get());
+  TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(TreeView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(createTreeContextMenu(const QPoint &)));
+}
+
+///Build the graph view
+void FeatureModelEditor::buildGraph() {
+  Graph = std::make_unique<FeatureModelGraph>(FeatureModel.get());
   for (auto &Node : *Graph->getNodes()) {
     QObject::connect(Node.get(), &FeatureNode::clicked, this,
                      &FeatureModelEditor::loadFeature);
     QObject::connect(Node.get(), &FeatureNode::inspectSource, this,
-                     &FeatureModelEditor::inspectFeature);
+                     &FeatureModelEditor::inspectFeatureSources);
   }
-  //create Tree View
-  TreeView = new QTreeView();
-  TreeModel = new FeatureTreeViewModel(Model.get(),TreeView);
-  for(auto Item:TreeModel->getItems()){
-    QObject::connect(Item, &FeatureTreeItem::inspectSource, this,
-                     &FeatureModelEditor::inspectFeature);
-  }
-  connect(TreeView,&QTreeView::pressed,this,&FeatureModelEditor::loadFeaturefromIndex);
-  TreeView->setModel(TreeModel);
-  TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(TreeView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenu(const QPoint &)));
-  Ui->tabWidget->addTab(TreeView,"TreeView");
-  connect(Ui->sources,&QComboBox::currentTextChanged, this,&FeatureModelEditor::loadSource);
 }
+
+///Spawn a Dialog to select data to add a Feature
 void FeatureModelEditor::featureAddDialog() {
-   FeatureAddDialog AddDialog(Graph,this);
+   FeatureAddDialog AddDialog(Graph.get(),this);
    if(AddDialog.exec() == QDialog::Accepted){
-    auto *NewNode = Graph->addFeature(AddDialog.getName(),Graph->getNode(AddDialog.getParent()));
-    QObject::connect(NewNode, &FeatureNode::clicked, this,
+    Feature* Parent = FeatureModel->getFeature(AddDialog.getParent().toStdString());
+    auto NewFeature = AddDialog.getFeature();
+
+    auto *NewNode = Graph->addNode(NewFeature.get(),
+                                   Graph->getNode(Parent->getName().str()));
+    auto *NewTreeItem = TreeModel->addFeature(NewFeature.get(),Parent->getName().str());
+    connect(NewTreeItem,&FeatureTreeItem::inspectSource, this,&FeatureModelEditor::inspectFeatureSources);
+    connect(NewNode, &FeatureNode::clicked, this,
                      &FeatureModelEditor::loadFeature);
-    QObject::connect(NewNode, &FeatureNode::inspectSource, this,
-                     &FeatureModelEditor::inspectFeature);
+    connect(NewNode, &FeatureNode::inspectSource, this,
+                     &FeatureModelEditor::inspectFeatureSources);
+
+    auto Transaction = vara::feature::FeatureModelTransaction<vara::feature::detail::ModifyTransactionMode>::openTransaction(*FeatureModel);
+    Transaction.addFeature(std::move(NewFeature),Parent);
+    Transaction.commit();
    }
 }
+
+
+///Save the current State of the Feature Model
+void FeatureModelEditor::save() {
+   SavePath = QFileDialog::getSaveFileName(this,tr("Save File"),ModelPath,tr("XML files (*.xml)"));
+   vara::feature::FeatureModelXmlWriter FMWrite{*FeatureModel};
+   FMWrite.writeFeatureModel(SavePath.toStdString());
+}
+
+
+
+///Spawn File Selection popup to get a Feature Model
 void FeatureModelEditor::findModel() {
    QString const Path = QFileDialog::getOpenFileName(this,tr("Open Model"),"/home",tr("XML files (*.xml)"));
    Ui->ModelFile->setText(Path);
 }
 
-void FeatureModelEditor::inspectFeature(vara::feature::Feature *Feature) {
+
+/// Loead the source files of the Feature to be selectable by the user and set the Feature as CurrentFeature.
+/// \param Feature
+void FeatureModelEditor::inspectFeatureSources(vara::feature::Feature *Feature) {
     CurrentFeature = Feature;
     if(Repository.isEmpty()){
     Repository = QFileDialog::getExistingDirectory();
@@ -105,6 +161,7 @@ void FeatureModelEditor::inspectFeature(vara::feature::Feature *Feature) {
     for(const auto& Source : Feature->getLocations()){
       Ui->sources->addItem(QString::fromStdString(Source.getPath().string()));
     }
+    Ui->sourcesLable->setText( QString::fromStdString("Sources for: "+Feature->getName().str()));
     if(Ui->sources->count() == 1){
       loadSource(Ui->sources->itemText(0));
     } else {
@@ -113,7 +170,7 @@ void FeatureModelEditor::inspectFeature(vara::feature::Feature *Feature) {
 }
 
 
-
+/// Load the selected file into the textedit and mark the sources of the selected feature
 void FeatureModelEditor::loadSource(const QString &RelativePath){
   Ui->textEdit->clear();
   auto SourcePath = Repository + "/" + RelativePath;
@@ -129,28 +186,36 @@ void FeatureModelEditor::loadSource(const QString &RelativePath){
       std::vector<vara::feature::FeatureSourceRange> Locations{};
       std::copy_if(CurrentFeature->getLocationsBegin(),CurrentFeature->getLocationsEnd(),std::back_inserter(Locations),[&RelativePath](auto const& Loc){return RelativePath.toStdString()==Loc.getPath();});
       for (auto &Location:Locations) {
-        Cursor.movePosition(QTextCursor::MoveOperation::Start,QTextCursor::MoveMode::MoveAnchor);
-        Cursor.movePosition(QTextCursor::MoveOperation::Down,
-                            QTextCursor::MoveMode::MoveAnchor,
-                            Location.getStart()->getLineNumber() - 1);
-        Cursor.movePosition(QTextCursor::MoveOperation::NextCharacter,
-                            QTextCursor::MoveMode::MoveAnchor,
-                            Location.getStart()->getColumnOffset()-1);
-        Cursor.movePosition(QTextCursor::MoveOperation::Down,
-                            QTextCursor::MoveMode::KeepAnchor,
-                            Location.getEnd()->getLineNumber() -
-                                Location.getStart()->getLineNumber());
-        Cursor.movePosition(QTextCursor::MoveOperation::StartOfLine,
-                            QTextCursor::MoveMode::KeepAnchor);
-        Cursor.movePosition(QTextCursor::MoveOperation::NextCharacter,
-                            QTextCursor::MoveMode::KeepAnchor,
-                            Location.getEnd()->getColumnOffset());
-        Cursor.setCharFormat(Fmt);
+        markLocation(Fmt, Cursor, Location);
       }
   }
 
 }
-void FeatureModelEditor::onCustomContextMenu(const QPoint &Pos) {
+/// Mark the given SourceRange with the given Format
+/// \param Fmt Format to mark with
+/// \param Cursor  Cursor
+/// \param Location Location to mark
+void FeatureModelEditor::markLocation(
+    const QTextCharFormat &Fmt, QTextCursor &Cursor,
+    vara::feature::FeatureSourceRange &Location)
+    const {
+  Cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+  Cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor,
+                      Location.getStart()->getLineNumber() - 1);
+  Cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor,
+                      Location.getStart()->getColumnOffset()-1);
+  Cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor,
+                      Location.getEnd()->getLineNumber() -
+                          Location.getStart()->getLineNumber());
+  Cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
+  Cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
+                      Location.getEnd()->getColumnOffset());
+  Cursor.setCharFormat(Fmt);
+}
+
+/// Create the Context menu for inspecting sources in the tree view
+/// \param Pos Position of the cursor used to find the clicked item
+void FeatureModelEditor::createTreeContextMenu(const QPoint &Pos) {
   auto Index = TreeView->indexAt(Pos);
   if(Index.isValid()){
       FeatureTreeItem* Item = static_cast<FeatureTreeItem*>(Index.internalPointer());
@@ -158,6 +223,8 @@ void FeatureModelEditor::onCustomContextMenu(const QPoint &Pos) {
   }
 
 }
+
+///Load a sourcefile to then add a location from it
 void FeatureModelEditor::addSourceFile(){
   if(!Repository.isEmpty()) {
       QString const Path = QFileDialog::getOpenFileName(
@@ -166,7 +233,7 @@ void FeatureModelEditor::addSourceFile(){
       Ui->sources->addItem(Path.sliced(Repository.length()));
   }
 }
-
+/// Add the user selected Part of the textedit as a source for the active Feature
 void FeatureModelEditor::addSource() {
   auto TextEdit = Ui->textEdit;
   auto Cursor = TextEdit->textCursor();
@@ -186,6 +253,8 @@ void FeatureModelEditor::addSource() {
       Block = Block.previous();
   }
   auto Range = vara::feature::FeatureSourceRange(Ui->sources->currentText().toStdString(),vara::feature::FeatureSourceRange::FeatureSourceLocation(lines,start-lineStart+1),vara::feature::FeatureSourceRange::FeatureSourceLocation(lines,end-lineStart));
-  CurrentFeature->addLocation(Range);
+  auto LocationTransAction = Transaction::openTransaction(*FeatureModel);
+  LocationTransAction.addLocation(CurrentFeature,Range);
+  LocationTransAction.commit();
   loadSource(Ui->sources->currentText());
 }

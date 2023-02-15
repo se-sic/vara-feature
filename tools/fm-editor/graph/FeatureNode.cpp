@@ -12,7 +12,7 @@
 #include <QStyleOption>
 #include <QMenu>
 
-FeatureNode::FeatureNode(FeatureModelGraph *Graph, vara::feature::Feature *Feature) : Graph(Graph),Feature(Feature) {
+FeatureNode::FeatureNode(vara::feature::Feature *Feature) : Feature(Feature) {
   setFlag(ItemIsMovable);
   setFlag(ItemSendsGeometryChanges);
   setCacheMode(DeviceCoordinateCache);
@@ -77,7 +77,6 @@ QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
     if (ParentEdge) {
       ParentEdge->adjust();
     }
-    Graph->itemMoved();
     break;
   default:
     break;

@@ -30,25 +30,32 @@
        </size>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="1" column="0">
+       <item row="3" column="0" colspan="2">
+        <widget class="QTextEdit" name="textEdit"/>
+       </item>
+       <item row="2" column="0">
         <widget class="QPushButton" name="addSource">
          <property name="text">
           <string>AddSource</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="1" column="0" colspan="2">
+        <widget class="QComboBox" name="sources"/>
+       </item>
+       <item row="2" column="1">
         <widget class="QPushButton" name="addSourceFile">
          <property name="text">
           <string>AddSourceFile</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QTextEdit" name="textEdit"/>
-       </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QComboBox" name="sources"/>
+       <item row="0" column="0">
+        <widget class="QLabel" name="sourcesLable">
+         <property name="text">
+          <string>Sources for:</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -173,7 +180,7 @@
      <x>0</x>
      <y>0</y>
      <width>943</width>
-     <height>34</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -181,13 +188,28 @@
      <string>Edit</string>
     </property>
     <addaction name="actionAddFeature"/>
+    <addaction name="actionSave"/>
    </widget>
    <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionAddFeature">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>AddFeature</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

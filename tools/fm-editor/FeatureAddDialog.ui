@@ -6,32 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>319</height>
+    <width>410</width>
+    <height>392</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="2">
-    <widget class="QLabel" name="namelable">
-     <property name="text">
-      <string>Name</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="3">
-    <widget class="QCheckBox" name="optinalCheck">
-     <property name="text">
-      <string>Optional</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="3">
-    <widget class="QComboBox" name="Nodes"/>
-   </item>
-   <item row="6" column="1" colspan="3">
+   <item row="10" column="1" colspan="3">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -41,51 +30,152 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="2">
+   <item row="3" column="2">
     <widget class="QLabel" name="parentLable">
      <property name="text">
       <string>Parent</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="2">
+   <item row="0" column="3">
+    <widget class="QLineEdit" name="name"/>
+   </item>
+   <item row="2" column="3">
+    <widget class="QCheckBox" name="optinalCheck">
+     <property name="text">
+      <string>Optional</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="2">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>FeatureType</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="3">
-    <widget class="QLineEdit" name="name"/>
-   </item>
-   <item row="4" column="3">
+   <item row="5" column="3">
     <widget class="QComboBox" name="FeatureKind"/>
    </item>
-   <item row="5" column="2" colspan="2">
-    <widget class="QWidget" name="NumericFeature" native="true">
-     <property name="enabled">
-      <bool>true</bool>
+   <item row="1" column="2">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Output String</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
+    </widget>
+   </item>
+   <item row="3" column="3">
+    <widget class="QComboBox" name="Nodes"/>
+   </item>
+   <item row="1" column="3">
+    <widget class="QLineEdit" name="outpuString"/>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="namelable">
+     <property name="text">
+      <string>Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="2" rowspan="2" colspan="2">
+    <widget class="QWidget" name="NumericFeature" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QCheckBox" name="range">
         <property name="text">
-         <string>Min</string>
+         <string>Range</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="spinBox_2"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Max</string>
+      <item>
+       <widget class="QStackedWidget" name="NumericValues">
+        <property name="enabled">
+         <bool>true</bool>
         </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="Values">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Values</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLineEdit" name="values">
+            <property name="placeholderText">
+             <string>1,2,10</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="Range" native="true">
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="1" column="2" colspan="2">
+           <widget class="QSpinBox" name="max">
+            <property name="maximum">
+             <number>100000000</number>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Min</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QDoubleSpinBox" name="stepOperant">
+            <property name="maximum">
+             <double>10000000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2" colspan="2">
+           <widget class="QSpinBox" name="min">
+            <property name="maximum">
+             <number>1000000000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>StepFunction</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QComboBox" name="stepOperator"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Max</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2" colspan="2">
+           <widget class="QCheckBox" name="lhs">
+            <property name="text">
+             <string>Value is Left Operant</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QSpinBox" name="spinBox"/>
       </item>
      </layout>
     </widget>
@@ -123,6 +213,22 @@
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>range</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>NumericValues</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>51</x>
+     <y>232</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>239</x>
+     <y>232</y>
     </hint>
    </hints>
   </connection>

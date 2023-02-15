@@ -14,14 +14,19 @@ class FeatureAddDialog : public QDialog, public Ui::Add {
 public:
   FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent);
   QString getName();
-  string getParent();
+  QString getParent();
+  QString getOutpuString();
+  std::unique_ptr<vara::feature::Feature> getFeature();
   vara::feature::Feature::FeatureKind getFeatureKind();
+  bool isOptional();
 public slots:
   void featureType(int index);
 private:
 
   QStringList NodeNames;
 
+
+  vara::feature::StepFunction::StepOperation getStepOperation();
 };
 
 #endif // VARA_FEATURE_FEATUREADDDIALOG_H

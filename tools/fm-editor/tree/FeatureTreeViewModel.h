@@ -11,9 +11,10 @@ class FeatureTreeViewModel : public QAbstractItemModel {
 public:
   FeatureTreeViewModel(vara::feature::FeatureModel* Model, QObject *Parent): QAbstractItemModel(Parent), Model(Model), RootItem(FeatureTreeItem::createFeatureTreeItem(Model->getRoot(), nullptr)) {
     Items = RootItem->getChildrenRecursive();
+    Items.push_back(RootItem);
   }
   ~FeatureTreeViewModel() override{
-    delete RootItem;
+    std::destroy(Items.begin(), Items.end());
   }
   std::vector<FeatureTreeItem*> getItems();
   [[nodiscard]] QVariant data(const QModelIndex &Index, int Role = Qt::DisplayRole)const override;
@@ -23,7 +24,7 @@ public:
   [[nodiscard]] int columnCount(const QModelIndex &Parent = QModelIndex()) const override;
   [[nodiscard]] Qt::ItemFlags flags(const QModelIndex &Index) const override;
   [[nodiscard]] QVariant headerData(int Section, Qt::Orientation Orientation, int Role = Qt::DisplayRole) const override;
-
+  FeatureTreeItem* addFeature(vara::feature::Feature* Item,string Parent);
 private:
   vara::feature::FeatureModel* Model;
   FeatureTreeItem* RootItem;

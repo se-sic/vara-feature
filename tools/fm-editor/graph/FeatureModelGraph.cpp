@@ -3,18 +3,16 @@
 //
 
 #include "FeatureModelGraph.h"
-#include "FeatureEdge.h"
-#include "FeatureNode.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelTransaction.h"
 #include <cmath>
-
 #include <QKeyEvent>
 #include <QRandomGenerator>
+using vara::feature::Feature;
 FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel * FeatureModel,
                                      QWidget *Parent)
-    : QGraphicsView(Parent), EntryNode(new FeatureNode(this, FeatureModel->getRoot())), FeatureModel(FeatureModel) {
+    : QGraphicsView(Parent), EntryNode(new FeatureNode(FeatureModel->getRoot())), FeatureModel(FeatureModel) {
   auto *Scene = new QGraphicsScene(this);
   Scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
@@ -45,7 +43,7 @@ void FeatureModelGraph::buildRec(FeatureNode *CurrentFeatureNode) {
   for (auto *Feature :
        CurrentFeatureNode->getFeature()->getChildren<vara::feature::Feature>(
            1)) {
-    auto Node = std::make_unique<FeatureNode>(this, Feature);
+    auto Node = std::make_unique<FeatureNode>(Feature);
     auto *Edge = new FeatureEdge(CurrentFeatureNode, Node.get());
     scene()->addItem(Edge);
     scene()->addItem(Node.get());
@@ -57,7 +55,7 @@ void FeatureModelGraph::buildRec(FeatureNode *CurrentFeatureNode) {
            1)) {
     for (auto *Feature :Relation->getChildren<vara::feature::Feature>(
              1)) {
-    auto Node = std::make_unique<FeatureNode>(this, Feature);
+    auto Node = std::make_unique<FeatureNode>(Feature);
     auto *Edge = new FeatureEdge(CurrentFeatureNode, Node.get());
     scene()->addItem(Edge);
     scene()->addItem(Node.get());
@@ -84,12 +82,6 @@ int FeatureModelGraph::positionRec(const int CurrentDepth, const std::vector<Fea
     MaxDepth = MaxDepth<Depth?Depth:MaxDepth;
   }
   return MaxDepth;
-}
-
-void FeatureModelGraph::itemMoved() {
-  if (!TimerId) {
-    TimerId = startTimer(1000 / 25);
-  }
 }
 void FeatureModelGraph::keyPressEvent(QKeyEvent *Event) {
   switch (Event->key()) {
@@ -155,12 +147,8 @@ void FeatureModelGraph::zoomIn() { scaleView(qreal(1.2)); }
 void FeatureModelGraph::zoomOut() { scaleView(1 / qreal(1.2)); }
 
 
-FeatureNode* FeatureModelGraph::addFeature(const QString& Name, FeatureNode* Parent) {
-  auto Transaction = vara::feature::FeatureModelTransaction<vara::feature::detail::ModifyTransactionMode>::openTransaction(*FeatureModel);
-  auto NewFeature = std::make_unique<vara::feature::Feature>(Name.toStdString());
-  auto NewNode = std::make_unique<FeatureNode>(this,NewFeature.get());
-  Transaction.addFeature(std::move(NewFeature),FeatureModel->getFeature(Parent->getName()));
-  Transaction.commit();
+FeatureNode* FeatureModelGraph::addNode(Feature* Feature, FeatureNode* Parent) {
+  auto NewNode = std::make_unique<FeatureNode>(Feature);
   auto * NewEdge = new FeatureEdge(Parent,NewNode.get());
   scene()->addItem(NewEdge);
   scene()->addItem(NewNode.get());

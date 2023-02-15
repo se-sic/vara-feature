@@ -81,3 +81,13 @@ return  {};
 std::vector<FeatureTreeItem *> FeatureTreeViewModel::getItems() {
 return Items;
 }
+FeatureTreeItem* FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature, std::string Parent) {
+auto Item = std::find_if(Items.begin(), Items.end(),[&Parent](auto I){return I->getName()==Parent;});
+if(Item != Items.end()){
+    auto NewItem = FeatureTreeItem::createFeatureTreeItem(Feature,*Item);
+    (*Item)->addChild(NewItem);
+    Items.push_back(NewItem);
+    return NewItem;
+}
+return nullptr;
+}

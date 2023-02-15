@@ -3,9 +3,9 @@
 #define VARA_FEATURE_FEATUREMODELGRAPH_H
 
 #include "vara/Feature/FeatureModel.h"
+#include "FeatureNode.h"
 #include <QGraphicsView>
-class FeatureNode;
-class FeatureEdge;
+#include "FeatureEdge.h"
 class FeatureModelGraph : public QGraphicsView {
   Q_OBJECT
 
@@ -15,7 +15,7 @@ public:
   auto getNodes() {return &Nodes;};
   void itemMoved();
   FeatureNode* getNode(std::string Name);
-  FeatureNode* addFeature(const QString& Name,FeatureNode* Parent);
+  FeatureNode*addNode(vara::feature::Feature *Feature,FeatureNode* Parent);
 public slots:
   void zoomIn();
   void zoomOut();
