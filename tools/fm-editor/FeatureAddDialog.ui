@@ -93,7 +93,7 @@
          <bool>true</bool>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="Values">
          <layout class="QGridLayout" name="gridLayout_3">
@@ -112,6 +112,8 @@
            </widget>
           </item>
          </layout>
+        </widget>
+        <widget class="QWidget" name="Blank">
         </widget>
         <widget class="QWidget" name="Range" native="true">
          <layout class="QGridLayout" name="gridLayout_2">
