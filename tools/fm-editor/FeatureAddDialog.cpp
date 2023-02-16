@@ -7,12 +7,17 @@
 #include "graph/FeatureNode.h"
 using vara::feature::Feature;
 using vara::feature::FeatureModel;
-FeatureAddDialog::FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent)
+FeatureAddDialog::FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent, Feature* ParentFeature)
     : QDialog(Parent) {
   setupUi(this);
   NodeNames = QStringList();
-  for (const auto &Node : *Graph->getNodes()) {
-    NodeNames.push_back(Node->getQName());
+  if (!ParentFeature) {
+    for (const auto &Node : *Graph->getNodes()) {
+      NodeNames.push_back(Node->getQName());
+    }
+  } else {
+    NodeNames.push_back(QString::fromStdString(ParentFeature->getName().str()));
+    Nodes->setEnabled(false);
   }
   this->Nodes->addItems(NodeNames);
   this->FeatureKind->addItems(QStringList{"Binary", "Numeric"});
