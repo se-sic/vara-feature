@@ -38,7 +38,7 @@ public slots:
   void loadFeature(const vara::feature::Feature *Feature);
   void inspectFeatureSources(vara::feature::Feature *Feature);
   void loadGraph();
-  void featureAddDialog();
+  void featureAddDialogChild(vara::feature::Feature* = nullptr);
   //void addNode(const QString& Name, FeatureNode *Parent);
   void loadSource(const QString &RelativePath);
   void findModel();
@@ -46,12 +46,12 @@ public slots:
   void addSourceFile();
   void loadFeaturefromIndex(const QModelIndex &Index);
   void save();
+  void featureAddDialog();
 private:
   void clean();
   void buildGraph();
   void buildTree();
-  void markLocation(const QTextCharFormat &Fmt, QTextCursor &Cursor,
-                    vara::feature::FeatureSourceRange &Location) const;
+  void markLocation(vara::feature::FeatureSourceRange &Location) const;
 };
 
 #endif // VARA_FEATURE_FEATUREMODELEDITOR_H

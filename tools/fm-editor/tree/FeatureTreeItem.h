@@ -38,28 +38,33 @@ public:
   void addChild(FeatureTreeItem* Child);
   [[nodiscard]] virtual int columnCount() const = 0;
   [[nodiscard]] virtual QVariant data(int Column) const = 0;
-  FeatureTreeItem static *createFeatureTreeItem(vara::feature::Relationship* Item,FeatureTreeItem* Parent);
-  FeatureTreeItem static *createFeatureTreeItem(vara::feature::Feature* Item,FeatureTreeItem* Parent);
+  FeatureTreeItem static *createFeatureTreeItem(vara::feature::FeatureTreeNode* Item);
   bool booleanColumn(int Column) {return false;}
   virtual void contextMenu(QPoint Pos) = 0;
   vara::feature::FeatureTreeNode::NodeKind getKind() {return Kind;}
   virtual string getName() {return "";};
+  void setParent(FeatureTreeItem*ParentItem) {this->Parent = ParentItem;}
 signals:
   void inspectSource(vara::feature::Feature *Feature);
+  void addCild(vara::feature::Feature *Feature);
 protected:
-  FeatureTreeItem(vara::feature::FeatureTreeNode* Item ,FeatureTreeItem* Parent,vara::feature::FeatureTreeNode::NodeKind Kind): Kind(Kind),Parent(Parent) {
+  FeatureTreeItem(vara::feature::FeatureTreeNode* Item ,vara::feature::FeatureTreeNode::NodeKind Kind): Kind(Kind) {
     for(auto *Child : Item->children()){
       if(vara::feature::Relationship::classof(Child)) {
-        Children.push_back(createFeatureTreeItem(dynamic_cast<vara::feature::Relationship*>(Child), this));
+        auto child  = createFeatureTreeItem(dynamic_cast<vara::feature::Relationship*>(Child));
+        Children.push_back(child);
+        child->setParent(this);
       }else {
-        Children.push_back(createFeatureTreeItem(dynamic_cast<vara::feature::Feature*>(Child), this));
+        auto child  = createFeatureTreeItem(dynamic_cast<vara::feature::Feature*>(Child));
+        Children.push_back(child);
+        child->setParent(this);
       }
     }
   }
 
 private:
   const vara::feature::FeatureTreeNode::NodeKind Kind;
-  FeatureTreeItem* Parent;
+  FeatureTreeItem* Parent = nullptr;
   std::vector<FeatureTreeItem*> Children = {};
 };
 
@@ -68,15 +73,16 @@ class FeatureTreeItemFeature: public FeatureTreeItem{
   Q_OBJECT
 public:
 virtual ~FeatureTreeItemFeature() = default;
-  FeatureTreeItemFeature(vara::feature::Feature* Item,FeatureTreeItem* Parent): FeatureTreeItem(Item,Parent,vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE), Item(Item) {}
+  FeatureTreeItemFeature(vara::feature::Feature* Item): FeatureTreeItem(Item,vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE), Item(Item) {}
   [[nodiscard]] QVariant data(int Column) const override;
   [[nodiscard]] int columnCount() const override {return 5;}
   bool booleanColumn(int Column) {return Column==1;}
   void contextMenu(QPoint Pos) override;
   const vara::feature::Feature* getItem() const {return Item;}
-  string getName() {return Item->getName().str();}
+  string getName() override {return Item->getName().str();}
 public slots:
   void inspect();
+  void addChild();
 private:
   vara::feature::Feature* Item;
 
@@ -86,7 +92,7 @@ private:
 class FeatureTreeItemRelation: public FeatureTreeItem {
 public:
 virtual ~FeatureTreeItemRelation() = default;
-FeatureTreeItemRelation(vara::feature::Relationship* Item,FeatureTreeItem* Parent): FeatureTreeItem(Item,Parent,vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP),Item(Item) {}
+FeatureTreeItemRelation(vara::feature::Relationship* Item): FeatureTreeItem(Item,vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP),Item(Item) {}
 [[nodiscard]] QVariant data(int Column) const override{
     if(Column==0) {
         return QString::fromStdString(relationType());

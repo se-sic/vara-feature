@@ -9,7 +9,7 @@
 #include <QAbstractItemModel>
 class FeatureTreeViewModel : public QAbstractItemModel {
 public:
-  FeatureTreeViewModel(vara::feature::FeatureModel* Model, QObject *Parent): QAbstractItemModel(Parent), Model(Model), RootItem(FeatureTreeItem::createFeatureTreeItem(Model->getRoot(), nullptr)) {
+  FeatureTreeViewModel(vara::feature::FeatureModel* Model, QObject *Parent): QAbstractItemModel(Parent), Model(Model), RootItem(FeatureTreeItem::createFeatureTreeItem(Model->getRoot())) {
     Items = RootItem->getChildrenRecursive();
     Items.push_back(RootItem);
   }

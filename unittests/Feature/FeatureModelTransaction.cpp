@@ -104,8 +104,8 @@ TEST_F(FeatureModelTransactionCopyTest, addFeatureToModel) {
   size_t FMSizeBefore = FM->size();
 
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
-  FT.featureAddDialog(std::make_unique<BinaryFeature>("ab"),
-                      FM->getFeature("a"));
+  FT.featureAddDialogChild(std::make_unique<BinaryFeature>("ab"),
+                           FM->getFeature("a"));
 
   EXPECT_EQ(FMSizeBefore, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
@@ -134,8 +134,8 @@ TEST_F(FeatureModelTransactionCopyTest, addFeatureToModelThenAbort) {
   size_t FMSizeBefore = FM->size();
 
   auto FT = FeatureModelCopyTransaction::openTransaction(*FM);
-  FT.featureAddDialog(std::make_unique<BinaryFeature>("ab"),
-                      FM->getFeature("a"));
+  FT.featureAddDialogChild(std::make_unique<BinaryFeature>("ab"),
+                           FM->getFeature("a"));
 
   EXPECT_EQ(FMSizeBefore, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
@@ -189,8 +189,8 @@ TEST_F(FeatureModelTransactionModifyTest, addFeatureToModel) {
   size_t FMSizeBefore = FM->size();
 
   auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
-  FT.featureAddDialog(std::make_unique<BinaryFeature>("ab"),
-                      FM->getFeature("a"));
+  FT.featureAddDialogChild(std::make_unique<BinaryFeature>("ab"),
+                           FM->getFeature("a"));
 
   EXPECT_EQ(FMSizeBefore, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));
@@ -210,8 +210,8 @@ TEST_F(FeatureModelTransactionModifyTest, addFeatureToModelThenAboard) {
   size_t FMSizeBefore = FM->size();
 
   auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
-  FT.featureAddDialog(std::make_unique<BinaryFeature>("ab"),
-                      FM->getFeature("a"));
+  FT.featureAddDialogChild(std::make_unique<BinaryFeature>("ab"),
+                           FM->getFeature("a"));
 
   EXPECT_EQ(FMSizeBefore, FM->size());
   EXPECT_TRUE(FM->getFeature("a"));

@@ -46,17 +46,20 @@ QVariant crossTreeConstraintString(vara::feature::Feature* Item){
   }
   return QString::fromStdString(StrS.str());
 }
-
-FeatureTreeItem*  FeatureTreeItem::createFeatureTreeItem(
-    vara::feature::Relationship *Item, FeatureTreeItem *Parent)  {
-  return new FeatureTreeItemRelation(Item,Parent);
-}
-FeatureTreeItem*  FeatureTreeItem::createFeatureTreeItem(
-    vara::feature::Feature *Item, FeatureTreeItem *Parent)  {
-  return new FeatureTreeItemFeature(Item, Parent);
+FeatureTreeItem* FeatureTreeItem::createFeatureTreeItem(
+    vara::feature::FeatureTreeNode *Item)  {
+  if(Item->getKind() == vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP){
+    return new FeatureTreeItemRelation(dynamic_cast<vara::feature::Relationship*>(Item));
+  }
+  return new FeatureTreeItemFeature(dynamic_cast<vara::feature::Feature*>(Item));
 }
 void FeatureTreeItem::addChild(FeatureTreeItem* Child) {
-  Children.push_back(Child);
+  if(!Children.empty() && Children[0]->getKind()==vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP){
+    Children[0]->addChild(Child);
+  } else {
+    Children.push_back(Child);
+    Child->setParent(this);
+  }
 }
 std::vector<FeatureTreeItem *> FeatureTreeItem::getChildrenRecursive() {
   auto Nodes = std::vector<FeatureTreeItem*>{Children};
@@ -85,7 +88,13 @@ void FeatureTreeItemFeature::inspect() {
 void FeatureTreeItemFeature::contextMenu(QPoint Pos) {
   auto *Menu = new QMenu;
   auto *Inspect = new QAction("Inspect Sources", this);
+  auto *AddChild = new QAction("Add Child", this);
   Menu->addAction(Inspect);
+  Menu->addAction(AddChild);
   Menu->popup(Pos);
   connect(Inspect, &QAction::triggered, this, &FeatureTreeItemFeature::inspect);
+  connect(AddChild, &QAction::triggered, this, &FeatureTreeItemFeature::addChild);
+}
+void FeatureTreeItemFeature::addChild() {
+  emit(addCild(Item));
 }

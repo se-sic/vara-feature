@@ -93,6 +93,8 @@ void FeatureModelEditor::buildTree() {
   for(auto Item: TreeModel->getItems()){
     connect(Item, &FeatureTreeItem::inspectSource, this,
             &FeatureModelEditor::inspectFeatureSources);
+    connect(Item, &FeatureTreeItem::addCild, this,
+            &FeatureModelEditor::featureAddDialogChild);
   }
   connect(TreeView,&QTreeView::pressed,this,&FeatureModelEditor::loadFeaturefromIndex);
   TreeView->setModel(TreeModel.get());
@@ -110,10 +112,11 @@ void FeatureModelEditor::buildGraph() {
                      &FeatureModelEditor::inspectFeatureSources);
   }
 }
-
+void FeatureModelEditor::featureAddDialog(){ featureAddDialogChild(nullptr);
+}
 ///Spawn a Dialog to select data to add a Feature
-void FeatureModelEditor::featureAddDialog() {
-   FeatureAddDialog AddDialog(Graph.get(),this);
+void FeatureModelEditor::featureAddDialogChild(Feature* ParentFeature) {
+   FeatureAddDialog AddDialog(Graph.get(),this, ParentFeature);
    if(AddDialog.exec() == QDialog::Accepted){
     Feature* Parent = FeatureModel->getFeature(AddDialog.getParent().toStdString());
     auto NewFeature = AddDialog.getFeature();
@@ -126,9 +129,13 @@ void FeatureModelEditor::featureAddDialog() {
                      &FeatureModelEditor::loadFeature);
     connect(NewNode, &FeatureNode::inspectSource, this,
                      &FeatureModelEditor::inspectFeatureSources);
-
     auto Transaction = vara::feature::FeatureModelTransaction<vara::feature::detail::ModifyTransactionMode>::openTransaction(*FeatureModel);
-    Transaction.addFeature(std::move(NewFeature),Parent);
+    auto PotentialRelations = Parent->getChildren<vara::feature::Relationship>(1);
+    if(!PotentialRelations.empty()){
+      Transaction.addFeature(std::move(NewFeature),*PotentialRelations.begin());
+    } else {
+      Transaction.addFeature(std::move(NewFeature),Parent);
+    }
     Transaction.commit();
    }
 }
@@ -179,14 +186,11 @@ void FeatureModelEditor::loadSource(const QString &RelativePath){
       File.open(QFile::ReadOnly | QFile::Text);
       QTextStream ReadFile(&File);
       Ui->textEdit->setText(ReadFile.readAll());
-      QTextCharFormat Fmt;
-      Fmt.setBackground(Qt::darkYellow);
-      QTextCursor Cursor(Ui->textEdit->document());
       std::cout << CurrentFeature->toString();
       std::vector<vara::feature::FeatureSourceRange> Locations{};
       std::copy_if(CurrentFeature->getLocationsBegin(),CurrentFeature->getLocationsEnd(),std::back_inserter(Locations),[&RelativePath](auto const& Loc){return RelativePath.toStdString()==Loc.getPath();});
       for (auto &Location:Locations) {
-        markLocation(Fmt, Cursor, Location);
+        markLocation(Location);
       }
   }
 
@@ -196,9 +200,10 @@ void FeatureModelEditor::loadSource(const QString &RelativePath){
 /// \param Cursor  Cursor
 /// \param Location Location to mark
 void FeatureModelEditor::markLocation(
-    const QTextCharFormat &Fmt, QTextCursor &Cursor,
-    vara::feature::FeatureSourceRange &Location)
-    const {
+    vara::feature::FeatureSourceRange &Location) const {
+  QTextCharFormat Fmt;
+  Fmt.setBackground(Qt::darkYellow);
+  QTextCursor Cursor(Ui->textEdit->document());
   Cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
   Cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor,
                       Location.getStart()->getLineNumber() - 1);
@@ -256,5 +261,5 @@ void FeatureModelEditor::addSource() {
   auto LocationTransAction = Transaction::openTransaction(*FeatureModel);
   LocationTransAction.addLocation(CurrentFeature,Range);
   LocationTransAction.commit();
-  loadSource(Ui->sources->currentText());
+  markLocation(Range);
 }
