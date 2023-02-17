@@ -6,8 +6,8 @@
 namespace vara::feature {
 TEST(ConstraintBuilder, build) {
   auto CB = ConstraintBuilder();
-  CB.feature("A").implies().lNot().feature("Foo")();
-  CB.implies().lNot().feature("Bar").implies().feature("D")();
+  CB.feature("A").implies().lNot().feature("B")();
+  CB.implies().lNot().feature("C").implies().feature("D")();
   CB.implies().feature("E");
 
   EXPECT_TRUE(CB.build());

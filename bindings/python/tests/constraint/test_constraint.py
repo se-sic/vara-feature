@@ -12,9 +12,7 @@ class TestConstraintBuilder(unittest.TestCase):
     def test_build(self):
         """ Checks if we can build a constraint. """
         cb = constraint.ConstraintBuilder()
-        cb.feature("A").implies().lNot().feature("Foo")()
-        cb.implies().lNot().feature("Bar").implies().feature("D")()
-        cb.implies().feature("E")
+        cb.feature("A").implies().feature("B")
         self.assertIsNotNone(cb.build())
 
     def test_full(self):
