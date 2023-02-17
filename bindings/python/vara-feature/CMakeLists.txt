@@ -1,5 +1,6 @@
 pybind11_add_module(vara_feature
   pybind_Init.cpp
+  pybind_Constraint.cpp
   pybind_Feature.cpp
   pybind_FeatureModel.cpp
   pybind_FeatureModelXmlWriter.cpp
