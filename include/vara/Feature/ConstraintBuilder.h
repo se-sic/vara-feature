@@ -183,7 +183,7 @@ public:
   /// Example:
   ///     constant(42)
   ///   produces the constraint
-  ///     42
+  ///     '42'
   ConstraintBuilder &constant(int V) {
     if (!Head || *Head) {
       llvm::errs() << "Syntax error: Unrecognized constant constraint.\n";
