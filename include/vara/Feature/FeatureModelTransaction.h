@@ -130,7 +130,8 @@ public:
     this->removeLocationImpl(F, FSR);
   }
 
-  decltype(auto) addConstraint(std::unique_ptr<Constraint> Constraint) {
+  template <class ConstraintTy>
+  decltype(auto) addConstraint(std::unique_ptr<ConstraintTy> Constraint) {
     if constexpr (IsCopyMode) {
       return this->addConstraintImpl(std::move(Constraint));
     } else {
@@ -247,8 +248,9 @@ protected:
     FM.removeRelationship(R);
   }
 
+  template <class ConstraintTy>
   static Constraint *addConstraint(FeatureModel &FM,
-                                   std::unique_ptr<Constraint> Constraint) {
+                                   std::unique_ptr<ConstraintTy> Constraint) {
     return FM.addConstraint(std::move(Constraint));
   }
 
@@ -557,6 +559,7 @@ private:
 //                       AddConstraintToModel
 //===----------------------------------------------------------------------===//
 
+template <class ConstraintTy>
 class AddConstraintToModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
@@ -601,10 +604,10 @@ private:
     FeatureModel *FM;
   };
 
-  AddConstraintToModel(std::unique_ptr<Constraint> NewConstraint)
+  AddConstraintToModel(std::unique_ptr<ConstraintTy> NewConstraint)
       : NewConstraint(std::move(NewConstraint)) {}
 
-  std::unique_ptr<Constraint> NewConstraint;
+  std::unique_ptr<ConstraintTy> NewConstraint;
 };
 
 //===----------------------------------------------------------------------===//
@@ -914,14 +917,15 @@ protected:
         FSR)(*FM);
   }
 
+  template <class ConstraintTy>
   Result<FTErrorCode, Constraint *>
-  addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
+  addConstraintImpl(std::unique_ptr<ConstraintTy> NewConstraint) {
     if (!FM) {
       return ERROR;
     }
 
-    return FeatureModelModification::makeModification<AddConstraintToModel>(
-        std::move(NewConstraint))(*FM);
+    return FeatureModelModification::makeModification<
+        AddConstraintToModel<ConstraintTy>>(std::move(NewConstraint))(*FM);
   }
 
   void setNameImpl(std::string Name) {
@@ -1059,10 +1063,11 @@ protected:
                             RemoveLocationFromFeature>(F, FSR));
   }
 
-  void addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
+  template <class ConstraintTy>
+  void addConstraintImpl(std::unique_ptr<ConstraintTy> NewConstraint) {
     Modifications.push_back(
-        FeatureModelModification::makeUniqueModification<AddConstraintToModel>(
-            std::move(NewConstraint)));
+        FeatureModelModification::makeUniqueModification<
+            AddConstraintToModel<ConstraintTy>>(std::move(NewConstraint)));
   }
 
   void setNameImpl(std::string Name) {

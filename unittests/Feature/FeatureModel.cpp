@@ -68,8 +68,9 @@ TEST(FeatureModel, cloneRelationship) {
 TEST(FeatureModel, cloneConstraint) {
   FeatureModelBuilder B;
   B.makeFeature<BinaryFeature>("a");
-  B.addConstraint(std::make_unique<PrimaryFeatureConstraint>(
-      std::make_unique<BinaryFeature>("a")));
+  B.addConstraint(std::make_unique<FeatureModel::BooleanConstraint>(
+      std::make_unique<PrimaryFeatureConstraint>(
+          std::make_unique<BinaryFeature>("a"))));
   auto FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
 
