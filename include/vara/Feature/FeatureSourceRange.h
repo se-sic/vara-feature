@@ -225,13 +225,6 @@ public:
     return RevisionRange.has_value() ? &RevisionRange.value() : nullptr;
   }
 
-  [[nodiscard]] bool hasRevisionRange() const {
-    return RevisionRange.hasValue();
-  }
-  [[nodiscard]] FeatureRevisionRange *revisionRange() {
-    return RevisionRange.hasValue() ? RevisionRange.getPointer() : nullptr;
-  }
-
   [[nodiscard]] std::string toString() const {
     std::stringstream StrS;
     StrS << Path.string();

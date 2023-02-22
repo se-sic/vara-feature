@@ -186,7 +186,7 @@ public:
 
     FeatureMapIterator(FeatureMapTy::const_iterator MapIter)
         : MapIter(MapIter) {}
-    Feat>>>>>>> vara-devureMapIterator(const FeatureMapIterator &) = default;
+    FeatureMapIterator(const FeatureMapIterator &) = default;
     FeatureMapIterator &operator=(const FeatureMapIterator &) = delete;
     FeatureMapIterator(FeatureMapIterator &&) = default;
     FeatureMapIterator &operator=(FeatureMapIterator &&) = delete;
