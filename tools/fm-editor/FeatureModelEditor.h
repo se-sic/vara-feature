@@ -41,17 +41,18 @@ public slots:
   void featureAddDialogChild(vara::feature::Feature* = nullptr);
   //void addNode(const QString& Name, FeatureNode *Parent);
   void loadSource(const QString &RelativePath);
-  void findModel();
   void createTreeContextMenu(const QPoint &Pos);
   void addSourceFile();
-  void loadFeaturefromIndex(const QModelIndex &Index);
+  void loadFeatureFromIndex(const QModelIndex &Index);
   void save();
   void featureAddDialog();
+  void removeFeature(bool Recursive, vara::feature::Feature* Feature);
 private:
   void clean();
   void buildGraph();
   void buildTree();
   void markLocation(vara::feature::FeatureSourceRange &Location) const;
+
 };
 
 #endif // VARA_FEATURE_FEATUREMODELEDITOR_H

@@ -4,6 +4,7 @@
 #include "FeatureTreeItem.h"
 #include <QMenu>
 #include <unordered_set>
+#include "../Utils.h"
 QVariant numericValue(vara::feature::Feature* Item) {
   if(Item->getKind()==vara::feature::Feature::FeatureKind::FK_NUMERIC){
     auto *NumItem = dynamic_cast<vara::feature::NumericFeature*>(Item);
@@ -35,14 +36,6 @@ QVariant locationString(vara::feature::Feature* Item){
                   [&StrS](const vara::feature::FeatureSourceRange &Fsr) {
                     StrS << llvm::formatv("{0}", Fsr.toString()).str();
                   });
-  }
-  return QString::fromStdString(StrS.str());
-}
-
-QVariant crossTreeConstraintString(vara::feature::Feature* Item){
-  std::stringstream StrS;
-  for(auto Constraint:Item->constraints()){
-    StrS << Constraint->toString();
   }
   return QString::fromStdString(StrS.str());
 }
@@ -86,15 +79,23 @@ void FeatureTreeItemFeature::inspect() {
   emit(inspectSource(Item));
 }
 void FeatureTreeItemFeature::contextMenu(QPoint Pos) {
-  auto *Menu = new QMenu;
-  auto *Inspect = new QAction("Inspect Sources", this);
-  auto *AddChild = new QAction("Add Child", this);
-  Menu->addAction(Inspect);
-  Menu->addAction(AddChild);
+  auto*  Menu =buildMenu(this,
+                         std::pair(QString("Inspect Sources"),&FeatureTreeItemFeature::inspect),
+                         std::pair(QString("Add Child"),&FeatureTreeItemFeature::addChild),
+                         std::pair(QString("Remove"),&FeatureTreeItemFeature::remove));
+  //TODO Make recursive Removal work
   Menu->popup(Pos);
-  connect(Inspect, &QAction::triggered, this, &FeatureTreeItemFeature::inspect);
-  connect(AddChild, &QAction::triggered, this, &FeatureTreeItemFeature::addChild);
 }
+
+
+void FeatureTreeItemFeature::remove() {
+    emit(removeFeature(false,Item));
+}
+
+void FeatureTreeItemFeature::removeRecursive() {
+  emit(removeFeature(true, Item));
+}
+
 void FeatureTreeItemFeature::addChild() {
-  emit(addCild(Item));
+  emit(addChildFeature(Item));
 }

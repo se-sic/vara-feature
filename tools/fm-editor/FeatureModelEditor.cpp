@@ -29,8 +29,6 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
   Highliter->setCurrentLanguage(QSourceHighlite::QSourceHighliter::CodeCpp);
   QObject::connect(Ui->loadModel, &QPushButton::pressed, this,
                    &FeatureModelEditor::loadGraph);
-  QObject::connect(Ui->findModel, &QPushButton::pressed, this,
-                   &FeatureModelEditor::findModel);
   QObject::connect(Ui->actionAddFeature,&QAction::triggered, this,
                    &FeatureModelEditor::featureAddDialog);
   connect(Ui->actionSave,&QAction::triggered,this,&FeatureModelEditor::save);
@@ -46,10 +44,10 @@ void FeatureModelEditor::loadFeature(const vara::feature::Feature *Feature) {
 }
 
 ///Get a Feature from an Index of the TreeView and display its information.
-void FeatureModelEditor::loadFeaturefromIndex(const QModelIndex &Index) {
+void FeatureModelEditor::loadFeatureFromIndex(const QModelIndex &Index) {
   if(Index.isValid()){
       auto Item =
-          static_cast<FeatureTreeItem *>(Index.internalPointer());
+          static_cast<FeatureTreeItem *>(Index.internalPointer())->child(Index.row());
       if(Item->getKind()  == vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE){
         loadFeature(static_cast<FeatureTreeItemFeature*>(Item)->getItem());
       }
@@ -72,8 +70,12 @@ void FeatureModelEditor::loadGraph() {
   ModelPath = Ui->ModelFile->text();
   FeatureModel = vara::feature::loadFeatureModel(ModelPath.toStdString());
   if(!FeatureModel){
-    //Return if no model at Path
-    return;
+      QString const Path = QFileDialog::getOpenFileName(this,tr("Open Model"),"/home",tr("XML files (*.xml)"));
+      if(Path.isEmpty()){
+        return ;
+      }
+      Ui->ModelFile->setText(Path);
+      FeatureModel = vara::feature::loadFeatureModel(Path.toStdString());
   }
   //create Graph view
   buildGraph();
@@ -93,10 +95,12 @@ void FeatureModelEditor::buildTree() {
   for(auto Item: TreeModel->getItems()){
     connect(Item, &FeatureTreeItem::inspectSource, this,
             &FeatureModelEditor::inspectFeatureSources);
-    connect(Item, &FeatureTreeItem::addCild, this,
+    connect(Item, &FeatureTreeItem::addChildFeature, this,
             &FeatureModelEditor::featureAddDialogChild);
+    connect(Item, &FeatureTreeItem::removeFeature, this, &FeatureModelEditor::removeFeature);
   }
-  connect(TreeView,&QTreeView::pressed,this,&FeatureModelEditor::loadFeaturefromIndex);
+  connect(TreeView,&QTreeView::pressed,this,
+          &FeatureModelEditor::loadFeatureFromIndex);
   TreeView->setModel(TreeModel.get());
   TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(TreeView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(createTreeContextMenu(const QPoint &)));
@@ -140,6 +144,13 @@ void FeatureModelEditor::featureAddDialogChild(Feature* ParentFeature) {
    }
 }
 
+void FeatureModelEditor::removeFeature(bool Recursive,Feature* Feature) {
+    TreeModel->deleteFeatureItem(Recursive,Feature);
+    Graph->deleteNode(Recursive,Feature);
+    Ui->featureInfo->clear();
+    vara::feature::removeFeature(*FeatureModel,Feature,Recursive);
+}
+
 
 ///Save the current State of the Feature Model
 void FeatureModelEditor::save() {
@@ -148,13 +159,6 @@ void FeatureModelEditor::save() {
    FMWrite.writeFeatureModel(SavePath.toStdString());
 }
 
-
-
-///Spawn File Selection popup to get a Feature Model
-void FeatureModelEditor::findModel() {
-   QString const Path = QFileDialog::getOpenFileName(this,tr("Open Model"),"/home",tr("XML files (*.xml)"));
-   Ui->ModelFile->setText(Path);
-}
 
 
 /// Loead the source files of the Feature to be selectable by the user and set the Feature as CurrentFeature.
@@ -175,7 +179,16 @@ void FeatureModelEditor::inspectFeatureSources(vara::feature::Feature *Feature) 
       Ui->sources->setPlaceholderText("Select File");
     }
 }
+/// Create the Context menu for inspecting sources in the tree view
+/// \param Pos Position of the cursor used to find the clicked item
+void FeatureModelEditor::createTreeContextMenu(const QPoint &Pos) {
+    auto Index = TreeView->indexAt(Pos);
+    if(Index.isValid()){
+      FeatureTreeItem* Item = static_cast<FeatureTreeItem*>(Index.internalPointer())->child(Index.row());
+      Item->contextMenu(TreeView->mapToGlobal(Pos));
+    }
 
+}
 
 /// Load the selected file into the textedit and mark the sources of the selected feature
 void FeatureModelEditor::loadSource(const QString &RelativePath){
@@ -216,17 +229,6 @@ void FeatureModelEditor::markLocation(
   Cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
                       Location.getEnd()->getColumnOffset());
   Cursor.setCharFormat(Fmt);
-}
-
-/// Create the Context menu for inspecting sources in the tree view
-/// \param Pos Position of the cursor used to find the clicked item
-void FeatureModelEditor::createTreeContextMenu(const QPoint &Pos) {
-  auto Index = TreeView->indexAt(Pos);
-  if(Index.isValid()){
-      FeatureTreeItem* Item = static_cast<FeatureTreeItem*>(Index.internalPointer());
-      Item->contextMenu(TreeView->mapToGlobal(Pos));
-  }
-
 }
 
 ///Load a sourcefile to then add a location from it

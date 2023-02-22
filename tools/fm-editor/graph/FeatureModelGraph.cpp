@@ -171,3 +171,28 @@ FeatureNode* FeatureModelGraph::getNode(std::string Name) {
   return nullptr;
 
 }
+void FeatureModelGraph::deleteNode(bool Recursive, FeatureNode* Node) {
+  auto *Parent = Node->parent()->sourceNode();
+  if(!Recursive){
+    for(auto *Child: Node->children()){
+    Child->setSourceNode(Parent);
+    }
+
+    Node->children().clear();
+  }else {
+    for(auto *Child: Node->children()){
+    deleteNode(true,Child->targetNode());
+    }
+  }
+  Parent->removeChild(Node);
+  scene()->removeItem(Node);
+  scene()->removeItem(Node->parent());
+
+  Nodes.erase(std::find_if(Nodes.begin(), Nodes.end(),[Node](auto &N){return N.get() == Node;}));
+
+}
+void FeatureModelGraph::deleteNode(bool Recursive,
+                                   vara::feature::Feature *Feature) {
+  auto * Node = getNode(Feature->getName().str());
+  deleteNode(Recursive,Node);
+}

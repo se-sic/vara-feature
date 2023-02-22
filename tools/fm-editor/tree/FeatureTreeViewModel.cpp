@@ -4,60 +4,65 @@
 
 #include "FeatureTreeViewModel.h"
 
-QModelIndex FeatureTreeViewModel::index(int Row, int Column, const QModelIndex &Parent) const{
-  FeatureTreeItem* ParentItem;
+QModelIndex FeatureTreeViewModel::index(int Row, int Column,
+                                        const QModelIndex &Parent) const {
+  FeatureTreeItem *ParentItem;
+
   if (!Parent.isValid()) {
     ParentItem = RootItem;
   } else {
-    ParentItem = static_cast<FeatureTreeItem*>(Parent.internalPointer());
+    ParentItem = static_cast<FeatureTreeItem *>(Parent.internalPointer())->child(Parent.row());
   }
-  auto *ChildItem= ParentItem->child(Row);
-  if(ChildItem) {
-    return createIndex(Row,Column,ChildItem);
+  if(ParentItem->childCount() <=0){
+    return {};
+  }
+  auto *ChildItem = ParentItem->child(Row);
+  if (ChildItem) {
+    return createIndex(Row, Column, ParentItem);
   }
   return {};
 }
 
 QModelIndex FeatureTreeViewModel::parent(const QModelIndex &Child) const {
-  if(!Child.isValid()){
+  if (!Child.isValid()) {
     return {};
   }
-  auto* ChildItem = static_cast<FeatureTreeItem*>(Child.internalPointer());
-  auto* ParentItem = ChildItem->parent();
-  if(ParentItem) {
-    return createIndex(ParentItem->row(),0,ParentItem);
-}
+  auto *ParentItem = static_cast<FeatureTreeItem *>(Child.internalPointer());
+  if (ParentItem && ParentItem != RootItem) {
+    return createIndex(ParentItem->row(), 0, ParentItem->parent());
+  }
   return {};
 }
 int FeatureTreeViewModel::rowCount(const QModelIndex &Parent) const {
-  if(Parent.column() > 0) {
+  if (Parent.column() > 0) {
     return 0;
-}
-  FeatureTreeItem* ParentItem;
-  if (!Parent.isValid()){
+  }
+  FeatureTreeItem *ParentItem;
+  if (!Parent.isValid()) {
     ParentItem = RootItem;
   } else {
-    ParentItem = static_cast<FeatureTreeItem*>(Parent.internalPointer());
+    ParentItem = static_cast<FeatureTreeItem *>(Parent.internalPointer())->child(Parent.row());
   }
   return ParentItem->childCount();
 }
 int FeatureTreeViewModel::columnCount(const QModelIndex &Parent) const {
-  if(Parent.isValid()) {
-    return static_cast<FeatureTreeItem*>(Parent.internalPointer())->columnCount();
-}
+  if (Parent.isValid()) {
+    auto Item = static_cast<FeatureTreeItem *>(Parent.internalPointer())->child(Parent.row());
+    return Item->columnCount();
+  }
   return RootItem->columnCount();
 }
 QVariant FeatureTreeViewModel::data(const QModelIndex &Index, int Role) const {
-  if(!Index.isValid() || Role!=Qt::DisplayRole) {
-  return {};
-}
-  auto* Item = static_cast<FeatureTreeItem* >(Index.internalPointer());
+  if (!Index.isValid() || Role != Qt::DisplayRole) {
+    return {};
+  }
+  auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())->child(Index.row());
   return Item->data(Index.column());
 }
 Qt::ItemFlags FeatureTreeViewModel::flags(const QModelIndex &Index) const {
-  if(Index.isValid()){
-    auto *Item = static_cast<FeatureTreeItem*>(Index.internalPointer());
-    if(Item->booleanColumn(Index.column())){
+  if (Index.isValid()) {
+    auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())->child(Index.row());
+    if (Item->booleanColumn(Index.column())) {
       return Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     }
   }
@@ -66,28 +71,70 @@ Qt::ItemFlags FeatureTreeViewModel::flags(const QModelIndex &Index) const {
 QVariant FeatureTreeViewModel::headerData(int Section,
                                           Qt::Orientation Orientation,
                                           int Role) const {
-  if(Orientation == Qt::Orientation::Horizontal && Role == Qt::DisplayRole) {
-  switch (Section) {
-    case 0:return QString("Feature");
-    case 1:return QString("Optional");
-    case 2:return QString("NumericValues");
-    case 3:return QString("Locations");
-    case 4:return QString("ConfigurationOption");
-    default:return QString("Todo");
+  if (Orientation == Qt::Orientation::Horizontal && Role == Qt::DisplayRole) {
+    switch (Section) {
+    case 0:
+      return QString("Feature");
+    case 1:
+      return QString("Optional");
+    case 2:
+      return QString("NumericValues");
+    case 3:
+      return QString("Locations");
+    case 4:
+      return QString("ConfigurationOption");
+    default:
+      return QString("Todo");
     }
-}
-return  {};
+  }
+  return {};
 }
 std::vector<FeatureTreeItem *> FeatureTreeViewModel::getItems() {
-return Items;
+  return Items;
 }
-FeatureTreeItem* FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature, std::string Parent) {
-auto Item = std::find_if(Items.begin(), Items.end(),[&Parent](auto I){return I->getName()==Parent;});
-if(Item != Items.end()){
+FeatureTreeItem *
+FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
+                                 std::string Parent) {
+  auto Item = getItem(Parent);
+  if (Item) {
     auto NewItem = FeatureTreeItem::createFeatureTreeItem(Feature);
-    (*Item)->addChild(NewItem);
+    Item->addChild(NewItem);
     Items.push_back(NewItem);
     return NewItem;
+  }
+  return nullptr;
 }
-return nullptr;
+
+void FeatureTreeViewModel::deleteFeatureItem(bool Recursive,
+                                             vara::feature::Feature *Feature) {
+  emit(layoutAboutToBeChanged());
+  auto Item = getItem(Feature->getName().str());
+  if (Item) {
+    deleteItem(Recursive,Item);
+  }
+  emit(layoutChanged());
+}
+
+void FeatureTreeViewModel::deleteItem(bool Recursive, FeatureTreeItem *Item) {
+
+  if (!Recursive) {
+    auto *Parent = Item->parent();
+    if (Parent) {
+      for (auto *Child : Item->getChildren()) {
+        Parent->addChild(Child);
+      }
+      auto ItemPos = std::find(Parent->getChildren().begin(),
+                               Parent->getChildren().end(), Item);
+      Parent->getChildren().erase(ItemPos);
+    }
+  }
+  if(Recursive) {
+    for (auto *Child : Item->getChildren()) {
+      deleteItem(Recursive,Child);
+    }
+  }
+  Items.erase(std::find(Items.begin(), Items.end(), Item));
+  emit(layoutAboutToBeChanged());
+  delete Item;
+  emit(layoutChanged());
 }

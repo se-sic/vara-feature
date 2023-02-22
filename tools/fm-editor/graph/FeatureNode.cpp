@@ -28,11 +28,11 @@ void FeatureNode::setParentEdge(FeatureEdge *Edge) {
   Edge->adjust();
 }
 
-std::vector<FeatureEdge *> FeatureNode::children() const {
+std::vector<FeatureEdge *> FeatureNode::children() {
   return ChildEdges;
 }
 
-FeatureEdge * FeatureNode::parent() const {
+FeatureEdge * FeatureNode::parent() {
   return ParentEdge;
 }
 
@@ -85,6 +85,13 @@ QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
   return QGraphicsItem::itemChange(Change, Value);
 }
 
+void FeatureNode::removeChild(FeatureNode* Child){
+  auto EdgePos = std::find_if(ChildEdges.begin(), ChildEdges.end(), [Child](auto *Edge){return Edge->targetNode()==Child;});
+  if(EdgePos!=ChildEdges.end()){
+    ChildEdges.erase(EdgePos);
+  }
+}
+
 void FeatureNode::mousePressEvent(QGraphicsSceneMouseEvent *Event) {
   update();
   QGraphicsItem::mousePressEvent(Event);
@@ -114,22 +121,22 @@ int FeatureNode::width() const {
 }
 
 int FeatureNode::childrenWidth() const {
-  if(children().empty()){
+  if(ChildEdges.empty()){
     return width();
   }
   int Result = 0;
-    for (auto *Child : children()){
+    for (auto *Child : ChildEdges){
     Result +=Child->targetNode()->childrenWidth();
     }
     return std::max(Result,width());
 }
 
 int FeatureNode::childrenDepth() const{
-  if(children().empty()){
+  if(ChildEdges.empty()){
     return 1;
   }
   int MaxDepth = 0;
-    for(auto *Child: children()){
+    for(auto *Child: ChildEdges){
       int const ChildDepth = Child->targetNode()->childrenDepth();
       if(ChildDepth +1> MaxDepth){
       MaxDepth = ChildDepth +1;

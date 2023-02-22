@@ -65,3 +65,7 @@ void FeatureEdge::paint(QPainter *Painter,
   Painter->setBrush(QBrush(Target->isOptional()?Qt::white:Qt::black));
   Painter->drawEllipse(TargetPoint,4,4);
 }
+void FeatureEdge::setSourceNode(FeatureNode *Node) {
+  Source = Node;
+  Node->addChildEdge(this);
+}

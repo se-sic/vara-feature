@@ -10,6 +10,7 @@ public:
 
   [[nodiscard]] FeatureNode *sourceNode() const;
   [[nodiscard]] FeatureNode *targetNode() const;
+  void setSourceNode(FeatureNode* Node);
   void adjust();
   enum { Type = UserType + 2 };
   [[nodiscard]] int type() const override { return Type; }

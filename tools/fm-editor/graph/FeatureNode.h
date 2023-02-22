@@ -14,12 +14,13 @@ class FeatureNode : public QObject,public QGraphicsItem{
 
 
 public:
+  void removeChild(FeatureNode *Child);
   FeatureNode( vara::feature::Feature *Feature);
   [[nodiscard]] int width() const;
   void addChildEdge(FeatureEdge *Edge);
   void setParentEdge(FeatureEdge *Edge);
-  [[nodiscard]] std::vector<FeatureEdge *> children() const;
-  [[nodiscard]] FeatureEdge * parent() const;
+  [[nodiscard]] std::vector<FeatureEdge *> children();
+  [[nodiscard]] FeatureEdge * parent();
   [[nodiscard]] int childrenWidth() const;
   [[nodiscard]] int childrenDepth() const;
   enum { Type = UserType + 1 };

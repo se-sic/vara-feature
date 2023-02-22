@@ -16,6 +16,8 @@ public:
   void itemMoved();
   FeatureNode* getNode(std::string Name);
   FeatureNode*addNode(vara::feature::Feature *Feature,FeatureNode* Parent);
+  void deleteNode(bool Recursive, vara::feature::Feature* Feature);
+  void deleteNode(bool Recursive, FeatureNode* Node);
 public slots:
   void zoomIn();
   void zoomOut();

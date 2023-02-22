@@ -25,10 +25,21 @@ public:
   [[nodiscard]] Qt::ItemFlags flags(const QModelIndex &Index) const override;
   [[nodiscard]] QVariant headerData(int Section, Qt::Orientation Orientation, int Role = Qt::DisplayRole) const override;
   FeatureTreeItem* addFeature(vara::feature::Feature* Item,string Parent);
+  void deleteFeatureItem(bool Recursive,vara::feature::Feature* Feature);
+  void deleteItem(bool Recursive, FeatureTreeItem* Item);
+  FeatureTreeItem* getItem(string Name) {
+    auto Item = std::find_if(Items.begin(), Items.end(),[&Name](auto I){return I->getName()== Name;});
+  if(Item != Items.end()) {
+    return *Item;
+  }
+  return nullptr;
+ }
+// bool removeRows(int row, int count, const QModelIndex &parent) override;
 private:
   vara::feature::FeatureModel* Model;
   FeatureTreeItem* RootItem;
   std::vector<FeatureTreeItem*> Items;
+
 };
 
 #endif // VARA_FEATURE_FEATURETREEVIEWMODEL_H
