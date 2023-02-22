@@ -12,7 +12,8 @@
 class FeatureAddDialog : public QDialog, public Ui::Add {
   Q_OBJECT
 public:
-  FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent, vara::feature::Feature* ParentFeature = nullptr);
+  FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent,
+                   vara::feature::Feature *ParentFeature = nullptr);
   QString getName();
   QString getParent();
   QString getOutpuString();
@@ -21,10 +22,9 @@ public:
   bool isOptional();
 public slots:
   void featureType(int index);
+
 private:
-
   QStringList NodeNames;
-
 
   vara::feature::StepFunction::StepOperation getStepOperation();
 };

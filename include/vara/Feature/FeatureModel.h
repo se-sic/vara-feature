@@ -232,7 +232,6 @@ public:
   //===--------------------------------------------------------------------===//
   // Constraints
 
-
 private:
   /// \brief Base for different constraint kinds (boolean, non-boolean, etc.).
   class FeatureModelConstraint {

@@ -978,14 +978,14 @@ private:
       }
       auto ParentFeature = dynamic_cast<Feature*>(Parent);
       ParentFeature = FM->getFeature(ParentFeature->getName());
-      Relationship* Base = *ParentFeature->getChildren<Relationship>(0).begin();
-      for(i=i-1;i<0;i--){
+      Relationship *Base = *ParentFeature->getChildren<Relationship>(0).begin();
+      for (i = i - 1; i < 0; i--) {
         Base = *Base->getChildren<Relationship>(0).begin();
       }
       return Base;
     }
 
-    return FM->getFeature(dynamic_cast<Feature&>(F).getName());
+    return FM->getFeature(dynamic_cast<Feature &>(F).getName());
   }
 
   std::unique_ptr<FeatureModel> FM;
@@ -1028,7 +1028,8 @@ protected:
   //===--------------------------------------------------------------------===//
   // Modifications
 
-  void addFeatureImpl(std::unique_ptr<Feature> NewFeature, FeatureTreeNode *Parent) {
+  void addFeatureImpl(std::unique_ptr<Feature> NewFeature,
+                      FeatureTreeNode *Parent) {
     assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
