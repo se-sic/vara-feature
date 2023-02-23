@@ -6,6 +6,7 @@ set(LLVM_LINK_COMPONENTS
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+include_directories(../../external/qsourcehighlite)
 add_vara_executable(fm-editor
         main.cpp
         graph/FeatureModelGraph.h
@@ -19,12 +20,14 @@ add_vara_executable(fm-editor
         tree/FeatureTreeItem.h
         tree/FeatureTreeItem.cpp
         FeatureModelEditor.h FeatureModelEditor.cpp
-        FeatureModelEditor.ui
-        FeatureAddDialog.h FeatureAddDialog.cpp FeatureAddDialog.ui
-        fileview/syntaxHighlite/qsourcehighliter.h fileview/syntaxHighlite/qsourcehighliter.cpp
-        fileview/syntaxHighlite/languagedata.h fileview/syntaxHighlite/languagedata.cpp
-        fileview/syntaxHighlite/qsourcehighliterthemes.h fileview/syntaxHighlite/qsourcehighliterthemes.cpp
-)
+        FeatureAddDialog.h FeatureAddDialog.cpp
+        ../../external/qsourcehighlite/qsourcehighliter.h
+        ../../external/qsourcehighlite/qsourcehighliter.cpp
+        ../../external/qsourcehighlite/languagedata.h
+        ../../external/qsourcehighlite/languagedata.cpp
+        ../../external/qsourcehighlite/qsourcehighliterthemes.h
+        ../../external/qsourcehighlite/qsourcehighliterthemes.cpp
+        )
 target_link_libraries(fm-editor
         LINK_PRIVATE
         VaRAFeature

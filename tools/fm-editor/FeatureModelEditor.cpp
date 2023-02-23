@@ -1,6 +1,6 @@
 #include "FeatureModelEditor.h"
 #include "FeatureAddDialog.h"
-#include "fileview/syntaxHighlite/qsourcehighliter.h"
+#include "qsourcehighliter.h"
 #include "graph/FeatureModelGraph.h"
 #include "graph/FeatureNode.h"
 #include "ui_FeatureModelEditor.h"
