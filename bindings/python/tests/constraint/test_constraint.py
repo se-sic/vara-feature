@@ -18,8 +18,8 @@ class TestConstraintBuilder(unittest.TestCase):
     def test_call(self):
         """ Checks if we can parenthesize part of a constraint. """
         cb = constraint.ConstraintBuilder()
-        cb.feature("A").implies().feature("B")()
-        cb.implies().feature("C").implies().feature("D")
+        cb.feature("A").implies().feature("B")().implies().feature("C")
+        cb.implies().feature("D")
         self.assertEqual("((A => B) => (C => D))", str(cb.build()))
 
     def test_full(self):

@@ -39,6 +39,17 @@ TEST_F(ConstraintBuilderTest, parenthesizeUnary) {
       "B");
 }
 
+TEST_F(ConstraintBuilderTest, parenthesizeCall) {
+  Expected = "((A => B) => (C => D))";
+  CB.feature("A")
+      .implies()
+      .feature("B")()
+      .implies()
+      .feature("C")
+      .implies()
+      .feature("D");
+}
+
 TEST_F(ConstraintBuilderTest, parenthesizeBinary) {
   Expected = "((A => B) => (C => D))";
   CB.openPar()
