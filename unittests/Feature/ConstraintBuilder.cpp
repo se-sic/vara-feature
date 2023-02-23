@@ -35,16 +35,17 @@ protected:
 
 TEST_F(ConstraintBuilderTest, parenthesizeUnary) {
   Expected = "!(!!A => B)";
-  CB.lNot().left().lNot().lNot().feature("A").right().implies().feature("B");
+  CB.lNot().openPar().lNot().lNot().feature("A").closePar().implies().feature(
+      "B");
 }
 
 TEST_F(ConstraintBuilderTest, parenthesizeBinary) {
   Expected = "((A => B) => (C => D))";
-  CB.left()
+  CB.openPar()
       .feature("A")
       .implies()
       .feature("B")
-      .right()
+      .closePar()
       .implies()
       .feature("C")
       .implies()
@@ -53,35 +54,35 @@ TEST_F(ConstraintBuilderTest, parenthesizeBinary) {
 
 TEST_F(ConstraintBuilderTest, parenthesizeFull) {
   Expected = "((A => (!!B => !(!C => !!D))) => E)";
-  CB.left()
-      .left()
+  CB.openPar()
+      .openPar()
       .feature("A")
       .implies()
-      .left()
-      .left()
+      .openPar()
+      .openPar()
       .lNot()
       .lNot()
       .feature("B")
-      .right()
+      .closePar()
       .implies()
-      .left()
+      .openPar()
       .lNot()
-      .left()
-      .left()
+      .openPar()
+      .openPar()
       .lNot()
       .feature("C")
-      .right()
+      .closePar()
       .implies()
       .lNot()
       .lNot()
       .feature("D")
-      .right()
-      .right()
-      .right()
-      .right()
+      .closePar()
+      .closePar()
+      .closePar()
+      .closePar()
       .implies()
       .feature("E")
-      .right();
+      .closePar();
 }
 
 TEST_F(ConstraintBuilderTest, constant) {

@@ -16,8 +16,8 @@ void init_constraint_module_constraint_builder(py::module &M) {
       .def(py::init<>())
       .def("build", &vf::ConstraintBuilder::build,
            R"pbdoc('Builds constraint.')pbdoc")
-      .def("left", &vf::ConstraintBuilder::feature, R"pbdoc('(')pbdoc")
-      .def("right", &vf::ConstraintBuilder::feature, R"pbdoc(')')pbdoc")
+      .def("openPar", &vf::ConstraintBuilder::openPar, R"pbdoc('(')pbdoc")
+      .def("closePar", &vf::ConstraintBuilder::closePar, R"pbdoc(')')pbdoc")
       .def("constant", &vf::ConstraintBuilder::constant, R"pbdoc('42')pbdoc")
       .def("feature", &vf::ConstraintBuilder::feature, R"pbdoc('Foo')pbdoc")
       .def("lNot", &vf::ConstraintBuilder::lNot, R"pbdoc('!Foo')pbdoc")
@@ -41,12 +41,12 @@ void init_constraint_module_constraint_builder(py::module &M) {
       .def("greaterEqual", &vf::ConstraintBuilder::greaterEqual,
            R"pbdoc('Foo >= Bar')pbdoc")
       .def("neg", &vf::ConstraintBuilder::neg, R"pbdoc('~Foo')pbdoc")
-      .def("add", &vf::ConstraintBuilder::feature, R"pbdoc('Foo + Bar')pbdoc")
-      .def("subtract", &vf::ConstraintBuilder::feature,
+      .def("add", &vf::ConstraintBuilder::add, R"pbdoc('Foo + Bar')pbdoc")
+      .def("subtract", &vf::ConstraintBuilder::subtract,
            R"pbdoc('Foo - Bar')pbdoc")
-      .def("multiply", &vf::ConstraintBuilder::feature,
+      .def("multiply", &vf::ConstraintBuilder::multiply,
            R"pbdoc('Foo * Bar')pbdoc")
-      .def("divide", &vf::ConstraintBuilder::feature,
+      .def("divide", &vf::ConstraintBuilder::divide,
            R"pbdoc('Foo / Bar')pbdoc");
 }
 

@@ -136,7 +136,7 @@ public:
   /// Open parenthesis. Allows to add more precise parentheses.
   ///
   /// Example:
-  ///     left().feature("A").implies().feature("B").right()
+  ///     openPar().feature("A").implies().feature("B").closePar()
   ///      .implies().feature("C").implies().feature("D")
   ///   produces the constraint
   ///     '((A => B) => (C => D))'
@@ -144,12 +144,12 @@ public:
   /// CAVE: These may be required for unary operators.
   ///
   /// Example:
-  ///     lNot().left().lNot().feature("A").right().implies().feature("B")
+  ///     lNot().openPar().lNot().feature("A").closePar().implies().feature("B")
   ///   produces the constraint
   ///     '!(!A => B)'
-  ConstraintBuilder &left() {
+  ConstraintBuilder &openPar() {
     if (!Head || *Head) {
-      llvm::errs() << "Syntax error: Unrecognized left parenthesis.\n";
+      llvm::errs() << "Syntax error: Unrecognized opening parenthesis.\n";
       Head = nullptr;
       return *this;
     }
@@ -157,18 +157,18 @@ public:
     return *this;
   }
 
-  /// Close parenthesis. See \a left.
+  /// Close parenthesis. See \a openPar.
   ///
   /// CAVE: If used without a succeeding operator or in conjunction with unary
   ///  expressions, this may not yield the desired result.
   ///
   /// Example:
-  ///     lNot().left().lNot().feature("A").implies().feature("B").right()
+  ///     lNot().openPar().lNot().feature("A").implies().feature("B").closePar()
   ///   produces the constraint
   ///     '!!(A => B)'
-  ConstraintBuilder &right() {
+  ConstraintBuilder &closePar() {
     if (!Head || !*Head || Parentheses.empty()) {
-      llvm::errs() << "Syntax error: Unrecognized right parenthesis.\n";
+      llvm::errs() << "Syntax error: Unrecognized closing parenthesis.\n";
       Head = nullptr;
       return *this;
     }

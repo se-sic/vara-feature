@@ -18,8 +18,9 @@ class TestConstraintBuilder(unittest.TestCase):
     def test_full(self):
         """ Checks if we can build a parenthesized constraint. """
         cb = constraint.ConstraintBuilder()
-        cb.left().left().feature("A").implies().left().left().lNot()
-        cb.lNot().feature("B").right().implies().left().lNot().left().left()
-        cb.lNot().feature("C").right().implies().lNot().lNot().feature("D")
-        cb.right().right().right().right().implies().feature("E").right()
+        cb.openPar().openPar().feature("A").implies().openPar().openPar().lNot()
+        cb.lNot().feature("B").closePar().implies().openPar().lNot().openPar()
+        cb.openPar().lNot().feature("C").closePar().implies().lNot().lNot()
+        cb.feature("D").closePar().closePar().closePar().closePar().implies()
+        cb.feature("E").closePar()
         self.assertEqual("((A => (!!B => !(!C => !!D))) => E)", str(cb.build()))
