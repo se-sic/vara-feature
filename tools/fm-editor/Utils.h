@@ -22,9 +22,9 @@ private:
 };
 
 template <class T, class... Func>
-QMenu *buildMenu(T *Receiver, std::pair<QString, Func>... Actions) {
-  auto Menu = new QMenu;
-  ActionBuilder Builder(Menu, Receiver);
+std::unique_ptr<QMenu> buildMenu(T *Receiver, std::pair<QString, Func>... Actions) {
+  auto Menu = std::make_unique<QMenu>();
+  ActionBuilder Builder(Menu.get(), Receiver);
   Builder.addActions(Actions...);
   return Menu;
 }

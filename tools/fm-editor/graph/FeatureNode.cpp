@@ -4,7 +4,6 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
-#include <QMenu>
 #include <QPainter>
 #include <QStyleOption>
 
@@ -13,6 +12,8 @@ FeatureNode::FeatureNode(vara::feature::Feature *Feature) : Feature(Feature) {
   setFlag(ItemSendsGeometryChanges);
   setCacheMode(DeviceCoordinateCache);
   setZValue(-1);
+  ContextMenu = std::make_unique<QMenu>();
+  ContextMenu->addAction("Inspect Sources", this, &FeatureNode::inspect);
 }
 
 void FeatureNode::addChildEdge(FeatureEdge *Edge) {
@@ -99,11 +100,7 @@ void FeatureNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) {
 }
 
 void FeatureNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) {
-  auto *Menu = new QMenu;
-  auto *Inspect = new QAction("Inspect Sources", this);
-  Menu->addAction(Inspect);
-  Menu->popup(Event->screenPos());
-  connect(Inspect, &QAction::triggered, this, &FeatureNode::inspect);
+  ContextMenu->popup(Event->screenPos());
 }
 void FeatureNode::inspect() { emit(inspectSource(Feature)); }
 
@@ -116,10 +113,12 @@ int FeatureNode::childrenWidth() const {
   if (ChildEdges.empty()) {
     return width();
   }
+
   int Result = 0;
   for (auto *Child : ChildEdges) {
     Result += Child->targetNode()->childrenWidth();
   }
+
   return std::max(Result, width());
 }
 
@@ -127,6 +126,7 @@ int FeatureNode::childrenDepth() const {
   if (ChildEdges.empty()) {
     return 1;
   }
+
   int MaxDepth = 0;
   for (auto *Child : ChildEdges) {
     int const ChildDepth = Child->targetNode()->childrenDepth();
@@ -134,5 +134,6 @@ int FeatureNode::childrenDepth() const {
       MaxDepth = ChildDepth + 1;
     }
   }
+
   return MaxDepth;
 }

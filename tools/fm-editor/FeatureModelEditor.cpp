@@ -83,11 +83,12 @@ void FeatureModelEditor::loadGraph() {
 
   // create Graph view
   buildGraph();
-  
+
   // create Tree View
   buildTree();
+
   Ui->tabWidget->addTab(Graph.get(), "GraphView");
-  Ui->tabWidget->addTab(TreeView, "TreeView");
+  Ui->tabWidget->addTab(TreeView.get(), "TreeView");
   connect(Ui->sources, &QComboBox::currentTextChanged, this,
           &FeatureModelEditor::loadSource);
   Ui->actionSave->setEnabled(true);
@@ -96,9 +97,9 @@ void FeatureModelEditor::loadGraph() {
 
 /// Build the Treeview
 void FeatureModelEditor::buildTree() {
-  TreeView = new QTreeView();
+  TreeView = std::make_unique<QTreeView>();
   TreeModel =
-      std::make_unique<FeatureTreeViewModel>(FeatureModel.get(), TreeView);
+      std::make_unique<FeatureTreeViewModel>(FeatureModel.get(), TreeView.get());
   for (auto Item : TreeModel->getItems()) {
     connect(Item, &FeatureTreeItem::inspectSource, this,
             &FeatureModelEditor::inspectFeatureSources);
@@ -107,11 +108,11 @@ void FeatureModelEditor::buildTree() {
     connect(Item, &FeatureTreeItem::removeFeature, this,
             &FeatureModelEditor::removeFeature);
   }
-  connect(TreeView, &QTreeView::pressed, this,
+  connect(TreeView.get(), &QTreeView::pressed, this,
           &FeatureModelEditor::loadFeatureFromIndex);
   TreeView->setModel(TreeModel.get());
   TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(TreeView, SIGNAL(customContextMenuRequested(const QPoint &)), this,
+  connect(TreeView.get(), SIGNAL(customContextMenuRequested(const QPoint &)), this,
           SLOT(createTreeContextMenu(const QPoint &)));
 }
 
@@ -176,8 +177,10 @@ void FeatureModelEditor::save() {
   FMWrite.writeFeatureModel(SavePath.toStdString());
 }
 
-/// Loead the source files of the Feature to be selectable by the user and set
-/// the Feature as CurrentFeature. \param Feature
+/// Load the source files of the Feature to be selectable by the user and set
+/// the Feature as CurrentFeature.
+///
+/// \param Feature Selected Feature
 void FeatureModelEditor::inspectFeatureSources(
     vara::feature::Feature *Feature) {
   CurrentFeature = Feature;
@@ -196,7 +199,6 @@ void FeatureModelEditor::inspectFeatureSources(
     Ui->sources->setPlaceholderText("Select File");
   }
 }
-
 /// Create the Context menu for inspecting sources in the tree view
 ///
 /// \param Pos Position of the cursor used to find the clicked item
@@ -210,8 +212,9 @@ void FeatureModelEditor::createTreeContextMenu(const QPoint &Pos) {
   }
 }
 
-/// Load the selected file into the textedit and mark the sources of the
-/// selected feature
+/// Load the selected file into the textedit and mark the sources of the selected feature
+///
+/// \param RelativePath  path to the source file relative to the repository path
 void FeatureModelEditor::loadSource(const QString &RelativePath) {
   Ui->textEdit->clear();
   auto SourcePath = Repository + "/" + RelativePath;
@@ -220,7 +223,6 @@ void FeatureModelEditor::loadSource(const QString &RelativePath) {
     File.open(QFile::ReadOnly | QFile::Text);
     QTextStream ReadFile(&File);
     Ui->textEdit->setText(ReadFile.readAll());
-    std::cout << CurrentFeature->toString();
     std::vector<vara::feature::FeatureSourceRange> Locations{};
     std::copy_if(
         CurrentFeature->getLocationsBegin(), CurrentFeature->getLocationsEnd(),
@@ -236,7 +238,7 @@ void FeatureModelEditor::loadSource(const QString &RelativePath) {
 /// Mark the given SourceRange with the given Format
 ///
 /// \param Fmt Format to mark with
-/// \param Cursor  the cursor
+/// \param Cursor  Cursor
 /// \param Location Location to mark
 void FeatureModelEditor::markLocation(
     vara::feature::FeatureSourceRange &Location) const {

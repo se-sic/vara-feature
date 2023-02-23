@@ -38,6 +38,7 @@ public:
     if (Item != Items.end()) {
       return *Item;
     }
+
     return nullptr;
   }
 

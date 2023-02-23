@@ -18,7 +18,7 @@ public:
   std::unique_ptr<vara::feature::Feature> getFeature();
   vara::feature::Feature::FeatureKind getFeatureKind();
   bool isOptional();
-  
+
 public slots:
   void featureType(int index);
 

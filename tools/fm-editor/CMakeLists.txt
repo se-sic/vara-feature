@@ -21,6 +21,7 @@ add_vara_executable(fm-editor
         tree/FeatureTreeItem.cpp
         FeatureModelEditor.h FeatureModelEditor.cpp
         FeatureAddDialog.h FeatureAddDialog.cpp
+        Utils.h
         ../../external/qsourcehighlite/qsourcehighliter.h
         ../../external/qsourcehighlite/qsourcehighliter.cpp
         ../../external/qsourcehighlite/languagedata.h

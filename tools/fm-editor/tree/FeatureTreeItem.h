@@ -1,7 +1,11 @@
 #ifndef VARA_FEATURE_FEATURETREEITEM_H
 #define VARA_FEATURE_FEATURETREEITEM_H
+
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
+#include "../Utils.h"
+
+#include <QMenu>
 #include <QPoint>
 #include <QVariant>
 #include <llvm/ADT/StringMap.h>
@@ -78,7 +82,15 @@ public:
   FeatureTreeItemFeature(vara::feature::Feature *Item)
       : FeatureTreeItem(Item,
                         vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE),
-        Item(Item) {}
+        Item(Item) {
+    ContextMenu = buildMenu(
+        this,
+        std::pair(QString("Inspect Sources"), &FeatureTreeItemFeature::inspect),
+        std::pair(QString("Add Child"), &FeatureTreeItemFeature::addChild),
+        std::pair(QString("Remove"), &FeatureTreeItemFeature::remove));
+    // TODO Make recursive Removal work
+
+  }
   [[nodiscard]] QVariant data(int Column) const override;
   [[nodiscard]] int columnCount() const override { return 5; }
   static bool booleanColumn(int Column) { return Column == 1; }
@@ -93,6 +105,7 @@ public slots:
 
 private:
   vara::feature::Feature *Item;
+  std::unique_ptr<QMenu> ContextMenu;
 };
 
 class FeatureTreeItemRelation : public FeatureTreeItem {

@@ -5,7 +5,7 @@
 
 class FeatureNode;
 
-class FeatureEdge : public QGraphicsItem{
+class FeatureEdge : public QGraphicsItem {
 public:
   FeatureEdge(FeatureNode *SourceNode, FeatureNode *TargetNode);
 

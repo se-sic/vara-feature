@@ -1,8 +1,6 @@
 #include "FeatureTreeItem.h"
-#include "../Utils.h"
 
 #include <QMenu>
-
 #include <unordered_set>
 
 QVariant numericValue(vara::feature::Feature *Item) {
@@ -44,21 +42,15 @@ QVariant locationString(vara::feature::Feature *Item) {
   return QString::fromStdString(StrS.str());
 }
 
-FeatureTreeItem* FeatureTreeItem::createFeatureTreeItem(
-    vara::feature::FeatureTreeNode *Item)  {
-  if(Item->getKind() == vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP){
-    return new FeatureTreeItemRelation(dynamic_cast<vara::feature::Relationship*>(Item));
-FeatureTreeItem *
-FeatureTreeItem::createFeatureTreeItem(vara::feature::FeatureTreeNode *Item) {
+FeatureTreeItem *FeatureTreeItem::createFeatureTreeItem(vara::feature::FeatureTreeNode *Item) {
   if (Item->getKind() ==
       vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
     return new FeatureTreeItemRelation(
-        dynamic_cast<vara::feature::Relationship *>(Item));
+        dyn_cast<vara::feature::Relationship>(Item));
   }
-  return new FeatureTreeItemFeature(
-      dynamic_cast<vara::feature::Feature *>(Item));
 
-  return new FeatureTreeItemFeature(dynamic_cast<vara::feature::Feature*>(Item));
+  return new FeatureTreeItemFeature(
+      dyn_cast<vara::feature::Feature>(Item));
 }
 
 void FeatureTreeItem::addChild(FeatureTreeItem *Child) {
@@ -78,6 +70,7 @@ std::vector<FeatureTreeItem *> FeatureTreeItem::getChildrenRecursive() {
     auto ChildNodes = Child->getChildrenRecursive();
     Nodes.insert(Nodes.end(), ChildNodes.begin(), ChildNodes.end());
   }
+
   return Nodes;
 }
 
@@ -101,13 +94,7 @@ QVariant FeatureTreeItemFeature::data(int Column) const {
 void FeatureTreeItemFeature::inspect() { emit(inspectSource(Item)); }
 
 void FeatureTreeItemFeature::contextMenu(QPoint Pos) {
-  auto *Menu = buildMenu(
-      this,
-      std::pair(QString("Inspect Sources"), &FeatureTreeItemFeature::inspect),
-      std::pair(QString("Add Child"), &FeatureTreeItemFeature::addChild),
-      std::pair(QString("Remove"), &FeatureTreeItemFeature::remove));
-  // TODO Make recursive Removal work
-  Menu->popup(Pos);
+  ContextMenu->popup(Pos);
 }
 
 void FeatureTreeItemFeature::remove() { emit(removeFeature(false, Item)); }

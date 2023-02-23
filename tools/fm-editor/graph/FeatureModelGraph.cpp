@@ -15,6 +15,7 @@ FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
     : QGraphicsView(Parent),
       EntryNode(new FeatureNode(FeatureModel->getRoot())),
       FeatureModel(FeatureModel) {
+
   auto *Scene = new QGraphicsScene(this);
   Scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
@@ -189,16 +190,16 @@ FeatureNode *FeatureModelGraph::getNode(std::string Name) {
 
 void FeatureModelGraph::deleteNode(bool Recursive, FeatureNode *Node) {
   auto *Parent = Node->parent()->sourceNode();
-  if (!Recursive) {
+  if (Recursive) {
+    for (auto *Child : Node->children()) {
+      deleteNode(true, Child->targetNode());
+    }
+  } else {
     for (auto *Child : Node->children()) {
       Child->setSourceNode(Parent);
     }
 
     Node->children().clear();
-  } else {
-    for (auto *Child : Node->children()) {
-      deleteNode(true, Child->targetNode());
-    }
   }
   Parent->removeChild(Node);
   scene()->removeItem(Node);

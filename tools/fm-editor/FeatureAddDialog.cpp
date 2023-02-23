@@ -9,13 +9,13 @@ FeatureAddDialog::FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent,
     : QDialog(Parent) {
   setupUi(this);
   NodeNames = QStringList();
-  if (!ParentFeature) {
+  if (ParentFeature) {
+    NodeNames.push_back(QString::fromStdString(ParentFeature->getName().str()));
+    Nodes->setEnabled(false);
+  } else {
     for (const auto &Node : *Graph->getNodes()) {
       NodeNames.push_back(Node->getQName());
     }
-  } else {
-    NodeNames.push_back(QString::fromStdString(ParentFeature->getName().str()));
-    Nodes->setEnabled(false);
   }
   this->Nodes->addItems(NodeNames);
   this->FeatureKind->addItems(QStringList{"Binary", "Numeric"});

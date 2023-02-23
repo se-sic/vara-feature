@@ -1,13 +1,9 @@
 #include "FeatureModelEditor.h"
-#include "graph/FeatureModelGraph.h"
-#include "vara/Feature/FeatureModel.h"
 
 #include <QApplication>
-#include <QMainWindow>
-#include <QTime>
 
-int main(int argc, char *argv[]) {
-  QApplication App(argc, argv);
+int main(int argc, char **argv) {
+  QApplication const App(argc, argv);
   FeatureModelEditor W;
   W.show();
   return App.exec();

@@ -1,7 +1,3 @@
-//
-// Created by simon on 02.02.23.
-//
-
 #include "FeatureTreeViewModel.h"
 
 QModelIndex FeatureTreeViewModel::index(int Row, int Column,
@@ -14,13 +10,16 @@ QModelIndex FeatureTreeViewModel::index(int Row, int Column,
     ParentItem = static_cast<FeatureTreeItem *>(Parent.internalPointer())
                      ->child(Parent.row());
   }
+
   if (ParentItem->childCount() <= 0) {
     return {};
   }
+
   auto *ChildItem = ParentItem->child(Row);
   if (ChildItem) {
     return createIndex(Row, Column, ParentItem);
   }
+
   return {};
 }
 
@@ -28,16 +27,20 @@ QModelIndex FeatureTreeViewModel::parent(const QModelIndex &Child) const {
   if (!Child.isValid()) {
     return {};
   }
+
   auto *ParentItem = static_cast<FeatureTreeItem *>(Child.internalPointer());
   if (ParentItem && ParentItem != RootItem) {
     return createIndex(ParentItem->row(), 0, ParentItem->parent());
   }
+
   return {};
 }
+
 int FeatureTreeViewModel::rowCount(const QModelIndex &Parent) const {
   if (Parent.column() > 0) {
     return 0;
   }
+
   FeatureTreeItem *ParentItem;
   if (!Parent.isValid()) {
     ParentItem = RootItem;
@@ -45,24 +48,30 @@ int FeatureTreeViewModel::rowCount(const QModelIndex &Parent) const {
     ParentItem = static_cast<FeatureTreeItem *>(Parent.internalPointer())
                      ->child(Parent.row());
   }
+
   return ParentItem->childCount();
 }
+
 int FeatureTreeViewModel::columnCount(const QModelIndex &Parent) const {
   if (Parent.isValid()) {
     auto Item = static_cast<FeatureTreeItem *>(Parent.internalPointer())
                     ->child(Parent.row());
     return Item->columnCount();
   }
+
   return RootItem->columnCount();
 }
+
 QVariant FeatureTreeViewModel::data(const QModelIndex &Index, int Role) const {
   if (!Index.isValid() || Role != Qt::DisplayRole) {
     return {};
   }
+
   auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
                    ->child(Index.row());
   return Item->data(Index.column());
 }
+
 Qt::ItemFlags FeatureTreeViewModel::flags(const QModelIndex &Index) const {
   if (Index.isValid()) {
     auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
@@ -70,9 +79,12 @@ Qt::ItemFlags FeatureTreeViewModel::flags(const QModelIndex &Index) const {
     if (Item->booleanColumn(Index.column())) {
       return Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     }
+
   }
+
   return QAbstractItemModel::flags(Index);
 }
+
 QVariant FeatureTreeViewModel::headerData(int Section,
                                           Qt::Orientation Orientation,
                                           int Role) const {
@@ -92,6 +104,7 @@ QVariant FeatureTreeViewModel::headerData(int Section,
       return QString("Todo");
     }
   }
+
   return {};
 }
 
@@ -99,8 +112,7 @@ std::vector<FeatureTreeItem *> FeatureTreeViewModel::getItems() {
   return Items;
 }
 
-FeatureTreeItem *
-FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
+FeatureTreeItem *FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
                                  std::string Parent) {
   auto Item = getItem(Parent);
   if (Item) {
@@ -120,15 +132,13 @@ void FeatureTreeViewModel::deleteFeatureItem(bool Recursive,
   if (Item) {
     deleteItem(Recursive, Item);
   }
+
   emit(layoutChanged());
 }
 
 void FeatureTreeViewModel::deleteItem(bool Recursive, FeatureTreeItem *Item) {
-  if(Recursive) {
-    for (auto *Child : Item->getChildren()) {
-      deleteItem(Recursive,Child);
-    }
-  } else {
+
+  if (!Recursive) {
     auto *Parent = Item->parent();
     if (Parent) {
       for (auto *Child : Item->getChildren()) {
@@ -139,8 +149,13 @@ void FeatureTreeViewModel::deleteItem(bool Recursive, FeatureTreeItem *Item) {
       Parent->getChildren().erase(ItemPos);
     }
   }
+
+  if (Recursive) {
+    for (auto *Child : Item->getChildren()) {
+      deleteItem(Recursive, Child);
+    }
+  }
+
   Items.erase(std::find(Items.begin(), Items.end(), Item));
-  emit(layoutAboutToBeChanged());
   delete Item;
-  emit(layoutChanged());
 }

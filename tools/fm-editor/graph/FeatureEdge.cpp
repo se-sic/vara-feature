@@ -57,6 +57,7 @@ void FeatureEdge::paint(QPainter *Painter,
   }
 
   QLineF Line(SourcePoint, TargetPoint);
+
   if (qFuzzyCompare(Line.length(), qreal(0.))) {
     return;
   }

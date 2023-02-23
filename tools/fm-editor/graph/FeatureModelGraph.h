@@ -6,6 +6,7 @@
 #include "vara/Feature/FeatureModel.h"
 
 #include <QGraphicsView>
+
 class FeatureModelGraph : public QGraphicsView {
   Q_OBJECT
 
@@ -18,6 +19,7 @@ public:
   FeatureNode *addNode(vara::feature::Feature *Feature, FeatureNode *Parent);
   void deleteNode(bool Recursive, vara::feature::Feature *Feature);
   void deleteNode(bool Recursive, FeatureNode *Node);
+
 public slots:
   void zoomIn();
   void zoomOut();
