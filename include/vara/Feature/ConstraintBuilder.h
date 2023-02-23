@@ -135,6 +135,9 @@ public:
 
   /// Open parenthesis. Allows to add more precise parentheses.
   ///
+  /// CAVE: As default all operators are right-associative and parentheses
+  ///  inserted respectively.
+  ///
   /// Example:
   ///     openPar().feature("A").implies().feature("B").closePar()
   ///      .implies().feature("C").implies().feature("D")
