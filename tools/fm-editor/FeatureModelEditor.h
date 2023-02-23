@@ -1,4 +1,3 @@
-
 #ifndef VARA_FEATURE_FEATUREMODELEDITOR_H
 #define VARA_FEATURE_FEATUREMODELEDITOR_H
 
@@ -11,11 +10,13 @@
 #include <QMainWindow>
 #include <QTextCharFormat>
 #include <QTreeView>
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class FeatureModelEditor;
 } // namespace Ui
 QT_END_NAMESPACE
+
 
 class FeatureModelEditor : public QMainWindow {
   Q_OBJECT
@@ -33,6 +34,7 @@ private:
   vara::feature::Feature *CurrentFeature;
   QString SavePath{};
   QString ModelPath{};
+  
 public slots:
   void addSource();
   void loadFeature(const vara::feature::Feature *Feature);

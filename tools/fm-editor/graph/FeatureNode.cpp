@@ -1,7 +1,3 @@
-//
-// Created by simon on 04.11.22.
-//
-
 #include "FeatureNode.h"
 #include "FeatureEdge.h"
 #include "FeatureModelGraph.h"
@@ -23,6 +19,7 @@ void FeatureNode::addChildEdge(FeatureEdge *Edge) {
   ChildEdges.push_back(Edge);
   Edge->adjust();
 }
+
 void FeatureNode::setParentEdge(FeatureEdge *Edge) {
   ParentEdge = Edge;
   Edge->adjust();
@@ -56,11 +53,11 @@ void FeatureNode::paint(QPainter *Painter,
   QBrush Brush(Qt::darkYellow);
   if (Option->state & QStyle::State_Sunken) {
     Brush.setColor(QColor(Qt::yellow).lighter(120));
-  } else {
   }
-  Painter->setBrush(Brush);
 
+  Painter->setBrush(Brush);
   Painter->setPen(QPen(Qt::black, 0));
+
   int W = width();
   Painter->drawRect(-W / 2, -10, W, 20);
   Painter->setPen(QPen(Qt::black, 1));
@@ -126,8 +123,9 @@ int FeatureNode::childrenWidth() const {
   }
   int Result = 0;
     for (auto *Child : ChildEdges){
-    Result +=Child->targetNode()->childrenWidth();
+      Result += Child->targetNode()->childrenWidth();
     }
+
     return std::max(Result,width());
 }
 

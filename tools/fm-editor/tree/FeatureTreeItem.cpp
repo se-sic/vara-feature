@@ -1,10 +1,10 @@
-//
-// Created by simon on 02.02.23.
-//
 #include "FeatureTreeItem.h"
-#include <QMenu>
-#include <unordered_set>
 #include "../Utils.h"
+
+#include <QMenu>
+
+#include <unordered_set>
+
 QVariant numericValue(vara::feature::Feature* Item) {
   if(Item->getKind()==vara::feature::Feature::FeatureKind::FK_NUMERIC){
     auto *NumItem = dynamic_cast<vara::feature::NumericFeature*>(Item);
@@ -27,7 +27,6 @@ QVariant numericValue(vara::feature::Feature* Item) {
   return {};
 }
 
-
 QVariant locationString(vara::feature::Feature* Item){
   auto Locs = Item->getLocations();
   std::stringstream StrS;
@@ -37,15 +36,19 @@ QVariant locationString(vara::feature::Feature* Item){
                     StrS << llvm::formatv("{0}", Fsr.toString()).str();
                   });
   }
+
   return QString::fromStdString(StrS.str());
 }
+
 FeatureTreeItem* FeatureTreeItem::createFeatureTreeItem(
     vara::feature::FeatureTreeNode *Item)  {
   if(Item->getKind() == vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP){
     return new FeatureTreeItemRelation(dynamic_cast<vara::feature::Relationship*>(Item));
   }
+
   return new FeatureTreeItemFeature(dynamic_cast<vara::feature::Feature*>(Item));
 }
+
 void FeatureTreeItem::addChild(FeatureTreeItem* Child) {
   if(!Children.empty() && Children[0]->getKind()==vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP){
     Children[0]->addChild(Child);
@@ -54,6 +57,7 @@ void FeatureTreeItem::addChild(FeatureTreeItem* Child) {
     Child->setParent(this);
   }
 }
+
 std::vector<FeatureTreeItem *> FeatureTreeItem::getChildrenRecursive() {
   auto Nodes = std::vector<FeatureTreeItem*>{Children};
   for(auto Child: Children){
@@ -78,6 +82,7 @@ QVariant FeatureTreeItemFeature::data(int Column) const {
 void FeatureTreeItemFeature::inspect() {
   emit(inspectSource(Item));
 }
+
 void FeatureTreeItemFeature::contextMenu(QPoint Pos) {
   auto*  Menu =buildMenu(this,
                          std::pair(QString("Inspect Sources"),&FeatureTreeItemFeature::inspect),

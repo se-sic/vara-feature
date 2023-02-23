@@ -1,12 +1,11 @@
-//
-// Created by simon on 02.02.23.
-//
-
 #ifndef VARA_FEATURE_FEATURETREEVIEWMODEL_H
 #define VARA_FEATURE_FEATURETREEVIEWMODEL_H
+
 #include "FeatureTreeItem.h"
 #include "vara/Feature/FeatureModel.h"
+
 #include <QAbstractItemModel>
+
 class FeatureTreeViewModel : public QAbstractItemModel {
 public:
   FeatureTreeViewModel(vara::feature::FeatureModel* Model, QObject *Parent): QAbstractItemModel(Parent), Model(Model), RootItem(FeatureTreeItem::createFeatureTreeItem(Model->getRoot())) {
@@ -32,14 +31,14 @@ public:
   if(Item != Items.end()) {
     return *Item;
   }
+
   return nullptr;
  }
-// bool removeRows(int row, int count, const QModelIndex &parent) override;
+
 private:
   vara::feature::FeatureModel* Model;
   FeatureTreeItem* RootItem;
   std::vector<FeatureTreeItem*> Items;
-
 };
 
 #endif // VARA_FEATURE_FEATURETREEVIEWMODEL_H

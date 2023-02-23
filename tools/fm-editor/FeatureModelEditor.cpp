@@ -1,7 +1,3 @@
-//
-// Created by simon on 07.11.22.
-//
-
 #include "FeatureModelEditor.h"
 #include "FeatureAddDialog.h"
 #include "fileview/syntaxHighlite/qsourcehighliter.h"
@@ -11,9 +7,12 @@
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelTransaction.h"
 #include "vara/Feature/FeatureModelWriter.h"
+
 #include <QDir>
 #include <QFileDialog>
+
 namespace fs = std::filesystem;
+
 using vara::feature::FeatureModel;
 using Transaction = vara::feature::FeatureModelTransaction<
     vara::feature::detail::ModifyTransactionMode>;
@@ -55,6 +54,7 @@ void FeatureModelEditor::loadFeatureFromIndex(const QModelIndex &Index) {
     }
   }
 }
+
 /// Clear all Fields that should be emptied when loading a new Model
 void FeatureModelEditor::clean() {
   SavePath.clear();
@@ -80,8 +80,10 @@ void FeatureModelEditor::loadGraph() {
     Ui->ModelFile->setText(Path);
     FeatureModel = vara::feature::loadFeatureModel(Path.toStdString());
   }
+
   // create Graph view
   buildGraph();
+  
   // create Tree View
   buildTree();
   Ui->tabWidget->addTab(Graph.get(),"GraphView");
@@ -122,7 +124,9 @@ void FeatureModelEditor::buildGraph() {
                      &FeatureModelEditor::inspectFeatureSources);
   }
 }
+
 void FeatureModelEditor::featureAddDialog() { featureAddDialogChild(nullptr); }
+
 /// Spawn a Dialog to select data to add a Feature
 void FeatureModelEditor::featureAddDialogChild(Feature *ParentFeature) {
   FeatureAddDialog AddDialog(Graph.get(), this, ParentFeature);
@@ -191,7 +195,9 @@ void FeatureModelEditor::inspectFeatureSources(
     Ui->sources->setPlaceholderText("Select File");
   }
 }
+
 /// Create the Context menu for inspecting sources in the tree view
+///
 /// \param Pos Position of the cursor used to find the clicked item
 void FeatureModelEditor::createTreeContextMenu(const QPoint &Pos) {
   auto Index = TreeView->indexAt(Pos);
@@ -225,9 +231,11 @@ void FeatureModelEditor::loadSource(const QString &RelativePath) {
     }
   }
 }
+
 /// Mark the given SourceRange with the given Format
+///
 /// \param Fmt Format to mark with
-/// \param Cursor  Cursor
+/// \param Cursor  the cursor
 /// \param Location Location to mark
 void FeatureModelEditor::markLocation(
     vara::feature::FeatureSourceRange &Location) const {
@@ -257,6 +265,7 @@ void FeatureModelEditor::addSourceFile() {
     Ui->sources->addItem(Path.sliced(Repository.length()));
   }
 }
+
 /// Add the user selected Part of the textedit as a source for the active
 /// Feature
 void FeatureModelEditor::addSource() {

@@ -1,17 +1,18 @@
-
 #ifndef VARA_FEATURE_FEATURENODE_H
 #define VARA_FEATURE_FEATURENODE_H
 
 #include "vara/Feature/Feature.h"
 #include "FeatureNode.h"
+
 #include <QGraphicsItem>
 #include <QList>
 #include <QObject>
+
 class FeatureEdge;
 class FeatureModelGraph;
-class FeatureNode : public QObject,public QGraphicsItem{
-  Q_OBJECT
 
+class FeatureNode : public QObject, public QGraphicsItem {
+  Q_OBJECT
 
 public:
   void removeChild(FeatureNode *Child);
@@ -35,15 +36,18 @@ public:
   };
   [[nodiscard]] std::string getName() const {return Feature->getName().str();};
   ~FeatureNode() {std::destroy(ChildEdges.begin(), ChildEdges.end());}
+  
 signals:
   void clicked(const vara::feature::Feature *Feature);
   void inspectSource(vara::feature::Feature *Feature);
+  
 protected:
   QVariant itemChange(GraphicsItemChange Change, const QVariant &Value) override;
 
   void mousePressEvent(QGraphicsSceneMouseEvent *Event) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *Event) override;
   void contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) override;
+  
 private:
   std::vector<FeatureEdge *> ChildEdges;
   FeatureEdge * ParentEdge = nullptr;

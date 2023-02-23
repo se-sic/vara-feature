@@ -1,11 +1,8 @@
-//
-// Created by simon on 20.02.23.
-//
-
 #ifndef VARA_FEATURE_UTILS_H
 #define VARA_FEATURE_UTILS_H
 
 #include <QMenu>
+
 template <class T>
 struct ActionBuilder {
   ActionBuilder(QMenu *Menu, T *Receiver) : Menu(Menu), Receiver(Receiver) {}

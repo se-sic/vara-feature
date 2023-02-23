@@ -1,11 +1,9 @@
-//
-// Created by simon on 29.11.22.
-//
-
 #ifndef VARA_FEATURE_FEATUREADDDIALOG_H
 #define VARA_FEATURE_FEATUREADDDIALOG_H
+
 #include "graph/FeatureModelGraph.h"
 #include "ui_FeatureAddDialog.h"
+
 #include <QDialog>
 #include <QInputDialog>
 
@@ -20,6 +18,7 @@ public:
   std::unique_ptr<vara::feature::Feature> getFeature();
   vara::feature::Feature::FeatureKind getFeatureKind();
   bool isOptional();
+  
 public slots:
   void featureType(int index);
 

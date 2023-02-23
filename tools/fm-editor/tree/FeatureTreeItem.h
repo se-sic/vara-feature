@@ -1,7 +1,3 @@
-//
-// Created by simon on 02.02.23.
-//
-
 #ifndef VARA_FEATURE_FEATURETREEITEM_H
 #define VARA_FEATURE_FEATURETREEITEM_H
 #include "vara/Feature/Feature.h"

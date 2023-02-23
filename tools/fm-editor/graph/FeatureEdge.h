@@ -1,9 +1,10 @@
-
 #ifndef VARA_FEATURE_FEATUREEDGE_H
 #define VARA_FEATURE_FEATUREEDGE_H
 
 #include <QGraphicsItem>
+
 class FeatureNode;
+
 class FeatureEdge : public QGraphicsItem{
 public:
   FeatureEdge(FeatureNode *SourceNode, FeatureNode *TargetNode);

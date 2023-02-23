@@ -1,15 +1,14 @@
-//
-// Created by simon on 04.11.22.
-//
-
 #include "FeatureModelGraph.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelTransaction.h"
-#include <cmath>
 #include <QKeyEvent>
 #include <QRandomGenerator>
+
+#include <cmath>
+
 using vara::feature::Feature;
+
 FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel * FeatureModel,
                                      QWidget *Parent)
     : QGraphicsView(Parent), EntryNode(new FeatureNode(FeatureModel->getRoot())), FeatureModel(FeatureModel) {
@@ -81,8 +80,10 @@ int FeatureModelGraph::positionRec(const int CurrentDepth, const std::vector<Fea
     NextOffset+=Width;
     MaxDepth = MaxDepth<Depth?Depth:MaxDepth;
   }
+
   return MaxDepth;
 }
+
 void FeatureModelGraph::keyPressEvent(QKeyEvent *Event) {
   switch (Event->key()) {
   case Qt::Key_Plus:
@@ -95,6 +96,7 @@ void FeatureModelGraph::keyPressEvent(QKeyEvent *Event) {
     QGraphicsView::keyPressEvent(Event);
   }
 }
+
 #if QT_CONFIG(wheelevent)
 void FeatureModelGraph::wheelEvent(QWheelEvent *Event) {
   scaleView(pow(2., -Event->angleDelta().y() / 240.0));
@@ -132,6 +134,7 @@ void FeatureModelGraph::drawBackground(QPainter *Painter, const QRectF &Rect) {
   Painter->setPen(Qt::lightGray);
   Painter->setPen(Qt::black);
 }
+
 void FeatureModelGraph::scaleView(qreal ScaleFactor) {
   qreal Factor = transform()
                      .scale(ScaleFactor, ScaleFactor)
@@ -143,9 +146,10 @@ void FeatureModelGraph::scaleView(qreal ScaleFactor) {
 
   scale(ScaleFactor, ScaleFactor);
 }
-void FeatureModelGraph::zoomIn() { scaleView(qreal(1.2)); }
-void FeatureModelGraph::zoomOut() { scaleView(1 / qreal(1.2)); }
 
+void FeatureModelGraph::zoomIn() { scaleView(qreal(1.2)); }
+
+void FeatureModelGraph::zoomOut() { scaleView(1 / qreal(1.2)); }
 
 FeatureNode* FeatureModelGraph::addNode(Feature* Feature, FeatureNode* Parent) {
   auto NewNode = std::make_unique<FeatureNode>(Feature);
@@ -162,15 +166,15 @@ FeatureNode* FeatureModelGraph::addNode(Feature* Feature, FeatureNode* Parent) {
   return NewNodeRaw;
 }
 
-
 FeatureNode* FeatureModelGraph::getNode(std::string Name) {
   auto It = std::find_if(Nodes.begin(),Nodes.end(),[&Name](auto const &Node){return Node->getName() == Name;});
   if (It != Nodes.end()) {
     return It->get();
   }
-  return nullptr;
 
+  return nullptr;
 }
+
 void FeatureModelGraph::deleteNode(bool Recursive, FeatureNode* Node) {
   auto *Parent = Node->parent()->sourceNode();
   if(!Recursive){
@@ -189,8 +193,8 @@ void FeatureModelGraph::deleteNode(bool Recursive, FeatureNode* Node) {
   scene()->removeItem(Node->parent());
 
   Nodes.erase(std::find_if(Nodes.begin(), Nodes.end(),[Node](auto &N){return N.get() == Node;}));
-
 }
+
 void FeatureModelGraph::deleteNode(bool Recursive,
                                    vara::feature::Feature *Feature) {
   auto * Node = getNode(Feature->getName().str());

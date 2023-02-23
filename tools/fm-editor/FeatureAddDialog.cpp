@@ -1,10 +1,7 @@
-//
-// Created by simon on 29.11.22.
-//
-
 #include "FeatureAddDialog.h"
 #include "graph/FeatureModelGraph.h"
 #include "graph/FeatureNode.h"
+
 using vara::feature::Feature;
 using vara::feature::FeatureModel;
 FeatureAddDialog::FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent,
@@ -39,10 +36,13 @@ void FeatureAddDialog::featureType(int index) {
     NumericFeature->setVisible(false);
   }
 }
+
 vara::feature::Feature::FeatureKind FeatureAddDialog::getFeatureKind() {
   return vara::feature::Feature::FeatureKind(FeatureKind->currentIndex());
 }
+
 bool FeatureAddDialog::isOptional() { return optinalCheck->isChecked(); }
+
 QString FeatureAddDialog::getOutpuString() { return outpuString->text(); }
 
 std::vector<int64_t> stringToIntVector(string &Input) {
@@ -51,6 +51,7 @@ std::vector<int64_t> stringToIntVector(string &Input) {
 
   for (std::string Substring; std::getline(InStream, Substring, ',');) {
     Out.push_back(std::stoi(Substring));
+
   }
   return Out;
 }

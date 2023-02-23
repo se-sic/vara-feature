@@ -89,9 +89,11 @@ QVariant FeatureTreeViewModel::headerData(int Section,
   }
   return {};
 }
+
 std::vector<FeatureTreeItem *> FeatureTreeViewModel::getItems() {
   return Items;
 }
+
 FeatureTreeItem *
 FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
                                  std::string Parent) {
@@ -102,6 +104,7 @@ FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
     Items.push_back(NewItem);
     return NewItem;
   }
+  
   return nullptr;
 }
 
@@ -116,8 +119,11 @@ void FeatureTreeViewModel::deleteFeatureItem(bool Recursive,
 }
 
 void FeatureTreeViewModel::deleteItem(bool Recursive, FeatureTreeItem *Item) {
-
-  if (!Recursive) {
+  if(Recursive) {
+    for (auto *Child : Item->getChildren()) {
+      deleteItem(Recursive,Child);
+    }
+  } else {
     auto *Parent = Item->parent();
     if (Parent) {
       for (auto *Child : Item->getChildren()) {
@@ -128,11 +134,7 @@ void FeatureTreeViewModel::deleteItem(bool Recursive, FeatureTreeItem *Item) {
       Parent->getChildren().erase(ItemPos);
     }
   }
-  if(Recursive) {
-    for (auto *Child : Item->getChildren()) {
-      deleteItem(Recursive,Child);
-    }
-  }
+
   Items.erase(std::find(Items.begin(), Items.end(), Item));
   emit(layoutAboutToBeChanged());
   delete Item;

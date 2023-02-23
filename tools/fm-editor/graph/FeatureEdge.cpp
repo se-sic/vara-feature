@@ -1,7 +1,3 @@
-//
-// Created by simon on 04.11.22.
-//
-
 #include "FeatureEdge.h"
 #include "FeatureNode.h"
 
@@ -15,8 +11,11 @@ FeatureEdge::FeatureEdge(FeatureNode *SourceNode, FeatureNode *TargetNode)
   TargetNode->setParentEdge(this);
   adjust();
 }
+
 FeatureNode *FeatureEdge::sourceNode() const { return Source; }
+
 FeatureNode *FeatureEdge::targetNode() const { return Target; }
+
 void FeatureEdge::adjust() {
   if (!Source || !Target) {
     return;
@@ -35,6 +34,7 @@ void FeatureEdge::adjust() {
     SourcePoint = TargetPoint = Line.p1();
   }
 }
+
 QRectF FeatureEdge::boundingRect() const {
   if (!Source || !Target) {
     return {};
@@ -48,6 +48,7 @@ QRectF FeatureEdge::boundingRect() const {
       .normalized()
       .adjusted(-Extra, -Extra, Extra, Extra);
 }
+
 void FeatureEdge::paint(QPainter *Painter,
                         const QStyleOptionGraphicsItem *Option,
                         QWidget *Widget) {
@@ -65,6 +66,7 @@ void FeatureEdge::paint(QPainter *Painter,
   Painter->setBrush(QBrush(Target->isOptional()?Qt::white:Qt::black));
   Painter->drawEllipse(TargetPoint,4,4);
 }
+
 void FeatureEdge::setSourceNode(FeatureNode *Node) {
   Source = Node;
   Node->addChildEdge(this);
