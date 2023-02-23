@@ -11,14 +11,14 @@ inline std::string getTestResource(llvm::StringRef ResourcePath = "") {
 
 namespace vara::feature {
 
-template <class ConstraintTy>
-std::unique_ptr<ConstraintTy> createBinaryConstraint(const std::string &A,
-                                                     const std::string &B) {
-  return std::make_unique<ConstraintTy>(
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>(A)),
-      std::make_unique<PrimaryFeatureConstraint>(
-          std::make_unique<BinaryFeature>(B)));
+template <class OperatorTy>
+std::unique_ptr<FeatureModel::BooleanConstraint>
+createBinaryConstraint(const std::string &A, const std::string &B) {
+  return std::make_unique<FeatureModel::BooleanConstraint>(
+      std::make_unique<OperatorTy>(std::make_unique<PrimaryFeatureConstraint>(
+                                       std::make_unique<BinaryFeature>(A)),
+                                   std::make_unique<PrimaryFeatureConstraint>(
+                                       std::make_unique<BinaryFeature>(B))));
 }
 
 } // namespace vara::feature

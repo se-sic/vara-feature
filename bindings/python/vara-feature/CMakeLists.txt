@@ -11,5 +11,5 @@ pybind11_add_module(vara_feature
 target_link_libraries(vara_feature
   LINK_PUBLIC
   VaRAFeature
-  stdc++fs
+  ${STD_FS_LIB}
 )

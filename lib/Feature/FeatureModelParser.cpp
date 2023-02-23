@@ -87,7 +87,9 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
               ConstraintBuilder CB;
               CB.feature(Name).excludes().feature(
                   trim(reinterpret_cast<char *>(CCnt.get())));
-              FMB.addConstraint(CB.build());
+              FMB.addConstraint(
+                  std::make_unique<FeatureModel::BooleanConstraint>(
+                      CB.build()));
             }
           }
         }
@@ -99,7 +101,9 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
               ConstraintBuilder CB;
               CB.feature(Name).implies().feature(
                   trim(reinterpret_cast<char *>(CCnt.get())));
-              FMB.addConstraint(CB.build());
+              FMB.addConstraint(
+                  std::make_unique<FeatureModel::BooleanConstraint>(
+                      CB.build()));
             }
           }
         }
@@ -209,6 +213,7 @@ Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
   return Ok();
 }
 
+template <class ConstraintTy>
 Result<FTErrorCode> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
@@ -219,7 +224,41 @@ Result<FTErrorCode> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
                     std::string(reinterpret_cast<char *>(Cnt.get())),
                     Node->line)
                     .buildConstraint()) {
-          FMB.addConstraint(std::move(Constraint));
+          FMB.addConstraint(
+              std::make_unique<ConstraintTy>(std::move(Constraint)));
+        } else {
+          return Error(ERROR);
+        }
+      }
+    }
+  }
+  return Ok();
+}
+
+template <>
+Result<FTErrorCode>
+FeatureModelXmlParser::parseConstraints<FeatureModel::MixedConstraint>(
+    xmlNode *Node) {
+  for (xmlNode *H = Node->children; H; H = H->next) {
+    if (H->type == XML_ELEMENT_NODE) {
+      if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
+        UniqueXmlChar Cnt(xmlNodeGetContent(H), xmlFree);
+        if (auto Constraint =
+                ConstraintParser(
+                    std::string(reinterpret_cast<char *>(Cnt.get())),
+                    Node->line)
+                    .buildConstraint()) {
+          UniqueXmlChar R(xmlGetProp(H, XmlConstants::REQ), xmlFree);
+          UniqueXmlChar E(xmlGetProp(H, XmlConstants::EXPRKIND), xmlFree);
+
+          FMB.addConstraint(std::make_unique<FeatureModel::MixedConstraint>(
+              std::move(Constraint),
+              std::string(reinterpret_cast<char *>(R.get())) == "none"
+                  ? FeatureModel::MixedConstraint::Req::NONE
+                  : FeatureModel::MixedConstraint::Req::ALL,
+              std::string(reinterpret_cast<char *>(E.get())) == "neg"
+                  ? FeatureModel::MixedConstraint::ExprKind::NEG
+                  : FeatureModel::MixedConstraint::ExprKind::POS));
         } else {
           return Error(ERROR);
         }
@@ -255,7 +294,15 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
           return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::BOOLEANCONSTRAINTS)) {
-        if (!parseConstraints(H)) {
+        if (!parseConstraints<FeatureModel::BooleanConstraint>(H)) {
+          return Error(ERROR);
+        }
+      } else if (!xmlStrcmp(H->name, XmlConstants::NONBOOLEANCONSTRAINTS)) {
+        if (!parseConstraints<FeatureModel::NonBooleanConstraint>(H)) {
+          return Error(ERROR);
+        }
+      } else if (!xmlStrcmp(H->name, XmlConstants::MIXEDCONSTRAINTS)) {
+        if (!parseConstraints<FeatureModel::MixedConstraint>(H)) {
           return Error(ERROR);
         }
       }
@@ -504,13 +551,14 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
     int LastIndentationLevel = -1;
     int RootIndentation = -1;
     int OrGroupCounter = 0;
-    std::map<int, std::string> IndentationToParentMapping;
+    std::unordered_map<int, std::string> IndentationToParentMapping;
 
     // This map is used for the or group mapping
     // Each entry represents an or group as a tuple where the first value is
     // the name of the parent, the second is the relationship kind, and the
     // third a vector consisting of the name of the children
-    std::map<int, std::tuple<std::string, Relationship::RelationshipKind>>
+    std::unordered_map<int,
+                       std::tuple<std::string, Relationship::RelationshipKind>>
         OrGroupMapping;
 
     if (FeatureTree == nullptr) {
@@ -762,7 +810,8 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
     }
 
     if (auto Constraint = ConstraintParser(CnfFormula).buildConstraint()) {
-      FMB.addConstraint(std::move(Constraint));
+      FMB.addConstraint(std::make_unique<FeatureModel::BooleanConstraint>(
+          std::move(Constraint)));
     }
   }
 
