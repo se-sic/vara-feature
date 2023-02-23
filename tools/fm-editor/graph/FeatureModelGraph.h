@@ -1,25 +1,23 @@
 #ifndef VARA_FEATURE_FEATUREMODELGRAPH_H
 #define VARA_FEATURE_FEATUREMODELGRAPH_H
 
-#include "vara/Feature/FeatureModel.h"
-#include "FeatureNode.h"
 #include "FeatureEdge.h"
+#include "FeatureNode.h"
+#include "vara/Feature/FeatureModel.h"
 
 #include <QGraphicsView>
-
 class FeatureModelGraph : public QGraphicsView {
   Q_OBJECT
 
 public:
-  FeatureModelGraph(vara::feature::FeatureModel * FeatureModel,
+  FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
                     QWidget *Parent = nullptr);
-  auto getNodes() {return &Nodes;};
+  auto getNodes() { return &Nodes; };
   void itemMoved();
-  FeatureNode* getNode(std::string Name);
-  FeatureNode*addNode(vara::feature::Feature *Feature,FeatureNode* Parent);
-  void deleteNode(bool Recursive, vara::feature::Feature* Feature);
-  void deleteNode(bool Recursive, FeatureNode* Node);
-
+  FeatureNode *getNode(std::string Name);
+  FeatureNode *addNode(vara::feature::Feature *Feature, FeatureNode *Parent);
+  void deleteNode(bool Recursive, vara::feature::Feature *Feature);
+  void deleteNode(bool Recursive, FeatureNode *Node);
 public slots:
   void zoomIn();
   void zoomOut();
@@ -39,9 +37,10 @@ private:
   void reload();
   void buildRec(FeatureNode *CurrentFeatureNode);
   int TimerId = 0;
-  FeatureNode* EntryNode;
-  int positionRec(int CurrentDepth, const std::vector<FeatureNode *>& Children,unsigned long Offset);
-  vara::feature::FeatureModel* FeatureModel;
+  FeatureNode *EntryNode;
+  int positionRec(int CurrentDepth, const std::vector<FeatureNode *> &Children,
+                  unsigned long Offset);
+  vara::feature::FeatureModel *FeatureModel;
   std::vector<std::unique_ptr<FeatureNode>> Nodes;
 };
 

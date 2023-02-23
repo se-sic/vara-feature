@@ -1,8 +1,8 @@
 #include "FeatureModelEditor.h"
 #include "FeatureAddDialog.h"
-#include "qsourcehighliter.h"
 #include "graph/FeatureModelGraph.h"
 #include "graph/FeatureNode.h"
+#include "qsourcehighliter.h"
 #include "ui_FeatureModelEditor.h"
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelTransaction.h"
@@ -86,9 +86,10 @@ void FeatureModelEditor::loadGraph() {
   
   // create Tree View
   buildTree();
-  Ui->tabWidget->addTab(Graph.get(),"GraphView");
-  Ui->tabWidget->addTab(TreeView,"TreeView");
-  connect(Ui->sources,&QComboBox::currentTextChanged, this,&FeatureModelEditor::loadSource);
+  Ui->tabWidget->addTab(Graph.get(), "GraphView");
+  Ui->tabWidget->addTab(TreeView, "TreeView");
+  connect(Ui->sources, &QComboBox::currentTextChanged, this,
+          &FeatureModelEditor::loadSource);
   Ui->actionSave->setEnabled(true);
   Ui->actionAddFeature->setEnabled(true);
 }

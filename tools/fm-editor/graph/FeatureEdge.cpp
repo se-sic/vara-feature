@@ -54,17 +54,18 @@ void FeatureEdge::paint(QPainter *Painter,
                         QWidget *Widget) {
   if (!Source || !Target) {
     return;
-}
+  }
 
   QLineF Line(SourcePoint, TargetPoint);
   if (qFuzzyCompare(Line.length(), qreal(0.))) {
     return;
-}
+  }
 
-  Painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+  Painter->setPen(
+      QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
   Painter->drawLine(Line);
-  Painter->setBrush(QBrush(Target->isOptional()?Qt::white:Qt::black));
-  Painter->drawEllipse(TargetPoint,4,4);
+  Painter->setBrush(QBrush(Target->isOptional() ? Qt::white : Qt::black));
+  Painter->drawEllipse(TargetPoint, 4, 4);
 }
 
 void FeatureEdge::setSourceNode(FeatureNode *Node) {

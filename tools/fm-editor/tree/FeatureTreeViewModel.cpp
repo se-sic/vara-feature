@@ -11,9 +11,10 @@ QModelIndex FeatureTreeViewModel::index(int Row, int Column,
   if (!Parent.isValid()) {
     ParentItem = RootItem;
   } else {
-    ParentItem = static_cast<FeatureTreeItem *>(Parent.internalPointer())->child(Parent.row());
+    ParentItem = static_cast<FeatureTreeItem *>(Parent.internalPointer())
+                     ->child(Parent.row());
   }
-  if(ParentItem->childCount() <=0){
+  if (ParentItem->childCount() <= 0) {
     return {};
   }
   auto *ChildItem = ParentItem->child(Row);
@@ -41,13 +42,15 @@ int FeatureTreeViewModel::rowCount(const QModelIndex &Parent) const {
   if (!Parent.isValid()) {
     ParentItem = RootItem;
   } else {
-    ParentItem = static_cast<FeatureTreeItem *>(Parent.internalPointer())->child(Parent.row());
+    ParentItem = static_cast<FeatureTreeItem *>(Parent.internalPointer())
+                     ->child(Parent.row());
   }
   return ParentItem->childCount();
 }
 int FeatureTreeViewModel::columnCount(const QModelIndex &Parent) const {
   if (Parent.isValid()) {
-    auto Item = static_cast<FeatureTreeItem *>(Parent.internalPointer())->child(Parent.row());
+    auto Item = static_cast<FeatureTreeItem *>(Parent.internalPointer())
+                    ->child(Parent.row());
     return Item->columnCount();
   }
   return RootItem->columnCount();
@@ -56,12 +59,14 @@ QVariant FeatureTreeViewModel::data(const QModelIndex &Index, int Role) const {
   if (!Index.isValid() || Role != Qt::DisplayRole) {
     return {};
   }
-  auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())->child(Index.row());
+  auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
+                   ->child(Index.row());
   return Item->data(Index.column());
 }
 Qt::ItemFlags FeatureTreeViewModel::flags(const QModelIndex &Index) const {
   if (Index.isValid()) {
-    auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())->child(Index.row());
+    auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
+                     ->child(Index.row());
     if (Item->booleanColumn(Index.column())) {
       return Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     }
@@ -104,7 +109,7 @@ FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
     Items.push_back(NewItem);
     return NewItem;
   }
-  
+
   return nullptr;
 }
 
@@ -113,7 +118,7 @@ void FeatureTreeViewModel::deleteFeatureItem(bool Recursive,
   emit(layoutAboutToBeChanged());
   auto Item = getItem(Feature->getName().str());
   if (Item) {
-    deleteItem(Recursive,Item);
+    deleteItem(Recursive, Item);
   }
   emit(layoutChanged());
 }
@@ -134,7 +139,6 @@ void FeatureTreeViewModel::deleteItem(bool Recursive, FeatureTreeItem *Item) {
       Parent->getChildren().erase(ItemPos);
     }
   }
-
   Items.erase(std::find(Items.begin(), Items.end(), Item));
   emit(layoutAboutToBeChanged());
   delete Item;

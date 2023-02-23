@@ -11,14 +11,15 @@ public:
 
   [[nodiscard]] FeatureNode *sourceNode() const;
   [[nodiscard]] FeatureNode *targetNode() const;
-  void setSourceNode(FeatureNode* Node);
+  void setSourceNode(FeatureNode *Node);
   void adjust();
   enum { Type = UserType + 2 };
   [[nodiscard]] int type() const override { return Type; }
 
 protected:
   QRectF boundingRect() const override;
-  void paint(QPainter *Painter, const QStyleOptionGraphicsItem *Option, QWidget *Widget) override;
+  void paint(QPainter *Painter, const QStyleOptionGraphicsItem *Option,
+             QWidget *Widget) override;
 
 private:
   FeatureNode *Source, *Target;

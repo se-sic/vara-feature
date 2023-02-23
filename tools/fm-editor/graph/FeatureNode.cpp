@@ -4,9 +4,9 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QMenu>
 #include <QPainter>
 #include <QStyleOption>
-#include <QMenu>
 
 FeatureNode::FeatureNode(vara::feature::Feature *Feature) : Feature(Feature) {
   setFlag(ItemIsMovable);
@@ -25,13 +25,9 @@ void FeatureNode::setParentEdge(FeatureEdge *Edge) {
   Edge->adjust();
 }
 
-std::vector<FeatureEdge *> FeatureNode::children() {
-  return ChildEdges;
-}
+std::vector<FeatureEdge *> FeatureNode::children() { return ChildEdges; }
 
-FeatureEdge * FeatureNode::parent() {
-  return ParentEdge;
-}
+FeatureEdge *FeatureNode::parent() { return ParentEdge; }
 
 QRectF FeatureNode::boundingRect() const {
   qreal Adjust = 2;
@@ -61,7 +57,7 @@ void FeatureNode::paint(QPainter *Painter,
   int W = width();
   Painter->drawRect(-W / 2, -10, W, 20);
   Painter->setPen(QPen(Qt::black, 1));
-  Painter->drawText(-W/2+5, 5, Name);
+  Painter->drawText(-W / 2 + 5, 5, Name);
 }
 
 QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
@@ -82,9 +78,11 @@ QVariant FeatureNode::itemChange(QGraphicsItem::GraphicsItemChange Change,
   return QGraphicsItem::itemChange(Change, Value);
 }
 
-void FeatureNode::removeChild(FeatureNode* Child){
-  auto EdgePos = std::find_if(ChildEdges.begin(), ChildEdges.end(), [Child](auto *Edge){return Edge->targetNode()==Child;});
-  if(EdgePos!=ChildEdges.end()){
+void FeatureNode::removeChild(FeatureNode *Child) {
+  auto EdgePos =
+      std::find_if(ChildEdges.begin(), ChildEdges.end(),
+                   [Child](auto *Edge) { return Edge->targetNode() == Child; });
+  if (EdgePos != ChildEdges.end()) {
     ChildEdges.erase(EdgePos);
   }
 }
@@ -105,12 +103,9 @@ void FeatureNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) {
   auto *Inspect = new QAction("Inspect Sources", this);
   Menu->addAction(Inspect);
   Menu->popup(Event->screenPos());
-  connect(Inspect, &QAction::triggered,
-          this, &FeatureNode::inspect);
+  connect(Inspect, &QAction::triggered, this, &FeatureNode::inspect);
 }
-void FeatureNode::inspect() {
-  emit(inspectSource(Feature));
-}
+void FeatureNode::inspect() { emit(inspectSource(Feature)); }
 
 int FeatureNode::width() const {
   auto Name = Feature->getName();
@@ -118,27 +113,26 @@ int FeatureNode::width() const {
 }
 
 int FeatureNode::childrenWidth() const {
-  if(ChildEdges.empty()){
+  if (ChildEdges.empty()) {
     return width();
   }
   int Result = 0;
-    for (auto *Child : ChildEdges){
-      Result += Child->targetNode()->childrenWidth();
-    }
-
-    return std::max(Result,width());
+  for (auto *Child : ChildEdges) {
+    Result += Child->targetNode()->childrenWidth();
+  }
+  return std::max(Result, width());
 }
 
-int FeatureNode::childrenDepth() const{
-  if(ChildEdges.empty()){
+int FeatureNode::childrenDepth() const {
+  if (ChildEdges.empty()) {
     return 1;
   }
   int MaxDepth = 0;
-    for(auto *Child: ChildEdges){
-      int const ChildDepth = Child->targetNode()->childrenDepth();
-      if(ChildDepth +1> MaxDepth){
-      MaxDepth = ChildDepth +1;
-      }
+  for (auto *Child : ChildEdges) {
+    int const ChildDepth = Child->targetNode()->childrenDepth();
+    if (ChildDepth + 1 > MaxDepth) {
+      MaxDepth = ChildDepth + 1;
     }
-    return MaxDepth;
+  }
+  return MaxDepth;
 }
