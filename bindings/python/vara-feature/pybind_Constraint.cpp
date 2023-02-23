@@ -16,8 +16,10 @@ void init_constraint_module_constraint_builder(py::module &M) {
       .def(py::init<>())
       .def("build", &vf::ConstraintBuilder::build,
            R"pbdoc('Builds constraint.')pbdoc")
-      .def("openPar", &vf::ConstraintBuilder::openPar, R"pbdoc('(')pbdoc")
-      .def("closePar", &vf::ConstraintBuilder::closePar, R"pbdoc(')')pbdoc")
+      .def("__call__", &vf::ConstraintBuilder::operator(),
+           R"pbdoc('(...)')pbdoc")
+      .def("openPar", &vf::ConstraintBuilder::openPar, R"pbdoc('(...')pbdoc")
+      .def("closePar", &vf::ConstraintBuilder::closePar, R"pbdoc('...)')pbdoc")
       .def("constant", &vf::ConstraintBuilder::constant, R"pbdoc('42')pbdoc")
       .def("feature", &vf::ConstraintBuilder::feature, R"pbdoc('Foo')pbdoc")
       .def("lNot", &vf::ConstraintBuilder::lNot, R"pbdoc('!Foo')pbdoc")

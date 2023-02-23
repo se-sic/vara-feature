@@ -7,13 +7,20 @@ import vara_feature.constraint as constraint
 
 
 class TestConstraintBuilder(unittest.TestCase):
-    """ Test ConstraintBuilder functionality.  """
+    """ Test ConstraintBuilder functionality. """
 
     def test_build(self):
         """ Checks if we can build a constraint. """
         cb = constraint.ConstraintBuilder()
         cb.feature("A").implies().feature("B")
         self.assertIsNotNone(cb.build())
+
+    def test_call(self):
+        """ Checks if we can parenthesize part of a constraint. """
+        cb = constraint.ConstraintBuilder()
+        cb.feature("A").implies().feature("B")()
+        cb.implies().feature("C").implies().feature("D")
+        self.assertEqual("((A => B) => (C => D))", str(cb.build()))
 
     def test_full(self):
         """ Checks if we can build a parenthesized constraint. """
