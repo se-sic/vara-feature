@@ -20,13 +20,20 @@ public:
   ~ConstraintBuilder() = default;
 
 private:
+  using PrecedenceTy = const unsigned int;
+  inline static PrecedenceTy MinPrecedence = 0;
+  inline static PrecedenceTy MaxPrecedence = 9;
+
+  class ConstraintBuilderImpl;
+  using FrameTy = std::unique_ptr<ConstraintBuilderImpl> *;
+
   class ConstraintBuilderImpl {
   public:
     virtual ~ConstraintBuilderImpl() = default;
 
     virtual std::unique_ptr<Constraint> build() = 0;
 
-    virtual std::unique_ptr<ConstraintBuilderImpl> *next() { return nullptr; }
+    virtual FrameTy next() { return nullptr; }
   };
 
   template <class ConstraintTy, class ValueTy>
@@ -49,7 +56,7 @@ private:
   public:
     UnaryBuilderImpl() : Operand(nullptr) {}
 
-    std::unique_ptr<ConstraintBuilderImpl> *next() override { return &Operand; }
+    FrameTy next() override { return &Operand; }
 
     std::unique_ptr<Constraint> build() override {
       return std::make_unique<ConstraintTy>(std::move(Operand->build()));
@@ -66,9 +73,7 @@ private:
     BinaryBuilderImpl(std::unique_ptr<ConstraintBuilderImpl> LeftOperand)
         : LeftOperand(std::move(LeftOperand)), RightOperand(nullptr) {}
 
-    std::unique_ptr<ConstraintBuilderImpl> *next() override {
-      return &RightOperand;
-    }
+    FrameTy next() override { return &RightOperand; }
 
     std::unique_ptr<Constraint> build() override {
       return std::make_unique<ConstraintTy>(std::move(LeftOperand->build()),
@@ -88,18 +93,28 @@ private:
       return *this;
     }
     *Head = std::make_unique<UnaryBuilderImpl<ConstraintTy>>();
+    Frames.push(std::make_tuple(ConstraintBuilder::MinPrecedence, Head));
     Head = (*Head)->next();
     return *this;
   }
 
   template <class ConstraintTy>
-  ConstraintBuilder &binary() {
+  ConstraintBuilder &binary(PrecedenceTy Precedence) {
+    assert(Precedence < ConstraintBuilder::MaxPrecedence);
+    assert(Precedence > ConstraintBuilder::MinPrecedence);
     if (!Head || !*Head) {
       llvm::errs() << "Syntax error: Unrecognized binary constraint.\n";
       Head = nullptr;
       return *this;
     }
+    while (!Frames.empty() &&
+           std::get<PrecedenceTy>(Frames.top()) <= Precedence) {
+      Head = std::get<FrameTy>(Frames.top());
+      Frames.pop();
+    }
+    assert(Head && *Head);
     *Head = std::make_unique<BinaryBuilderImpl<ConstraintTy>>(std::move(*Head));
+    Frames.push(std::make_tuple(Precedence, Head));
     Head = (*Head)->next();
     return *this;
   }
@@ -109,7 +124,11 @@ public:
   ///
   /// \return unique pointer for built constraint
   [[nodiscard]] std::unique_ptr<Constraint> build() {
-    if (!Head || !*Head || !Root || !Parentheses.empty()) {
+    while (!Frames.empty() && std::get<PrecedenceTy>(Frames.top()) <
+                                  ConstraintBuilder::MaxPrecedence) {
+      Frames.pop();
+    }
+    if (!Head || !*Head || !Root || !Frames.empty()) {
       llvm::errs() << "Syntax error: Incomplete constraint.\n";
       return nullptr;
     }
@@ -119,35 +138,33 @@ public:
   /// Parenthesizes intermediate constraint.
   ///
   /// Example:
-  ///     feature("A").implies().feature("B")()
-  ///      .implies().feature("C").implies().feature("D")
+  ///     feature("A").add().feature("B")().multiply().feature("C")
   ///   produces the constraint
-  ///     '((A => B) => (C => D))'
+  ///     '((A + B) * C)'
   ConstraintBuilder &operator()() {
-    if (!Head || !*Head || !Parentheses.empty()) {
+    if (!Head || !*Head) {
       llvm::errs() << "Syntax error: Unrecognized parentheses.\n";
       Head = nullptr;
       return *this;
     }
+    while (!Frames.empty()) {
+      Frames.pop();
+    }
+    assert(Root);
     Head = &Root;
     return *this;
   }
 
   /// Open parenthesis. Allows to add more precise parentheses.
   ///
-  /// CAVE: As default all operators are right-associative and parentheses
-  ///  inserted respectively.
-  ///
   /// Example:
-  ///     openPar().feature("A").implies().feature("B").closePar()
-  ///      .implies().feature("C").implies().feature("D")
+  ///     feature("A").implies().feature("B").implies()
+  ///      .openPar().feature("C").implies().feature("D").closePar()
   ///   produces the constraint
   ///     '((A => B) => (C => D))'
   ///
-  /// CAVE: These may be required for unary operators.
-  ///
   /// Example:
-  ///     lNot().openPar().lNot().feature("A").closePar().implies().feature("B")
+  ///     lNot().openPar().lNot().feature("A").implies().feature("B").closePar()
   ///   produces the constraint
   ///     '!(!A => B)'
   ConstraintBuilder &openPar() {
@@ -156,27 +173,24 @@ public:
       Head = nullptr;
       return *this;
     }
-    Parentheses.push(Head);
+    Frames.push(std::make_tuple(ConstraintBuilder::MaxPrecedence, Head));
     return *this;
   }
 
   /// Close parenthesis. See \a openPar.
-  ///
-  /// CAVE: If used without a succeeding operator or in conjunction with unary
-  ///  expressions, this may not yield the desired result.
-  ///
-  /// Example:
-  ///     lNot().openPar().lNot().feature("A").implies().feature("B").closePar()
-  ///   produces the constraint
-  ///     '!!(A => B)'
   ConstraintBuilder &closePar() {
-    if (!Head || !*Head || Parentheses.empty()) {
+    while (!Frames.empty() && std::get<PrecedenceTy>(Frames.top()) <
+                                  ConstraintBuilder::MaxPrecedence) {
+      Frames.pop();
+    }
+    if (!Head || !*Head || Frames.empty()) {
       llvm::errs() << "Syntax error: Unrecognized closing parenthesis.\n";
       Head = nullptr;
       return *this;
     }
-    Head = Parentheses.top();
-    Parentheses.pop();
+    Head = std::get<FrameTy>(Frames.top());
+    Frames.pop();
+    assert(Head && *Head);
     return *this;
   }
 
@@ -195,6 +209,7 @@ public:
     }
     *Head =
         std::make_unique<PrimaryBuilderImpl<PrimaryIntegerConstraint, int>>(V);
+    Frames.push(std::make_tuple(ConstraintBuilder::MinPrecedence, Head));
     return *this;
   }
 
@@ -214,6 +229,7 @@ public:
     *Head = std::make_unique<
         PrimaryBuilderImpl<PrimaryFeatureConstraint, std::unique_ptr<Feature>>>(
         std::make_unique<Feature>(Name));
+    Frames.push(std::make_tuple(ConstraintBuilder::MinPrecedence, Head));
     return *this;
   }
 
@@ -230,37 +246,37 @@ public:
   ///     feature("Foo").lOr().feature("Bar")
   ///   produces the constraint
   ///     '(Foo | Bar)'
-  ConstraintBuilder &lOr() { return binary<OrConstraint>(); }
+  ConstraintBuilder &lOr() { return binary<OrConstraint>(6); }
 
   /// Example:
   ///     feature("Foo").lXor().feature("Bar")
   ///   produces the constraint
   ///     '(Foo ^ Bar)'
-  ConstraintBuilder &lXor() { return binary<XorConstraint>(); }
+  ConstraintBuilder &lXor() { return binary<XorConstraint>(6); }
 
   /// Example:
   ///     feature("Foo").lAnd().feature("Bar")
   ///   produces the constraint
   ///     '(Foo & Bar)'
-  ConstraintBuilder &lAnd() { return binary<AndConstraint>(); }
+  ConstraintBuilder &lAnd() { return binary<AndConstraint>(5); }
 
   /// Example:
   ///     feature("Foo").implies().feature("Bar")
   ///   produces the constraint
   ///     '(Foo => Bar)'
-  ConstraintBuilder &implies() { return binary<ImpliesConstraint>(); }
+  ConstraintBuilder &implies() { return binary<ImpliesConstraint>(7); }
 
   /// Example:
   ///     feature("Foo").excludes().feature("Bar")
   ///   produces the constraint
   ///     '(Foo => !Bar)'
-  ConstraintBuilder &excludes() { return binary<ExcludesConstraint>(); }
+  ConstraintBuilder &excludes() { return binary<ExcludesConstraint>(7); }
 
   /// Example:
   ///     feature("Foo").equivalent().feature("Bar")
   ///   produces the constraint
   ///     '(Foo <=> Bar)'
-  ConstraintBuilder &equivalent() { return binary<EquivalenceConstraint>(); }
+  ConstraintBuilder &equivalent() { return binary<EquivalenceConstraint>(8); }
 
   //===--------------------------------------------------------------------===//
   // Comparison
@@ -269,37 +285,39 @@ public:
   ///     feature("Foo").equal().feature("Bar")
   ///   produces the constraint
   ///     '(Foo = Bar)'
-  ConstraintBuilder &equal() { return binary<EqualConstraint>(); }
+  ConstraintBuilder &equal() { return binary<EqualConstraint>(4); }
 
   /// Example:
   ///     feature("Foo").notEqual().feature("Bar")
   ///   produces the constraint
   ///     '(Foo != Bar)'
-  ConstraintBuilder &notEqual() { return binary<NotEqualConstraint>(); }
+  ConstraintBuilder &notEqual() { return binary<NotEqualConstraint>(4); }
 
   /// Example:
   ///     feature("Foo").less().feature("Bar")
   ///   produces the constraint
   ///     '(Foo < Bar)'
-  ConstraintBuilder &less() { return binary<LessConstraint>(); }
+  ConstraintBuilder &less() { return binary<LessConstraint>(3); }
 
   /// Example:
   ///     feature("Foo").greater().feature("Bar")
   ///   produces the constraint
   ///     '(Foo > Bar)'
-  ConstraintBuilder &greater() { return binary<GreaterConstraint>(); }
+  ConstraintBuilder &greater() { return binary<GreaterConstraint>(3); }
 
   /// Example:
   ///     feature("Foo").lessEqual().feature("Bar")
   ///   produces the constraint
   ///     '(Foo <= Bar)'
-  ConstraintBuilder &lessEqual() { return binary<LessEqualConstraint>(); }
+  ConstraintBuilder &lessEqual() { return binary<LessEqualConstraint>(3); }
 
   /// Example:
   ///     feature("Foo").greaterEqual().feature("Bar")
   ///   produces the constraint
   ///     '(Foo >= Bar)'
-  ConstraintBuilder &greaterEqual() { return binary<GreaterEqualConstraint>(); }
+  ConstraintBuilder &greaterEqual() {
+    return binary<GreaterEqualConstraint>(3);
+  }
 
   //===--------------------------------------------------------------------===//
   // Arithmetic
@@ -314,30 +332,30 @@ public:
   ///     feature("Foo").add().feature("Bar")
   ///   produces the constraint
   ///     '(Foo + Bar)'
-  ConstraintBuilder &add() { return binary<AdditionConstraint>(); }
+  ConstraintBuilder &add() { return binary<AdditionConstraint>(2); }
 
   /// Example:
   ///     feature("Foo").subtract().feature("Bar")
   ///   produces the constraint
   ///     '(Foo - Bar)'
-  ConstraintBuilder &subtract() { return binary<SubtractionConstraint>(); }
+  ConstraintBuilder &subtract() { return binary<SubtractionConstraint>(2); }
 
   /// Example:
   ///     feature("Foo").multiply().feature("Bar")
   ///   produces the constraint
   ///     '(Foo * Bar)'
-  ConstraintBuilder &multiply() { return binary<MultiplicationConstraint>(); }
+  ConstraintBuilder &multiply() { return binary<MultiplicationConstraint>(1); }
 
   /// Example:
   ///     feature("Foo").divide().feature("Bar")
   ///   produces the constraint
   ///     '(Foo / Bar)'
-  ConstraintBuilder &divide() { return binary<DivisionConstraint>(); }
+  ConstraintBuilder &divide() { return binary<DivisionConstraint>(1); }
 
 private:
   std::unique_ptr<ConstraintBuilderImpl> Root;
-  std::unique_ptr<ConstraintBuilderImpl> *Head;
-  std::stack<std::unique_ptr<ConstraintBuilderImpl> *> Parentheses;
+  FrameTy Head;
+  std::stack<std::tuple<PrecedenceTy, FrameTy>> Frames;
 };
 
 } // namespace vara::feature

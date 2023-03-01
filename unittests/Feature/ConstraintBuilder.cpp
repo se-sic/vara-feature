@@ -4,17 +4,32 @@
 #include "gtest/gtest.h"
 
 namespace vara::feature {
+
 TEST(ConstraintBuilder, build) {
   auto CB = ConstraintBuilder();
-  CB.feature("A").implies().lNot().feature("B")();
-  CB.implies().lNot().feature("C").implies().feature("D")();
-  CB.implies().feature("E");
+
+  CB.feature("A");
 
   EXPECT_TRUE(CB.build());
 }
 
+TEST(ConstraintBuilder, none) {
+  auto CB = ConstraintBuilder();
+
+  EXPECT_FALSE(CB.build());
+}
+
+TEST(ConstraintBuilder, empty) {
+  auto CB = ConstraintBuilder();
+
+  CB.openPar().closePar()();
+
+  EXPECT_FALSE(CB.build());
+}
+
 TEST(ConstraintBuilder, error) {
   auto CB = ConstraintBuilder();
+
   CB.feature("A").implies().excludes().feature("B");
 
   EXPECT_FALSE(CB.build());
@@ -33,33 +48,93 @@ protected:
   ConstraintBuilder CB;
 };
 
-TEST_F(ConstraintBuilderTest, parenthesizeUnary) {
-  Expected = "!(!!A => B)";
-  CB.lNot().openPar().lNot().lNot().feature("A").closePar().implies().feature(
-      "B");
+TEST_F(ConstraintBuilderTest, steps) {
+  Expected = "(((A => !B) => !!C) => D)";
+  CB.feature("A");
+  CB.implies();
+  CB.lNot();
+  CB.feature("B");
+  CB.implies();
+  CB.lNot();
+  CB.lNot();
+  CB.feature("C");
+  CB.implies();
+  CB.feature("D");
 }
 
-TEST_F(ConstraintBuilderTest, parenthesizeCall) {
-  Expected = "((A => B) => (C => D))";
+TEST_F(ConstraintBuilderTest, chain) {
+  Expected = "(((A => !B) => !!C) => D)";
   CB.feature("A")
       .implies()
-      .feature("B")()
+      .lNot()
+      .feature("B")
       .implies()
+      .lNot()
+      .lNot()
       .feature("C")
       .implies()
       .feature("D");
 }
 
-TEST_F(ConstraintBuilderTest, parenthesizeBinary) {
-  Expected = "((A => B) => (C => D))";
-  CB.openPar()
+TEST_F(ConstraintBuilderTest, precedence) {
+  Expected = "(((((A * ~B) + C) - (!!D / E)) => F) <=> (G => !(H | (I & J))))";
+  CB.feature("A")
+      .multiply()
+      .neg()
+      .feature("B")
+      .add()
+      .feature("C")
+      .subtract()
+      .lNot()
+      .lNot()
+      .feature("D")
+      .divide()
+      .feature("E")
+      .implies()
+      .feature("F")
+      .equivalent()
+      .feature("G")
+      .excludes()
+      .feature("H")
+      .lOr()
+      .feature("I")
+      .lAnd()
+      .feature("J");
+}
+
+TEST_F(ConstraintBuilderTest, parenthesize) {
+  Expected = "A";
+  CB.openPar().feature("A").closePar()();
+}
+
+TEST_F(ConstraintBuilderTest, parenthesizeUnary) {
+  Expected = "!(!!A => B)";
+  CB.lNot()
+      .openPar()
+      .lNot()
+      .lNot()
       .feature("A")
       .implies()
       .feature("B")
+      .closePar();
+}
+
+TEST_F(ConstraintBuilderTest, parenthesizeOperator) {
+  Expected = "(((A + B) * C) + D)";
+  CB.feature("A").add().feature("B")().multiply().feature("C").add().feature(
+      "D");
+}
+
+TEST_F(ConstraintBuilderTest, parenthesizeBinary) {
+  Expected = "(((A + B) * C) + D)";
+  CB.openPar()
+      .feature("A")
+      .add()
+      .feature("B")
       .closePar()
-      .implies()
+      .multiply()
       .feature("C")
-      .implies()
+      .add()
       .feature("D");
 }
 
