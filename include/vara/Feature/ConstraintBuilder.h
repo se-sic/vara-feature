@@ -142,13 +142,14 @@ public:
   ///   produces the constraint
   ///     '((A + B) * C)'
   ConstraintBuilder &operator()() {
-    if (!Head || !*Head) {
+    while (!Frames.empty() && std::get<PrecedenceTy>(Frames.top()) <
+                                  ConstraintBuilder::MaxPrecedence) {
+      Frames.pop();
+    }
+    if (!Head || !*Head || !Frames.empty()) {
       llvm::errs() << "Syntax error: Unrecognized parentheses.\n";
       Head = nullptr;
       return *this;
-    }
-    while (!Frames.empty()) {
-      Frames.pop();
     }
     assert(Root);
     Head = &Root;
