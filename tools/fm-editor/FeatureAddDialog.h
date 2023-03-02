@@ -17,7 +17,7 @@ public:
   QString getOutputString() const;
   std::unique_ptr<vara::feature::Feature> getFeature();
   vara::feature::Feature::FeatureKind getFeatureKind();
-  bool isOptional() const ;
+  bool isOptional() const;
 
 public slots:
   void featureType(int index);

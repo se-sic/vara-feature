@@ -6,8 +6,8 @@
 
 #include <QGraphicsItem>
 #include <QList>
-#include <QObject>
 #include <QMenu>
+#include <QObject>
 
 class FeatureEdge;
 class FeatureModelGraph;
@@ -39,7 +39,9 @@ public:
   [[nodiscard]] std::string getName() const {
     return Feature->getName().str();
   };
-  ~FeatureNode() override { std::destroy(ChildEdges.begin(), ChildEdges.end()); }
+  ~FeatureNode() override {
+    std::destroy(ChildEdges.begin(), ChildEdges.end());
+  }
 
 signals:
   void clicked(const vara::feature::Feature *Feature);

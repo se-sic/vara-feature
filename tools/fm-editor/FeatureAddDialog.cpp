@@ -43,7 +43,9 @@ vara::feature::Feature::FeatureKind FeatureAddDialog::getFeatureKind() {
 
 bool FeatureAddDialog::isOptional() const { return optinalCheck->isChecked(); }
 
-QString FeatureAddDialog::getOutputString() const { return outpuString->text(); }
+QString FeatureAddDialog::getOutputString() const {
+  return outpuString->text();
+}
 
 std::vector<int64_t> stringToIntVector(string &Input) {
   std::stringstream InStream(Input);
@@ -51,12 +53,12 @@ std::vector<int64_t> stringToIntVector(string &Input) {
 
   for (std::string Substring; std::getline(InStream, Substring, ',');) {
     Out.push_back(std::stoi(Substring));
-
   }
   return Out;
 }
 
-///Retrieve the Feature defined by the dialog this should only be called after the dialog was accepted
+/// Retrieve the Feature defined by the dialog this should only be called after
+/// the dialog was accepted
 std::unique_ptr<Feature> FeatureAddDialog::getFeature() {
   const std::string Name = getName().toStdString();
   const bool Optional = isOptional();
@@ -94,7 +96,7 @@ std::unique_ptr<Feature> FeatureAddDialog::getNumericFeature() const {
     ValueRange = stringToIntVector(ValueString);
   }
   return std::make_unique<vara::feature::NumericFeature>(
-        Name, ValueRange, Optional,
-        std::vector<vara::feature::FeatureSourceRange>(), OutputString,
-        std::move(SF));
+      Name, ValueRange, Optional,
+      std::vector<vara::feature::FeatureSourceRange>(), OutputString,
+      std::move(SF));
 }

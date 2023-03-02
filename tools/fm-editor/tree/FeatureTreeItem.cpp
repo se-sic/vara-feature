@@ -47,10 +47,13 @@ FeatureTreeItem::createFeatureTreeItem(vara::feature::FeatureTreeNode *Item) {
   if (Item->getKind() ==
       vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
     return new FeatureTreeItemRelation(
-        llvm::dyn_cast<vara::feature::Relationship,vara::feature::FeatureTreeNode>(Item));
+        llvm::dyn_cast<vara::feature::Relationship,
+                       vara::feature::FeatureTreeNode>(Item));
   }
 
-  return new FeatureTreeItemFeature(llvm::dyn_cast<vara::feature::Feature,vara::feature::FeatureTreeNode>(Item));
+  return new FeatureTreeItemFeature(
+      llvm::dyn_cast<vara::feature::Feature, vara::feature::FeatureTreeNode>(
+          Item));
 }
 
 void FeatureTreeItem::addChild(FeatureTreeItem *Child) {

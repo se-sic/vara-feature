@@ -97,11 +97,11 @@ void FeatureModelEditor::loadGraph() {
 
 /// Build the Treeview
 void FeatureModelEditor::buildTree() {
-  if(!TreeView){
+  if (!TreeView) {
     TreeView = std::make_unique<QTreeView>(this);
   }
-  TreeModel =
-      std::make_unique<FeatureTreeViewModel>(FeatureModel.get(), TreeView.get());
+  TreeModel = std::make_unique<FeatureTreeViewModel>(FeatureModel.get(),
+                                                     TreeView.get());
   for (auto Item : TreeModel->getItems()) {
     connect(Item, &FeatureTreeItem::inspectSource, this,
             &FeatureModelEditor::inspectFeatureSources);
@@ -114,8 +114,8 @@ void FeatureModelEditor::buildTree() {
           &FeatureModelEditor::loadFeatureFromIndex);
   TreeView->setModel(TreeModel.get());
   TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(TreeView.get(), SIGNAL(customContextMenuRequested(const QPoint &)), this,
-          SLOT(createTreeContextMenu(const QPoint &)));
+  connect(TreeView.get(), SIGNAL(customContextMenuRequested(const QPoint &)),
+          this, SLOT(createTreeContextMenu(const QPoint &)));
 }
 
 /// Build the graph view
@@ -214,7 +214,8 @@ void FeatureModelEditor::createTreeContextMenu(const QPoint &Pos) {
   }
 }
 
-/// Load the selected file into the textedit and mark the sources of the selected feature
+/// Load the selected file into the textedit and mark the sources of the
+/// selected feature
 ///
 /// \param RelativePath  path to the source file relative to the repository path
 void FeatureModelEditor::loadSource(const QString &RelativePath) {

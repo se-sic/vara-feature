@@ -89,7 +89,6 @@ public:
         std::pair(QString("Add Child"), &FeatureTreeItemFeature::addChild),
         std::pair(QString("Remove"), &FeatureTreeItemFeature::remove));
     // TODO Make recursive Removal work
-
   }
   [[nodiscard]] QVariant data(int Column) const override;
   [[nodiscard]] int columnCount() const override { return 5; }
