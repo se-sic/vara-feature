@@ -238,7 +238,12 @@ void FeatureModelEditor::loadSource(const QString &RelativePath) {
     }
   }
 }
-
+void setCursorLineAndColumn (QTextCursor &Cursor, int Line, int Col,
+                            QTextCursor::MoveMode Mode)
+{
+  QTextBlock const B = Cursor.document()->findBlockByLineNumber(Line);
+  Cursor.setPosition(B.position() + Col, Mode);
+}
 /// Mark the given SourceRange with the given Format
 ///
 /// \param Fmt Format to mark with
@@ -250,18 +255,12 @@ void FeatureModelEditor::markLocation(
   Fmt.setBackground(Qt::darkYellow);
   QTextCursor Cursor(Ui->textEdit->document());
   Cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-  Cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor,
-                      int(Location.getStart()->getLineNumber()) - 1);
-  Cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor,
-                      int(Location.getStart()->getColumnOffset()) - 1);
-  Cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor,
-                      int(Location.getEnd()->getLineNumber()) -
-                          int(Location.getStart()->getLineNumber()));
-  Cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
-  Cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
-                      int(Location.getEnd()->getColumnOffset()));
+  setCursorLineAndColumn(Cursor,Location.getStart()->getLineNumber()-1,Location.getStart()->getColumnOffset()-1,QTextCursor::MoveAnchor);
+  setCursorLineAndColumn(Cursor,Location.getEnd()->getLineNumber()-1,Location.getEnd()->getColumnOffset()-1,QTextCursor::KeepAnchor);
   Cursor.setCharFormat(Fmt);
 }
+
+
 
 /// Load a sourcefile to then add a location from it
 void FeatureModelEditor::addSourceFile() {
