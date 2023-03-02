@@ -5,10 +5,9 @@ set(LLVM_LINK_COMPONENTS
 )
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt6 COMPONENTS Widgets)
-if (NOT Qt6_FOUND)
-    find_package(Qt5 5.15 REQUIRED COMPONENTS Widgets)
-endif()
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
 include_directories(../../external/qsourcehighlite)
 include_directories(.)
 
@@ -36,7 +35,7 @@ add_vara_executable(fm-editor
 target_link_libraries(fm-editor
         LINK_PRIVATE
         VaRAFeature
-        Qt::Widgets
+        Qt${QT_VERSION_MAJOR}::Widgets
         ${STD_FS_LIB}
 )
 
