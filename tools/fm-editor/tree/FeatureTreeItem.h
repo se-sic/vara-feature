@@ -1,9 +1,9 @@
 #ifndef VARA_FEATURE_FEATURETREEITEM_H
 #define VARA_FEATURE_FEATURETREEITEM_H
 
+#include "Utils.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
-#include ""
 
 #include <QMenu>
 #include <QPoint>

@@ -7,6 +7,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 include_directories(../../external/qsourcehighlite)
+include_directories(.)
+
 add_vara_executable(fm-editor
         main.cpp
         graph/FeatureModelGraph.h
@@ -21,7 +23,6 @@ add_vara_executable(fm-editor
         tree/FeatureTreeItem.cpp
         FeatureModelEditor.h FeatureModelEditor.cpp
         FeatureAddDialog.h FeatureAddDialog.cpp
-        Utils.h
         ../../external/qsourcehighlite/qsourcehighliter.h
         ../../external/qsourcehighlite/qsourcehighliter.cpp
         ../../external/qsourcehighlite/languagedata.h
