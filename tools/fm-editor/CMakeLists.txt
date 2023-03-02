@@ -7,7 +7,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-
+if(QT_VERSION_MAJOR GREATER 5 OR QT_VERSION_MINOR GREATER_EQUAL 15)
+    add_compile_definitions(QT_HAS_SETPLACEHOLDERTEXT)
+endif()
 include_directories(../../external/qsourcehighlite)
 include_directories(.)
 
