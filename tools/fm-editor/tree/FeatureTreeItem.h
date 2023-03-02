@@ -73,7 +73,7 @@ public:
                            &FeatureTreeItemFeature::addChild);
     RemoveAction = std::make_unique<QAction>("Remove");
     connect(RemoveAction.get(), &QAction::triggered, this,
-            &FeatureTreeItemFeature::remove,Qt::QueuedConnection);
+            &FeatureTreeItemFeature::remove, Qt::QueuedConnection);
   }
   [[nodiscard]] QVariant data(int Column) const override;
   [[nodiscard]] int columnCount() const override { return 5; }

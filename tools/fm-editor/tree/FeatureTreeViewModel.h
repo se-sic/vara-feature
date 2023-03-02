@@ -9,18 +9,15 @@
 class FeatureTreeViewModel : public QAbstractItemModel {
 public:
   FeatureTreeViewModel(vara::feature::FeatureModel *Model, QObject *Parent)
-      : QAbstractItemModel(Parent), Model(Model)
-         {
+      : QAbstractItemModel(Parent), Model(Model) {
     auto UniqueRoot = FeatureTreeItem::createFeatureTreeItem(Model->getRoot());
     RootItem = UniqueRoot.get();
     Items.push_back(std::move(UniqueRoot));
     buildRecursive(RootItem);
-
   }
 
-
   ~FeatureTreeViewModel() override { std::destroy(Items.begin(), Items.end()); }
-  std::vector<std::unique_ptr<FeatureTreeItem>>* getItems();
+  std::vector<std::unique_ptr<FeatureTreeItem>> *getItems();
   [[nodiscard]] QVariant data(const QModelIndex &Index,
                               int Role = Qt::DisplayRole) const override;
   [[nodiscard]] int
@@ -38,8 +35,9 @@ public:
   void deleteFeatureItem(bool Recursive, vara::feature::Feature *Feature);
   void deleteItem(bool Recursive, FeatureTreeItem *Item);
   FeatureTreeItem *getItem(string Name) {
-    auto Item = std::find_if(Items.begin(), Items.end(),
-                             [&Name](const auto &I) { return I->getName() == Name; });
+    auto Item =
+        std::find_if(Items.begin(), Items.end(),
+                     [&Name](const auto &I) { return I->getName() == Name; });
     if (Item != Items.end()) {
       return Item->get();
     }
@@ -48,9 +46,9 @@ public:
   }
 
 private:
-  void buildRecursive(FeatureTreeItem* Parent) {
+  void buildRecursive(FeatureTreeItem *Parent) {
     for (auto *ChildItem : Parent->getItem()->children()) {
-      FeatureTreeItem* RawChild;
+      FeatureTreeItem *RawChild;
       if (vara::feature::Relationship::classof(ChildItem)) {
         auto Child = FeatureTreeItem::createFeatureTreeItem(
             dynamic_cast<vara::feature::Relationship *>(ChildItem));

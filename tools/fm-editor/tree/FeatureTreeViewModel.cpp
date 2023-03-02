@@ -107,7 +107,8 @@ QVariant FeatureTreeViewModel::headerData(int Section,
   return {};
 }
 
-std::vector<std::unique_ptr<FeatureTreeItem>>* FeatureTreeViewModel::getItems() {
+std::vector<std::unique_ptr<FeatureTreeItem>> *
+FeatureTreeViewModel::getItems() {
   return &Items;
 }
 
@@ -157,5 +158,6 @@ void FeatureTreeViewModel::deleteItem(bool Recursive, FeatureTreeItem *Item) {
     }
   }
 
-  Items.erase(std::find_if(Items.begin(), Items.end(), [Item](auto &I) {return I.get()==Item;}));
+  Items.erase(std::find_if(Items.begin(), Items.end(),
+                           [Item](auto &I) { return I.get() == Item; }));
 }
