@@ -1,5 +1,5 @@
-#include "FeatureAddDialog.h"
 #include "FeatureModelEditor.h"
+#include "FeatureAddDialog.h"
 #include "graph/FeatureModelGraph.h"
 #include "graph/FeatureNode.h"
 #include "ui_FeatureModelEditor.h"
@@ -9,7 +9,6 @@
 
 #include <QDir>
 #include <QFileDialog>
-
 
 using vara::feature::FeatureModel;
 using Transaction = vara::feature::FeatureModelTransaction<
@@ -44,8 +43,8 @@ void FeatureModelEditor::loadFeature(const vara::feature::Feature *Feature) {
 /// Get a Feature from an Index of the TreeView and display its information.
 void FeatureModelEditor::loadFeatureFromIndex(const QModelIndex &Index) {
   if (Index.isValid()) {
-    auto* Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
-                    ->child(Index.row());
+    auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
+                     ->child(Index.row());
     if (Item->getKind() ==
         vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE) {
       loadFeature(dynamic_cast<FeatureTreeItemFeature *>(Item)->getFeature());
@@ -112,8 +111,8 @@ void FeatureModelEditor::buildTree() {
           &FeatureModelEditor::loadFeatureFromIndex);
   TreeView->setModel(TreeModel.get());
   TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(TreeView.get(), SIGNAL(customContextMenuRequested(QPoint)),
-          this, SLOT(createTreeContextMenu(QPoint)));
+  connect(TreeView.get(), SIGNAL(customContextMenuRequested(QPoint)), this,
+          SLOT(createTreeContextMenu(QPoint)));
 }
 
 /// Build the graph view
@@ -273,7 +272,7 @@ void FeatureModelEditor::addSourceFile() {
 /// Add the user selected Part of the textedit as a source for the active
 /// Feature
 void FeatureModelEditor::addSource() {
-  auto * TextEdit = Ui->textEdit;
+  auto *TextEdit = Ui->textEdit;
   auto Cursor = TextEdit->textCursor();
   int const Start = Cursor.selectionStart();
   int const End = Cursor.selectionEnd();
