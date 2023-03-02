@@ -23,9 +23,9 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
 
   Ui->setupUi(this);
   Ui->textEdit->setReadOnly(true);
-  auto *Highliter =
-      new QSourceHighlite::QSourceHighliter(Ui->textEdit->document());
-  Highliter->setCurrentLanguage(QSourceHighlite::QSourceHighliter::CodeCpp);
+  Highlighter = std::make_unique<QSourceHighlite::QSourceHighliter>(
+      Ui->textEdit->document());
+  Highlighter->setCurrentLanguage(QSourceHighlite::QSourceHighliter::CodeCpp);
   QObject::connect(Ui->loadModel, &QPushButton::pressed, this,
                    &FeatureModelEditor::loadGraph);
   QObject::connect(Ui->actionAddFeature, &QAction::triggered, this,

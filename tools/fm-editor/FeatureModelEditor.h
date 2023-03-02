@@ -2,6 +2,7 @@
 #define VARA_FEATURE_FEATUREMODELEDITOR_H
 
 #include "graph/FeatureModelGraph.h"
+#include "qsourcehighliter.h"
 #include "tree/FeatureTreeViewModel.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureModel.h"
@@ -54,6 +55,7 @@ private:
   void buildGraph();
   void buildTree();
   void markLocation(vara::feature::FeatureSourceRange &Location) const;
+  std::unique_ptr<QSourceHighlite::QSourceHighliter> Highlighter;
 };
 
 #endif // VARA_FEATURE_FEATUREMODELEDITOR_H
