@@ -238,11 +238,13 @@ void FeatureModelEditor::loadSource(const QString &RelativePath) {
     }
   }
 }
+
 void setCursorLineAndColumn(QTextCursor &Cursor, int Line, int Col,
                             QTextCursor::MoveMode Mode) {
   QTextBlock const B = Cursor.document()->findBlockByLineNumber(Line);
   Cursor.setPosition(B.position() + Col, Mode);
 }
+
 /// Mark the given SourceRange with the given Format
 ///
 /// \param Fmt Format to mark with
