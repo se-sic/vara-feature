@@ -9,9 +9,7 @@ struct ActionBuilder {
   template <class Func1, class... Func>
   void addActions(std::pair<QString, Func1> Action,
                   std::pair<QString, Func>... Actions) {
-    auto *A = new QAction(Action.first, Receiver);
-    QObject::connect(A, &QAction::triggered, Receiver, Action.second);
-    Menu->addAction(A);
+    Menu->addAction(Action.first,Receiver,Action.second);
     addActions(Actions...);
   }
   void addActions() {}
