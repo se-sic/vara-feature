@@ -42,15 +42,15 @@ QVariant locationString(vara::feature::Feature *Item) {
   return QString::fromStdString(StrS.str());
 }
 
-FeatureTreeItem *FeatureTreeItem::createFeatureTreeItem(vara::feature::FeatureTreeNode *Item) {
+FeatureTreeItem *
+FeatureTreeItem::createFeatureTreeItem(vara::feature::FeatureTreeNode *Item) {
   if (Item->getKind() ==
       vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
     return new FeatureTreeItemRelation(
         dyn_cast<vara::feature::Relationship>(Item));
   }
 
-  return new FeatureTreeItemFeature(
-      dyn_cast<vara::feature::Feature>(Item));
+  return new FeatureTreeItemFeature(dyn_cast<vara::feature::Feature>(Item));
 }
 
 void FeatureTreeItem::addChild(FeatureTreeItem *Child) {

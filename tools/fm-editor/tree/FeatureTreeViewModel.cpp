@@ -79,7 +79,6 @@ Qt::ItemFlags FeatureTreeViewModel::flags(const QModelIndex &Index) const {
     if (Item->booleanColumn(Index.column())) {
       return Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     }
-
   }
 
   return QAbstractItemModel::flags(Index);
@@ -112,7 +111,8 @@ std::vector<FeatureTreeItem *> FeatureTreeViewModel::getItems() {
   return Items;
 }
 
-FeatureTreeItem *FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
+FeatureTreeItem *
+FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
                                  std::string Parent) {
   auto Item = getItem(Parent);
   if (Item) {

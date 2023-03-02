@@ -28,7 +28,7 @@ add_vara_executable(fm-editor
         ../../external/qsourcehighlite/languagedata.cpp
         ../../external/qsourcehighlite/qsourcehighliterthemes.h
         ../../external/qsourcehighlite/qsourcehighliterthemes.cpp
-        )
+)
 target_link_libraries(fm-editor
         LINK_PRIVATE
         VaRAFeature
