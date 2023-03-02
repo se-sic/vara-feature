@@ -107,8 +107,8 @@ QVariant FeatureTreeViewModel::headerData(int Section,
   return {};
 }
 
-std::vector<FeatureTreeItem *> FeatureTreeViewModel::getItems() {
-  return Items;
+std::vector<std::unique_ptr<FeatureTreeItem>>* FeatureTreeViewModel::getItems() {
+  return &Items;
 }
 
 FeatureTreeItem *
@@ -117,9 +117,10 @@ FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
   auto Item = getItem(Parent);
   if (Item) {
     auto NewItem = FeatureTreeItem::createFeatureTreeItem(Feature);
-    Item->addChild(NewItem);
-    Items.push_back(NewItem);
-    return NewItem;
+    Item->addChild(NewItem.get());
+    auto *NewItemRaw = NewItem.get();
+    Items.push_back(std::move(NewItem));
+    return NewItemRaw;
   }
 
   return nullptr;
@@ -156,6 +157,5 @@ void FeatureTreeViewModel::deleteItem(bool Recursive, FeatureTreeItem *Item) {
     }
   }
 
-  Items.erase(std::find(Items.begin(), Items.end(), Item));
-  delete Item;
+  Items.erase(std::find_if(Items.begin(), Items.end(), [Item](auto &I) {return I.get()==Item;}));
 }

@@ -48,7 +48,7 @@ void FeatureModelEditor::loadFeatureFromIndex(const QModelIndex &Index) {
                     ->child(Index.row());
     if (Item->getKind() ==
         vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE) {
-      loadFeature(dynamic_cast<FeatureTreeItemFeature *>(Item)->getItem());
+      loadFeature(dynamic_cast<FeatureTreeItemFeature *>(Item)->getFeature());
     }
   }
 }
@@ -100,12 +100,12 @@ void FeatureModelEditor::buildTree() {
   }
   TreeModel = std::make_unique<FeatureTreeViewModel>(FeatureModel.get(),
                                                      TreeView.get());
-  for (auto* Item : TreeModel->getItems()) {
-    connect(Item, &FeatureTreeItem::inspectSource, this,
+  for (auto &Item : *TreeModel->getItems()) {
+    connect(Item.get(), &FeatureTreeItem::inspectSource, this,
             &FeatureModelEditor::inspectFeatureSources);
-    connect(Item, &FeatureTreeItem::addChildFeature, this,
+    connect(Item.get(), &FeatureTreeItem::addChildFeature, this,
             &FeatureModelEditor::featureAddDialogChild);
-    connect(Item, &FeatureTreeItem::removeFeature, this,
+    connect(Item.get(), &FeatureTreeItem::removeFeature, this,
             &FeatureModelEditor::removeFeature);
   }
   connect(TreeView.get(), &QTreeView::pressed, this,

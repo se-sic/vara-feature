@@ -42,16 +42,16 @@ QVariant locationString(vara::feature::Feature *Item) {
   return QString::fromStdString(StrS.str());
 }
 
-FeatureTreeItem *
+std::unique_ptr<FeatureTreeItem>
 FeatureTreeItem::createFeatureTreeItem(vara::feature::FeatureTreeNode *Item) {
   if (Item->getKind() ==
       vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
-    return new FeatureTreeItemRelation(
+    return std::make_unique<FeatureTreeItemRelation>(
         llvm::dyn_cast<vara::feature::Relationship,
                        vara::feature::FeatureTreeNode>(Item));
   }
 
-  return new FeatureTreeItemFeature(
+  return std::make_unique<FeatureTreeItemFeature>(
       llvm::dyn_cast<vara::feature::Feature, vara::feature::FeatureTreeNode>(
           Item));
 }
