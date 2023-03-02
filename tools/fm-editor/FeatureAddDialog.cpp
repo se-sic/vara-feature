@@ -25,9 +25,9 @@ FeatureAddDialog::FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent,
           &FeatureAddDialog::featureType);
 }
 
-QString FeatureAddDialog::getName() { return name->text(); }
+QString FeatureAddDialog::getName() const { return name->text(); }
 
-QString FeatureAddDialog::getParent() { return Nodes->currentText(); }
+QString FeatureAddDialog::getParent() const { return Nodes->currentText(); }
 
 void FeatureAddDialog::featureType(int index) {
   if (index == 1) {
@@ -41,9 +41,9 @@ vara::feature::Feature::FeatureKind FeatureAddDialog::getFeatureKind() {
   return vara::feature::Feature::FeatureKind(FeatureKind->currentIndex());
 }
 
-bool FeatureAddDialog::isOptional() { return optinalCheck->isChecked(); }
+bool FeatureAddDialog::isOptional() const { return optinalCheck->isChecked(); }
 
-QString FeatureAddDialog::getOutputString() { return outpuString->text(); }
+QString FeatureAddDialog::getOutputString() const { return outpuString->text(); }
 
 std::vector<int64_t> stringToIntVector(string &Input) {
   std::stringstream InStream(Input);
@@ -60,7 +60,6 @@ std::unique_ptr<Feature> FeatureAddDialog::getFeature() {
   const std::string Name = getName().toStdString();
   const bool Optional = isOptional();
   const std::string OutputString = getOutputString().toStdString();
-  vara::feature::NumericFeature::ValuesVariantType ValueRange;
   switch (getFeatureKind()) {
 
   case Feature::FeatureKind::FK_BINARY:
@@ -68,25 +67,33 @@ std::unique_ptr<Feature> FeatureAddDialog::getFeature() {
         Name, Optional, std::vector<vara::feature::FeatureSourceRange>(),
         OutputString);
   case Feature::FeatureKind::FK_NUMERIC: {
-    std::unique_ptr<vara::feature::StepFunction> SF{};
-    if (range->isChecked()) {
-      ValueRange = vara::feature::NumericFeature::ValueRangeType(min->value(),
-                                                                 max->value());
-      if (lhs->isChecked()) {
-        SF = std::make_unique<vara::feature::StepFunction>(
-            stepOperant->value(), vara::feature::StepFunction::StepOperation(
-                                      stepOperator->currentIndex()));
-      }
-    } else {
-      auto ValueString = values->text().toStdString();
-      ValueRange = stringToIntVector(ValueString);
-    }
-    return std::make_unique<vara::feature::NumericFeature>(
-        Name, ValueRange, Optional,
-        std::vector<vara::feature::FeatureSourceRange>(), OutputString,
-        std::move(SF));
+    return getNumericFeature();
   }
   default:
     return std::make_unique<Feature>(Name);
   }
+}
+
+std::unique_ptr<Feature> FeatureAddDialog::getNumericFeature() const {
+  const std::string Name = getName().toStdString();
+  const bool Optional = isOptional();
+  const std::string OutputString = getOutputString().toStdString();
+  std::unique_ptr<vara::feature::StepFunction> SF{};
+  vara::feature::NumericFeature::ValuesVariantType ValueRange;
+  if (range->isChecked()) {
+    ValueRange = vara::feature::NumericFeature::ValueRangeType(min->value(),
+                                                               max->value());
+    if (lhs->isChecked()) {
+      SF = std::make_unique<vara::feature::StepFunction>(
+          stepOperant->value(), vara::feature::StepFunction::StepOperation(
+                                    stepOperator->currentIndex()));
+    }
+  } else {
+    auto ValueString = values->text().toStdString();
+    ValueRange = stringToIntVector(ValueString);
+  }
+  return std::make_unique<vara::feature::NumericFeature>(
+        Name, ValueRange, Optional,
+        std::vector<vara::feature::FeatureSourceRange>(), OutputString,
+        std::move(SF));
 }
