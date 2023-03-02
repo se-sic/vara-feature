@@ -14,7 +14,6 @@ public:
   FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
                     QWidget *Parent = nullptr);
   auto getNodes() { return &Nodes; };
-  void itemMoved();
   FeatureNode *getNode(std::string Name);
   FeatureNode *addNode(vara::feature::Feature *Feature, FeatureNode *Parent);
   void deleteNode(bool Recursive, vara::feature::Feature *Feature);
@@ -44,6 +43,7 @@ private:
                   unsigned long Offset);
   vara::feature::FeatureModel *FeatureModel;
   std::vector<std::unique_ptr<FeatureNode>> Nodes;
+  std::unique_ptr<QGraphicsScene> Scene;
 };
 
 #endif // VARA_FEATURE_FEATUREMODELGRAPH_H

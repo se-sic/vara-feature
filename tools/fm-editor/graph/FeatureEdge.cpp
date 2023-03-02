@@ -27,7 +27,6 @@ void FeatureEdge::adjust() {
   prepareGeometryChange();
 
   if (Length > qreal(20.)) {
-    QPointF EdgeOffset((Line.dx() * 10) / Length, (Line.dy() * 10) / Length);
     SourcePoint = Line.p1();
     TargetPoint = Line.p2();
   } else {
