@@ -46,7 +46,11 @@ jobs:
           sudo add-apt-repository -y 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-15 main'
           sudo apt-get update
           sudo apt-get -y install --no-install-recommends clang-${{ matrix.llvm-major }} llvm-${{ matrix.llvm-major }}-dev clang-tidy-14
-
+      - name: Install Tool Dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install qt6-base-dev
       - name: Workaround for sanitizer
         shell: bash
         run: |
