@@ -43,7 +43,7 @@ vara::feature::Feature::FeatureKind FeatureAddDialog::getFeatureKind() {
 
 bool FeatureAddDialog::isOptional() { return optinalCheck->isChecked(); }
 
-QString FeatureAddDialog::getOutpuString() { return outpuString->text(); }
+QString FeatureAddDialog::getOutputString() { return outpuString->text(); }
 
 std::vector<int64_t> stringToIntVector(string &Input) {
   std::stringstream InStream(Input);
@@ -59,7 +59,7 @@ std::vector<int64_t> stringToIntVector(string &Input) {
 std::unique_ptr<Feature> FeatureAddDialog::getFeature() {
   const std::string Name = getName().toStdString();
   const bool Optional = isOptional();
-  const std::string OutputString = getOutpuString().toStdString();
+  const std::string OutputString = getOutputString().toStdString();
   vara::feature::NumericFeature::ValuesVariantType ValueRange;
   switch (getFeatureKind()) {
 

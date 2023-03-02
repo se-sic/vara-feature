@@ -14,7 +14,7 @@ public:
                    vara::feature::Feature *ParentFeature = nullptr);
   QString getName();
   QString getParent();
-  QString getOutpuString();
+  QString getOutputString();
   std::unique_ptr<vara::feature::Feature> getFeature();
   vara::feature::Feature::FeatureKind getFeatureKind();
   bool isOptional();
