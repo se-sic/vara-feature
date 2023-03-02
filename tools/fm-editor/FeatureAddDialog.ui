@@ -41,7 +41,7 @@
     <widget class="QLineEdit" name="name"/>
    </item>
    <item row="2" column="3">
-    <widget class="QCheckBox" name="optinalCheck">
+    <widget class="QCheckBox" name="optionalCheck">
      <property name="text">
       <string>Optional</string>
      </property>
@@ -68,10 +68,10 @@
     <widget class="QComboBox" name="Nodes"/>
    </item>
    <item row="1" column="3">
-    <widget class="QLineEdit" name="outpuString"/>
+    <widget class="QLineEdit" name="outputString"/>
    </item>
    <item row="0" column="2">
-    <widget class="QLabel" name="namelable">
+    <widget class="QLabel" name="nameLabel">
      <property name="text">
       <string>Name</string>
      </property>
@@ -135,7 +135,7 @@
            </widget>
           </item>
           <item row="2" column="3">
-           <widget class="QDoubleSpinBox" name="stepOperant">
+           <widget class="QDoubleSpinBox" name="stepOperand">
             <property name="maximum">
              <double>10000000.000000000000000</double>
             </property>
@@ -171,7 +171,7 @@
           <item row="3" column="2" colspan="2">
            <widget class="QCheckBox" name="lhs">
             <property name="text">
-             <string>Value is Left Operant</string>
+             <string>Value is Left Operand</string>
             </property>
            </widget>
           </item>
@@ -192,11 +192,11 @@
    <receiver>Add</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel">
+    <hint type="sourceLabel">
      <x>248</x>
      <y>254</y>
     </hint>
-    <hint type="destinationlabel">
+    <hint type="destinationLabel">
      <x>157</x>
      <y>274</y>
     </hint>

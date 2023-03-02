@@ -41,10 +41,10 @@ vara::feature::Feature::FeatureKind FeatureAddDialog::getFeatureKind() {
   return vara::feature::Feature::FeatureKind(FeatureKind->currentIndex());
 }
 
-bool FeatureAddDialog::isOptional() const { return optinalCheck->isChecked(); }
+bool FeatureAddDialog::isOptional() const { return optionalCheck->isChecked(); }
 
 QString FeatureAddDialog::getOutputString() const {
-  return outpuString->text();
+  return outputString->text();
 }
 
 std::vector<int64_t> stringToIntVector(string &Input) {
@@ -88,7 +88,7 @@ std::unique_ptr<Feature> FeatureAddDialog::getNumericFeature() const {
                                                                max->value());
     if (lhs->isChecked()) {
       SF = std::make_unique<vara::feature::StepFunction>(
-          stepOperant->value(), vara::feature::StepFunction::StepOperation(
+          stepOperand->value(), vara::feature::StepFunction::StepOperation(
                                     stepOperator->currentIndex()));
     }
   } else {

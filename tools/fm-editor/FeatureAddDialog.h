@@ -25,7 +25,6 @@ public slots:
 private:
   QStringList NodeNames;
 
-  vara::feature::StepFunction::StepOperation getStepOperation();
   std::unique_ptr<vara::feature::Feature> getNumericFeature() const;
 };
 

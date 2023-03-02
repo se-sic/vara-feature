@@ -1,8 +1,7 @@
-#include "FeatureModelEditor.h"
 #include "FeatureAddDialog.h"
+#include "FeatureModelEditor.h"
 #include "graph/FeatureModelGraph.h"
 #include "graph/FeatureNode.h"
-#include "qsourcehighliter.h"
 #include "ui_FeatureModelEditor.h"
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelTransaction.h"
@@ -11,7 +10,6 @@
 #include <QDir>
 #include <QFileDialog>
 
-namespace fs = std::filesystem;
 
 using vara::feature::FeatureModel;
 using Transaction = vara::feature::FeatureModelTransaction<
@@ -46,11 +44,11 @@ void FeatureModelEditor::loadFeature(const vara::feature::Feature *Feature) {
 /// Get a Feature from an Index of the TreeView and display its information.
 void FeatureModelEditor::loadFeatureFromIndex(const QModelIndex &Index) {
   if (Index.isValid()) {
-    auto Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
+    auto* Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
                     ->child(Index.row());
     if (Item->getKind() ==
         vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE) {
-      loadFeature(static_cast<FeatureTreeItemFeature *>(Item)->getItem());
+      loadFeature(dynamic_cast<FeatureTreeItemFeature *>(Item)->getItem());
     }
   }
 }
@@ -102,7 +100,7 @@ void FeatureModelEditor::buildTree() {
   }
   TreeModel = std::make_unique<FeatureTreeViewModel>(FeatureModel.get(),
                                                      TreeView.get());
-  for (auto Item : TreeModel->getItems()) {
+  for (auto* Item : TreeModel->getItems()) {
     connect(Item, &FeatureTreeItem::inspectSource, this,
             &FeatureModelEditor::inspectFeatureSources);
     connect(Item, &FeatureTreeItem::addChildFeature, this,
@@ -114,8 +112,8 @@ void FeatureModelEditor::buildTree() {
           &FeatureModelEditor::loadFeatureFromIndex);
   TreeView->setModel(TreeModel.get());
   TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(TreeView.get(), SIGNAL(customContextMenuRequested(const QPoint &)),
-          this, SLOT(createTreeContextMenu(const QPoint &)));
+  connect(TreeView.get(), SIGNAL(customContextMenuRequested(QPoint)),
+          this, SLOT(createTreeContextMenu(QPoint)));
 }
 
 /// Build the graph view
@@ -250,15 +248,15 @@ void FeatureModelEditor::markLocation(
   QTextCursor Cursor(Ui->textEdit->document());
   Cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
   Cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor,
-                      Location.getStart()->getLineNumber() - 1);
+                      int(Location.getStart()->getLineNumber()) - 1);
   Cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor,
-                      Location.getStart()->getColumnOffset() - 1);
+                      int(Location.getStart()->getColumnOffset()) - 1);
   Cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor,
-                      Location.getEnd()->getLineNumber() -
-                          Location.getStart()->getLineNumber());
+                      int(Location.getEnd()->getLineNumber()) -
+                          int(Location.getStart()->getLineNumber()));
   Cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
   Cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor,
-                      Location.getEnd()->getColumnOffset());
+                      int(Location.getEnd()->getColumnOffset()));
   Cursor.setCharFormat(Fmt);
 }
 
@@ -275,29 +273,29 @@ void FeatureModelEditor::addSourceFile() {
 /// Add the user selected Part of the textedit as a source for the active
 /// Feature
 void FeatureModelEditor::addSource() {
-  auto TextEdit = Ui->textEdit;
+  auto * TextEdit = Ui->textEdit;
   auto Cursor = TextEdit->textCursor();
-  int start = Cursor.selectionStart();
-  int end = Cursor.selectionEnd();
+  int const Start = Cursor.selectionStart();
+  int const End = Cursor.selectionEnd();
   Cursor.movePosition(QTextCursor::MoveOperation::StartOfLine);
-  int lineStart = Cursor.position();
-  int lines = 1;
+  int const LineStart = Cursor.position();
+  int Lines = 1;
   auto Block = Cursor.block();
   while (Cursor.position() > Block.position()) {
     Cursor.movePosition(QTextCursor::MoveOperation::Up);
-    lines++;
+    Lines++;
   }
   Block = Block.previous();
   while (Block.isValid()) {
-    lines += Block.lineCount();
+    Lines += Block.lineCount();
     Block = Block.previous();
   }
   auto Range = vara::feature::FeatureSourceRange(
       Ui->sources->currentText().toStdString(),
       vara::feature::FeatureSourceRange::FeatureSourceLocation(
-          lines, start - lineStart + 1),
+          Lines, Start - LineStart + 1),
       vara::feature::FeatureSourceRange::FeatureSourceLocation(
-          lines, end - lineStart));
+          Lines, End - LineStart));
   auto LocationTransAction = Transaction::openTransaction(*FeatureModel);
   LocationTransAction.addLocation(CurrentFeature, Range);
   LocationTransAction.commit();
