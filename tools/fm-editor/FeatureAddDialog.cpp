@@ -21,7 +21,7 @@ FeatureAddDialog::FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent,
   this->FeatureKind->addItems(QStringList{"Binary", "Numeric"});
   stepOperator->addItems(QStringList{"Add +", "Multiply *", "Exp ^"});
   NumericFeature->setVisible(false);
-  connect(FeatureKind, &QComboBox::activated, this,
+  connect(FeatureKind, QOverload<int>::of(&QComboBox::activated), this,
           &FeatureAddDialog::featureType);
 }
 

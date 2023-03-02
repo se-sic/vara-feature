@@ -20,7 +20,7 @@ public:
   bool isOptional() const;
 
 public slots:
-  void featureType(int index);
+  void featureType(int Index);
 
 private:
   QStringList NodeNames;

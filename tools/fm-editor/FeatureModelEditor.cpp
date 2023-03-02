@@ -9,6 +9,7 @@
 
 #include <QDir>
 #include <QFileDialog>
+#include <QTextStream>
 
 using vara::feature::FeatureModel;
 using Transaction = vara::feature::FeatureModelTransaction<
@@ -265,7 +266,7 @@ void FeatureModelEditor::addSourceFile() {
     QString const Path =
         QFileDialog::getOpenFileName(this, tr("Select Source File"), Repository,
                                      tr("C Files (*.c *c++ *.h)"));
-    Ui->sources->addItem(Path.sliced(Repository.length()));
+    Ui->sources->addItem(Path.mid(Repository.length()));
   }
 }
 

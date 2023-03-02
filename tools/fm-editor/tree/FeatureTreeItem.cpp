@@ -102,8 +102,4 @@ void FeatureTreeItemFeature::contextMenu(QPoint Pos) {
 
 void FeatureTreeItemFeature::remove() { emit(removeFeature(false, Item)); }
 
-void FeatureTreeItemFeature::removeRecursive() {
-  emit(removeFeature(true, Item));
-}
-
 void FeatureTreeItemFeature::addChild() { emit(addChildFeature(Item)); }
