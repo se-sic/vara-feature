@@ -1,3 +1,15 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classvara_1_1feature_1_1FeatureModel_1_1BooleanConstraint.html" title=" " alt="" coords="5,5,208,47"/>
+<area shape="rect" id="node1" href="$classvara_1_1feature_1_1detail_1_1FeatureModelModification.html" title=" " alt="" coords="5,381,204,423"/>
+<area shape="rect" id="node2" href="$classvara_1_1feature_1_1detail_1_1AddChild.html" title=" " alt="" coords="296,5,447,47"/>
+<area shape="rect" id="node3" href="$classvara_1_1feature_1_1detail_1_1AddConstraintToModel.html" title=" " alt="" coords="283,71,459,127"/>
+<area shape="rect" id="node4" href="$classvara_1_1feature_1_1detail_1_1AddFeatureToModel.html" title=" " alt="" coords="292,152,451,193"/>
+<area shape="rect" id="node5" href="$classvara_1_1feature_1_1detail_1_1AddLocationToFeature.html" title=" " alt="" coords="285,217,458,259"/>
+<area shape="rect" id="node6" href="$classvara_1_1feature_1_1detail_1_1AddRelationshipToModel.html" title=" " alt="" coords="276,283,467,324"/>
+<area shape="rect" id="node7" href="$classvara_1_1feature_1_1detail_1_1RemoveFeatureFromModel.html" title=" " alt="" coords="268,348,475,389"/>
+<area shape="rect" id="node8" href="$classvara_1_1feature_1_1detail_1_1RemoveLocationFromFeature.html" title=" " alt="" coords="261,413,482,455"/>
+<area shape="rect" id="node9" href="$classvara_1_1feature_1_1detail_1_1RemoveRelationshipFromModel.html" title=" " alt="" coords="252,479,491,520"/>
+<area shape="rect" id="node10" href="$classvara_1_1feature_1_1detail_1_1SetCommit.html" title=" " alt="" coords="296,544,447,585"/>
+<area shape="rect" id="node11" href="$classvara_1_1feature_1_1detail_1_1SetName.html" title=" " alt="" coords="296,609,447,651"/>
+<area shape="rect" id="node12" href="$classvara_1_1feature_1_1detail_1_1SetPath.html" title=" " alt="" coords="296,675,447,716"/>
+<area shape="rect" id="node13" href="$classvara_1_1feature_1_1detail_1_1SetRoot.html" title=" " alt="" coords="296,740,447,781"/>
 </map>
