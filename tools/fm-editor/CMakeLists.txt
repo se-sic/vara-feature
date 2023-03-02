@@ -4,8 +4,11 @@ set(LLVM_LINK_COMPONENTS
         Core
 )
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+set(CMAKE_AUTOUI C ON)
+find_package(Qt6 COMPONENTS Widgets)
+if (NOT Qt6_FOUND)
+    find_package(Qt5 5.15 REQUIRED COMPONENTS Widgets)
+endif()
 include_directories(../../external/qsourcehighlite)
 include_directories(.)
 
