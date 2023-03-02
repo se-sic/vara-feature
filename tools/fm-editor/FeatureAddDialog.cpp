@@ -56,6 +56,7 @@ std::vector<int64_t> stringToIntVector(string &Input) {
   return Out;
 }
 
+///Retrieve the Feature defined by the dialog this should only be called after the dialog was accepted
 std::unique_ptr<Feature> FeatureAddDialog::getFeature() {
   const std::string Name = getName().toStdString();
   const bool Optional = isOptional();
