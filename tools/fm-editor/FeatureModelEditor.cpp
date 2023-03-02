@@ -97,7 +97,9 @@ void FeatureModelEditor::loadGraph() {
 
 /// Build the Treeview
 void FeatureModelEditor::buildTree() {
-  TreeView = std::make_unique<QTreeView>();
+  if(!TreeView){
+    TreeView = std::make_unique<QTreeView>(this);
+  }
   TreeModel =
       std::make_unique<FeatureTreeViewModel>(FeatureModel.get(), TreeView.get());
   for (auto Item : TreeModel->getItems()) {
