@@ -7,6 +7,7 @@ namespace py = pybind11;
 
 void init_llvm(py::module &M);
 void init_feature_module(py::module &M);
+void init_constraint_module(py::module &M);
 void init_feature_location_module(py::module &M);
 void init_feature_model_module(py::module &M);
 void init_feature_model_builder_module(py::module &M);
@@ -18,6 +19,8 @@ PYBIND11_MODULE(vara_feature, M) {
   auto FeatureModule = M.def_submodule("feature");
   init_feature_module(FeatureModule);
   init_feature_location_module(FeatureModule);
+  auto ConstraintModule = M.def_submodule("constraint");
+  init_constraint_module(ConstraintModule);
   auto FeatureModelModule = M.def_submodule("feature_model");
   init_feature_model_module(FeatureModelModule);
   auto FMWriterModule = M.def_submodule("fm_writer");

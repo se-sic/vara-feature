@@ -1,5 +1,6 @@
 add_vara_unittest(VaRAFeatureUnitTests VaRAFeatureTests
   BinaryFeature.cpp
+  ConstraintBuilder.cpp
   ConstraintParser.cpp
   Feature.cpp
   FeatureModel.cpp

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <variant>
@@ -31,42 +32,48 @@ public:
 
   /// This method returns the string value of the configuration option.
   /// \returns the string value of the configuration option as a string
-  [[nodiscard]] llvm::Optional<llvm::StringRef> stringValue() const {
+  [[nodiscard]] std::optional<llvm::StringRef> stringValue() const {
     if (isString()) {
-      return llvm::Optional<llvm::StringRef>{
-          std::get<std::string>(this->Value)};
+      return std::optional<llvm::StringRef>{std::get<std::string>(this->Value)};
     }
-    return llvm::Optional<llvm::StringRef>{llvm::None};
+    return std::optional<llvm::StringRef>{std::nullopt};
   }
 
   /// This method returns the boolean value of the configuration option.
   /// \returns the boolean value of the configuration option as a bool
-  [[nodiscard]] llvm::Optional<bool> boolValue() const {
+  [[nodiscard]] std::optional<bool> boolValue() const {
     if (isBool()) {
-      return llvm::Optional<bool>{std::get<bool>(this->Value)};
+      return std::optional<bool>{std::get<bool>(this->Value)};
     }
-    return llvm::Optional<bool>{llvm::None};
+    return std::optional<bool>{std::nullopt};
   }
 
   /// This method returns the integer value of the configuration option.
   /// \returns the integer value of the configuration option as an int64_t
-  [[nodiscard]] llvm::Optional<int64_t> intValue() const {
+  [[nodiscard]] std::optional<int64_t> intValue() const {
     if (isInt()) {
-      return llvm::Optional<int64_t>{std::get<int64_t>(this->Value)};
+      return std::optional<int64_t>{std::get<int64_t>(this->Value)};
     }
-    return llvm::Optional<int64_t>{llvm::None};
+    return std::optional<int64_t>{std::nullopt};
   }
 
   /// This method returns the value as string no matter what the real type is.
+  ///
   /// \returns the value as string
   [[nodiscard]] std::string asString() const {
     std::string ConvertedValue;
     if (isString()) {
-      ConvertedValue = stringValue().getValue();
+      auto ParsedValue = stringValue();
+      assert(ParsedValue.has_value() && "Parsing <string> failed.");
+      ConvertedValue = ParsedValue.value();
     } else if (isBool()) {
-      ConvertedValue = boolValue().getValue() ? "true" : "false";
+      auto ParsedValue = boolValue();
+      assert(ParsedValue.has_value() && "Parsing <bool> failed.");
+      ConvertedValue = ParsedValue.value() ? "true" : "false";
     } else {
-      ConvertedValue = std::to_string(intValue().getValue());
+      auto ParsedValue = intValue();
+      assert(ParsedValue.has_value() && "Parsing <int> failed.");
+      ConvertedValue = std::to_string(ParsedValue.value());
     }
     return ConvertedValue;
   }
@@ -162,7 +169,7 @@ public:
 
   /// This method returns the value of the configuration option.
   /// \returns the value of the configuration option as a string
-  [[nodiscard]] llvm::Optional<std::string>
+  [[nodiscard]] std::optional<std::string>
   configurationOptionValue(llvm::StringRef Name);
 
   /// This method dumps the current configuration to a json string.

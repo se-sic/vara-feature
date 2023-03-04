@@ -54,13 +54,13 @@ void Configuration::setConfigurationOption(llvm::StringRef Name,
   addConfigurationOption(std::move(Option));
 }
 
-llvm::Optional<std::string>
+std::optional<std::string>
 Configuration::configurationOptionValue(llvm::StringRef Name) {
   auto Search = this->OptionMappings.find(Name);
   if (Search == this->OptionMappings.end()) {
-    return llvm::Optional<std::string>{};
+    return std::optional<std::string>{};
   }
-  return llvm::Optional<std::string>{Search->second->asString()};
+  return std::optional<std::string>{Search->second->asString()};
 }
 
 std::string Configuration::dumpToString() {

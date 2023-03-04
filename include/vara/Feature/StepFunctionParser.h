@@ -33,13 +33,13 @@ public:
 
   [[nodiscard]] TokenKind getKind() const { return Kind; };
 
-  [[nodiscard]] llvm::Optional<const std::string> getValue() const {
+  [[nodiscard]] std::optional<const std::string> getValue() const {
     return Value;
   }
 
 private:
   const TokenKind Kind;
-  const llvm::Optional<const std::string> Value{llvm::None};
+  const std::optional<const std::string> Value{std::nullopt};
 };
 
 //===----------------------------------------------------------------------===//
@@ -144,7 +144,7 @@ private:
 class StepFunctionParser {
 public:
   explicit StepFunctionParser(std::string Cnt,
-                              llvm::Optional<unsigned int> Line = llvm::None)
+                              std::optional<unsigned int> Line = std::nullopt)
       : TokenList(StepFunctionLexer(std::move(Cnt)).tokenize()), Line(Line) {}
 
   [[nodiscard]] std::unique_ptr<StepFunction> buildStepFunction() {
@@ -170,53 +170,53 @@ private:
     return false;
   }
 
-  llvm::Optional<StepFunction::OperandVariantType> parseOperand() {
+  std::optional<StepFunction::OperandVariantType> parseOperand() {
     while (!TokenList.empty()) {
       switch (peek().getKind()) {
       case StepFunctionToken::TokenKind::ERROR:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Lexical error: Unexpected character '"
                      << *peek().getValue() << "'\n";
-        return llvm::None;
+        return std::nullopt;
       case StepFunctionToken::TokenKind::END_OF_FILE:
         llvm::errs() << "Syntax error: Unexpected end of expression.\n";
-        return llvm::None;
+        return std::nullopt;
       case StepFunctionToken::TokenKind::WHITESPACE:
         consume(StepFunctionToken::TokenKind::WHITESPACE);
         continue;
       case StepFunctionToken::TokenKind::PLUS:
         llvm::errs() << "Lexical error: Unexpected operator '+'.\n";
-        return llvm::None;
+        return std::nullopt;
       case StepFunctionToken::TokenKind::STAR:
         llvm::errs() << "Lexical error: Unexpected operator '*'.\n";
-        return llvm::None;
+        return std::nullopt;
       case StepFunctionToken::TokenKind::CARET:
         llvm::errs() << "Lexical error: Unexpected operator '^'.\n";
-        return llvm::None;
+        return std::nullopt;
       case StepFunctionToken::TokenKind::IDENTIFIER:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         return {*next().getValue()};
       case StepFunctionToken::TokenKind::NUMBER:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         double Number;
         llvm::StringRef(*next().getValue()).getAsDouble(Number);
         return {Number};
       }
     }
-    return llvm::None;
+    return std::nullopt;
   }
 
-  llvm::Optional<StepFunction::StepOperation> parseOperator() {
+  std::optional<StepFunction::StepOperation> parseOperator() {
     while (!TokenList.empty()) {
       switch (peek().getKind()) {
       case StepFunctionToken::TokenKind::ERROR:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Lexical error: Unexpected character '"
                      << *peek().getValue() << "'\n";
-        return llvm::None;
+        return std::nullopt;
       case StepFunctionToken::TokenKind::END_OF_FILE:
         llvm::errs() << "Syntax error: Unexpected end of expression.\n";
-        return llvm::None;
+        return std::nullopt;
       case StepFunctionToken::TokenKind::WHITESPACE:
         consume(StepFunctionToken::TokenKind::WHITESPACE);
         continue;
@@ -230,25 +230,25 @@ private:
         consume(StepFunctionToken::TokenKind::CARET);
         return StepFunction::StepOperation::EXPONENTIATION;
       case StepFunctionToken::TokenKind::IDENTIFIER:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Syntax error: Unexpected identifier '"
                      << *peek().getValue() << "'\n";
-        return llvm::None;
+        return std::nullopt;
       case StepFunctionToken::TokenKind::NUMBER:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Syntax error: Unexpected number '"
                      << *peek().getValue() << "'\n";
-        return llvm::None;
+        return std::nullopt;
       }
     }
-    return llvm::None;
+    return std::nullopt;
   }
 
   bool parseEOF() {
     while (!TokenList.empty()) {
       switch (peek().getKind()) {
       case StepFunctionToken::TokenKind::ERROR:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Lexical error: Unexpected character '"
                      << *peek().getValue() << "'\n";
         return false;
@@ -267,12 +267,12 @@ private:
         llvm::errs() << "Lexical error: Unexpected operator '^'.\n";
         return false;
       case StepFunctionToken::TokenKind::IDENTIFIER:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Syntax error: Unexpected identifier '"
                      << *peek().getValue() << "'\n";
         return false;
       case StepFunctionToken::TokenKind::NUMBER:
-        assert(peek().getValue().hasValue());
+        assert(peek().getValue().has_value());
         llvm::errs() << "Syntax error: Unexpected number '"
                      << *peek().getValue() << "'\n";
         return false;
@@ -283,38 +283,37 @@ private:
 
   std::unique_ptr<StepFunction> parseStepFunction() {
     auto LHS = parseOperand();
-    if (!LHS.hasValue()) {
+    if (!LHS.has_value()) {
       return nullptr;
     }
     auto Op = parseOperator();
-    if (!Op.hasValue()) {
+    if (!Op.has_value()) {
       return nullptr;
     }
     auto RHS = parseOperand();
-    if (!RHS.hasValue()) {
+    if (!RHS.has_value()) {
       return nullptr;
     }
     if (!parseEOF()) {
       return nullptr;
     }
 
-    if (std::holds_alternative<std::string>(LHS.getValue()) &&
-        std::holds_alternative<std::string>(RHS.getValue())) {
+    if (std::holds_alternative<std::string>(LHS.value()) &&
+        std::holds_alternative<std::string>(RHS.value())) {
       llvm::errs() << "Syntax error: Missing constant.\n";
       return nullptr;
     }
-    if (std::holds_alternative<double>(LHS.getValue()) &&
-        std::holds_alternative<double>(RHS.getValue())) {
+    if (std::holds_alternative<double>(LHS.value()) &&
+        std::holds_alternative<double>(RHS.value())) {
       llvm::errs() << "Syntax error: Missing operand.\n";
       return nullptr;
     }
 
-    return std::make_unique<StepFunction>(LHS.getValue(), Op.getValue(),
-                                          RHS.getValue());
+    return std::make_unique<StepFunction>(LHS.value(), Op.value(), RHS.value());
   }
 
   StepFunctionLexer::TokenListTy TokenList;
-  llvm::Optional<unsigned int> Line;
+  std::optional<unsigned int> Line;
 };
 
 } // namespace vara::feature
