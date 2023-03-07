@@ -6,6 +6,7 @@
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
 #include "vara/Utils/Result.h"
+#include "vara/Utils/UniqueIterator.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringMap.h"
@@ -256,12 +257,13 @@ public:
   using BooleanConstraintContainerTy =
       std::vector<std::unique_ptr<BooleanConstraint>>;
   using const_boolean_constraint_iterator =
-      typename BooleanConstraintContainerTy::const_iterator;
+      UniqueIterator<const BooleanConstraintContainerTy>;
 
   [[nodiscard]] llvm::iterator_range<const_boolean_constraint_iterator>
   booleanConstraints() const {
-    return llvm::make_range(BooleanConstraints.begin(),
-                            BooleanConstraints.end());
+    return llvm::make_range(
+        const_boolean_constraint_iterator(BooleanConstraints.begin()),
+        const_boolean_constraint_iterator(BooleanConstraints.end()));
   }
 
   class NonBooleanConstraint : public FeatureModelConstraint {
@@ -273,12 +275,13 @@ public:
   using NonBooleanConstraintContainerTy =
       std::vector<std::unique_ptr<NonBooleanConstraint>>;
   using const_non_boolean_constraint_iterator =
-      typename NonBooleanConstraintContainerTy::const_iterator;
+      UniqueIterator<const NonBooleanConstraintContainerTy>;
 
   [[nodiscard]] llvm::iterator_range<const_non_boolean_constraint_iterator>
   nonBooleanConstraints() const {
-    return llvm::make_range(NonBooleanConstraints.begin(),
-                            NonBooleanConstraints.end());
+    return llvm::make_range(
+        const_non_boolean_constraint_iterator(NonBooleanConstraints.begin()),
+        const_non_boolean_constraint_iterator(NonBooleanConstraints.end()));
   }
 
   class MixedConstraint : public FeatureModelConstraint {
@@ -302,11 +305,13 @@ public:
   using MixedConstraintContainerTy =
       std::vector<std::unique_ptr<MixedConstraint>>;
   using const_mixed_constraint_iterator =
-      typename MixedConstraintContainerTy::const_iterator;
+      UniqueIterator<const MixedConstraintContainerTy>;
 
   [[nodiscard]] llvm::iterator_range<const_mixed_constraint_iterator>
   mixedConstraints() const {
-    return llvm::make_range(MixedConstraints.begin(), MixedConstraints.end());
+    return llvm::make_range(
+        const_mixed_constraint_iterator(MixedConstraints.begin()),
+        const_mixed_constraint_iterator(MixedConstraints.end()));
   }
 
   //===--------------------------------------------------------------------===//
@@ -384,12 +389,13 @@ private:
   }
 
   using boolean_constraint_iterator =
-      typename BooleanConstraintContainerTy::iterator;
+      UniqueIterator<BooleanConstraintContainerTy>;
 
   [[nodiscard]] llvm::iterator_range<boolean_constraint_iterator>
   booleanConstraints() {
-    return llvm::make_range(BooleanConstraints.begin(),
-                            BooleanConstraints.end());
+    return llvm::make_range(
+        boolean_constraint_iterator(BooleanConstraints.begin()),
+        boolean_constraint_iterator(BooleanConstraints.end()));
   }
 
   vara::feature::Constraint *
@@ -399,12 +405,13 @@ private:
   }
 
   using non_boolean_constraint_iterator =
-      typename NonBooleanConstraintContainerTy::iterator;
+      UniqueIterator<NonBooleanConstraintContainerTy>;
 
   [[nodiscard]] llvm::iterator_range<non_boolean_constraint_iterator>
   nonBooleanConstraints() {
-    return llvm::make_range(NonBooleanConstraints.begin(),
-                            NonBooleanConstraints.end());
+    return llvm::make_range(
+        non_boolean_constraint_iterator(NonBooleanConstraints.begin()),
+        non_boolean_constraint_iterator(NonBooleanConstraints.end()));
   }
 
   vara::feature::Constraint *addConstraint(std::unique_ptr<MixedConstraint> C) {
@@ -412,12 +419,12 @@ private:
     return **MixedConstraints.back();
   }
 
-  using mixed_constraint_iterator =
-      typename MixedConstraintContainerTy::iterator;
+  using mixed_constraint_iterator = UniqueIterator<MixedConstraintContainerTy>;
 
   [[nodiscard]] llvm::iterator_range<mixed_constraint_iterator>
   mixedConstraints() {
-    return llvm::make_range(MixedConstraints.begin(), MixedConstraints.end());
+    return llvm::make_range(mixed_constraint_iterator(MixedConstraints.begin()),
+                            mixed_constraint_iterator(MixedConstraints.end()));
   }
 
   //===--------------------------------------------------------------------===//

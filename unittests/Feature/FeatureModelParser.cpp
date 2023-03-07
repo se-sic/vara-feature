@@ -117,7 +117,7 @@ TEST(FeatureModelParser, booleanConstraint) {
   ASSERT_TRUE(FM);
 
   EXPECT_EQ(
-      (*FM->booleanConstraints().begin())->constraint()->getRoot()->toString(),
+      FM->booleanConstraints().begin()->constraint()->getRoot()->toString(),
       C.toString());
 }
 
@@ -130,11 +130,9 @@ TEST(FeatureModelParser, nonBooleanConstraint) {
   auto FM = buildFeatureModel("test_constraints.xml");
   ASSERT_TRUE(FM);
 
-  EXPECT_EQ((*FM->nonBooleanConstraints().begin())
-                ->constraint()
-                ->getRoot()
-                ->toString(),
-            C.toString());
+  EXPECT_EQ(
+      FM->nonBooleanConstraints().begin()->constraint()->getRoot()->toString(),
+      C.toString());
 }
 
 TEST(FeatureModelParser, mixedConstraint) {
@@ -148,12 +146,11 @@ TEST(FeatureModelParser, mixedConstraint) {
   auto FM = buildFeatureModel("test_constraints.xml");
   ASSERT_TRUE(FM);
 
-  EXPECT_EQ(
-      (*FM->mixedConstraints().begin())->constraint()->getRoot()->toString(),
-      C.toString());
-  EXPECT_EQ((*FM->mixedConstraints().begin())->req(),
+  EXPECT_EQ(FM->mixedConstraints().begin()->constraint()->getRoot()->toString(),
+            C.toString());
+  EXPECT_EQ(FM->mixedConstraints().begin()->req(),
             FeatureModel::MixedConstraint::Req::ALL);
-  EXPECT_EQ((*FM->mixedConstraints().begin())->exprKind(),
+  EXPECT_EQ(FM->mixedConstraints().begin()->exprKind(),
             FeatureModel::MixedConstraint::ExprKind::POS);
 }
 
