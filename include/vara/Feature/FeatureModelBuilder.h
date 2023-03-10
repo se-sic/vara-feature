@@ -23,8 +23,8 @@ public:
 
   FeatureModelBuilder(const FeatureModelBuilder &) = delete;
   FeatureModelBuilder &operator=(const FeatureModelBuilder &) = delete;
-  FeatureModelBuilder(FeatureModelBuilder &&) noexcept = default;
-  FeatureModelBuilder &operator=(FeatureModelBuilder &&) noexcept = default;
+  FeatureModelBuilder(FeatureModelBuilder &&) = default;
+  FeatureModelBuilder &operator=(FeatureModelBuilder &&) = default;
 
   ~FeatureModelBuilder() {
     FeatureBuilder.abort();
