@@ -49,13 +49,13 @@ Feature *getActualFeature(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   return ActualFeature;
 }
 
-llvm::Optional<bool> fvIsLeaf(FeatureModel &FM, detail::FeatureVariantTy &FV) {
+std::optional<bool> fvIsLeaf(FeatureModel &FM, detail::FeatureVariantTy &FV) {
   Feature *ActualFeature = getActualFeature(FM, FV);
   // if Feature does not exist in FM
   if (ActualFeature == nullptr) {
-    return llvm::None;
+    return std::nullopt;
   }
-  return llvm::Optional<bool>{ActualFeature->isLeaf()};
+  return std::optional<bool>{ActualFeature->isLeaf()};
 }
 
 /// Checks if in recursive mode the provided Feature can be deleted or not.
@@ -66,12 +66,12 @@ llvm::Optional<bool> fvIsLeaf(FeatureModel &FM, detail::FeatureVariantTy &FV) {
 /// \return optional of true, if all transitive children of FV are not part of
 /// OtherFeatures; optional of false, if at least one transitive child of FV is
 /// part of OtherFeatures; nullopt, if FV is not part of FM
-llvm::Optional<bool>
+std::optional<bool>
 canBeDeletedRecursively(FeatureModel &FM, detail::FeatureVariantTy &FV,
                         const std::set<FeatureTreeNode *> &OtherFeatures) {
   Feature *ActualFeature = getActualFeature(FM, FV);
   if (ActualFeature == nullptr) { // Feature does not exist in FM
-    return llvm::None;
+    return std::nullopt;
   }
 
   std::set<FeatureTreeNode *> Intersection;
@@ -82,7 +82,7 @@ canBeDeletedRecursively(FeatureModel &FM, detail::FeatureVariantTy &FV,
                         std::inserter(Intersection, Intersection.begin()));
   // if the children are not matching the other features, the intersection is
   // empty and we are good to go for deletion
-  return llvm::Optional<bool>{Intersection.begin() == Intersection.end()};
+  return std::optional<bool>{Intersection.begin() == Intersection.end()};
 }
 
 std::vector<detail::FeatureVariantTy> removeFeatures(
@@ -110,13 +110,13 @@ std::vector<detail::FeatureVariantTy> removeFeatures(
   auto DeleteIt = std::partition(
       Begin, End,
       [&FM, Recursive, &OtherFeatures](detail::FeatureVariantTy &FV) {
-        if (fvIsLeaf(FM, FV).getValueOr(false)) {
+        if (fvIsLeaf(FM, FV).value_or(false)) {
           return true;
         }
         if (!Recursive) {
           return false;
         }
-        return canBeDeletedRecursively(FM, FV, OtherFeatures).getValueOr(false);
+        return canBeDeletedRecursively(FM, FV, OtherFeatures).value_or(false);
       });
 
   // check if something can be deleted --> if not and return non-deletable

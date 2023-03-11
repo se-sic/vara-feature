@@ -17,11 +17,11 @@ namespace vf = vara::feature;
 namespace py = pybind11;
 
 template <typename T>
-llvm::Optional<T> convertOptional(const std::optional<T> &Value) {
+std::optional<T> convertOptional(const std::optional<T> &Value) {
   if (Value.has_value()) {
     return {std::move(Value.value())};
   }
-  return llvm::None;
+  return std::nullopt;
 }
 
 void init_feature_location_module(py::module &M) {
