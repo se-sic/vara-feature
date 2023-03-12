@@ -27,23 +27,17 @@ void init_feature_model_builder_module(py::module &M){
             [](vf::FeatureModelBuilder &FMB, std::string feature_name, bool Opt){
                 return FMB.makeFeature<vf::BinaryFeature>(feature_name); 
             }    
+        )   
+        .def(
+            "make_numeric_feature",
+            [](vf::FeatureModelBuilder &FMB, std::string feature_name, bool Opt){
+                return FMB.makeFeature<vf::NumericFeature>(feature_name); 
+            }    
         )
-///        .def(
-///            "make_numeric_feature",
-///            [](vf::FeatureModelBuilder &FMB, std::string feature_name, bool Opt){
-///                return FMB.makeFeature<vf::NumericFeature>(feature_name); 
-///            }    
-///        )
         .def(
             "add_an_edge",
             [](vf::FeatureModelBuilder &FMB, std::string parent_name, std::string feature_name){
                 return FMB.addEdge(parent_name, feature_name);
-            }    
-        )
-        .def(
-            "get_parent_name",
-            [](vf::FeatureModelBuilder &FMB, std::string feature_name){
-                return FMB.getParentName(feature_name).getValue();
             }    
         )
         .def(
@@ -62,9 +56,20 @@ void init_feature_model_builder_module(py::module &M){
             }    
         )
         .def(
-            "add_constraint",
-            [](vf::FeatureModelBuilder &FMB, std::string constraintStr){
-                std::unique_ptr<vf::FeatureModel::ConstraintTy> cnst = NULL;
+            "add_mixed_constraint",
+            [](vf::FeatureModelBuilder &FMB, std::unique_ptr<vf::FeatureModel::MixedConstraintContainerTy> cnst){
+                return FMB.addConstraint(move(cnst));
+            }    
+        )
+        .def(
+            "add_boolean_constraint",
+            [](vf::FeatureModelBuilder &FMB, std::unique_ptr<vf::FeatureModel::BooleanConstraintContainerTy> cnst){
+                return FMB.addConstraint(move(cnst));
+            }    
+        )
+        .def(
+            "add_non_boolean_constraint",
+            [](vf::FeatureModelBuilder &FMB, std::unique_ptr<vf::FeatureModel::NonBooleanConstraintContainerTy> cnst){
                 return FMB.addConstraint(move(cnst));
             }    
         )
