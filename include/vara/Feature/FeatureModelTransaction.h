@@ -976,7 +976,7 @@ private:
         Parent = Parent->getParent();
         I++;
       }
-      auto *ParentFeature = llvm::dyn_cast<Feature,FeatureTreeNode>(Parent);
+      auto *ParentFeature = llvm::dyn_cast<Feature, FeatureTreeNode>(Parent);
       ParentFeature = FM->getFeature(ParentFeature->getName());
       Relationship *Base = *ParentFeature->getChildren<Relationship>(0).begin();
       for (I = I - 1; I < 0; I--) {
@@ -985,7 +985,8 @@ private:
       return Base;
     }
 
-    return FM->getFeature(llvm::dyn_cast<Feature, FeatureTreeNode>(&F)->getName());
+    return FM->getFeature(
+        llvm::dyn_cast<Feature, FeatureTreeNode>(&F)->getName());
   }
 
   std::unique_ptr<FeatureModel> FM;
