@@ -969,10 +969,10 @@ private:
   }
 
   [[nodiscard]] FeatureTreeNode *translateFeature(FeatureTreeNode &F) {
-    if(F.getKind()==FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
-      FeatureTreeNode* Parent = F.getParent();
-      assert(Parent->getKind()==FeatureTreeNode::NodeKind::NK_FEATURE);
-      auto *ParentFeature = llvm::dyn_cast<Feature,FeatureTreeNode>(Parent);
+    if (F.getKind() == FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
+      FeatureTreeNode *Parent = F.getParent();
+      assert(Parent->getKind() == FeatureTreeNode::NodeKind::NK_FEATURE);
+      auto *ParentFeature = llvm::dyn_cast<Feature, FeatureTreeNode>(Parent);
       ParentFeature = FM->getFeature(ParentFeature->getName());
       Relationship *Base = *ParentFeature->getChildren<Relationship>(0).begin();
       Base = *Base->getChildren<Relationship>(0).begin();
