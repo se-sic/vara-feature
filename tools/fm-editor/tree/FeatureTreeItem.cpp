@@ -9,10 +9,10 @@ QVariant numericValue(vara::feature::Feature *Item) {
     string Result = "[";
     if (std::holds_alternative<vara::feature::NumericFeature::ValueRangeType>(
             NumItem->getValues())) {
-      auto range = std::get<vara::feature::NumericFeature::ValueRangeType>(
+      auto Range = std::get<vara::feature::NumericFeature::ValueRangeType>(
           NumItem->getValues());
-      Result += std::to_string(range.first) + ", " +
-                std::to_string(range.second) + "]";
+      Result += std::to_string(Range.first) + ", " +
+                std::to_string(Range.second) + "]";
     } else {
       auto Range = std::get<vara::feature::NumericFeature::ValueListType>(
           NumItem->getValues());
@@ -69,7 +69,7 @@ void FeatureTreeItem::addChild(FeatureTreeItem *Child) {
 
 std::vector<FeatureTreeItem *> FeatureTreeItem::getChildrenRecursive() {
   auto Nodes = std::vector<FeatureTreeItem *>{Children};
-  for (auto Child : Children) {
+  for (auto *Child : Children) {
     auto ChildNodes = Child->getChildrenRecursive();
     Nodes.insert(Nodes.end(), ChildNodes.begin(), ChildNodes.end());
   }

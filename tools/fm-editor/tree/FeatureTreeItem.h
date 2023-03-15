@@ -37,7 +37,7 @@ public:
   [[nodiscard]] virtual QVariant data(int Column) const = 0;
   std::unique_ptr<FeatureTreeItem> static createFeatureTreeItem(
       vara::feature::FeatureTreeNode *Item);
-  static bool booleanColumn(int Column) { return false; }
+  bool booleanColumn(int Column) { return false; }
   virtual void contextMenu(QPoint Pos) = 0;
   virtual vara::feature::FeatureTreeNode *getItem() const = 0;
   vara::feature::FeatureTreeNode::NodeKind getKind() { return Kind; }
@@ -77,7 +77,7 @@ public:
   }
   [[nodiscard]] QVariant data(int Column) const override;
   [[nodiscard]] int columnCount() const override { return 5; }
-  static bool booleanColumn(int Column) { return Column == 1; }
+  bool booleanColumn(int Column) { return Column == 1; }
   void contextMenu(QPoint Pos) override;
   vara::feature::FeatureTreeNode *getItem() const override { return Item; }
   const vara::feature::Feature *getFeature() const { return Item; }

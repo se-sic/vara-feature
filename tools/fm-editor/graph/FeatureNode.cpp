@@ -31,15 +31,15 @@ std::vector<FeatureEdge *> FeatureNode::children() { return ChildEdges; }
 FeatureEdge *FeatureNode::parent() { return ParentEdge; }
 
 QRectF FeatureNode::boundingRect() const {
-  qreal Adjust = 2;
-  int W = width();
-  return {-W / 2 - Adjust, -10 - Adjust, W + Adjust, 23 + Adjust};
+  qreal const Adjust = 2;
+  int const W = width();
+  return {-W / 2.0 - Adjust, -10 - Adjust, W + Adjust, 23 + Adjust};
 }
 
 QPainterPath FeatureNode::shape() const {
   QPainterPath Path;
-  int W = width();
-  Path.addRect(-W / 2, -10, W, 20);
+  int const W = width();
+  Path.addRect(-W / 2.0, -10, W, 20);
   return Path;
 }
 
@@ -55,7 +55,7 @@ void FeatureNode::paint(QPainter *Painter,
   Painter->setBrush(Brush);
   Painter->setPen(QPen(Qt::black, 0));
 
-  int W = width();
+  int const W = width();
   Painter->drawRect(-W / 2, -10, W, 20);
   Painter->setPen(QPen(Qt::black, 1));
   Painter->drawText(-W / 2 + 5, 5, Name);
@@ -106,7 +106,7 @@ void FeatureNode::inspect() { emit(inspectSource(Feature)); }
 
 int FeatureNode::width() const {
   auto Name = Feature->getName();
-  return 15 + 5 * Name.str().length();
+  return 15 + 5 * int(Name.str().length());
 }
 
 int FeatureNode::childrenWidth() const {

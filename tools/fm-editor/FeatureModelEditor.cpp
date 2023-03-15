@@ -10,8 +10,6 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QTextStream>
-
-using vara::feature::FeatureModel;
 using Transaction = vara::feature::FeatureModelTransaction<
     vara::feature::detail::ModifyTransactionMode>;
 using vara::feature::Feature;
@@ -256,11 +254,11 @@ void FeatureModelEditor::markLocation(
   Fmt.setBackground(Qt::darkYellow);
   QTextCursor Cursor(Ui->textEdit->document());
   Cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-  setCursorLineAndColumn(Cursor, Location.getStart()->getLineNumber() - 1,
-                         Location.getStart()->getColumnOffset() - 1,
+  setCursorLineAndColumn(Cursor, int(Location.getStart()->getLineNumber()) - 1,
+                         int(Location.getStart()->getColumnOffset()) - 1,
                          QTextCursor::MoveAnchor);
-  setCursorLineAndColumn(Cursor, Location.getEnd()->getLineNumber() - 1,
-                         Location.getEnd()->getColumnOffset() - 1,
+  setCursorLineAndColumn(Cursor, int(Location.getEnd()->getLineNumber()) - 1,
+                         int(Location.getEnd()->getColumnOffset()) - 1,
                          QTextCursor::KeepAnchor);
   Cursor.setCharFormat(Fmt);
 }

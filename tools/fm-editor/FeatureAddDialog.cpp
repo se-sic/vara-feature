@@ -29,8 +29,8 @@ QString FeatureAddDialog::getName() const { return name->text(); }
 
 QString FeatureAddDialog::getParent() const { return Nodes->currentText(); }
 
-void FeatureAddDialog::featureType(int index) {
-  if (index == 1) {
+void FeatureAddDialog::featureType(int Index) {
+  if (Index == 1) {
     NumericFeature->setVisible(true);
   } else {
     NumericFeature->setVisible(false);

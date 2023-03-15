@@ -6,5 +6,5 @@ int main(int argc, char **argv) {
   QApplication const App(argc, argv);
   FeatureModelEditor W;
   W.show();
-  return App.exec();
+  return QApplication::exec();
 }

@@ -8,7 +8,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 if(QT_VERSION_MAJOR GREATER 5 OR QT_VERSION_MINOR GREATER_EQUAL 15)
-    add_compile_definitions(QT_HAS_SETPLACEHOLDERTEXT)
+   # add_compile_definitions(QT_HAS_SETPLACEHOLDERTEXT)
 endif()
 include_directories(../../external/qsourcehighlite)
 include_directories(.)
@@ -45,3 +45,9 @@ add_custom_target(check-vara-fm-editor
         COMMAND fm-editor xml/test.xml -viewer cat | dot | grep . -q
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../unittests/resources
 )
+
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/[project_name]_autogen/.clang-tidy" "
+---
+Checks: '-*,llvm-twine-local'
+...
+")

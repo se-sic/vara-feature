@@ -32,7 +32,7 @@ private:
   std::unique_ptr<FeatureTreeViewModel> TreeModel{};
   std::unique_ptr<vara::feature::FeatureModel> FeatureModel{};
   QString Repository{};
-  vara::feature::Feature *CurrentFeature;
+  vara::feature::Feature *CurrentFeature = nullptr;
   QString SavePath{};
   QString ModelPath{};
 

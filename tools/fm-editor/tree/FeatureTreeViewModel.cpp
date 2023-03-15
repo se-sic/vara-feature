@@ -1,5 +1,7 @@
 #include "FeatureTreeViewModel.h"
 
+#include <utility>
+
 QModelIndex FeatureTreeViewModel::index(int Row, int Column,
                                         const QModelIndex &Parent) const {
   FeatureTreeItem *ParentItem;
@@ -54,8 +56,8 @@ int FeatureTreeViewModel::rowCount(const QModelIndex &Parent) const {
 
 int FeatureTreeViewModel::columnCount(const QModelIndex &Parent) const {
   if (Parent.isValid()) {
-    auto Item = static_cast<FeatureTreeItem *>(Parent.internalPointer())
-                    ->child(Parent.row());
+    auto *Item = static_cast<FeatureTreeItem *>(Parent.internalPointer())
+                     ->child(Parent.row());
     return Item->columnCount();
   }
 
@@ -115,7 +117,7 @@ FeatureTreeViewModel::getItems() {
 FeatureTreeItem *
 FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
                                  std::string Parent) {
-  auto Item = getItem(Parent);
+  auto *Item = getItem(std::move(Parent));
   if (Item) {
     auto NewItem = FeatureTreeItem::createFeatureTreeItem(Feature);
     Item->addChild(NewItem.get());
@@ -130,7 +132,7 @@ FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
 void FeatureTreeViewModel::deleteFeatureItem(bool Recursive,
                                              vara::feature::Feature *Feature) {
   emit(layoutAboutToBeChanged());
-  auto Item = getItem(Feature->getName().str());
+  auto *Item = getItem(Feature->getName().str());
   if (Item) {
     deleteItem(Recursive, Item);
   }

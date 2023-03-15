@@ -42,7 +42,7 @@ void FeatureModelGraph::reload() {
                  NextChildren.begin(),
                  [](FeatureEdge *Edge) { return Edge->targetNode(); });
   positionRec(1, NextChildren, 5);
-  EntryNode->setPos(EntryNode->childrenWidth() / 2, 10);
+  EntryNode->setPos(EntryNode->childrenWidth() / 2.0, 10);
 }
 
 void FeatureModelGraph::buildRec(FeatureNode *CurrentFeatureNode) {
@@ -85,7 +85,7 @@ int FeatureModelGraph::positionRec(const int CurrentDepth,
                    [](FeatureEdge *Edge) { return Edge->targetNode(); });
     int const Depth = positionRec(CurrentDepth + 1, NextChildren, NextOffset);
     int Width = Node->childrenWidth() + 5;
-    Node->setPos(NextOffset + Width / 2, 100 * CurrentDepth);
+    Node->setPos(double(NextOffset) + Width / 2.0, 100 * CurrentDepth);
     NextOffset += Width;
     MaxDepth = MaxDepth < Depth ? Depth : MaxDepth;
   }
@@ -113,14 +113,14 @@ void FeatureModelGraph::wheelEvent(QWheelEvent *Event) {
 #endif
 
 void FeatureModelGraph::drawBackground(QPainter *Painter, const QRectF &Rect) {
-  Q_UNUSED(Rect);
+  Q_UNUSED(Rect)
 
   // Shadow
-  QRectF SceneRect = this->sceneRect();
-  QRectF RightShadow(SceneRect.right(), SceneRect.top() + 5, 5,
-                     SceneRect.height());
-  QRectF BottomShadow(SceneRect.left() + 5, SceneRect.bottom(),
-                      SceneRect.width(), 5);
+  QRectF const SceneRect = this->sceneRect();
+  QRectF const RightShadow(SceneRect.right(), SceneRect.top() + 5, 5,
+                           SceneRect.height());
+  QRectF const BottomShadow(SceneRect.left() + 5, SceneRect.bottom(),
+                            SceneRect.width(), 5);
   if (RightShadow.intersects(Rect) || RightShadow.contains(Rect)) {
     Painter->fillRect(RightShadow, Qt::darkGray);
   }
@@ -145,10 +145,10 @@ void FeatureModelGraph::drawBackground(QPainter *Painter, const QRectF &Rect) {
 }
 
 void FeatureModelGraph::scaleView(qreal ScaleFactor) {
-  qreal Factor = transform()
-                     .scale(ScaleFactor, ScaleFactor)
-                     .mapRect(QRectF(0, 0, 1, 1))
-                     .width();
+  qreal const Factor = transform()
+                           .scale(ScaleFactor, ScaleFactor)
+                           .mapRect(QRectF(0, 0, 1, 1))
+                           .width();
   if (Factor < 0.07 || Factor > 100) {
     return;
   }
@@ -165,7 +165,7 @@ FeatureNode *FeatureModelGraph::addNode(Feature *Feature, FeatureNode *Parent) {
   auto *NewEdge = new FeatureEdge(Parent, NewNode.get());
   scene()->addItem(NewEdge);
   scene()->addItem(NewNode.get());
-  auto NewNodeRaw = NewNode.get();
+  auto *NewNodeRaw = NewNode.get();
   Nodes.push_back(std::move(NewNode));
   auto NextChildren = std::vector<FeatureNode *>(EntryNode->children().size());
   auto CurrentChildren = EntryNode->children();
@@ -173,7 +173,7 @@ FeatureNode *FeatureModelGraph::addNode(Feature *Feature, FeatureNode *Parent) {
                  NextChildren.begin(),
                  [](FeatureEdge *Edge) { return Edge->targetNode(); });
   positionRec(1, NextChildren, 5);
-  EntryNode->setPos(EntryNode->childrenWidth() / 2, 10);
+  EntryNode->setPos(EntryNode->childrenWidth() / 2.0, 10);
   return NewNodeRaw;
 }
 
