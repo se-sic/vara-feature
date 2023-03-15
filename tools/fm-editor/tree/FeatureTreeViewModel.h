@@ -31,7 +31,7 @@ public:
   [[nodiscard]] Qt::ItemFlags flags(const QModelIndex &Index) const override;
   [[nodiscard]] QVariant headerData(int Section, Qt::Orientation Orientation,
                                     int Role = Qt::DisplayRole) const override;
-  FeatureTreeItem *addFeature(vara::feature::Feature *Item, string Parent);
+  FeatureTreeItem *addFeature(vara::feature::Feature *Feature, string Parent);
   void deleteFeatureItem(bool Recursive, vara::feature::Feature *Feature);
   void deleteItem(bool Recursive, FeatureTreeItem *Item);
   FeatureTreeItem *getItem(string Name) {

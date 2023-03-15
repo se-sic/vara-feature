@@ -3,7 +3,6 @@
 #include "graph/FeatureNode.h"
 
 using vara::feature::Feature;
-using vara::feature::FeatureModel;
 FeatureAddDialog::FeatureAddDialog(FeatureModelGraph *Graph, QWidget *Parent,
                                    Feature *ParentFeature)
     : QDialog(Parent) {

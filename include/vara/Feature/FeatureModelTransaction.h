@@ -971,15 +971,16 @@ private:
   [[nodiscard]] FeatureTreeNode *translateFeature(FeatureTreeNode &F) {
     if (F.getKind() == FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
       FeatureTreeNode *Parent = F.getParent();
-      assert(Parent->getKind() == FeatureTreeNode::NodeKind::NK_FEATURE);
       auto *ParentFeature = llvm::dyn_cast<Feature, FeatureTreeNode>(Parent);
+      assert(ParentFeature != nullptr);
       ParentFeature = FM->getFeature(ParentFeature->getName());
       Relationship *Base = *ParentFeature->getChildren<Relationship>(0).begin();
       Base = *Base->getChildren<Relationship>(0).begin();
       return Base;
     }
-    return FM->getFeature(
-        llvm::dyn_cast<Feature, FeatureTreeNode>(&F)->getName());
+    auto *CastF = llvm::dyn_cast<Feature, FeatureTreeNode>(&F);
+    assert(CastF != nullptr);
+    return FM->getFeature(CastF->getName());
   }
 
   std::unique_ptr<FeatureModel> FM;
