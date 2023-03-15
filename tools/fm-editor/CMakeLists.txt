@@ -46,7 +46,7 @@ add_custom_target(check-vara-fm-editor
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../unittests/resources
 )
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/[project_name]_autogen/.clang-tidy" "
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fm-editor_autogen/.clang-tidy" "
 ---
 Checks: '-*,llvm-twine-local'
 ...
