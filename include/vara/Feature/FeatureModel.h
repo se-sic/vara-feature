@@ -283,8 +283,12 @@ public:
 
   class MixedConstraint : public FeatureModelConstraint {
   public:
+    /// This enum indicates whether the constraint should be evaluated when
+    /// `all` boolean features are present or `none`.
     enum class Req { ALL, NONE };
 
+    /// This enum indicates whether the whole constraint should be `negated`
+    /// or not.
     enum class ExprKind { POS, NEG };
 
     MixedConstraint(std::unique_ptr<Constraint> C, Req R, ExprKind E)

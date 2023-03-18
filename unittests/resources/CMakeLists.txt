@@ -29,7 +29,9 @@ set(FEATURE_LIB_TEST_FILES
   xml/test_dune_num_explicit.xml
   xml/test_hipacc_bin.xml
   xml/test_hipacc_num.xml
+  xml/test_hsqldb_num.xml
   xml/test_member_offset.xml
+  xml/test_mixed_constraints.xml
   xml/test_numbers.xml
   xml/test_only_children.xml
   xml/test_only_parents.xml

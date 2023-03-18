@@ -42,7 +42,7 @@ Z3Solver::addFeature(const feature::Feature &FeatureToAdd,
       auto *StepFunction = F->getStepFunction();
       auto Step = Range.first;
       std::vector<int64_t> Vals;
-      while (Step < Range.second) {
+      while (Step <= Range.second) {
         Vals.insert(Vals.begin(), Step);
         Step = StepFunction->next(Step);
       }
@@ -87,7 +87,7 @@ Result<SolverErrorCode> Z3Solver::addFeature(const string &FeatureName) {
       OptionToVariableMapping.end()) {
     return ALREADY_PRESENT;
   }
-  z3::expr Feature = Context.bool_const(FeatureName.c_str());
+  z3::expr const Feature = Context.bool_const(FeatureName.c_str());
   OptionToVariableMapping.insert(
       std::make_pair(FeatureName, std::make_unique<z3::expr>(Feature)));
   return Ok();
@@ -100,13 +100,13 @@ Z3Solver::addFeature(const string &FeatureName,
       OptionToVariableMapping.end()) {
     return ALREADY_PRESENT;
   }
-  z3::expr Feature = Context.int_const(FeatureName.c_str());
+  z3::expr const Feature = Context.int_const(FeatureName.c_str());
   OptionToVariableMapping.insert(
       std::make_pair(FeatureName, std::make_unique<z3::expr>(Feature)));
 
   // Add the numeric values as constraints
   z3::expr Constraint = Context.bool_val(false);
-  for (int64_t Value : Values) {
+  for (int64_t const Value : Values) {
     Constraint = Constraint || (Feature == Context.int_val(Value));
   }
   Solver->add(Constraint);
@@ -144,7 +144,7 @@ Z3Solver::addRelationship(const feature::Relationship &R) {
 Result<SolverErrorCode>
 Z3Solver::addConstraint(feature::Constraint &ConstraintToAdd) {
   Z3SolverConstraintVisitor SCV(this);
-  bool Succ = SCV.addConstraint(&ConstraintToAdd);
+  const bool Succ = SCV.addConstraint(&ConstraintToAdd);
   if (!Succ) {
     return SolverErrorCode::NOT_SUPPORTED;
   }
@@ -156,7 +156,7 @@ Result<SolverErrorCode> Z3Solver::addMixedConstraint(
     feature::FeatureModel::MixedConstraint::ExprKind ExprKind,
     feature::FeatureModel::MixedConstraint::Req Req) {
   Z3SolverConstraintVisitor SCV(this, true);
-  bool Succ = SCV.addConstraint(
+  const bool Succ = SCV.addConstraint(
       &ConstraintToAdd,
       ExprKind == feature::FeatureModel::MixedConstraint::ExprKind::NEG,
       Req == feature::FeatureModel::MixedConstraint::Req::ALL);
@@ -222,8 +222,6 @@ Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature,
         *OptionToVariableMapping[Feature.getName()]));
   }
 
-  Z3SolverConstraintVisitor SCV(this);
-
   return Ok();
 }
 
@@ -231,12 +229,12 @@ Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
   if (Solver->check() == z3::unsat) {
     return UNSAT;
   }
-  z3::model M = Solver->get_model();
+  z3::model const M = Solver->get_model();
   z3::expr Expr = Context.bool_val(false);
   for (auto Iterator = OptionToVariableMapping.begin();
        Iterator != OptionToVariableMapping.end(); Iterator++) {
-    z3::expr OptionExpr = *Iterator->getValue();
-    z3::expr Value = M.eval(OptionExpr, true);
+    z3::expr const OptionExpr = *Iterator->getValue();
+    z3::expr const Value = M.eval(OptionExpr, true);
     if (Value.is_bool()) {
       if (Value.is_true()) {
         Expr = Expr || !*Iterator->getValue();
@@ -256,13 +254,13 @@ Z3Solver::getCurrentConfiguration() {
   if (Solver->check() == z3::unsat) {
     return UNSAT;
   }
-  z3::model M = Solver->get_model();
+  z3::model const M = Solver->get_model();
   auto Config = std::make_unique<vara::feature::Configuration>();
 
   for (auto Iterator = OptionToVariableMapping.begin();
        Iterator != OptionToVariableMapping.end(); Iterator++) {
-    z3::expr OptionExpr = *Iterator->getValue();
-    z3::expr Value = M.eval(OptionExpr, true);
+    z3::expr const OptionExpr = *Iterator->getValue();
+    z3::expr const Value = M.eval(OptionExpr, true);
     Config->setConfigurationOption(Iterator->getKey(),
                                    llvm::StringRef(Value.to_string()));
   }
@@ -289,9 +287,9 @@ bool Z3SolverConstraintVisitor::addConstraint(vara::feature::Constraint *C,
 
 bool Z3SolverConstraintVisitor::visit(vara::feature::BinaryConstraint *C) {
 
-  bool LHS = C->getLeftOperand()->accept(*this);
-  z3::expr Left = Z3ConstraintExpression;
-  bool RHS = C->getRightOperand()->accept(*this);
+  bool const LHS = C->getLeftOperand()->accept(*this);
+  z3::expr const Left = Z3ConstraintExpression;
+  bool const RHS = C->getRightOperand()->accept(*this);
   if (!LHS || !RHS) {
     return false;
   }

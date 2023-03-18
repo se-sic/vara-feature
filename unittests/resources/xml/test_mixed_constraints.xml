@@ -1,0 +1,53 @@
+<vm name="hsqldb-evo">
+    <binaryOptions>
+        <configurationOption>
+            <name>root</name>
+            <outputString>
+            </outputString>
+            <prefix>
+            </prefix>
+            <postfix>
+            </postfix>
+            <parent>
+            </parent>
+            <impliedOptions />
+            <excludedOptions />
+            <optional>False</optional>
+        </configurationOption>
+        <configurationOption>
+            <name>A</name>
+            <outputString>
+            </outputString>
+            <prefix>
+            </prefix>
+            <postfix>
+            </postfix>
+            <parent>root</parent>
+            <impliedOptions />
+            <excludedOptions />
+            <optional>True</optional>
+        </configurationOption>
+    </binaryOptions>
+    <numericOptions>
+        <configurationOption>
+            <name>N</name>
+            <outputString>
+            </outputString>
+            <prefix>
+            </prefix>
+            <postfix>
+            </postfix>
+            <parent>root</parent>
+            <impliedOptions />
+            <excludedOptions />
+            <minValue>625</minValue>
+            <maxValue>10000</maxValue>
+            <stepFunction>cacheSize * 4</stepFunction>
+        </configurationOption>
+    </numericOptions>
+    <booleanConstraints />
+    <nonBooleanConstraints />
+    <mixedConstraints>
+        <constraint req="all" exprKind="pos">A * N = 10000</constraint>
+    </mixedConstraints>
+</vm>

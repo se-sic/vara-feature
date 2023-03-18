@@ -1,13 +1,9 @@
 #include "vara/Feature/FeatureModel.h"
-#include "vara/Feature/FeatureModelBuilder.h"
-#include "vara/Feature/FeatureModelParser.h"
 #include "vara/Solver/ConfigurationFactory.h"
 
 #include "Utils/UnittestHelper.h"
 
 #include "llvm/ADT/StringRef.h"
-#include "llvm/ADT/Twine.h"
-#include "llvm/Support/MemoryBuffer.h"
 #include "gtest/gtest.h"
 
 namespace vara::solver {
@@ -31,6 +27,22 @@ TEST(SolverAPI, TestDuneConfigurations) {
   auto ConfigResultNumStep = ConfigurationFactory::getAllConfigs(*FMNumStep);
   EXPECT_TRUE(ConfigResultNumStep);
   EXPECT_EQ(ConfigResultNumStep.extractValue().size(), 2304);
+}
+
+TEST(SolverAPI, SmallTestMixedConstraints) {
+  auto FMNumStep =
+      feature::loadFeatureModel(getTestResource("test_mixed_constraints.xml"));
+  auto ConfigResultNumStep = ConfigurationFactory::getAllConfigs(*FMNumStep);
+  EXPECT_TRUE(ConfigResultNumStep);
+  EXPECT_EQ(ConfigResultNumStep.extractValue().size(), 4);
+}
+
+TEST(SolverAPI, TestMixedConstraints) {
+  auto FMNumStep =
+      feature::loadFeatureModel(getTestResource("test_hsqldb_num.xml"));
+  auto ConfigResultNumStep = ConfigurationFactory::getAllConfigs(*FMNumStep);
+  EXPECT_TRUE(ConfigResultNumStep);
+  EXPECT_EQ(ConfigResultNumStep.extractValue().size(), 864);
 }
 
 TEST(SolverAPI, TestHipaccConfigurations) {

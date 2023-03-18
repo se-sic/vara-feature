@@ -105,8 +105,10 @@ public:
   /// Constructs a new solver constraint visitor by using the reference to
   /// the solver. This reference is needed to retrieve the context and reuse
   /// it in the visitor.
-
+  ///
   /// \param S The Z3Solver instance that uses this visitor.
+  /// \param MixedConstraint whether the visitor is applied on mixed constraints
+  /// or not.
   Z3SolverConstraintVisitor(Z3Solver *S, bool MixedConstraint = false)
       : Z3ConstraintExpression(S->Context),
         VariableConstraint(S->Context.bool_val(false)),
@@ -114,12 +116,13 @@ public:
 
   /// This method adds the constraint after visiting the constraint and
   /// constructing it while visiting.
-
+  ///
   /// \param C The constraint to visit
   /// \param NegateExpr Whether the expression should be evaluated as is or
-  /// negated \param RequireAll Whether all binary features have to be selected
+  /// negated
+  /// \param RequireAll Whether all binary features have to be selected
   /// in order to evaluate the mixed constraint or not
-
+  ///
   /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool addConstraint(vara::feature::Constraint *C, bool NegateExpr = false,
@@ -128,36 +131,36 @@ public:
   /// Visits the binary constraint. Thereby, it constructs the z3 constraint
   /// by first executing the first part of the binary operator and afterwards
   /// the second (right) part.
-
+  ///
   /// \param C the binary constraint to be converted
-
+  ///
   /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool visit(vara::feature::BinaryConstraint *C) override;
 
   /// Visits the unary constraints. Thereby, it visits the operand and creates
   /// a new z3 constraint by preceeding it with the according expression.
-
+  ///
   /// \param C the unary constraint to visit
-
+  ///
   /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool visit(vara::feature::UnaryConstraint *C) override;
 
   /// Visits the feature in the constraint. This method creates the according
   /// z3 constant.
-
+  ///
   /// \param C the primary feature
-
+  ///
   /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool visit(vara::feature::PrimaryFeatureConstraint *C) override;
 
   /// Visits the feature in the integer constraints. This method creates the
   /// according z3 constant.
-
+  ///
   /// \param C the integer constraint
-
+  ///
   /// \returns \c true if adding the constraint was successfull; \c false
   /// otherwise.
   bool visit(feature::PrimaryIntegerConstraint *C) override;
