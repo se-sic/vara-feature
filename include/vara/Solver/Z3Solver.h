@@ -60,8 +60,7 @@ public:
   Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getCurrentConfiguration() override;
 
-  Result<SolverErrorCode, uint64_t>
-  getNumberValidConfigurations() override;
+  Result<SolverErrorCode, uint64_t> getNumberValidConfigurations() override;
 
   Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getNextConfiguration() override;

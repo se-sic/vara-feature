@@ -182,8 +182,7 @@ Z3Solver::getNextConfiguration() {
   return getCurrentConfiguration();
 }
 
-Result<SolverErrorCode, uint64_t>
-Z3Solver::getNumberValidConfigurations() {
+Result<SolverErrorCode, uint64_t> Z3Solver::getNumberValidConfigurations() {
   Solver->push();
   uint64_t Count = 0;
   while (Solver->check() == z3::sat) {

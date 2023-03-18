@@ -124,8 +124,7 @@ public:
   /// \returns an error if the number of valid configurations can not be
   /// retried. This can be the case if there are still constraints left that
   /// were not included into the solver because of missing variables.
-  virtual Result<SolverErrorCode, uint64_t>
-  getNumberValidConfigurations() = 0;
+  virtual Result<SolverErrorCode, uint64_t> getNumberValidConfigurations() = 0;
 
   /// Returns the current configuration.
   ///
