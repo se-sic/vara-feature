@@ -87,7 +87,7 @@ Result<SolverErrorCode> Z3Solver::addFeature(const string &FeatureName) {
       OptionToVariableMapping.end()) {
     return ALREADY_PRESENT;
   }
-  z3::expr const Feature = Context.bool_const(FeatureName.c_str());
+  const z3::expr Feature = Context.bool_const(FeatureName.c_str());
   OptionToVariableMapping.insert(
       std::make_pair(FeatureName, std::make_unique<z3::expr>(Feature)));
   return Ok();
@@ -100,7 +100,7 @@ Z3Solver::addFeature(const string &FeatureName,
       OptionToVariableMapping.end()) {
     return ALREADY_PRESENT;
   }
-  z3::expr const Feature = Context.int_const(FeatureName.c_str());
+  const z3::expr Feature = Context.int_const(FeatureName.c_str());
   OptionToVariableMapping.insert(
       std::make_pair(FeatureName, std::make_unique<z3::expr>(Feature)));
 
