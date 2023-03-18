@@ -14,7 +14,7 @@ target_link_libraries(config-generator
   ${STD_FS_LIB}
   )
 
-add_custom_target(check-vara-fm-viewer
-  COMMAND config-generator xml/test.xml -viewer cat | dot | grep . -q
+add_custom_target(check-vara-config-generator
+  COMMAND config-generator xml/test_dune_num.xml -type sample -csv csv/configs_dune.csv
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../unittests/resources
   )
