@@ -100,8 +100,9 @@ int main(int Argc, char **Argv) {
   }
 
   if (!OutputFilePath.empty() && !Configurations.empty()) {
-    const std::string Str = vara::sampling::SampleSetWriter::writeConfigurations(
-        *FM, Configurations);
+    const std::string Str =
+        vara::sampling::SampleSetWriter::writeConfigurations(*FM,
+                                                             Configurations);
     std::error_code EC;
     auto *Out = new llvm::raw_fd_ostream(OutputFilePath.getValue(), EC);
     if (EC) {
