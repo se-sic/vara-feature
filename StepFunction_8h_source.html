@@ -114,76 +114,82 @@ $(function() {
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keywordflow">return</span> Value * std::get&lt;double&gt;(RHS);</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a615c33c43fd4dc87a68a79ad06a9dc20">StepOperation::EXPONENTIATION</a>:</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keywordflow">return</span> std::pow(Value, std::get&lt;double&gt;(RHS));</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    }</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    assert(std::holds_alternative&lt;double&gt;(LHS));</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">switch</span> (Op) {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a8cc6c2a8240840901a7317b95658c073">StepOperation::ADDITION</a>:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      <span class="keywordflow">return</span> std::get&lt;double&gt;(LHS) + Value;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7af4e42c8a8e1f0086b97479eb8a0571ad">StepOperation::MULTIPLICATION</a>:</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keywordflow">return</span> std::get&lt;double&gt;(LHS) * Value;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a615c33c43fd4dc87a68a79ad06a9dc20">StepOperation::EXPONENTIATION</a>:</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keywordflow">return</span> std::pow(std::get&lt;double&gt;(LHS), Value);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1StepFunction.html#ac26498562fd26131b3ecb35db0d41271">   52</a></span>&#160;  [[nodiscard]] <span class="keywordtype">double</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#ac26498562fd26131b3ecb35db0d41271">operator()</a>(<span class="keywordtype">double</span> Value) { <span class="keywordflow">return</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a3ee0f960f5d74bcdb67365c0a4397b37">next</a>(Value); }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1StepFunction.html#abbf0569e25642473c1fe9c14bcc5e8af">   54</a></span>&#160;  [[nodiscard]] std::string <a class="code" href="classvara_1_1feature_1_1StepFunction.html#abbf0569e25642473c1fe9c14bcc5e8af">toString</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">if</span> (std::holds_alternative&lt;double&gt;(RHS)) {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      assert(std::holds_alternative&lt;std::string&gt;(LHS));</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keywordflow">switch</span> (Op) {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a8cc6c2a8240840901a7317b95658c073">StepOperation::ADDITION</a>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} + {1}&quot;</span>, std::get&lt;std::string&gt;(LHS),</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                             std::get&lt;double&gt;(RHS));</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7af4e42c8a8e1f0086b97479eb8a0571ad">StepOperation::MULTIPLICATION</a>:</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} * {1}&quot;</span>, std::get&lt;std::string&gt;(LHS),</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                             std::get&lt;double&gt;(RHS));</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a615c33c43fd4dc87a68a79ad06a9dc20">StepOperation::EXPONENTIATION</a>:</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} ^ {1}&quot;</span>, std::get&lt;std::string&gt;(LHS),</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        static_assert(<span class="stringliteral">&quot;Missing operation has to be implemented!&quot;</span>);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordflow">return</span> Value;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    assert(std::holds_alternative&lt;double&gt;(LHS));</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">switch</span> (Op) {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a8cc6c2a8240840901a7317b95658c073">StepOperation::ADDITION</a>:</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <span class="keywordflow">return</span> std::get&lt;double&gt;(LHS) + Value;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7af4e42c8a8e1f0086b97479eb8a0571ad">StepOperation::MULTIPLICATION</a>:</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="keywordflow">return</span> std::get&lt;double&gt;(LHS) * Value;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a615c33c43fd4dc87a68a79ad06a9dc20">StepOperation::EXPONENTIATION</a>:</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="keywordflow">return</span> std::pow(std::get&lt;double&gt;(LHS), Value);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      static_assert(<span class="stringliteral">&quot;Missing operation has to be implemented!&quot;</span>);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      <span class="keywordflow">return</span> Value;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    }</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1StepFunction.html#ac26498562fd26131b3ecb35db0d41271">   58</a></span>&#160;  [[nodiscard]] <span class="keywordtype">double</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#ac26498562fd26131b3ecb35db0d41271">operator()</a>(<span class="keywordtype">double</span> Value) { <span class="keywordflow">return</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a3ee0f960f5d74bcdb67365c0a4397b37">next</a>(Value); }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classvara_1_1feature_1_1StepFunction.html#abbf0569e25642473c1fe9c14bcc5e8af">   60</a></span>&#160;  [[nodiscard]] std::string <a class="code" href="classvara_1_1feature_1_1StepFunction.html#abbf0569e25642473c1fe9c14bcc5e8af">toString</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordflow">if</span> (std::holds_alternative&lt;double&gt;(RHS)) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      assert(std::holds_alternative&lt;std::string&gt;(LHS));</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      <span class="keywordflow">switch</span> (Op) {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a8cc6c2a8240840901a7317b95658c073">StepOperation::ADDITION</a>:</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} + {1}&quot;</span>, std::get&lt;std::string&gt;(LHS),</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                             std::get&lt;double&gt;(RHS));</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      }</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    assert(std::holds_alternative&lt;double&gt;(LHS));</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">switch</span> (Op) {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a8cc6c2a8240840901a7317b95658c073">StepOperation::ADDITION</a>:</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} + {1}&quot;</span>, std::get&lt;double&gt;(LHS),</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                           std::get&lt;std::string&gt;(RHS));</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7af4e42c8a8e1f0086b97479eb8a0571ad">StepOperation::MULTIPLICATION</a>:</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} * {1}&quot;</span>, std::get&lt;double&gt;(LHS),</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                           std::get&lt;std::string&gt;(RHS));</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a615c33c43fd4dc87a68a79ad06a9dc20">StepOperation::EXPONENTIATION</a>:</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} ^ {1}&quot;</span>, std::get&lt;double&gt;(LHS),</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7af4e42c8a8e1f0086b97479eb8a0571ad">StepOperation::MULTIPLICATION</a>:</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} * {1}&quot;</span>, std::get&lt;std::string&gt;(LHS),</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                             std::get&lt;double&gt;(RHS));</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a615c33c43fd4dc87a68a79ad06a9dc20">StepOperation::EXPONENTIATION</a>:</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} ^ {1}&quot;</span>, std::get&lt;std::string&gt;(LHS),</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                             std::get&lt;double&gt;(RHS));</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    assert(std::holds_alternative&lt;double&gt;(LHS));</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordflow">switch</span> (Op) {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a8cc6c2a8240840901a7317b95658c073">StepOperation::ADDITION</a>:</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} + {1}&quot;</span>, std::get&lt;double&gt;(LHS),</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                           std::get&lt;std::string&gt;(RHS));</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    }</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7">StepOperation</a> Op;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <a class="code" href="classvara_1_1feature_1_1StepFunction.html#ae8d8a1d548f7f40b3b54e222e3539eba">OperandVariantType</a> LHS;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <a class="code" href="classvara_1_1feature_1_1StepFunction.html#ae8d8a1d548f7f40b3b54e222e3539eba">OperandVariantType</a> RHS;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;};</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7af4e42c8a8e1f0086b97479eb8a0571ad">StepOperation::MULTIPLICATION</a>:</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;      <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} * {1}&quot;</span>, std::get&lt;double&gt;(LHS),</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                           std::get&lt;std::string&gt;(RHS));</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a615c33c43fd4dc87a68a79ad06a9dc20">StepOperation::EXPONENTIATION</a>:</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      <span class="keywordflow">return</span> llvm::formatv(<span class="stringliteral">&quot;{0} ^ {1}&quot;</span>, std::get&lt;double&gt;(LHS),</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                           std::get&lt;std::string&gt;(RHS));</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    }</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  }</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif // VARA_FEATURE_STEPFUNCTION_H</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <a class="code" href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7">StepOperation</a> Op;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <a class="code" href="classvara_1_1feature_1_1StepFunction.html#ae8d8a1d548f7f40b3b54e222e3539eba">OperandVariantType</a> LHS;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <a class="code" href="classvara_1_1feature_1_1StepFunction.html#ae8d8a1d548f7f40b3b54e222e3539eba">OperandVariantType</a> RHS;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;};</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;} <span class="comment">// namespace vara::feature</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#endif // VARA_FEATURE_STEPFUNCTION_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_a7f3ef044c124047f9fa9dadd0aa0018d"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#a7f3ef044c124047f9fa9dadd0aa0018d">vara::feature::StepFunction::StepFunction</a></div><div class="ttdeci">StepFunction(OperandVariantType LHS, StepOperation Op, OperandVariantType RHS)</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00022">StepFunction.h:22</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_a9e2cddeaafa6d40737280f5f47868db7a8cc6c2a8240840901a7317b95658c073"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a8cc6c2a8240840901a7317b95658c073">vara::feature::StepFunction::StepOperation::ADDITION</a></div><div class="ttdeci">@ ADDITION</div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html">vara::feature::StepFunction</a></div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00016">StepFunction.h:16</a></div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_ac26498562fd26131b3ecb35db0d41271"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#ac26498562fd26131b3ecb35db0d41271">vara::feature::StepFunction::operator()</a></div><div class="ttdeci">double operator()(double Value)</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00052">StepFunction.h:52</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_ac26498562fd26131b3ecb35db0d41271"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#ac26498562fd26131b3ecb35db0d41271">vara::feature::StepFunction::operator()</a></div><div class="ttdeci">double operator()(double Value)</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00058">StepFunction.h:58</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_a9e2cddeaafa6d40737280f5f47868db7af4e42c8a8e1f0086b97479eb8a0571ad"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7af4e42c8a8e1f0086b97479eb8a0571ad">vara::feature::StepFunction::StepOperation::MULTIPLICATION</a></div><div class="ttdeci">@ MULTIPLICATION</div></div>
 <div class="ttc" id="anamespacevara_1_1feature_html"><div class="ttname"><a href="namespacevara_1_1feature.html">vara::feature</a></div><div class="ttdef"><b>Definition:</b> <a href="Configuration_8h_source.html#l00014">Configuration.h:14</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_a856fdb7caee2903c7bac818ff2ce775d"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#a856fdb7caee2903c7bac818ff2ce775d">vara::feature::StepFunction::StepFunction</a></div><div class="ttdeci">StepFunction(StepOperation Op, double RHS)</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00025">StepFunction.h:25</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_a91215ace9cb05489b82a1a49f99bcae3"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#a91215ace9cb05489b82a1a49f99bcae3">vara::feature::StepFunction::StepFunction</a></div><div class="ttdeci">StepFunction(double LHS, StepOperation Op)</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00026">StepFunction.h:26</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_a3ee0f960f5d74bcdb67365c0a4397b37"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#a3ee0f960f5d74bcdb67365c0a4397b37">vara::feature::StepFunction::next</a></div><div class="ttdeci">T next(T Value)</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00029">StepFunction.h:29</a></div></div>
-<div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_abbf0569e25642473c1fe9c14bcc5e8af"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#abbf0569e25642473c1fe9c14bcc5e8af">vara::feature::StepFunction::toString</a></div><div class="ttdeci">std::string toString() const</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00054">StepFunction.h:54</a></div></div>
+<div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_abbf0569e25642473c1fe9c14bcc5e8af"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#abbf0569e25642473c1fe9c14bcc5e8af">vara::feature::StepFunction::toString</a></div><div class="ttdeci">std::string toString() const</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00060">StepFunction.h:60</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_ae8d8a1d548f7f40b3b54e222e3539eba"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#ae8d8a1d548f7f40b3b54e222e3539eba">vara::feature::StepFunction::OperandVariantType</a></div><div class="ttdeci">typename std::variant&lt; std::string, double &gt; OperandVariantType</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00020">StepFunction.h:20</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_a9e2cddeaafa6d40737280f5f47868db7"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7">vara::feature::StepFunction::StepOperation</a></div><div class="ttdeci">StepOperation</div><div class="ttdef"><b>Definition:</b> <a href="StepFunction_8h_source.html#l00018">StepFunction.h:18</a></div></div>
 <div class="ttc" id="aclassvara_1_1feature_1_1StepFunction_html_a9e2cddeaafa6d40737280f5f47868db7a615c33c43fd4dc87a68a79ad06a9dc20"><div class="ttname"><a href="classvara_1_1feature_1_1StepFunction.html#a9e2cddeaafa6d40737280f5f47868db7a615c33c43fd4dc87a68a79ad06a9dc20">vara::feature::StepFunction::StepOperation::EXPONENTIATION</a></div><div class="ttdeci">@ EXPONENTIATION</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 10 2023 12:48:14 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Mar 18 2023 16:51:18 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>

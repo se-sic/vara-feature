@@ -1,0 +1,52 @@
+<map id="include/vara/Solver/ConfigurationFactory.h" name="include/vara/Solver/ConfigurationFactory.h">
+<area shape="rect" id="node1" title=" " alt="" coords="1933,5,2103,47"/>
+<area shape="rect" id="node2" href="$Configuration_8h.html" title=" " alt="" coords="289,497,432,539"/>
+<area shape="rect" id="node11" href="$FeatureModel_8h.html" title=" " alt="" coords="2119,348,2328,375"/>
+<area shape="rect" id="node44" href="$SamplingMethods_8h.html" title=" " alt="" coords="5,177,255,203"/>
+<area shape="rect" id="node45" href="$Solver_8h.html" title=" " alt="" coords="1874,266,2026,293"/>
+<area shape="rect" id="node47" href="$SolverFactory_8h.html" title=" " alt="" coords="1987,95,2185,121"/>
+<area shape="rect" id="node50" title=" " alt="" coords="2260,95,2323,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="433,594,597,621"/>
+<area shape="rect" id="node4" title=" " alt="" coords="427,676,646,703"/>
+<area shape="rect" id="node5" title=" " alt="" coords="206,594,257,621"/>
+<area shape="rect" id="node6" title=" " alt="" coords="622,594,699,621"/>
+<area shape="rect" id="node7" title=" " alt="" coords="670,676,745,703"/>
+<area shape="rect" id="node8" title=" " alt="" coords="769,676,843,703"/>
+<area shape="rect" id="node9" title=" " alt="" coords="867,676,926,703"/>
+<area shape="rect" id="node10" title=" " alt="" coords="1305,594,1373,621"/>
+<area shape="rect" id="node12" href="$Constraint_8h.html" title=" " alt="" coords="799,505,986,531"/>
+<area shape="rect" id="node15" title=" " alt="" coords="2204,676,2264,703"/>
+<area shape="rect" id="node16" href="$Feature_2Error_8h.html" title=" " alt="" coords="2947,423,3097,449"/>
+<area shape="rect" id="node17" href="$Result_8h.html" title=" " alt="" coords="2803,505,2945,531"/>
+<area shape="rect" id="node23" href="$Feature_8h.html" title=" " alt="" coords="1243,423,1412,449"/>
+<area shape="rect" id="node30" title=" " alt="" coords="2301,594,2457,621"/>
+<area shape="rect" id="node39" href="$Relationship_8h.html" title=" " alt="" coords="1848,423,2049,449"/>
+<area shape="rect" id="node40" title=" " alt="" coords="2124,423,2323,449"/>
+<area shape="rect" id="node41" title=" " alt="" coords="2634,423,2719,449"/>
+<area shape="rect" id="node42" title=" " alt="" coords="2346,423,2421,449"/>
+<area shape="rect" id="node43" title=" " alt="" coords="2445,423,2508,449"/>
+<area shape="rect" id="node13" title=" " alt="" coords="1398,594,1555,621"/>
+<area shape="rect" id="node14" title=" " alt="" coords="3006,676,3075,703"/>
+<area shape="rect" id="node18" href="$VariantUtil_8h.html" title=" " alt="" coords="3239,594,3410,621"/>
+<area shape="rect" id="node20" title=" " alt="" coords="2533,594,2740,621"/>
+<area shape="rect" id="node21" title=" " alt="" coords="2917,594,2997,621"/>
+<area shape="rect" id="node22" title=" " alt="" coords="3021,594,3113,621"/>
+<area shape="rect" id="node19" title=" " alt="" coords="3295,676,3354,703"/>
+<area shape="rect" id="node24" href="$FeatureSourceRange_8h.html" title=" " alt="" coords="927,587,1128,628"/>
+<area shape="rect" id="node29" href="$FeatureTreeNode_8h.html" title=" " alt="" coords="1986,497,2170,539"/>
+<area shape="rect" id="node31" title=" " alt="" coords="1580,594,1771,621"/>
+<area shape="rect" id="node32" title=" " alt="" coords="1795,594,1934,621"/>
+<area shape="rect" id="node33" title=" " alt="" coords="2009,594,2129,621"/>
+<area shape="rect" id="node34" title=" " alt="" coords="2153,594,2195,621"/>
+<area shape="rect" id="node35" title=" " alt="" coords="2220,594,2277,621"/>
+<area shape="rect" id="node36" href="$StepFunction_8h.html" title=" " alt="" coords="571,505,775,531"/>
+<area shape="rect" id="node37" title=" " alt="" coords="1549,505,1709,531"/>
+<area shape="rect" id="node38" title=" " alt="" coords="1365,505,1524,531"/>
+<area shape="rect" id="node25" title=" " alt="" coords="1321,676,1453,703"/>
+<area shape="rect" id="node26" title=" " alt="" coords="951,676,1104,703"/>
+<area shape="rect" id="node27" title=" " alt="" coords="1128,676,1297,703"/>
+<area shape="rect" id="node28" title=" " alt="" coords="91,676,145,703"/>
+<area shape="rect" id="node46" href="$Solver_2Error_8h.html" title=" " alt="" coords="2576,348,2719,375"/>
+<area shape="rect" id="node48" href="$FeatureModelBuilder_8h.html" title=" " alt="" coords="2523,169,2721,211"/>
+<area shape="rect" id="node49" href="$FeatureModelTransaction_8h.html" title=" " alt="" coords="2658,259,2855,300"/>
+</map>

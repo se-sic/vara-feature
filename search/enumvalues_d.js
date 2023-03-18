@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['whitespace_1130',['WHITESPACE',['../classvara_1_1feature_1_1ConstraintToken.html#a4fc8d285432b0b9fd4adc0aa610eba74a52f1e315372b38db1b8f4e3666c4f721',1,'vara::feature::ConstraintToken::WHITESPACE()'],['../classvara_1_1feature_1_1StepFunctionToken.html#a47327fc381fbc127d63a622cc41f06c3a52f1e315372b38db1b8f4e3666c4f721',1,'vara::feature::StepFunctionToken::WHITESPACE()']]]
+  ['unsat_1211',['UNSAT',['../namespacevara_1_1solver.html#a0e7ac101241b60cc23e0f9eadac40b91af4bcbab80a7da70239408a0017f752bc',1,'vara::solver']]]
 ];

@@ -1,8 +1,14 @@
 <map id="include/vara/Configuration/Configuration.h" name="include/vara/Configuration/Configuration.h">
-<area shape="rect" id="node1" title=" " alt="" coords="277,5,470,47"/>
-<area shape="rect" id="node2" href="$SampleSetParser_8h.html" title=" " alt="" coords="62,95,229,136"/>
-<area shape="rect" id="node4" href="$SampleSetWriter_8h.html" title=" " alt="" coords="290,95,457,136"/>
-<area shape="rect" id="node6" href="$Configuration_8cpp.html" title=" " alt="" coords="481,102,727,129"/>
-<area shape="rect" id="node3" href="$SampleSetParser_8cpp.html" title=" " alt="" coords="5,184,248,211"/>
-<area shape="rect" id="node5" href="$SampleSetWriter_8cpp.html" title=" " alt="" coords="272,184,515,211"/>
+<area shape="rect" id="node1" title=" " alt="" coords="510,5,703,47"/>
+<area shape="rect" id="node2" href="$SampleSetParser_8h.html" title=" " alt="" coords="82,95,249,136"/>
+<area shape="rect" id="node4" href="$SampleSetWriter_8h.html" title=" " alt="" coords="329,95,495,136"/>
+<area shape="rect" id="node6" href="$ConfigurationFactory_8h.html" title=" " alt="" coords="492,273,663,315"/>
+<area shape="rect" id="node7" href="$Solver_8h.html" title=" " alt="" coords="589,95,736,136"/>
+<area shape="rect" id="node10" href="$Z3Solver_8h.html" title=" " alt="" coords="811,184,957,225"/>
+<area shape="rect" id="node12" href="$Configuration_8cpp.html" title=" " alt="" coords="810,102,1057,129"/>
+<area shape="rect" id="node3" href="$SampleSetParser_8cpp.html" title=" " alt="" coords="5,191,248,218"/>
+<area shape="rect" id="node5" href="$SampleSetWriter_8cpp.html" title=" " alt="" coords="272,191,515,218"/>
+<area shape="rect" id="node8" href="$SolverFactory_8h.html" title=" " alt="" coords="640,184,787,225"/>
+<area shape="rect" id="node9" href="$SolverFactory_8cpp.html" title=" " alt="" coords="687,281,887,307"/>
+<area shape="rect" id="node11" href="$Z3Solver_8cpp.html" title=" " alt="" coords="911,281,1081,307"/>
 </map>

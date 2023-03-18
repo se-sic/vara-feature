@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['error_2eh_626',['Error.h',['../Error_8h.html',1,'']]]
+  ['error_2eh_676',['Error.h',['../Feature_2Error_8h.html',1,'(Global Namespace)'],['../Solver_2Error_8h.html',1,'(Global Namespace)']]]
 ];
