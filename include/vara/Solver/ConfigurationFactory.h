@@ -13,18 +13,24 @@ namespace vara::solver {
 
 /// This class represents a configuration iterator that lazily traverses
 /// over all configurations.
-class ConfigurationIterator {
+class ConfigurationIterable {
 public:
-  class Iterator {
+  class ConfigurationIterator {
   public:
-    Iterator(Solver *S = nullptr) : S{S} {}
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = std::unique_ptr<vara::feature::Configuration>;
+    using pointer = std::unique_ptr<vara::feature::Configuration> *;
+    using reference = std::unique_ptr<vara::feature::Configuration> &;
+
+    ConfigurationIterator(Solver *S = nullptr) : S{S} {}
 
     Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
     operator*() const {
       return S->getCurrentConfiguration();
     }
 
-    Iterator &operator++() {
+    ConfigurationIterator &operator++() {
       auto R = S->getNextConfiguration();
       if (!R) {
         S = nullptr;
@@ -32,21 +38,23 @@ public:
       return *this;
     }
 
-    bool operator==(Iterator Other) const { return S == Other.S; }
-    bool operator!=(Iterator Other) const { return !(Other == *this); }
+    bool operator==(ConfigurationIterator Other) const { return S == Other.S; }
+    bool operator!=(ConfigurationIterator Other) const {
+      return !(Other == *this);
+    }
 
   private:
     Solver *S;
   };
 
-  explicit ConfigurationIterator(std::unique_ptr<Solver> Solver)
+  explicit ConfigurationIterable(std::unique_ptr<Solver> Solver)
       : S(std::move(Solver)) {}
 
-  virtual ~ConfigurationIterator() = default;
+  virtual ~ConfigurationIterable() = default;
 
-  Iterator begin() { return Iterator{S.get()}; }
+  ConfigurationIterator begin() { return ConfigurationIterator{S.get()}; }
 
-  Iterator end() { return Iterator{}; } // NOLINT
+  ConfigurationIterator end() { return ConfigurationIterator{}; } // NOLINT
 
 private:
   std::unique_ptr<Solver> S;
@@ -63,11 +71,11 @@ public:
   /// \param Type the type of solver to use
   ///
   /// \returns A unique pointer to the configuration iterator
-  static ConfigurationIterator
+  static ConfigurationIterable
   getConfigIterator(feature::FeatureModel &Model,
                     const vara::solver::SolverType Type = SolverType::Z3) {
     auto S = SolverFactory::initializeSolver(Model, Type);
-    return ConfigurationIterator(std::move(S));
+    return ConfigurationIterable(std::move(S));
   }
 
   /// This method returns all configurations of the given feature model. Note
