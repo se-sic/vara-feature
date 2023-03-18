@@ -48,6 +48,7 @@ endif ()
 
 option(VARA_FEATURE_USE_Z3_SOLVER "Use z3 solver" FALSE)
 option(VARA_FEATURE_BUILD_Z3_SOLVER "Build z3 solver from source" TRUE)
+option(VARA_FEATURE_EXECUTE_Z3_LARGE_MODEL_TESTS "Execute z3 tests on larger models" FALSE)
 
 option(VARA_FEATURE_BUILD_DOC "Generate documentation" FALSE)
 

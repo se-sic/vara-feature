@@ -45,24 +45,4 @@ TEST(SolverAPI, TestMixedConstraints) {
   EXPECT_EQ(ConfigResultNumStep.extractValue().size(), 864);
 }
 
-TEST(SolverAPI, TestHipaccConfigurations) {
-  GTEST_SKIP();
-  //  Test the Hipacc feature model, which has (1) numeric features and
-  //  (2) many cross-tree-constraints.
-  //  To test also alternative groups, we test Hipacc with numeric features,
-  //  but also with its discretized counterpart (i.e., every numeric feature
-  //  is converted into multiple binary features)
-  auto FmNum =
-      feature::loadFeatureModel(getTestResource("test_hipacc_num.xml"));
-  EXPECT_TRUE(FmNum);
-  auto ConfigResult = ConfigurationFactory::getAllConfigs(*FmNum);
-  EXPECT_TRUE(ConfigResult);
-  EXPECT_EQ(ConfigResult.extractValue().size(), 13485);
-  auto FMBin =
-      feature::loadFeatureModel(getTestResource("test_hipacc_bin.xml"));
-  auto ConfigResultBin = ConfigurationFactory::getAllConfigs(*FMBin);
-  EXPECT_TRUE(ConfigResultBin);
-  EXPECT_EQ(ConfigResultBin.extractValue().size(), 13485);
-}
-
 } // namespace vara::solver
