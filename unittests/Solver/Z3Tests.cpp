@@ -57,7 +57,7 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   // Enumerate the solutions
   auto Enumerate = S->getNumberValidConfigurations();
   EXPECT_TRUE(Enumerate);
-  EXPECT_EQ(2, *Enumerate.extractValue());
+  EXPECT_EQ(2, Enumerate.extractValue());
 
   E = S->addFeature(*FM->getFeature("B"));
   EXPECT_TRUE(E);
@@ -71,7 +71,7 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   // Enumerate the solutions
   Enumerate = S->getNumberValidConfigurations();
   EXPECT_TRUE(Enumerate);
-  EXPECT_EQ(6, *Enumerate.extractValue());
+  EXPECT_EQ(6, Enumerate.extractValue());
 
   E = S->addFeature(*FM->getFeature("C"));
   EXPECT_TRUE(E);
@@ -79,7 +79,7 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   EXPECT_TRUE(V.extractValue());
   Enumerate = S->getNumberValidConfigurations();
   EXPECT_TRUE(Enumerate);
-  EXPECT_EQ(6, *Enumerate.extractValue());
+  EXPECT_EQ(6, Enumerate.extractValue());
 }
 
 TEST(Z3Solver, TestAllValidConfigurations) {
@@ -160,7 +160,7 @@ TEST(Z3Solver, AddImpliesConstraint) {
   S->addConstraint(*C);
   auto E = S->getNumberValidConfigurations();
   EXPECT_TRUE(E);
-  EXPECT_EQ(*E.extractValue(), 6);
+  EXPECT_EQ(E.extractValue(), 6);
 }
 
 TEST(Z3Solver, AddAlternative) {
@@ -205,7 +205,7 @@ TEST(Z3Solver, AddAlternative) {
   }
   auto E = S->getNumberValidConfigurations();
   EXPECT_TRUE(E);
-  EXPECT_EQ(*E.extractValue(), 63);
+  EXPECT_EQ(E.extractValue(), 63);
 }
 
 } // namespace vara::solver

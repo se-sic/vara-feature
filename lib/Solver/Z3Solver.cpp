@@ -182,13 +182,13 @@ Z3Solver::getNextConfiguration() {
   return getCurrentConfiguration();
 }
 
-Result<SolverErrorCode, std::unique_ptr<uint64_t>>
+Result<SolverErrorCode, uint64_t>
 Z3Solver::getNumberValidConfigurations() {
   Solver->push();
-  std::unique_ptr<uint64_t> Count = std::make_unique<uint64_t>(0);
+  uint64_t Count = 0;
   while (Solver->check() == z3::sat) {
     excludeCurrentConfiguration();
-    (*Count)++;
+    Count++;
   }
   Solver->pop();
   return Count;

@@ -9,7 +9,7 @@ TEST(SolverFactory, EmptyZ3SolverTest) {
   auto S = SolverFactory::initializeSolver(SolverType::Z3);
   auto E = S->getNumberValidConfigurations();
   EXPECT_TRUE(E);
-  EXPECT_EQ(*E.extractValue(), 1);
+  EXPECT_EQ(E.extractValue(), 1);
 }
 
 TEST(SolverFactory, GeneralZ3Test) {
@@ -57,7 +57,7 @@ TEST(SolverFactory, GeneralZ3Test) {
 
   auto E = S->getNumberValidConfigurations();
   EXPECT_TRUE(E);
-  EXPECT_EQ(*E.extractValue(), 6 * 63);
+  EXPECT_EQ(E.extractValue(), 6 * 63);
 }
 
 } // namespace vara::solver
