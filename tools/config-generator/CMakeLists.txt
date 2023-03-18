@@ -13,6 +13,7 @@ target_link_libraries(config-generator
   VaRAFeature
   VaRASampling
   VaRASolver
+  csv
   ${STD_FS_LIB}
 )
 
