@@ -229,12 +229,12 @@ Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
   if (Solver->check() == z3::unsat) {
     return UNSAT;
   }
-  z3::model const M = Solver->get_model();
+  const z3::model M = Solver->get_model();
   z3::expr Expr = Context.bool_val(false);
   for (auto Iterator = OptionToVariableMapping.begin();
        Iterator != OptionToVariableMapping.end(); Iterator++) {
-    z3::expr const OptionExpr = *Iterator->getValue();
-    z3::expr const Value = M.eval(OptionExpr, true);
+    const z3::expr OptionExpr = *Iterator->getValue();
+    const z3::expr Value = M.eval(OptionExpr, true);
     if (Value.is_bool()) {
       if (Value.is_true()) {
         Expr = Expr || !*Iterator->getValue();
@@ -254,13 +254,13 @@ Z3Solver::getCurrentConfiguration() {
   if (Solver->check() == z3::unsat) {
     return UNSAT;
   }
-  z3::model const M = Solver->get_model();
+  const z3::model M = Solver->get_model();
   auto Config = std::make_unique<vara::feature::Configuration>();
 
   for (auto Iterator = OptionToVariableMapping.begin();
        Iterator != OptionToVariableMapping.end(); Iterator++) {
-    z3::expr const OptionExpr = *Iterator->getValue();
-    z3::expr const Value = M.eval(OptionExpr, true);
+    const z3::expr OptionExpr = *Iterator->getValue();
+    const z3::expr Value = M.eval(OptionExpr, true);
     Config->setConfigurationOption(Iterator->getKey(),
                                    llvm::StringRef(Value.to_string()));
   }
@@ -287,9 +287,9 @@ bool Z3SolverConstraintVisitor::addConstraint(vara::feature::Constraint *C,
 
 bool Z3SolverConstraintVisitor::visit(vara::feature::BinaryConstraint *C) {
 
-  bool const LHS = C->getLeftOperand()->accept(*this);
-  z3::expr const Left = Z3ConstraintExpression;
-  bool const RHS = C->getRightOperand()->accept(*this);
+  const bool LHS = C->getLeftOperand()->accept(*this);
+  const z3::expr Left = Z3ConstraintExpression;
+  const bool RHS = C->getRightOperand()->accept(*this);
   if (!LHS || !RHS) {
     return false;
   }

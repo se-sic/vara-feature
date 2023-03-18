@@ -39,7 +39,7 @@ public:
   [[nodiscard]] static std::unique_ptr<Solver>
   initializeSolver(const SolverType Type) {
     vara::feature::FeatureModelBuilder B;
-    std::unique_ptr<const feature::FeatureModel> const FM =
+    const std::unique_ptr<const feature::FeatureModel> FM =
         B.buildFeatureModel();
     return initializeSolver(*FM, Type);
   }
