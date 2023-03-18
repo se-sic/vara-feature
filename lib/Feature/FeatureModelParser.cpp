@@ -1,4 +1,5 @@
 #include "vara/Feature/FeatureModelParser.h"
+#include "vara/Feature/ConstraintBuilder.h"
 #include "vara/Feature/ConstraintParser.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureSourceRange.h"
@@ -83,14 +84,12 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
+              ConstraintBuilder CB;
+              CB.feature(Name).excludes().feature(
+                  trim(reinterpret_cast<char *>(CCnt.get())));
               FMB.addConstraint(
                   std::make_unique<FeatureModel::BooleanConstraint>(
-                      std::make_unique<ExcludesConstraint>(
-                          std::make_unique<PrimaryFeatureConstraint>(
-                              std::make_unique<Feature>(Name)),
-                          std::make_unique<PrimaryFeatureConstraint>(
-                              std::make_unique<Feature>(trim(
-                                  reinterpret_cast<char *>(CCnt.get())))))));
+                      CB.build()));
             }
           }
         }
@@ -99,14 +98,12 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
+              ConstraintBuilder CB;
+              CB.feature(Name).implies().feature(
+                  trim(reinterpret_cast<char *>(CCnt.get())));
               FMB.addConstraint(
                   std::make_unique<FeatureModel::BooleanConstraint>(
-                      std::make_unique<ImpliesConstraint>(
-                          std::make_unique<PrimaryFeatureConstraint>(
-                              std::make_unique<Feature>(Name)),
-                          std::make_unique<PrimaryFeatureConstraint>(
-                              std::make_unique<Feature>(trim(
-                                  reinterpret_cast<char *>(CCnt.get())))))));
+                      CB.build()));
             }
           }
         }
