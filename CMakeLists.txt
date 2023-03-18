@@ -46,6 +46,10 @@ if (${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
   add_compile_options(-fPIC)
 endif ()
 
+option(VARA_FEATURE_USE_Z3_SOLVER "Use z3 solver" FALSE)
+option(VARA_FEATURE_BUILD_Z3_SOLVER "Build z3 solver from source" TRUE)
+option(VARA_FEATURE_EXECUTE_Z3_LARGE_MODEL_TESTS "Execute z3 tests on larger models" FALSE)
+
 option(VARA_FEATURE_BUILD_DOC "Generate documentation" FALSE)
 
 # Extra debug warning flags
@@ -164,6 +168,40 @@ include_directories(external/gcem/include/)
 
 add_subdirectory(external/csv-parser)
 include_directories(external/csv-parser/include/)
+
+if (${VARA_FEATURE_USE_Z3_SOLVER})
+  if (VARA_FEATURE_IN_TREE)
+    # Currently, we don't build the solver part when part of LLVM
+  else()
+    if (${VARA_FEATURE_BUILD_Z3_SOLVER})
+      # Hack to ignore warnings in the Z3 codebase
+      set(ORIG_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+
+      add_subdirectory(external/z3)
+
+      # Set Z3 vars similar to find package
+      set(Z3_INCLUDE_DIR
+        "${PROJECT_BINARY_DIR}/external/z3/src/api"
+        "${PROJECT_SOURCE_DIR}/external/z3/src/api"
+        "${PROJECT_SOURCE_DIR}/external/z3/src/api/c++"
+      )
+      set(Z3_LIBRARIES
+        libz3
+      )
+
+      # Reset old CXX flags to enable warnings again
+      set(CMAKE_CXX_FLAGS "${ORIG_CXX_FLAGS}")
+    else()
+      find_package(Z3 4.8.7 REQUIRED)
+      if (NOT Z3_FOUND)
+        message(FATAL_ERROR "Z3 library not found!")
+      endif ()
+    endif ()
+
+    include_directories(${Z3_INCLUDE_DIR})
+  endif()
+endif ()
 
 add_subdirectory(include)
 add_subdirectory(lib)

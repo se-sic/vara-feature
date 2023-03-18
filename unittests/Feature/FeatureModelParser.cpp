@@ -1,6 +1,6 @@
 #include "vara/Feature/FeatureModelParser.h"
 
-#include "UnittestHelper.h"
+#include "Utils/UnittestHelper.h"
 
 #include "llvm/Support/MemoryBuffer.h"
 

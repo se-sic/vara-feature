@@ -2,11 +2,13 @@ set(VARA_FEATURE_TEST_UNITS
   VaRAFeatureUnitTests
   VaRAConfigurationUnitTests
   VaRASamplingUnitTests
+  VaRASolverUnitTests
 )
 set(VARA_FEATURE_LIBS
   VaRAFeature
   VaRAConfiguration
   VaRASampling
+  VaRASolver
 )
 set(VARA_FEAUTRE_TEST_WORKING_DIR
   ${CMAKE_CURRENT_BINARY_DIR}
@@ -72,5 +74,6 @@ include_directories(
 add_subdirectory(Configuration)
 add_subdirectory(Feature)
 add_subdirectory(Sampling)
+add_subdirectory(Solver)
 add_subdirectory(Utils)
 add_subdirectory(resources)

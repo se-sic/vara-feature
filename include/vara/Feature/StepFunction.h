@@ -36,6 +36,9 @@ public:
         return Value * std::get<double>(RHS);
       case StepOperation::EXPONENTIATION:
         return std::pow(Value, std::get<double>(RHS));
+      default:
+        static_assert("Missing operation has to be implemented!");
+        return Value;
       }
     }
     assert(std::holds_alternative<double>(LHS));
@@ -46,6 +49,9 @@ public:
       return std::get<double>(LHS) * Value;
     case StepOperation::EXPONENTIATION:
       return std::pow(std::get<double>(LHS), Value);
+    default:
+      static_assert("Missing operation has to be implemented!");
+      return Value;
     }
   }
 
