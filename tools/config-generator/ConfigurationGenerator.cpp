@@ -23,7 +23,7 @@ enum class ConfigurationGenerationChoice : unsigned {
 
 static llvm::cl::opt<ConfigurationGenerationChoice, false>
     ConfigurationGenerationOption(
-        "config-type",
+        "type",
         llvm::cl::desc("The way how the configurations should be generated."),
         llvm::cl::values(
             clEnumValN(ConfigurationGenerationChoice::ALL, "All",
@@ -81,7 +81,6 @@ int main(int Argc, char **Argv) {
   }
 
   std::vector<std::unique_ptr<vara::feature::Configuration>> Configurations;
-  llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> FS = nullptr;
   switch (ConfigurationGenerationOption.getValue()) {
   case ConfigurationGenerationChoice::ALL:
     if (auto R = vara::solver::ConfigurationFactory::getAllConfigs(*FM); R) {
@@ -92,10 +91,8 @@ int main(int Argc, char **Argv) {
     }
     break;
   case ConfigurationGenerationChoice::SAMPLE_SET:
-    FS = llvm::MemoryBuffer::getFileAsStream(CsvInputFilePath);
-    assert(FS);
     Configurations = vara::sampling::SampleSetParser::readConfigurations(
-        *FM, FS.get()->getBuffer().str());
+        *FM, CsvInputFilePath);
     break;
   case ConfigurationGenerationChoice::SAMPLING_STRATEGY:
     llvm::errs() << "error: Sampling is not implemented yet.\n";
