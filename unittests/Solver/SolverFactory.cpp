@@ -1,5 +1,6 @@
 #include "vara/Solver/SolverFactory.h"
 
+#include "vara/Feature/ConstraintBuilder.h"
 #include "vara/Feature/FeatureModelBuilder.h"
 #include "gtest/gtest.h"
 
@@ -15,23 +16,18 @@ TEST(SolverFactory, EmptyZ3SolverTest) {
 TEST(SolverFactory, GeneralZ3Test) {
   vara::feature::FeatureModelBuilder B;
   B.makeRoot("root");
-  B.makeFeature<vara::feature::BinaryFeature>("Foo", true);
-  B.addEdge("root", "Foo");
-  B.makeFeature<vara::feature::BinaryFeature>("alt", false);
-  B.addEdge("root", "alt");
-  B.makeFeature<feature::BinaryFeature>("a", true);
-  B.makeFeature<feature::BinaryFeature>("b", true);
-  B.addEdge("alt", "a");
-  B.addEdge("alt", "b");
-  std::unique_ptr<feature::FeatureModel::BooleanConstraint> C =
-      std::make_unique<feature::FeatureModel::BooleanConstraint>(
-          std::make_unique<feature::ImpliesConstraint>(
-              std::make_unique<feature::PrimaryFeatureConstraint>(
-                  std::make_unique<feature::BinaryFeature>("a")),
-              std::make_unique<feature::NotConstraint>(
-                  std::make_unique<feature::PrimaryFeatureConstraint>(
-                      std::make_unique<feature::BinaryFeature>("b")))));
-  B.addConstraint(std::move(C));
+  B.makeFeature<vara::feature::BinaryFeature>("Foo", true)
+      ->addEdge("root", "Foo");
+  B.makeFeature<vara::feature::BinaryFeature>("alt", false)
+      ->addEdge("root", "alt");
+  B.makeFeature<feature::BinaryFeature>("a", true)->addEdge("alt", "a");
+  B.makeFeature<feature::BinaryFeature>("b", true)->addEdge("alt", "b");
+
+  vara::feature::ConstraintBuilder CB;
+  CB.feature("a").implies().lNot().feature("b");
+  B.addConstraint(
+      std::make_unique<vara::feature::FeatureModel::BooleanConstraint>(
+          CB.build()));
 
   B.makeFeature<vara::feature::BinaryFeature>("A", false)->addEdge("root", "A");
   B.makeFeature<vara::feature::BinaryFeature>("A1", true)->addEdge("A", "A1");
