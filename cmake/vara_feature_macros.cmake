@@ -1,4 +1,4 @@
-macro(add_vara_executable name)
+macro(ADD_VARA_EXECUTABLE name)
   if (VARA_FEATURE_IN_TREE)
     set(LLVM_RUNTIME_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bin)
     set(LLVM_LIBRARY_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/lib)
@@ -13,7 +13,7 @@ macro(add_vara_executable name)
       RUNTIME DESTINATION bin
     )
   endif()
-endmacro(add_vara_executable)
+endmacro(ADD_VARA_EXECUTABLE)
 
 macro(add_vara_library name)
   cmake_parse_arguments(ARG "" "" "" ${ARGN})

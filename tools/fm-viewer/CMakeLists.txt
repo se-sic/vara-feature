@@ -4,7 +4,7 @@ set(LLVM_LINK_COMPONENTS
   Core
 )
 
-add_vara_executable(fm-viewer
+ADD_VARA_EXECUTABLE(fm-viewer
   FeatureModelViewer.cpp
 )
 
