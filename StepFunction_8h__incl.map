@@ -1,7 +1,8 @@
 <map id="include/vara/Feature/StepFunction.h" name="include/vara/Feature/StepFunction.h">
-<area shape="rect" id="node1" title=" " alt="" coords="249,5,404,47"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,95,224,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="249,95,311,121"/>
-<area shape="rect" id="node4" title=" " alt="" coords="336,95,413,121"/>
-<area shape="rect" id="node5" title=" " alt="" coords="438,95,506,121"/>
+<area shape="rect" id="node1" title=" " alt="" coords="437,5,592,47"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,95,216,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="240,95,459,121"/>
+<area shape="rect" id="node4" title=" " alt="" coords="483,95,546,121"/>
+<area shape="rect" id="node5" title=" " alt="" coords="571,95,648,121"/>
+<area shape="rect" id="node6" title=" " alt="" coords="673,95,741,121"/>
 </map>

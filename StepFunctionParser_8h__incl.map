@@ -1,11 +1,12 @@
 <map id="include/vara/Feature/StepFunctionParser.h" name="include/vara/Feature/StepFunctionParser.h">
-<area shape="rect" id="node1" title=" " alt="" coords="533,5,694,47"/>
-<area shape="rect" id="node2" href="$StepFunction_8h.html" title=" " alt="" coords="225,95,429,121"/>
-<area shape="rect" id="node7" title=" " alt="" coords="453,95,630,121"/>
-<area shape="rect" id="node8" title=" " alt="" coords="654,95,717,121"/>
-<area shape="rect" id="node9" title=" " alt="" coords="741,95,816,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,169,224,196"/>
-<area shape="rect" id="node4" title=" " alt="" coords="249,169,311,196"/>
-<area shape="rect" id="node5" title=" " alt="" coords="336,169,413,196"/>
-<area shape="rect" id="node6" title=" " alt="" coords="438,169,506,196"/>
+<area shape="rect" id="node1" title=" " alt="" coords="721,5,882,47"/>
+<area shape="rect" id="node2" href="$StepFunction_8h.html" title=" " alt="" coords="413,95,617,121"/>
+<area shape="rect" id="node8" title=" " alt="" coords="641,95,818,121"/>
+<area shape="rect" id="node9" title=" " alt="" coords="842,95,905,121"/>
+<area shape="rect" id="node10" title=" " alt="" coords="929,95,1004,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,169,216,196"/>
+<area shape="rect" id="node4" title=" " alt="" coords="240,169,459,196"/>
+<area shape="rect" id="node5" title=" " alt="" coords="483,169,546,196"/>
+<area shape="rect" id="node6" title=" " alt="" coords="571,169,648,196"/>
+<area shape="rect" id="node7" title=" " alt="" coords="673,169,741,196"/>
 </map>
