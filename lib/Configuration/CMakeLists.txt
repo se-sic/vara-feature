@@ -1,13 +1,5 @@
-set(CONFIGURATION_LIB_SRC
-  Configuration.cpp
-)
+set(CONFIGURATION_LIB_SRC Configuration.cpp)
 
-set(LLVM_LINK_COMPONENTS
-  Support
-  Demangle
-  Core
-)
+set(LLVM_LINK_COMPONENTS Support Demangle Core)
 
-add_vara_library(VaRAConfiguration
-  ${CONFIGURATION_LIB_SRC}
-)
+add_vara_library(VaRAConfiguration ${CONFIGURATION_LIB_SRC})
