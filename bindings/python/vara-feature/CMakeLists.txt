@@ -9,6 +9,11 @@ pybind11_add_module(vara_feature
   pybind_llvm.cpp
 )
 
+set(LLVM_LINK_COMPONENTS
+  Core
+  Support
+)
+
 target_link_libraries(vara_feature
   LINK_PUBLIC
   VaRAFeature

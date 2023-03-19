@@ -5,6 +5,8 @@ set(SAMPLING_LIB_SRC
 )
 
 set(LLVM_LINK_COMPONENTS
+  Core
+  Support
 )
 
 add_vara_library(VaRASampling
@@ -12,6 +14,7 @@ add_vara_library(VaRASampling
 )
 
 target_link_libraries(VaRASampling
+  LINK_PUBLIC
   VaRAConfiguration
   csv
 )

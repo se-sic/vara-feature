@@ -168,39 +168,47 @@ include_directories(external/gcem/include/)
 
 add_subdirectory(external/csv-parser)
 include_directories(external/csv-parser/include/)
+if (VARA_FEATURE_IN_TREE)
+  install(TARGETS csv
+    EXPORT LLVMExports
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib${LLVM_LIBDIR_SUFFIX})
+  set_property(GLOBAL APPEND PROPERTY LLVM_EXPORTS csv)
+endif()
 
 if (${VARA_FEATURE_USE_Z3_SOLVER})
   if (VARA_FEATURE_IN_TREE)
-    # Currently, we don't build the solver part when part of LLVM
-  else()
-    if (${VARA_FEATURE_BUILD_Z3_SOLVER})
-      # Hack to ignore warnings in the Z3 codebase
-      set(ORIG_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
-
-      add_subdirectory(external/z3)
-
-      # Set Z3 vars similar to find package
-      set(Z3_INCLUDE_DIR
-        "${PROJECT_BINARY_DIR}/external/z3/src/api"
-        "${PROJECT_SOURCE_DIR}/external/z3/src/api"
-        "${PROJECT_SOURCE_DIR}/external/z3/src/api/c++"
-      )
-      set(Z3_LIBRARIES
-        libz3
-      )
-
-      # Reset old CXX flags to enable warnings again
-      set(CMAKE_CXX_FLAGS "${ORIG_CXX_FLAGS}")
-    else()
-      find_package(Z3 4.8.7 REQUIRED)
-      if (NOT Z3_FOUND)
-        message(FATAL_ERROR "Z3 library not found!")
-      endif ()
-    endif ()
-
-    include_directories(${Z3_INCLUDE_DIR})
+    set(VARA_FEATURE_IN_TREE_PREFIX "tools/vara/external/vara-feature/")
   endif()
+
+  if (${VARA_FEATURE_BUILD_Z3_SOLVER})
+    # Hack to ignore warnings in the Z3 codebase
+    set(ORIG_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+
+    add_subdirectory(external/z3)
+
+    # Set Z3 vars similar to find package
+    set(Z3_INCLUDE_DIR
+      "${PROJECT_BINARY_DIR}/${VARA_FEATURE_IN_TREE_PREFIX}external/z3/src/api"
+      "${CMAKE_CURRENT_SOURCE_DIR}/external/z3/src/api"
+      "${CMAKE_CURRENT_SOURCE_DIR}/external/z3/src/api/c++"
+    )
+    message(STATUS "${Z3_INCLUDE_DIR}")
+    set(Z3_LIBRARIES
+      libz3
+    )
+
+    # Reset old CXX flags to enable warnings again
+    set(CMAKE_CXX_FLAGS "${ORIG_CXX_FLAGS}")
+  else()
+    find_package(Z3 4.8.7 REQUIRED)
+    if (NOT Z3_FOUND)
+      message(FATAL_ERROR "Z3 library not found!")
+    endif ()
+  endif ()
+
+  include_directories(${Z3_INCLUDE_DIR})
 endif ()
 
 add_subdirectory(include)
