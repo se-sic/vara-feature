@@ -1,6 +1,7 @@
 #ifndef VARA_FEATURE_STEPFUNCTION_H
 #define VARA_FEATURE_STEPFUNCTION_H
 
+#include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/FormatVariadic.h"
 
 #include <cmath>
@@ -36,10 +37,9 @@ public:
         return Value * std::get<double>(RHS);
       case StepOperation::EXPONENTIATION:
         return std::pow(Value, std::get<double>(RHS));
-      default:
-        static_assert("Missing operation has to be implemented!");
-        return Value;
       }
+
+      llvm_unreachable("Missing operation has to be implemented!");
     }
     assert(std::holds_alternative<double>(LHS));
     switch (Op) {
@@ -49,10 +49,9 @@ public:
       return std::get<double>(LHS) * Value;
     case StepOperation::EXPONENTIATION:
       return std::pow(std::get<double>(LHS), Value);
-    default:
-      static_assert("Missing operation has to be implemented!");
-      return Value;
     }
+
+    llvm_unreachable("Missing operation has to be implemented!");
   }
 
   [[nodiscard]] double operator()(double Value) { return next(Value); }
