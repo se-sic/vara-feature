@@ -1,5 +1,7 @@
 #include "vara/Solver/Z3Solver.h"
 
+#include "llvm/Support/ErrorHandling.h"
+
 #include "z3++.h"
 
 namespace vara::solver {
@@ -344,7 +346,7 @@ bool Z3SolverConstraintVisitor::visit(vara::feature::BinaryConstraint *C) {
                              z3::implies(Z3ConstraintExpression, !Left);
     break;
   default:
-    static_assert(
+    llvm_unreachable(
         "Unimplemented binary constraint in Z3SolverConstraintVisitor "
         "detected!");
     return false;
