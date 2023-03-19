@@ -108,4 +108,3 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(Z3
                                   VERSION_VAR Z3_VERSION_STRING)
 
 mark_as_advanced(Z3_INCLUDE_DIR Z3_LIBRARIES)
-

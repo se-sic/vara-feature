@@ -24,4 +24,3 @@ target_link_libraries(VaRAFeature
   ${LIBXML2_LIBRARIES}
   ${STD_FS_LIB}
   )
-

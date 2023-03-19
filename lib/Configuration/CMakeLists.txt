@@ -11,4 +11,3 @@ set(LLVM_LINK_COMPONENTS
 add_vara_library(VaRAConfiguration
   ${CONFIGURATION_LIB_SRC}
 )
-
