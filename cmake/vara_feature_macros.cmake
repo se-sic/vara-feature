@@ -14,10 +14,22 @@ endmacro(ADD_VARA_EXECUTABLE)
 
 # Adds a new library target that is provided with vara
 function(add_vara_library name)
-  cmake_parse_arguments(ARG "" "" "" ${ARGN})
+  cmake_parse_arguments(
+    ARG
+    ""
+    ""
+    ""
+    ${ARGN}
+  )
   set(srcs ${ARG_UNPARSED_ARGUMENTS})
   if(MSVC_IDE OR XCODE)
-    file(GLOB_RECURSE headers *.h *.td *.def)
+    file(
+      GLOB_RECURSE
+      headers
+      *.h
+      *.td
+      *.def
+    )
     set(srcs ${srcs} ${headers})
     string(REGEX MATCHALL "/[^/]+" split_path ${CMAKE_CURRENT_SOURCE_DIR})
     list(GET split_path -1 dir)

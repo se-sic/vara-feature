@@ -64,7 +64,11 @@ if(CMAKE_BUILD_TYPE)
 endif()
 if(BUILD_TYPE MATCHES "^(DEBUG)")
   add_compile_options(
-    -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wimplicit-fallthrough
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wno-unused-parameter
+    -Wimplicit-fallthrough
   )
 endif()
 
@@ -115,14 +119,21 @@ endif()
 
 find_program(
   VARA_FEATURE_RUN_CLANG_TIDY
-  NAMES run-clang-tidy-12.py run-clang-tidy-12 run-clang-tidy.py run-clang-tidy
-        clang-tidy-12 clang-tidy
+  NAMES run-clang-tidy-12.py
+        run-clang-tidy-12
+        run-clang-tidy.py
+        run-clang-tidy
+        clang-tidy-12
+        clang-tidy
   PATHS /usr/lib/llvm/*/share/clang/ /usr/bin/
 )
 
 add_custom_target(
   tidy-vara-feature
-  ${VARA_FEATURE_RUN_CLANG_TIDY} -header-filter=vara/.* lib/* unittests/*
+  ${VARA_FEATURE_RUN_CLANG_TIDY}
+  -header-filter=vara/.*
+  lib/*
+  unittests/*
   tools/*
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   COMMENT "Run clang-tidy over vara-feature files"
