@@ -26,5 +26,6 @@ configure_file(
 add_custom_target(
   build-docs
   COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_CONFIGURED_INPUT}
+  COMMENT "Target to build documentation"
   WORKING_DIRECTORY ${DOXYGEN_INPUT_DIR}
 )

@@ -1,3 +1,4 @@
+# Adds a new executable target that is provided with vara
 macro(ADD_VARA_EXECUTABLE name)
   if(VARA_FEATURE_IN_TREE)
     set(LLVM_RUNTIME_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bin)
@@ -11,7 +12,8 @@ macro(ADD_VARA_EXECUTABLE name)
   endif()
 endmacro(ADD_VARA_EXECUTABLE)
 
-macro(add_vara_library name)
+# Adds a new library target that is provided with vara
+function(add_vara_library name)
   cmake_parse_arguments(ARG "" "" "" ${ARGN})
   set(srcs ${ARG_UNPARSED_ARGUMENTS})
   if(MSVC_IDE OR XCODE)
@@ -67,10 +69,13 @@ macro(add_vara_library name)
     ARCHIVE DESTINATION lib${LLVM_LIBDIR_SUFFIX}
   )
   set_property(GLOBAL APPEND PROPERTY LLVM_EXPORTS ${name})
-endmacro(add_vara_library)
+endfunction(add_vara_library)
 
+# cmake-lint: disable=C0103
+
+# Checks if std filesystem is present
 function(check_std_filesystems varname)
-  set(OLD_CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
+  set(old_cmake_required_flags ${CMAKE_REQUIRED_FLAGS})
   set(CMAKE_REQUIRED_FLAGS "-std=c++17 ${CMAKE_REQUIRED_FLAGS}")
   check_cxx_source_compiles(
     "
@@ -80,16 +85,17 @@ int main() { return 0; }
 "
     ${varname}
   )
-  set(CMAKE_REQUIRED_FLAGS ${OLD_CMAKE_REQUIRED_FLAGS})
+  set(CMAKE_REQUIRED_FLAGS ${old_cmake_required_flags})
 endfunction()
 
+# Checks if extra flags are required for std filesystem
 function(check_std_filesystem_flags varname)
   # Check if we need to add -lstdc++fs or -lc++fs or nothing
-  set(OLD_CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES})
-  set(OLD_CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
+  set(old_cmake_required_libraries ${CMAKE_REQUIRED_LIBRARIES})
+  set(old_cmake_required_flags ${CMAKE_REQUIRED_FLAGS})
   set(CMAKE_REQUIRED_FLAGS "-std=c++17 ${CMAKE_REQUIRED_FLAGS}")
 
-  set(STD_FILESYSTEM_TEST_PROG
+  set(std_filesystem_test_prog
       "
 #include <filesystem>
 int main(int argc, char ** argv) {
@@ -98,14 +104,14 @@ return p.string().length(); }
 "
   )
 
-  check_cxx_source_compiles("${STD_FILESYSTEM_TEST_PROG}" STD_FS_NO_LIB_NEEDED)
+  check_cxx_source_compiles("${std_filesystem_test_prog}" STD_FS_NO_LIB_NEEDED)
   set(CMAKE_REQUIRED_LIBRARIES "stdc++fs;${CMAKE_REQUIRED_LIBRARIES}")
-  check_cxx_source_compiles("${STD_FILESYSTEM_TEST_PROG}" STD_FS_NEEDS_STDCXXFS)
-  set(CMAKE_REQUIRED_LIBRARIES ${OLD_CMAKE_REQUIRED_LIBRARIES})
+  check_cxx_source_compiles("${std_filesystem_test_prog}" STD_FS_NEEDS_STDCXXFS)
+  set(CMAKE_REQUIRED_LIBRARIES ${old_cmake_required_libraries})
   set(CMAKE_REQUIRED_LIBRARIES "c++fs;${CMAKE_REQUIRED_LIBRARIES}")
-  check_cxx_source_compiles("${STD_FILESYSTEM_TEST_PROG}" STD_FS_NEEDS_CXXFS)
-  set(CMAKE_REQUIRED_LIBRARIES ${OLD_CMAKE_REQUIRED_LIBRARIES})
-  set(CMAKE_REQUIRED_FLAGS ${OLD_CMAKE_REQUIRED_FLAGS})
+  check_cxx_source_compiles("${std_filesystem_test_prog}" STD_FS_NEEDS_CXXFS)
+  set(CMAKE_REQUIRED_LIBRARIES ${old_cmake_required_libraries})
+  set(CMAKE_REQUIRED_FLAGS ${old_cmake_required_flags})
 
   if(${STD_FS_NO_LIB_NEEDED})
     set(${varname}

@@ -4,9 +4,9 @@ set(VARA_FEATURE_TEST_UNITS VaRAFeatureUnitTests VaRAConfigurationUnitTests
 set(VARA_FEATURE_LIBS VaRAFeature VaRAConfiguration VaRASampling VaRASolver)
 set(VARA_FEAUTRE_TEST_WORKING_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
-foreach(TEST_UNIT ${VARA_FEATURE_TEST_UNITS})
-  message(STATUS "Setting: ${TEST_UNIT}")
-  add_custom_target(${TEST_UNIT})
+foreach(test_unit ${VARA_FEATURE_TEST_UNITS})
+  message(STATUS "Setting: ${test_unit}")
+  add_custom_target(${test_unit} COMMENT "Target to run a specific test unit")
 
   set_target_properties(${TEST_UNIT} PROPERTIES FOLDER "VaRA/vara-feature")
 endforeach()
@@ -31,6 +31,7 @@ else()
   add_custom_target(
     check-vara-feature-unittests
     COMMAND ${CMAKE_CTEST_COMMAND} --progress --output-on-failure -j 8
+    COMMENT "Target to run all vara-feature unittests"
     DEPENDS ${VARA_FEATURE_TEST_UNITS}
   )
 endif()
@@ -58,7 +59,7 @@ function(add_vara_unittest test_unit test_name)
       COMMAND ${test_name} ${CATCH_TEST_FILTER}
       WORKING_DIRECTORY ${VARA_FEAUTRE_TEST_WORKING_DIR}
     )
-    set(CTEST_OUTPUT_ON_FAILURE 1)
+    set(CTEST_OUTPUT_ON_FAILURE 1) # cmake-lint: disable=C0103
   endif()
   target_link_libraries(${test_name} PRIVATE ${VARA_FEATURE_LIBS})
 endfunction()

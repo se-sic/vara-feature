@@ -18,3 +18,4 @@ repos:
   rev: v0.6.13
   hooks:
   - id: cmake-format
+  - id: cmake-lint

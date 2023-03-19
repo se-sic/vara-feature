@@ -104,9 +104,8 @@ if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
       RESULT_VARIABLE GIT_SUBMOD_RESULT
     )
     if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-      message(
-        FATAL_ERROR
-          "git submodule update --init failed with ${VARA_FEATURE_GIT_SUBMODULE}"
+      message(FATAL_ERROR "git submodule update --init failed with "
+                          "${VARA_FEATURE_GIT_SUBMODULE}"
       )
     endif()
   endif()
@@ -150,7 +149,8 @@ if(NOT VARA_FEATURE_IN_TREE)
   if(NOT "${LLVM_VERSION_MAJOR}" GREATER_EQUAL "${MIN_LLVM_REQUIRED}")
     message(
       FATAL_ERROR
-        "LLVM version error: minimal required LLVM-${MIN_LLVM_REQUIRED} but found LLVM-${LLVM_VERSION_MAJOR}. "
+        "LLVM version error: minimal required LLVM-${MIN_LLVM_REQUIRED} "
+        "but found LLVM-${LLVM_VERSION_MAJOR}. "
     )
   endif()
   include_directories(${LLVM_INCLUDE_DIRS})
@@ -215,7 +215,9 @@ if(${VARA_FEATURE_USE_Z3_SOLVER})
 
     # Set Z3 vars similar to find package
     set(Z3_INCLUDE_DIR
-        "${PROJECT_BINARY_DIR}/${VARA_FEATURE_IN_TREE_PREFIX}external/z3/src/api"
+        string
+        (CONCAT "${PROJECT_BINARY_DIR}/${VARA_FEATURE_IN_TREE_PREFIX}"
+         "external/z3/src/api")
         "${CMAKE_CURRENT_SOURCE_DIR}/external/z3/src/api"
         "${CMAKE_CURRENT_SOURCE_DIR}/external/z3/src/api/c++"
     )

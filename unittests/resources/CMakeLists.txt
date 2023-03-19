@@ -1,9 +1,10 @@
-macro(add_test_file file_name)
+# Add test files from the repo into the test execution environment
+function(add_test_file file_name)
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/${file_name} ${CMAKE_CURRENT_BINARY_DIR}/
     COPYONLY
   )
-endmacro()
+endfunction()
 
 set(FEATURE_LIB_TEST_FILES
     csv/configs_dune.csv
