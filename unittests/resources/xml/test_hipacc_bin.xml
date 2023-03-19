@@ -1444,5 +1444,5 @@
   <constraint>!LocalMemory | !bs_512x2 | !pixelPerThread_4</constraint>
   <constraint>!LocalMemory | !bs_1024x1 | !pixelPerThread_4</constraint>
   </booleanConstraints>
-  
+
 </vm>

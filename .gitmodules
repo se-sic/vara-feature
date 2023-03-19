@@ -12,7 +12,7 @@
 	url = https://github.com/kthohr/gcem.git
 [submodule "external/csv-parser"]
 	path = external/csv-parser
-	url = https://github.com/vincentlaucsb/csv-parser
+	url = https://github.com/se-sic/csv-parser.git
 [submodule "external/z3"]
 	path = external/z3
 	url = https://github.com/fabianbs96/z3.git
