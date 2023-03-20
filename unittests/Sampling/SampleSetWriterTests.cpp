@@ -28,9 +28,9 @@ TEST(SampleSetWriter, testWriting) {
   auto P = vara::feature::FeatureModelXmlParser(FMFS.get()->getBuffer().str());
   auto FM = P.buildFeatureModel();
   auto Configs = SampleSetParser::readConfigurations(*FM, CsvPath);
-  ASSERT_EQ(Configs->size(), 40);
+  ASSERT_EQ(Configs.size(), 40);
 
-  auto ActualString = SampleSetWriter::writeConfigurations(*FM, *Configs);
+  auto ActualString = SampleSetWriter::writeConfigurations(*FM, Configs);
   auto ExpectedString =
       llvm::MemoryBuffer::getFileAsStream(getTestResource("dune_configs.yml"))
           .get()
