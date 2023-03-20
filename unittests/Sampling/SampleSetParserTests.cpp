@@ -27,10 +27,10 @@ TEST(SampleSetParser, testCSVParsing) {
   auto P = vara::feature::FeatureModelXmlParser(FMFS.get()->getBuffer().str());
   auto FM = P.buildFeatureModel();
   auto Configs = SampleSetParser::readConfigurations(*FM, CsvPath);
-  ASSERT_EQ(Configs->size(), 40);
+  ASSERT_EQ(Configs.size(), 40);
 
   // Check the configuration options of the first configuration
-  const auto &FirstConfig = Configs->back();
+  const auto &FirstConfig = Configs.back();
   testConfigurationOption(FirstConfig, "root", "true");
   testConfigurationOption(FirstConfig, "Precon", "true");
   testConfigurationOption(FirstConfig, "Solver", "true");
@@ -45,7 +45,7 @@ TEST(SampleSetParser, testCSVParsing) {
   testConfigurationOption(FirstConfig, "cells", "55");
 
   // Check the configuration options of the last configuration
-  const auto &LastConfig = Configs->front();
+  const auto &LastConfig = Configs.front();
   testConfigurationOption(LastConfig, "root", "true");
   testConfigurationOption(LastConfig, "Precon", "true");
   testConfigurationOption(LastConfig, "Solver", "true");
