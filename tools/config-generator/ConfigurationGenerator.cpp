@@ -106,6 +106,7 @@ int main(int Argc, char **Argv) {
     std::error_code EC;
     auto *Out = new llvm::raw_fd_ostream(OutputFilePath.getValue(), EC);
     if (EC) {
+      delete Out;
       llvm::errs() << "error: Error while writing to file.\n";
       return 1;
     }
