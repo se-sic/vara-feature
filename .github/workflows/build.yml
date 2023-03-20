@@ -91,6 +91,7 @@ jobs:
           cd build
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
+          cmake --build . --target check-vara-config-generator
 
       - name: Run Tests (Cov)
         env:
@@ -102,6 +103,7 @@ jobs:
           cmake . -DVARA_FEATURE_ENABLE_COVERAGE=True
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
+          cmake --build . --target check-vara-config-generator
           ./scripts/ci_utils/prepare_coverage_data.py
           bash <(curl -s https://codecov.io/bash)
 
