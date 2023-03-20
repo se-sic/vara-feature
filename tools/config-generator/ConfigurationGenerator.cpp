@@ -56,7 +56,7 @@ int main(int Argc, char **Argv) {
 
   llvm::cl::ParseCommandLineOptions(Argc, Argv, Overview, nullptr, FlagsEnvVar);
   if (FileName.empty()) {
-    llvm::errs() << "error: Expected single file.\n";
+    llvm::errs() << "error: Expected file.\n";
     return 1;
   }
 
