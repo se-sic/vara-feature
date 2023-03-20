@@ -11,9 +11,9 @@
 static llvm::cl::OptionCategory
     ConfigCreatorCategory("Configuration generator options");
 
-static llvm::cl::list<std::string>
-    FileNames(llvm::cl::Positional, llvm::cl::desc("Path to the feature model"),
-              llvm::cl::cat(ConfigCreatorCategory));
+static llvm::cl::opt<std::string>
+    FileName(llvm::cl::Positional, llvm::cl::desc("Path to the feature model"),
+             llvm::cl::cat(ConfigCreatorCategory));
 
 enum class ConfigurationGenerationChoice : unsigned {
   ALL,
@@ -43,7 +43,8 @@ static llvm::cl::opt<std::string>
 
 static llvm::cl::opt<std::string>
     OutputFilePath("out", llvm::cl::desc("Path to the yml output file."),
-                   llvm::cl::value_desc("filename"), llvm::cl::init(""),
+                   llvm::cl::value_desc("filename"),
+                   llvm::cl::init("configurations.yml"),
                    llvm::cl::cat(ConfigCreatorCategory));
 
 int main(int Argc, char **Argv) {
@@ -54,18 +55,18 @@ int main(int Argc, char **Argv) {
   const char *Overview = R"(Generate configurations.)";
 
   llvm::cl::ParseCommandLineOptions(Argc, Argv, Overview, nullptr, FlagsEnvVar);
-  if (FileNames.size() != 1) {
+  if (FileName.empty()) {
     llvm::errs() << "error: Expected single file.\n";
     return 1;
   }
 
-  if (!vara::feature::verifyFeatureModel(FileNames[0])) {
+  if (!vara::feature::verifyFeatureModel(FileName.getValue())) {
     llvm::errs() << "error: Invalid feature model.\n";
     return 1;
   }
 
   std::unique_ptr<vara::feature::FeatureModel> FM =
-      vara::feature::loadFeatureModel(FileNames[0]);
+      vara::feature::loadFeatureModel(FileName.getValue());
 
   if (!FM) {
     llvm::errs() << "error: Could not build feature model.\n";
@@ -104,14 +105,12 @@ int main(int Argc, char **Argv) {
         vara::sampling::SampleSetWriter::writeConfigurations(*FM,
                                                              Configurations);
     std::error_code EC;
-    auto *Out = new llvm::raw_fd_ostream(OutputFilePath.getValue(), EC);
+    auto Out = llvm::raw_fd_ostream(OutputFilePath.getValue(), EC);
     if (EC) {
-      delete Out;
       llvm::errs() << "error: Error while writing to file.\n";
       return 1;
     }
-    *Out << Str;
-    delete Out;
+    Out << Str;
   }
 
   return 0;
