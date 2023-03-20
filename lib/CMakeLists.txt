@@ -1,4 +1,7 @@
 add_subdirectory(Configuration)
 add_subdirectory(Feature)
 add_subdirectory(Sampling)
-add_subdirectory(Solver)
+
+if(VARA_FEATURE_USE_Z3_SOLVER)
+  add_subdirectory(Solver)
+endif()
