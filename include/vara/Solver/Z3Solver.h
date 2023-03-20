@@ -4,11 +4,11 @@
 #include "vara/Configuration/Configuration.h"
 #include "vara/Feature/Constraint.h"
 #include "vara/Feature/Feature.h"
+#include "vara/Feature/Relationship.h"
 #include "vara/Solver/Error.h"
 #include "vara/Solver/Solver.h"
 #include "vara/Utils/Result.h"
 
-#include "vara/Feature/Relationship.h"
 #include "z3++.h"
 
 namespace vara::solver {

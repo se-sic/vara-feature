@@ -1,4 +1,6 @@
-add_vara_unittest(VaRAFeatureUnitTests VaRAFeatureTests
+add_vara_unittest(
+  VaRAFeatureUnitTests
+  VaRAFeatureTests
   BinaryFeature.cpp
   ConstraintBuilder.cpp
   ConstraintParser.cpp
@@ -18,4 +20,4 @@ add_vara_unittest(VaRAFeatureUnitTests VaRAFeatureTests
   RootFeature.cpp
   StepFunction.cpp
   StepFunctionParser.cpp
-  )
+)
