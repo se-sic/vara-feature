@@ -15,7 +15,7 @@ target_link_libraries(
 add_custom_target(
   check-vara-config-generator
   COMMAND config-generator test_dune_num.xml -type sample -csv configs_dune.csv
-          -out configs.yml
+          -out configs_dune.yml
   COMMENT "Target to run the configuration generator using csv import."
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../unittests/resources
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../unittests/resources
 )
