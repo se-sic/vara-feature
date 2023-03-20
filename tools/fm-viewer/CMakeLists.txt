@@ -8,5 +8,5 @@ add_custom_target(
   check-vara-fm-viewer
   COMMAND fm-viewer xml/test.xml -viewer cat | dot | grep . -q
   COMMENT "Target to run fm-viewer tests"
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../unittests/resources
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../unittests/resources
 )
