@@ -127,6 +127,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=$CXX \
             -DVARA_FEATURE_SANITIZE=False \
             -DVARA_FEATURE_BUILD_PYTHON_BINDINGS=True \
+            -DVARA_FEATURE_USE_Z3_SOLVER=True \
             -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
