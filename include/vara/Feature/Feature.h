@@ -260,7 +260,7 @@ public:
 
   [[nodiscard]] ValuesVariantType getValues() const { return Values; }
 
-  [[nodiscard]] StepFunction *getStepFunction() { return Step.get(); }
+  [[nodiscard]] StepFunction *getStepFunction() const { return Step.get(); }
 
   [[nodiscard]] string toString() const override;
 

@@ -33,6 +33,11 @@ To set the version to version 16.0, for instance, you can use the following comm
 CC=clang CXX=clang++ cmake -DLLVM_REQUESTED_VERSION=16.0 ..
 ```
 
+To enable the support for Z3, you can use different flags.
+First, you will have to set the flag `VARA_FEATURE_USE_Z3_SOLVER` to `True`. If you have installed Z3 on your system, you can further set `VARA_FEATURE_BUILD_Z3_SOLVER` to `False`; otherwise, it will build the Z3 version that is pulled in by `external/z3`.
+```bash
+CC=clang CXX=clang++ cmake -DVARA_FEATURE_USE_Z3_SOLVER=True -DVARA_FEATURE_BUILD_Z3_SOLVER=False ..
+```
 
 Test Execution
 ---------------

@@ -6,6 +6,7 @@
 #include "pybind11/stl.h"
 #include "pybind_common.h"
 
+#include <cassert>
 #include <filesystem>
 #include <memory>
 
@@ -35,7 +36,8 @@ void init_feature_model_builder_module(py::module &M) {
             vf::Relationship::RelationshipKind RK;
             if (relation == "OR") {
               RK = vf::Relationship::RelationshipKind::RK_OR;
-            } else if (relation == "XOR") {
+            } else {
+              assert(relation == "XOR" && "relation had unhandled kind");
               RK = vf::Relationship::RelationshipKind::RK_ALTERNATIVE;
             }
             return FMB.emplaceRelationship(RK, parent_name);

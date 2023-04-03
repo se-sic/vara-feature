@@ -6,6 +6,7 @@
 #include <llvm/ADT/StringExtras.h>
 
 #include <deque>
+#include <optional>
 
 namespace vara::feature {
 
