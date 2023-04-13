@@ -12,7 +12,7 @@
 	url = https://github.com/kthohr/gcem.git
 [submodule "external/csv-parser"]
 	path = external/csv-parser
-	url = url = https://github.com/se-sic/csv-parser.git
+	url = https://github.com/se-sic/csv-parser.git
 [submodule "external/qsourcehighlite"]
 	path = external/qsourcehighlite
 	url = git@github.com:Waqar144/QSourceHighlite.git
