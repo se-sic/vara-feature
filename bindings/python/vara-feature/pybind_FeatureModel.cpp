@@ -17,14 +17,18 @@ void init_feature_model_module(py::module &M) {
       .def(py::init([](vf::Constraint &C) {
         return std::make_unique<vf::FeatureModel::BooleanConstraint>(C.clone());
       }))
-      .def("constraint", &vf::FeatureModel::BooleanConstraint::constraint);
+      .def("__str__", &vf::FeatureModel::BooleanConstraint::toString)
+      .def_property_readonly("constraint",
+                             &vf::FeatureModel::BooleanConstraint::constraint);
 
   py::class_<vf::FeatureModel::NonBooleanConstraint>(M, "NonBooleanConstraint")
       .def(py::init([](vf::Constraint &C) {
         return std::make_unique<vf::FeatureModel::NonBooleanConstraint>(
             C.clone());
       }))
-      .def("constraint", &vf::FeatureModel::NonBooleanConstraint::constraint);
+      .def("__str__", &vf::FeatureModel::NonBooleanConstraint::toString)
+      .def_property_readonly(
+          "constraint", &vf::FeatureModel::NonBooleanConstraint::constraint);
 
   py::enum_<vf::FeatureModel::MixedConstraint::Req>(M, "Req")
       .value("ALL", vf::FeatureModel::MixedConstraint::Req::ALL)
@@ -39,7 +43,12 @@ void init_feature_model_module(py::module &M) {
         return std::make_unique<vf::FeatureModel::MixedConstraint>(C.clone(), R,
                                                                    E);
       }))
-      .def("constraint", &vf::FeatureModel::MixedConstraint::constraint);
+      .def("__str__", &vf::FeatureModel::MixedConstraint::toString)
+      .def_property_readonly("req", &vf::FeatureModel::MixedConstraint::req)
+      .def_property_readonly("exprKind",
+                             &vf::FeatureModel::MixedConstraint::exprKind)
+      .def_property_readonly("constraint",
+                             &vf::FeatureModel::MixedConstraint::constraint);
 
   py::class_<vf::FeatureModel>(M, "FeatureModel")
       .def_property_readonly(

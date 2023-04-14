@@ -243,6 +243,10 @@ private:
 
     [[nodiscard]] Constraint *operator*() { return C.get(); }
 
+    [[nodiscard]] virtual std::string toString() const { return C->toString(); }
+
+    [[nodiscard]] virtual std::string toHTML() const { return C->toHTML(); }
+
   private:
     std::unique_ptr<Constraint> C;
   };
