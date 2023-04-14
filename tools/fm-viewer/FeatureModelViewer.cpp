@@ -9,9 +9,9 @@
 static llvm::cl::OptionCategory
     FMViewerCategory("Feature model viewer options");
 
-static llvm::cl::list<std::string> FileNames(llvm::cl::Positional,
-                                             llvm::cl::desc("file"),
-                                             llvm::cl::cat(FMViewerCategory));
+static llvm::cl::opt<std::string> FileName(llvm::cl::Positional,
+                                           llvm::cl::desc("file"),
+                                           llvm::cl::cat(FMViewerCategory));
 
 static llvm::cl::opt<bool> Xml("xml",
                                llvm::cl::desc("Use XML format (default)."),
@@ -45,18 +45,18 @@ int main(int Argc, char **Argv) {
   const char *Overview = R"(View feature model as graph.)";
 
   llvm::cl::ParseCommandLineOptions(Argc, Argv, Overview, nullptr, FlagsEnvVar);
-  if (FileNames.size() != 1) {
-    llvm::errs() << "error: Expected single file.\n";
+  if (FileName.empty()) {
+    llvm::errs() << "error: Expected file.\n";
     return 1;
   }
 
-  if (Verify && !vara::feature::verifyFeatureModel(FileNames[0])) {
+  if (Verify && !vara::feature::verifyFeatureModel(FileName.getValue())) {
     llvm::errs() << "error: Invalid feature model.\n";
     return 1;
   }
 
   std::unique_ptr<vara::feature::FeatureModel> FM =
-      vara::feature::loadFeatureModel(FileNames[0]);
+      vara::feature::loadFeatureModel(FileName.getValue());
 
   if (!FM) {
     llvm::errs() << "error: Could not build feature model.\n";

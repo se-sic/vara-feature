@@ -1,6 +1,6 @@
 #include "vara/Feature/FeatureModelParser.h"
 
-#include "UnittestHelper.h"
+#include "Utils/UnittestHelper.h"
 
 #include "llvm/Support/MemoryBuffer.h"
 #include "gtest/gtest.h"
@@ -41,7 +41,7 @@ TEST(FeatureModelParser, detectWornglyFormattedConstraint) {
   EXPECT_TRUE(FS && "Input file could not be read.");
 
   auto FM =
-          FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
+      FeatureModelSxfmParser(FS.get()->getBuffer().str()).buildFeatureModel();
 
   EXPECT_FALSE(FM);
 }

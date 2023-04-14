@@ -1,6 +1,6 @@
 #include "vara/Feature/FeatureModelBuilder.h"
 
-#include "UnittestHelper.h"
+#include "Utils/UnittestHelper.h"
 #include "gtest/gtest.h"
 
 namespace vara::feature {

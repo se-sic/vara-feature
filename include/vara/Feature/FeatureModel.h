@@ -286,8 +286,12 @@ public:
 
   class MixedConstraint : public FeatureModelConstraint {
   public:
+    /// This enum indicates whether the constraint should be evaluated when
+    /// `all` boolean features are present or `none`.
     enum class Req { ALL, NONE };
 
+    /// This enum indicates whether the whole constraint should be `negated`
+    /// or not.
     enum class ExprKind { POS, NEG };
 
     MixedConstraint(std::unique_ptr<Constraint> C, Req R, ExprKind E)
@@ -505,8 +509,7 @@ struct GraphWriter<vara::feature::FeatureModel *> {
       O << "digraph graph_" << static_cast<void *>(G) << " {\n";
     }
     std::string GraphName =
-        llvm::formatv("Feature model for {0}\n{1}", G->getName().str(),
-                      G->getPath().string());
+        llvm::formatv("Feature model for {0}", G->getName().str());
 
     O.indent(2) << "graph [pad=.5 nodesep=2 ranksep=2 splines=true "
                    "newrank=true bgcolor=white rankdir=tb overlap=false "

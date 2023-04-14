@@ -21,8 +21,8 @@ public:
   ///
   /// \returns a pointer to a vector containing the configurations from the
   /// sample set.
-  [[nodiscard]] static std::unique_ptr<
-      std::vector<std::unique_ptr<vara::feature::Configuration>>>
+  [[nodiscard]] static std::vector<
+      std::unique_ptr<vara::feature::Configuration>>
   readConfigurations(const feature::FeatureModel &Model, llvm::StringRef Csv);
 };
 

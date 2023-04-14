@@ -2,9 +2,9 @@ name: VaRA Feature Library Build
 
 on:
   push:
-    branches: [ vara, vara-dev ]
+    branches: [vara, vara-dev]
   pull_request:
-    branches: [ vara, vara-dev ]
+    branches: [vara, vara-dev]
 
 jobs:
   build:
@@ -12,9 +12,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        build: [ Debug, Release ]
-        llvm-major: [ 14 ]
-        compiler: [ clang++-14, clang++-15, g++-9 ]
+        build: [Debug, Release]
+        llvm-major: [14]
+        compiler: [clang++-14, clang++-15, g++-9]
         include:
           - llvm-major: 14
             llvm-minor: 0
@@ -37,6 +37,16 @@ jobs:
           sudo apt-add-repository -y 'deb https://apt.kitware.com/ubuntu/ focal main'
           sudo apt-get update
           sudo apt-get -y install --no-install-recommends cmake libstdc++6 libxml2-dev python3-dev graphviz gcc-9 g++-9
+
+      - name: Download and Install Z3 4.11.2
+        shell: bash
+        run: |
+          cd /tmp/
+          wget https://github.com/Z3Prover/z3/releases/download/z3-4.11.2/z3-4.11.2-x64-glibc-2.31.zip
+          unzip z3-4.11.2-x64-glibc-2.31.zip
+          sudo cp z3-4.11.2-x64-glibc-2.31/include/* /usr/include/
+          sudo cp z3-4.11.2-x64-glibc-2.31/bin/libz3.so /usr/lib/x86_64-linux-gnu/
+
 
       - name: Install Strategy Dependencies
         shell: bash
@@ -69,6 +79,8 @@ jobs:
             -DCMAKE_CXX_COMPILER=$CXX \
             -DVARA_FEATURE_SANITIZE=True \
             -DVARA_FEATURE_BUILD_PYTHON_BINDINGS=False \
+            -DVARA_FEATURE_USE_Z3_SOLVER=True \
+            -DVARA_FEATURE_BUILD_Z3_SOLVER=False \
             -DPYTHON_EXECUTABLE=$(which python3)
           cmake --build . -- -j
 
@@ -79,6 +91,7 @@ jobs:
           cd build
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
+          cmake --build . --target check-vara-config-generator
 
       - name: Run Tests (Cov)
         env:
@@ -90,6 +103,7 @@ jobs:
           cmake . -DVARA_FEATURE_ENABLE_COVERAGE=True
           cmake --build . --target check-vara-feature-unittests
           cmake --build . --target check-vara-fm-viewer
+          cmake --build . --target check-vara-config-generator
           ./scripts/ci_utils/prepare_coverage_data.py
           bash <(curl -s https://codecov.io/bash)
 
