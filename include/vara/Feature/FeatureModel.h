@@ -237,7 +237,7 @@ private:
   /// \brief Base for different constraint kinds (boolean, non-boolean, etc.).
   class FeatureModelConstraint {
   public:
-    FeatureModelConstraint(std::unique_ptr<Constraint> C) : C(std::move(C)) {}
+    virtual ~FeatureModelConstraint() = default;
 
     [[nodiscard]] Constraint *constraint() { return C.get(); }
 
@@ -246,6 +246,9 @@ private:
     [[nodiscard]] virtual std::string toString() const { return C->toString(); }
 
     [[nodiscard]] virtual std::string toHTML() const { return C->toHTML(); }
+
+  protected:
+    FeatureModelConstraint(std::unique_ptr<Constraint> C) : C(std::move(C)) {}
 
   private:
     std::unique_ptr<Constraint> C;
