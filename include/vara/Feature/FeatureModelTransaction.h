@@ -973,15 +973,14 @@ private:
       FeatureTreeNode *Parent = F.getParent();
       auto *ParentFeature = llvm::dyn_cast<Feature, FeatureTreeNode>(Parent);
 #undef NDEBUG
+#include <cassert>
       assert(ParentFeature != nullptr);
-#define NDEBUG
       ParentFeature = FM->getFeature(ParentFeature->getName());
       Relationship *Base = *ParentFeature->getChildren<Relationship>(0).begin();
       Base = *Base->getChildren<Relationship>(0).begin();
       return Base;
     }
     auto *CastF = llvm::dyn_cast<Feature, FeatureTreeNode>(&F);
-#undef NDEBUG
     assert(CastF != nullptr);
 #define NDEBUG
     return FM->getFeature(CastF->getName());
