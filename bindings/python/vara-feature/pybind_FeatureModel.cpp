@@ -19,7 +19,8 @@ void init_feature_model_module(py::module &M) {
       }))
       .def("__str__", &vf::FeatureModel::BooleanConstraint::toString)
       .def_property_readonly("constraint",
-                             &vf::FeatureModel::BooleanConstraint::constraint);
+                             &vf::FeatureModel::BooleanConstraint::constraint,
+                             R"pbdoc(Get underlying constraint.)pbdoc");
 
   py::class_<vf::FeatureModel::NonBooleanConstraint>(M, "NonBooleanConstraint")
       .def(py::init([](vf::Constraint &C) {
@@ -28,7 +29,8 @@ void init_feature_model_module(py::module &M) {
       }))
       .def("__str__", &vf::FeatureModel::NonBooleanConstraint::toString)
       .def_property_readonly(
-          "constraint", &vf::FeatureModel::NonBooleanConstraint::constraint);
+          "constraint", &vf::FeatureModel::NonBooleanConstraint::constraint,
+          R"pbdoc(Get underlying constraint.)pbdoc");
 
   py::enum_<vf::FeatureModel::MixedConstraint::Req>(M, "Req")
       .value("ALL", vf::FeatureModel::MixedConstraint::Req::ALL)
@@ -48,7 +50,8 @@ void init_feature_model_module(py::module &M) {
       .def_property_readonly("exprKind",
                              &vf::FeatureModel::MixedConstraint::exprKind)
       .def_property_readonly("constraint",
-                             &vf::FeatureModel::MixedConstraint::constraint);
+                             &vf::FeatureModel::MixedConstraint::constraint,
+                             R"pbdoc(Get underlying constraint.)pbdoc");
 
   py::class_<vf::FeatureModel>(M, "FeatureModel")
       .def_property_readonly(
