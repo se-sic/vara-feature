@@ -972,17 +972,21 @@ private:
     if (F.getKind() == FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
       FeatureTreeNode *Parent = F.getParent();
       auto *ParentFeature = llvm::dyn_cast<Feature, FeatureTreeNode>(Parent);
-#undef NDEBUG
-#include <cassert>
-      assert(ParentFeature != nullptr);
+      if (ParentFeature == nullptr) {
+        // The Parent of a Relationship should always be a Feature
+        abort();
+      }
       ParentFeature = FM->getFeature(ParentFeature->getName());
       Relationship *Base = *ParentFeature->getChildren<Relationship>(0).begin();
       Base = *Base->getChildren<Relationship>(0).begin();
       return Base;
     }
     auto *CastF = llvm::dyn_cast<Feature, FeatureTreeNode>(&F);
-    assert(CastF != nullptr);
-#define NDEBUG
+    if (CastF == nullptr) {
+      // There are only Features and Relationship nodes if F was not a
+      // Relationship it has to be a Feature
+      abort();
+    }
     return FM->getFeature(CastF->getName());
   }
 
