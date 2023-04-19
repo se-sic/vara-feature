@@ -85,6 +85,7 @@ $(function() {
 <code>#include &quot;<a class="el" href="Feature_8h_source.html">vara/Feature/Feature.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Relationship_8h_source.html">vara/Feature/Relationship.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Result_8h_source.html">vara/Utils/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="UniqueIterator_8h_source.html">vara/Utils/UniqueIterator.h</a>&quot;</code><br />
 <code>#include &quot;llvm/ADT/SmallSet.h&quot;</code><br />
 <code>#include &quot;llvm/ADT/StringMap.h&quot;</code><br />
 <code>#include &quot;llvm/Support/GraphWriter.h&quot;</code><br />
@@ -97,50 +98,51 @@ Include dependency graph for FeatureModel.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="FeatureModel_8h__incl.png" border="0" usemap="#include_2vara_2Feature_2FeatureModel_8h" alt=""/></div>
 <map name="include_2vara_2Feature_2FeatureModel_8h" id="include_2vara_2Feature_2FeatureModel_8h">
-<area shape="rect" title=" " alt="" coords="2499,5,2654,47"/>
-<area shape="rect" href="Constraint_8h.html" title=" " alt="" coords="179,177,366,203"/>
-<area shape="rect" title=" " alt="" coords="5,348,65,375"/>
-<area shape="rect" href="Feature_2Error_8h.html" title=" " alt="" coords="2445,95,2596,121"/>
-<area shape="rect" href="Result_8h.html" title=" " alt="" coords="2720,177,2863,203"/>
-<area shape="rect" href="Feature_8h.html" title=" " alt="" coords="840,95,1009,121"/>
-<area shape="rect" title=" " alt="" coords="2237,266,2393,293"/>
-<area shape="rect" href="Relationship_8h.html" title=" " alt="" coords="1516,95,1717,121"/>
-<area shape="rect" title=" " alt="" coords="2672,95,2836,121"/>
-<area shape="rect" title=" " alt="" coords="2860,95,3059,121"/>
-<area shape="rect" title=" " alt="" coords="3082,95,3167,121"/>
-<area shape="rect" title=" " alt="" coords="3191,95,3266,121"/>
-<area shape="rect" title=" " alt="" coords="3291,95,3353,121"/>
-<area shape="rect" title=" " alt="" coords="698,266,855,293"/>
-<area shape="rect" title=" " alt="" coords="271,348,490,375"/>
-<area shape="rect" title=" " alt="" coords="2705,348,2774,375"/>
-<area shape="rect" title=" " alt="" coords="225,266,302,293"/>
-<area shape="rect" title=" " alt="" coords="90,348,165,375"/>
-<area shape="rect" title=" " alt="" coords="189,348,247,375"/>
-<area shape="rect" title=" " alt="" coords="931,266,999,293"/>
-<area shape="rect" href="VariantUtil_8h.html" title=" " alt="" coords="2971,266,3142,293"/>
-<area shape="rect" title=" " alt="" coords="2417,266,2624,293"/>
-<area shape="rect" title=" " alt="" coords="2699,266,2779,293"/>
-<area shape="rect" title=" " alt="" coords="2855,266,2947,293"/>
-<area shape="rect" title=" " alt="" coords="3027,348,3086,375"/>
-<area shape="rect" href="FeatureSourceRange_8h.html" title=" " alt="" coords="1075,259,1276,300"/>
-<area shape="rect" href="FeatureTreeNode_8h.html" title=" " alt="" coords="1525,169,1709,211"/>
-<area shape="rect" title=" " alt="" coords="2023,266,2213,293"/>
-<area shape="rect" title=" " alt="" coords="1351,266,1490,293"/>
-<area shape="rect" title=" " alt="" coords="1514,266,1634,293"/>
-<area shape="rect" title=" " alt="" coords="1874,266,1917,293"/>
-<area shape="rect" title=" " alt="" coords="1941,266,1999,293"/>
-<area shape="rect" href="StepFunction_8h.html" title=" " alt="" coords="403,177,607,203"/>
-<area shape="rect" title=" " alt="" coords="1087,177,1247,203"/>
-<area shape="rect" title=" " alt="" coords="904,177,1063,203"/>
-<area shape="rect" title=" " alt="" coords="849,348,981,375"/>
-<area shape="rect" title=" " alt="" coords="1005,348,1159,375"/>
-<area shape="rect" title=" " alt="" coords="1183,348,1352,375"/>
-<area shape="rect" title=" " alt="" coords="1377,348,1558,375"/>
-<area shape="rect" title=" " alt="" coords="1582,348,1657,375"/>
-<area shape="rect" title=" " alt="" coords="771,348,825,375"/>
-<area shape="rect" title=" " alt="" coords="1658,266,1850,293"/>
-<area shape="rect" title=" " alt="" coords="463,266,674,293"/>
-<area shape="rect" title=" " alt="" coords="377,266,440,293"/>
+<area shape="rect" title=" " alt="" coords="1911,5,2065,47"/>
+<area shape="rect" href="Constraint_8h.html" title=" " alt="" coords="759,177,945,203"/>
+<area shape="rect" title=" " alt="" coords="1902,348,1962,375"/>
+<area shape="rect" href="Feature_2Error_8h.html" title=" " alt="" coords="470,95,621,121"/>
+<area shape="rect" href="Result_8h.html" title=" " alt="" coords="326,177,469,203"/>
+<area shape="rect" href="Feature_8h.html" title=" " alt="" coords="1903,95,2073,121"/>
+<area shape="rect" title=" " alt="" coords="2151,266,2307,293"/>
+<area shape="rect" href="Relationship_8h.html" title=" " alt="" coords="2097,95,2298,121"/>
+<area shape="rect" href="UniqueIterator_8h.html" title=" " alt="" coords="5,177,200,203"/>
+<area shape="rect" title=" " alt="" coords="2322,95,2486,121"/>
+<area shape="rect" title=" " alt="" coords="2510,95,2709,121"/>
+<area shape="rect" title=" " alt="" coords="2732,95,2817,121"/>
+<area shape="rect" title=" " alt="" coords="2841,95,2916,121"/>
+<area shape="rect" title=" " alt="" coords="2941,95,3003,121"/>
+<area shape="rect" title=" " alt="" coords="1969,266,2127,293"/>
+<area shape="rect" title=" " alt="" coords="748,348,967,375"/>
+<area shape="rect" title=" " alt="" coords="417,348,487,375"/>
+<area shape="rect" title=" " alt="" coords="885,266,963,293"/>
+<area shape="rect" title=" " alt="" coords="567,348,641,375"/>
+<area shape="rect" title=" " alt="" coords="665,348,724,375"/>
+<area shape="rect" title=" " alt="" coords="793,266,861,293"/>
+<area shape="rect" href="VariantUtil_8h.html" title=" " alt="" coords="189,266,360,293"/>
+<area shape="rect" title=" " alt="" coords="1687,266,1894,293"/>
+<area shape="rect" title=" " alt="" coords="435,266,515,293"/>
+<area shape="rect" title=" " alt="" coords="73,266,165,293"/>
+<area shape="rect" title=" " alt="" coords="245,348,304,375"/>
+<area shape="rect" href="FeatureSourceRange_8h.html" title=" " alt="" coords="1038,259,1239,300"/>
+<area shape="rect" href="FeatureTreeNode_8h.html" title=" " alt="" coords="2076,169,2260,211"/>
+<area shape="rect" title=" " alt="" coords="2599,266,2790,293"/>
+<area shape="rect" title=" " alt="" coords="2815,266,2953,293"/>
+<area shape="rect" title=" " alt="" coords="2977,266,3097,293"/>
+<area shape="rect" title=" " alt="" coords="3121,266,3164,293"/>
+<area shape="rect" title=" " alt="" coords="3189,266,3246,293"/>
+<area shape="rect" href="StepFunction_8h.html" title=" " alt="" coords="1233,177,1437,203"/>
+<area shape="rect" title=" " alt="" coords="2721,177,2881,203"/>
+<area shape="rect" title=" " alt="" coords="2538,177,2697,203"/>
+<area shape="rect" title=" " alt="" coords="991,348,1123,375"/>
+<area shape="rect" title=" " alt="" coords="1147,348,1301,375"/>
+<area shape="rect" title=" " alt="" coords="1325,348,1494,375"/>
+<area shape="rect" title=" " alt="" coords="1519,348,1700,375"/>
+<area shape="rect" title=" " alt="" coords="1724,348,1799,375"/>
+<area shape="rect" title=" " alt="" coords="1823,348,1878,375"/>
+<area shape="rect" title=" " alt="" coords="2332,266,2524,293"/>
+<area shape="rect" title=" " alt="" coords="1401,266,1612,293"/>
+<area shape="rect" title=" " alt="" coords="1315,266,1378,293"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -220,7 +222,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 27 2023 09:06:48 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 19 2023 07:57:56 for vara-feature by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
