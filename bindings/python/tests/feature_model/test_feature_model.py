@@ -148,6 +148,23 @@ class TestFeatureModelStatic(unittest.TestCase):
         self.assertEqual(
             test_merged.get_feature("Z").parent().name.str(), "root")
 
+    def test_boolean_constraints(self):
+        """ Check if we can access boolean constraints. """
+        *_, c = iter(self.fm.booleanConstraints)
+        self.assertEqual(str(c), "(A | B)")
+
+    def test_non_boolean_constraints(self):
+        """ Check if we can access non-boolean constraints. """
+        *_, c = iter(self.fm.nonBooleanConstraints)
+        self.assertEqual(str(c), "(A + B)")
+
+    def test_mixed_constraints(self):
+        """ Check if we can access mixed constraints. """
+        *_, c = iter(self.fm.mixedConstraints)
+        self.assertEqual(c.req, FM.Req.ALL)
+        self.assertEqual(c.exprKind, FM.ExprKind.POS)
+        self.assertEqual(str(c), "((A * B) = 0)")
+
 
 class TestFeatureModelModifications(unittest.TestCase):
     """

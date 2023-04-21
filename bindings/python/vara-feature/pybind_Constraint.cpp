@@ -8,7 +8,8 @@ namespace py = pybind11;
 
 void init_constraint_module_constraint(py::module &M) {
   py::class_<vf::Constraint>(M, "Constraint")
-      .def("__str__", &vf::Constraint::toString);
+      .def("__str__", &vf::Constraint::toString)
+      .def("clone", &vf::Constraint::clone);
 }
 
 void init_constraint_module_constraint_builder(py::module &M) {

@@ -84,4 +84,13 @@
       <values>1;5;9</values>
     </configurationOption>
   </numericOptions>
+  <booleanConstraints>
+    <constraint>(A | B)</constraint>
+  </booleanConstraints>
+  <nonBooleanConstraints>
+    <constraint>(A + B)</constraint>
+  </nonBooleanConstraints>
+  <mixedConstraints>
+    <constraint req="all" exprKind="pos">((A * B) = 0)</constraint>
+  </mixedConstraints>
 </vm>
