@@ -99,7 +99,7 @@ TEST(FeatureModelBuilder, addOrConstraint) {
   ASSERT_TRUE(FM);
 
   EXPECT_EQ(
-      (*FM->booleanConstraints().begin())->constraint()->getRoot()->toString(),
+      FM->booleanConstraints().begin()->constraint()->getRoot()->toString(),
       Expected);
   EXPECT_EQ(
       (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
@@ -122,11 +122,9 @@ TEST(FeatureModelBuilder, addNonBooleanConstraint) {
   std::unique_ptr<const FeatureModel> FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
 
-  EXPECT_EQ((*FM->nonBooleanConstraints().begin())
-                ->constraint()
-                ->getRoot()
-                ->toString(),
-            Expected);
+  EXPECT_EQ(
+      FM->nonBooleanConstraints().begin()->constraint()->getRoot()->toString(),
+      Expected);
   EXPECT_EQ(
       (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),
       Expected);
@@ -152,12 +150,11 @@ TEST(FeatureModelBuilder, addMixedConstraint) {
   std::unique_ptr<const FeatureModel> FM = B.buildFeatureModel();
   ASSERT_TRUE(FM);
 
-  EXPECT_EQ(
-      (*FM->mixedConstraints().begin())->constraint()->getRoot()->toString(),
-      Expected);
-  EXPECT_EQ((*FM->mixedConstraints().begin())->req(),
+  EXPECT_EQ(FM->mixedConstraints().begin()->constraint()->getRoot()->toString(),
+            Expected);
+  EXPECT_EQ(FM->mixedConstraints().begin()->req(),
             FeatureModel::MixedConstraint::Req::ALL);
-  EXPECT_EQ((*FM->mixedConstraints().begin())->exprKind(),
+  EXPECT_EQ(FM->mixedConstraints().begin()->exprKind(),
             FeatureModel::MixedConstraint::ExprKind::POS);
   EXPECT_EQ(
       (*FM->getFeature("a")->constraints().begin())->getRoot()->toString(),

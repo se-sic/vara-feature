@@ -1,5 +1,5 @@
 <!ELEMENT vm (binaryOptions, numericOptions?, booleanConstraints?, nonBooleanConstraints?, mixedConstraints?)>
-<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED>
+<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED commit CDATA #IMPLIED>
 <!ELEMENT binaryOptions (configurationOption*)>
 <!ELEMENT numericOptions (configurationOption*)>
 <!ELEMENT booleanConstraints (constraint*)>

@@ -13,6 +13,46 @@ namespace vf = vara::feature;
 namespace py = pybind11;
 
 void init_feature_model_module(py::module &M) {
+  py::class_<vf::FeatureModel::BooleanConstraint>(M, "BooleanConstraint")
+      .def(py::init([](vf::Constraint &C) {
+        return std::make_unique<vf::FeatureModel::BooleanConstraint>(C.clone());
+      }))
+      .def("__str__", &vf::FeatureModel::BooleanConstraint::toString)
+      .def_property_readonly("constraint",
+                             &vf::FeatureModel::BooleanConstraint::constraint,
+                             R"pbdoc(Get underlying constraint.)pbdoc");
+
+  py::class_<vf::FeatureModel::NonBooleanConstraint>(M, "NonBooleanConstraint")
+      .def(py::init([](vf::Constraint &C) {
+        return std::make_unique<vf::FeatureModel::NonBooleanConstraint>(
+            C.clone());
+      }))
+      .def("__str__", &vf::FeatureModel::NonBooleanConstraint::toString)
+      .def_property_readonly(
+          "constraint", &vf::FeatureModel::NonBooleanConstraint::constraint,
+          R"pbdoc(Get underlying constraint.)pbdoc");
+
+  py::enum_<vf::FeatureModel::MixedConstraint::Req>(M, "Req")
+      .value("ALL", vf::FeatureModel::MixedConstraint::Req::ALL)
+      .value("NONE", vf::FeatureModel::MixedConstraint::Req::NONE);
+  py::enum_<vf::FeatureModel::MixedConstraint::ExprKind>(M, "ExprKind")
+      .value("POS", vf::FeatureModel::MixedConstraint::ExprKind::POS)
+      .value("NEG", vf::FeatureModel::MixedConstraint::ExprKind::NEG);
+  py::class_<vf::FeatureModel::MixedConstraint>(M, "MixedConstraint")
+      .def(py::init([](vf::Constraint &C,
+                       vf::FeatureModel::MixedConstraint::Req R,
+                       vf::FeatureModel::MixedConstraint::ExprKind E) {
+        return std::make_unique<vf::FeatureModel::MixedConstraint>(C.clone(), R,
+                                                                   E);
+      }))
+      .def("__str__", &vf::FeatureModel::MixedConstraint::toString)
+      .def_property_readonly("req", &vf::FeatureModel::MixedConstraint::req)
+      .def_property_readonly("exprKind",
+                             &vf::FeatureModel::MixedConstraint::exprKind)
+      .def_property_readonly("constraint",
+                             &vf::FeatureModel::MixedConstraint::constraint,
+                             R"pbdoc(Get underlying constraint.)pbdoc");
+
   py::class_<vf::FeatureModel>(M, "FeatureModel")
       .def_property_readonly(
           "name", &vf::FeatureModel::getName,
@@ -99,7 +139,24 @@ void init_feature_model_module(py::module &M) {
           [](const vf::FeatureModel &FM) {
             return py::make_iterator(FM.begin(), FM.end());
           },
-          py::keep_alive<0, 1>());
+          py::keep_alive<0, 1>())
+      .def_property_readonly("booleanConstraints",
+                             [](const vf::FeatureModel &FM) {
+                               return py::make_iterator(
+                                   FM.booleanConstraints().begin(),
+                                   FM.booleanConstraints().end());
+                             })
+      .def_property_readonly("nonBooleanConstraints",
+                             [](const vf::FeatureModel &FM) {
+                               return py::make_iterator(
+                                   FM.nonBooleanConstraints().begin(),
+                                   FM.nonBooleanConstraints().end());
+                             })
+      .def_property_readonly(
+          "mixedConstraints", [](const vf::FeatureModel &FM) {
+            return py::make_iterator(FM.mixedConstraints().begin(),
+                                     FM.mixedConstraints().end());
+          });
   M.def(
       "loadFeatureModel",
       [](const std::filesystem::path &Path) {
