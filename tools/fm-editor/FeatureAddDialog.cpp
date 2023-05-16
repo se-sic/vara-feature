@@ -63,7 +63,6 @@ std::unique_ptr<Feature> FeatureAddDialog::getFeature() {
   const bool Optional = isOptional();
   const std::string OutputString = getOutputString().toStdString();
   switch (getFeatureKind()) {
-
   case Feature::FeatureKind::FK_BINARY:
     return std::make_unique<vara::feature::BinaryFeature>(
         Name, Optional, std::vector<vara::feature::FeatureSourceRange>(),
@@ -82,6 +81,7 @@ std::unique_ptr<Feature> FeatureAddDialog::getNumericFeature() const {
   const std::string OutputString = getOutputString().toStdString();
   std::unique_ptr<vara::feature::StepFunction> SF{};
   vara::feature::NumericFeature::ValuesVariantType ValueRange;
+
   if (range->isChecked()) {
     ValueRange = vara::feature::NumericFeature::ValueRangeType(min->value(),
                                                                max->value());

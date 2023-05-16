@@ -3,7 +3,7 @@
 #include <QApplication>
 
 int main(int argc, char **argv) {
-  QApplication const App(argc, argv);
+  const QApplication App(argc, argv);
   FeatureModelEditor W;
   W.show();
   return QApplication::exec();

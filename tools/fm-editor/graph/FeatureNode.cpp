@@ -31,14 +31,14 @@ std::vector<FeatureEdge *> FeatureNode::children() { return ChildEdges; }
 FeatureEdge *FeatureNode::parent() { return ParentEdge; }
 
 QRectF FeatureNode::boundingRect() const {
-  qreal const Adjust = 2;
-  int const W = width();
+  const qreal Adjust = 2;
+  const int W = width();
   return {-W / 2.0 - Adjust, -10 - Adjust, W + Adjust, 23 + Adjust};
 }
 
 QPainterPath FeatureNode::shape() const {
   QPainterPath Path;
-  int const W = width();
+  const int W = width();
   Path.addRect(-W / 2.0, -10, W, 20);
   return Path;
 }
@@ -105,8 +105,7 @@ void FeatureNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) {
 void FeatureNode::inspect() { emit(inspectSource(Feature)); }
 
 int FeatureNode::width() const {
-  auto Name = Feature->getName();
-  return 15 + 5 * int(Name.str().length());
+  return 15 + 5 * int(Feature->getName().size());
 }
 
 int FeatureNode::childrenWidth() const {

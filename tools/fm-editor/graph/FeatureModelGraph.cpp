@@ -75,6 +75,7 @@ int FeatureModelGraph::positionRec(const int CurrentDepth,
   if (Children.empty()) {
     return CurrentDepth - 1;
   }
+
   int MaxDepth = CurrentDepth;
   auto NextOffset = Offset;
   for (FeatureNode *Node : Children) {
@@ -116,10 +117,10 @@ void FeatureModelGraph::drawBackground(QPainter *Painter, const QRectF &Rect) {
   Q_UNUSED(Rect)
 
   // Shadow
-  QRectF const SceneRect = this->sceneRect();
-  QRectF const RightShadow(SceneRect.right(), SceneRect.top() + 5, 5,
+  const QRectF SceneRect = this->sceneRect();
+  const QRectF RightShadow(SceneRect.right(), SceneRect.top() + 5, 5,
                            SceneRect.height());
-  QRectF const BottomShadow(SceneRect.left() + 5, SceneRect.bottom(),
+  const QRectF BottomShadow(SceneRect.left() + 5, SceneRect.bottom(),
                             SceneRect.width(), 5);
   if (RightShadow.intersects(Rect) || RightShadow.contains(Rect)) {
     Painter->fillRect(RightShadow, Qt::darkGray);
@@ -145,7 +146,7 @@ void FeatureModelGraph::drawBackground(QPainter *Painter, const QRectF &Rect) {
 }
 
 void FeatureModelGraph::scaleView(qreal ScaleFactor) {
-  qreal const Factor = transform()
+  const qreal Factor = transform()
                            .scale(ScaleFactor, ScaleFactor)
                            .mapRect(QRectF(0, 0, 1, 1))
                            .width();
@@ -174,11 +175,12 @@ FeatureNode *FeatureModelGraph::addNode(Feature *Feature, FeatureNode *Parent) {
                  [](FeatureEdge *Edge) { return Edge->targetNode(); });
   positionRec(1, NextChildren, 5);
   EntryNode->setPos(EntryNode->childrenWidth() / 2.0, 10);
+  
   return NewNodeRaw;
 }
 
 FeatureNode *FeatureModelGraph::getNode(std::string Name) {
-  auto It = std::find_if(Nodes.begin(), Nodes.end(), [&Name](auto const &Node) {
+  auto It = std::find_if(Nodes.begin(), Nodes.end(), [&Name](const auto &Node) {
     return Node->getName() == Name;
   });
   if (It != Nodes.end()) {
@@ -211,6 +213,5 @@ void FeatureModelGraph::deleteNode(bool Recursive, FeatureNode *Node) {
 
 void FeatureModelGraph::deleteNode(bool Recursive,
                                    vara::feature::Feature *Feature) {
-  auto *Node = getNode(Feature->getName().str());
-  deleteNode(Recursive, Node);
+  deleteNode(Recursive, getNode(Feature->getName().str()));
 }

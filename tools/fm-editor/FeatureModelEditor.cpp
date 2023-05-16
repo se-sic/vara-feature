@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QTextStream>
+
 using Transaction = vara::feature::FeatureModelTransaction<
     vara::feature::detail::ModifyTransactionMode>;
 using vara::feature::Feature;
@@ -35,8 +36,7 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
 
 /// Display the information of a Feature
 void FeatureModelEditor::loadFeature(const vara::feature::Feature *Feature) {
-  auto FeatureString = Feature->toString();
-  Ui->featureInfo->setText(QString::fromStdString(FeatureString));
+  Ui->featureInfo->setText(QString::fromStdString(Feature->toString()));
 }
 
 /// Get a Feature from an Index of the TreeView and display its information.
@@ -200,6 +200,7 @@ void FeatureModelEditor::inspectFeatureSources(
   }
 #endif
 }
+
 /// Create the Context menu for inspecting sources in the tree view
 ///
 /// \param Pos Position of the cursor used to find the clicked item
@@ -236,7 +237,6 @@ void FeatureModelEditor::loadSource(const QString &RelativePath) {
     }
   }
 }
-
 void setCursorLineAndColumn(QTextCursor &Cursor, int Line, int Col,
                             QTextCursor::MoveMode Mode) {
   QTextBlock const B = Cursor.document()->findBlockByLineNumber(Line);
@@ -278,10 +278,10 @@ void FeatureModelEditor::addSourceFile() {
 void FeatureModelEditor::addSource() {
   auto *TextEdit = Ui->textEdit;
   auto Cursor = TextEdit->textCursor();
-  int const Start = Cursor.selectionStart();
-  int const End = Cursor.selectionEnd();
+  const int Start = Cursor.selectionStart();
+  const int End = Cursor.selectionEnd();
   Cursor.movePosition(QTextCursor::MoveOperation::StartOfLine);
-  int const LineStart = Cursor.position();
+  const int LineStart = Cursor.position();
   int Lines = 1;
   auto Block = Cursor.block();
   while (Cursor.position() > Block.position()) {

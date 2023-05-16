@@ -15,8 +15,8 @@ public:
     Items.push_back(std::move(UniqueRoot));
     buildRecursive(RootItem);
   }
-
   ~FeatureTreeViewModel() override { std::destroy(Items.begin(), Items.end()); }
+
   std::vector<std::unique_ptr<FeatureTreeItem>> *getItems();
   [[nodiscard]] QVariant data(const QModelIndex &Index,
                               int Role = Qt::DisplayRole) const override;
@@ -58,7 +58,7 @@ private:
         Items.push_back(std::move(Child));
       } else {
         auto Child = FeatureTreeItem::createFeatureTreeItem(
-            dynamic_cast<vara::feature::Feature *>(ChildItem));
+            llvm::dyn_cast<vara::feature::Feature *>(ChildItem));
         Parent->addChild(Child.get());
         Child->setParent(Parent);
         RawChild = Child.get();
@@ -67,6 +67,7 @@ private:
       buildRecursive(RawChild);
     }
   }
+
   vara::feature::FeatureModel *Model;
   FeatureTreeItem *RootItem;
   std::vector<std::unique_ptr<FeatureTreeItem>> Items;

@@ -21,6 +21,7 @@ QT_END_NAMESPACE
 
 class FeatureModelEditor : public QMainWindow {
   Q_OBJECT
+
 public:
   explicit FeatureModelEditor(QWidget *Parent = nullptr);
   ~FeatureModelEditor() override = default;
