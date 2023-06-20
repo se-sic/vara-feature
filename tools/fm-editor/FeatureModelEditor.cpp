@@ -193,8 +193,7 @@ void FeatureModelEditor::inspectFeatureSources(
       QString::fromStdString("Sources for: " + Feature->getName().str()));
   if (Ui->sources->count() == 1) {
     loadSource(Ui->sources->itemText(0));
-  }
-  else {
+  } else {
     Ui->sources->setPlaceholderText("Select File");
   }
 }
@@ -268,7 +267,7 @@ void FeatureModelEditor::addSourceFile() {
         QFileDialog::getOpenFileName(this, tr("Select Source File"), Repository,
                                      tr("C Files (*.c *c++ *.h)"));
     Ui->sources->addItem(Path.mid(Repository.length()));
-    Ui->sources->setCurrentIndex(Ui->sources->count()-1);
+    Ui->sources->setCurrentIndex(Ui->sources->count() - 1);
   }
 }
 

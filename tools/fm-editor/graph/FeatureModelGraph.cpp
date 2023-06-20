@@ -174,7 +174,7 @@ FeatureNode *FeatureModelGraph::addNode(Feature *Feature, FeatureNode *Parent) {
                  [](FeatureEdge *Edge) { return Edge->targetNode(); });
   positionRec(1, NextChildren, 5);
   EntryNode->setPos(EntryNode->childrenWidth() / 2.0, 10);
-  
+
   return NewNodeRaw;
 }
 
