@@ -16,10 +16,9 @@ FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
       EntryNode(new FeatureNode(FeatureModel->getRoot())),
       FeatureModel(FeatureModel) {
 
-  auto *Scene = new QGraphicsScene(this);
+  Scene = std::make_unique<QGraphicsScene>(this);
   Scene->setItemIndexMethod(QGraphicsScene::NoIndex);
-
-  setScene(Scene);
+  setScene(Scene.get());
   setCacheMode(CacheBackground);
   setViewportUpdateMode(BoundingRectViewportUpdate);
   setRenderHint(QPainter::Antialiasing);

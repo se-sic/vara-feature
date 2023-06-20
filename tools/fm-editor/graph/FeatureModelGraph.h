@@ -37,7 +37,6 @@ protected:
 private:
   void reload();
   void buildRec(FeatureNode *CurrentFeatureNode);
-  int TimerId = 0;
   FeatureNode *EntryNode;
   int positionRec(int CurrentDepth, const std::vector<FeatureNode *> &Children,
                   unsigned long Offset);

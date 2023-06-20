@@ -6,7 +6,7 @@
 
 QVariant numericValue(vara::feature::Feature *Item) {
   if (Item->getKind() == vara::feature::Feature::FeatureKind::FK_NUMERIC) {
-    auto *NumItem = llvm::dyn_cast<vara::feature::NumericFeature *>(Item);
+    auto *NumItem = llvm::dyn_cast<vara::feature::NumericFeature>(Item);
     string Result = "[";
     if (std::holds_alternative<vara::feature::NumericFeature::ValueRangeType>(
             NumItem->getValues())) {

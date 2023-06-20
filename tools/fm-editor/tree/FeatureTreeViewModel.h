@@ -58,7 +58,7 @@ private:
         Items.push_back(std::move(Child));
       } else {
         auto Child = FeatureTreeItem::createFeatureTreeItem(
-            llvm::dyn_cast<vara::feature::Feature *>(ChildItem));
+            llvm::dyn_cast<vara::feature::Feature>(ChildItem));
         Parent->addChild(Child.get());
         Child->setParent(Parent);
         RawChild = Child.get();
