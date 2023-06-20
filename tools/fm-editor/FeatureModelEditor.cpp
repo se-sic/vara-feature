@@ -186,9 +186,11 @@ void FeatureModelEditor::inspectFeatureSources(
     Repository = QFileDialog::getExistingDirectory();
   }
   Ui->sources->clear();
+  QSet<QString> Locations = {};
   for (const auto &Source : Feature->getLocations()) {
-    Ui->sources->addItem(QString::fromStdString(Source.getPath().string()));
+    Locations.insert(QString::fromStdString(Source.getPath().string()));
   }
+  Ui->sources->addItems(Locations.values());
   Ui->sourcesLable->setText(
       QString::fromStdString("Sources for: " + Feature->getName().str()));
   if (Ui->sources->count() == 1) {
