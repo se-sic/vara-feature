@@ -14,7 +14,7 @@ class FeatureModelGraph;
 
 class FeatureNode : public QObject, public QGraphicsItem {
   Q_OBJECT
-
+  Q_INTERFACES(QGraphicsItem)
 public:
   void removeChild(FeatureNode *Child);
   FeatureNode(vara::feature::Feature *Feature);
