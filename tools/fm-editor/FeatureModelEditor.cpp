@@ -194,11 +194,9 @@ void FeatureModelEditor::inspectFeatureSources(
   if (Ui->sources->count() == 1) {
     loadSource(Ui->sources->itemText(0));
   }
-#ifdef QT_HAS_SETPLACEHOLDERTEXT
   else {
     Ui->sources->setPlaceholderText("Select File");
   }
-#endif
 }
 
 /// Create the Context menu for inspecting sources in the tree view
