@@ -599,8 +599,9 @@ struct GraphWriter<vara::feature::FeatureModel *> {
         "<<table align=\"center\" valign=\"middle\" border=\"0\" "
         "cellborder=\"0\" "
         "cellpadding=\"5\">{0}{1}{2}</table>>",
-        llvm::formatv("<tr><td><b>{0}</b></td></tr>",
-                      DOT::EscapeString(F->getName().str())),
+        llvm::formatv("<tr><td><b>{0} (Flag: {1})</b></td></tr>",
+                      DOT::EscapeString(F->getName().str()),
+                      F->getOutputString().trim().str()),
         CS.str(), LS.str());
   }
 
