@@ -25,6 +25,7 @@ FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
   setTransformationAnchor(AnchorUnderMouse);
   scale(qreal(0.8), qreal(0.8));
   reload();
+  setDragMode(ScrollHandDrag);
   Scene->setSceneRect(0, 0, EntryNode->childrenWidth() + 100,
                       100 * EntryNode->childrenDepth() + 100);
 }
@@ -149,7 +150,7 @@ void FeatureModelGraph::scaleView(qreal ScaleFactor) {
                            .scale(ScaleFactor, ScaleFactor)
                            .mapRect(QRectF(0, 0, 1, 1))
                            .width();
-  if (Factor < 0.07 || Factor > 100) {
+  if (Factor < 0.3 || Factor > 5) {
     return;
   }
 
