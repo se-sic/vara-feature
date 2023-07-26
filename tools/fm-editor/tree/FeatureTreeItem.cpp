@@ -38,7 +38,7 @@ QVariant locationString(vara::feature::Feature *Item) {
   if (Item->hasLocations()) {
     std::for_each(Locs.begin(), Locs.end(),
                   [&StrS](const vara::feature::FeatureSourceRange &Fsr) {
-                    StrS << llvm::formatv("{0}", Fsr.toString()).str();
+                    StrS << llvm::formatv("{0}; ", Fsr.toString()).str();
                   });
   }
 
