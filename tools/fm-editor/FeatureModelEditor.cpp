@@ -66,8 +66,7 @@ void FeatureModelEditor::clean() {
 void FeatureModelEditor::loadGraph() {
   clean();
   ModelPath = Ui->ModelFile->text();
-  FeatureModel = vara::feature::loadFeatureModel(ModelPath.toStdString());
-  if (!FeatureModel) {
+  if (ModelPath.isEmpty()) {
     QString const Path = QFileDialog::getOpenFileName(
         this, tr("Open Model"), "/home", tr("XML files (*.xml)"));
     if (Path.isEmpty()) {
@@ -75,8 +74,12 @@ void FeatureModelEditor::loadGraph() {
     }
     Ui->ModelFile->setText(Path);
     FeatureModel = vara::feature::loadFeatureModel(Path.toStdString());
+  } else {
+    FeatureModel = vara::feature::loadFeatureModel(ModelPath.toStdString());
   }
-
+  if (!FeatureModel) {
+    return;
+  }
   // create Graph view
   buildGraph();
 
@@ -278,8 +281,11 @@ void FeatureModelEditor::addSourceFile() {
 void FeatureModelEditor::addSource() {
   auto *TextEdit = Ui->textEdit;
   auto Cursor = TextEdit->textCursor();
-  const int Start = Cursor.selectionStart();
-  const int End = Cursor.selectionEnd();
+  int Start = Cursor.selectionStart();
+  int End = Cursor.selectionEnd();
+  if (Start > End) {
+    std::swap(Start, End);
+  }
   Cursor.movePosition(QTextCursor::MoveOperation::StartOfLine);
   const int LineStart = Cursor.position();
   int Lines = 1;
@@ -298,7 +304,7 @@ void FeatureModelEditor::addSource() {
       vara::feature::FeatureSourceRange::FeatureSourceLocation(
           Lines, Start - LineStart + 1),
       vara::feature::FeatureSourceRange::FeatureSourceLocation(
-          Lines, End - LineStart));
+          Lines, End - LineStart + 1));
   auto LocationTransAction = Transaction::openTransaction(*FeatureModel);
   LocationTransAction.addLocation(CurrentFeature, Range);
   LocationTransAction.commit();
