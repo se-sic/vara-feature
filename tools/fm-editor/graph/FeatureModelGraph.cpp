@@ -85,7 +85,7 @@ int FeatureModelGraph::positionRec(const int CurrentDepth,
                    NextChildren.begin(),
                    [](FeatureEdge *Edge) { return Edge->targetNode(); });
     int const Depth = positionRec(CurrentDepth + 1, NextChildren, NextOffset);
-    int Width = Node->childrenWidth() + 5;
+    int Width = Node->childrenWidth();
     Node->setPos(double(NextOffset) + Width / 2.0, 100 * CurrentDepth);
     NextOffset += Width;
     MaxDepth = MaxDepth < Depth ? Depth : MaxDepth;

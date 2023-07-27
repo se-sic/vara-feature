@@ -61,6 +61,7 @@ private:
   vara::feature::Feature *Feature;
   std::unique_ptr<QMenu> ContextMenu;
   void inspect();
+  const int widthAdjust = 10;
 };
 
 #endif // VARA_FEATURE_FEATURENODE_H
