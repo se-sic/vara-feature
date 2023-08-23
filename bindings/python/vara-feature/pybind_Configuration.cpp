@@ -22,12 +22,6 @@ void init_configuration_module(py::module &M) {
           R"pbdoc(Returns the value of the ConfigurationOption as str.)pbdoc");
   py::class_<vf::Configuration>(M, "Configuration")
       .def("__str__", [](vf::Configuration &C) { return C.dumpToString(); })
-      /*.def(
-          "__iter__",
-          [](vf::Configuration &C) {
-            return py::make_iterator(C.begin(), C.end());
-          },
-          py::keep_alive<0, 1>())*/
       .def("getOptions", [](vf::Configuration &C) {
         std::vector<vf::ConfigurationOption> V;
         for (auto &O : C) {
@@ -36,7 +30,6 @@ void init_configuration_module(py::module &M) {
 
         return V;
       });
-
   M.def(
       "getAllConfigs",
       [](vf::FeatureModel &FM) {
