@@ -47,6 +47,8 @@ class CMakeBuild(build_ext):
             '-DPYTHON_EXECUTABLE=' + sys.executable,
             '-DVARA_FEATURE_USE_Z3_SOLVER=True'
         ]
+        if os.path.exists('/lib/x86_64-linux-gnu/libz3.so'):
+            cmake_args.append('-DVARA_FEATURE_BUILD_Z3_SOLVER=False')
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
