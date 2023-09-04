@@ -133,6 +133,7 @@ TEST(FeatureMemberOffset, individualAccessors) {
   EXPECT_EQ(Member.value().className(0), "bar");
   EXPECT_EQ(Member.value().className(1), "foo");
   EXPECT_EQ(Member.value().memberName(), "member");
+  EXPECT_EQ(Member.value().nestingDepth(), 2);
 }
 
 TEST(FeatureMemberOffset, anonymous) {
@@ -143,6 +144,7 @@ TEST(FeatureMemberOffset, anonymous) {
   EXPECT_EQ(Member->toString(), "::member");
   EXPECT_EQ(Member.value().className(), "");
   EXPECT_EQ(Member.value().memberName(), "member");
+  EXPECT_EQ(Member.value().nestingDepth(), 0);
 }
 
 TEST(FeatureMemberOffset, comparison) {

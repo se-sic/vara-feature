@@ -158,6 +158,9 @@ public:
 
     static llvm::SmallVector<llvm::StringRef, 1>
     splitClass(llvm::StringRef Class) {
+      if (Class.empty()) {
+        return {};
+      }
       llvm::SmallVector<llvm::StringRef, 1> Split;
       Class.split(Split, "::");
       return Split;
