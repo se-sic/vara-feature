@@ -116,6 +116,9 @@ public:
         assert(Nested.value() < Class.size());
         return Class[Class.size() - Nested.value() - 1];
       }
+      if (Class.empty()) {
+        return "";
+      }
       std::stringstream StrS;
       StrS << Class[0];
       for (size_t Idx = 1; Idx < Class.size(); ++Idx) {
