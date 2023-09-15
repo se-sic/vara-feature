@@ -13,4 +13,10 @@ pybind11_add_module(
 
 set(LLVM_LINK_COMPONENTS Core Support)
 
-target_link_libraries(vara_feature LINK_PUBLIC VaRAFeature VaRASolver ${STD_FS_LIB})
+target_link_libraries(
+  vara_feature
+  LINK_PUBLIC
+  VaRAFeature
+  VaRASolver
+  ${STD_FS_LIB}
+)
