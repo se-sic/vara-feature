@@ -46,7 +46,7 @@ public slots:
   void loadSource(const QString &RelativePath);
   void createTreeContextMenu(const QPoint &Pos);
   void addSourceFile();
-  void loadFeatureFromIndex(const QModelIndex &Index);
+  void loadFeatureFromSelection(const QItemSelection &Selection);
   void save();
   void featureAddDialog();
   void removeFeature(bool Recursive, vara::feature::Feature *Feature);

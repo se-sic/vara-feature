@@ -40,7 +40,13 @@ void FeatureModelEditor::loadFeature(const vara::feature::Feature *Feature) {
 }
 
 /// Get a Feature from an Index of the TreeView and display its information.
-void FeatureModelEditor::loadFeatureFromIndex(const QModelIndex &Index) {
+void FeatureModelEditor::loadFeatureFromSelection(const QItemSelection &Selection) {
+  if ( Selection.size() != 1 ){
+    return;
+  }
+
+  auto Index = Selection.indexes().at(0);
+
   if (Index.isValid()) {
     auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
                      ->child(Index.row());
@@ -109,12 +115,11 @@ void FeatureModelEditor::buildTree() {
     connect(Item.get(), &FeatureTreeItem::removeFeature, this,
             &FeatureModelEditor::removeFeature);
   }
-  connect(TreeView.get(), &QTreeView::pressed, this,
-          &FeatureModelEditor::loadFeatureFromIndex);
   TreeView->setModel(TreeModel.get());
   TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(TreeView.get(), SIGNAL(customContextMenuRequested(QPoint)), this,
           SLOT(createTreeContextMenu(QPoint)));
+  connect(TreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &FeatureModelEditor::loadFeatureFromSelection);
 }
 
 /// Build the graph view
