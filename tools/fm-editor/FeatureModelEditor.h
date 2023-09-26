@@ -48,6 +48,7 @@ public slots:
   void addSourceFile();
   void loadFeatureFromSelection(const QItemSelection &Selection);
   void save();
+  void saveAs();
   void featureAddDialog();
   void removeFeature(bool Recursive, vara::feature::Feature *Feature);
   void createNewModel();

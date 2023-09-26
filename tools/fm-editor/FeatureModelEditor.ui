@@ -183,6 +183,7 @@
     <addaction name="actionCreateNewFM"/>
     <addaction name="actionAddFeature"/>
     <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
    </widget>
    <addaction name="menuEdit"/>
   </widget>
@@ -212,6 +213,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+S</string>
    </property>
   </action>
  </widget>

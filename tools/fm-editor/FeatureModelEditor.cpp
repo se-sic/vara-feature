@@ -28,6 +28,7 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
   QObject::connect(Ui->actionAddFeature, &QAction::triggered, this,
                    &FeatureModelEditor::featureAddDialog);
   connect(Ui->actionSave, &QAction::triggered, this, &FeatureModelEditor::save);
+  connect(Ui->actionSaveAs, &QAction::triggered, this, &FeatureModelEditor::saveAs);
   connect(Ui->addSource, &QPushButton::pressed, this,
           &FeatureModelEditor::addSource);
   connect(Ui->addSourceFile, &QPushButton::pressed, this,
@@ -79,6 +80,8 @@ void FeatureModelEditor::loadGraph() {
     if (Path.isEmpty()) {
       return;
     }
+
+    ModelPath = SavePath = Path;
     Ui->ModelFile->setText(Path);
     FeatureModel = vara::feature::loadFeatureModel(Path.toStdString());
   } else {
@@ -98,6 +101,7 @@ void FeatureModelEditor::loadGraph() {
   connect(Ui->sources, &QComboBox::currentTextChanged, this,
           &FeatureModelEditor::loadSource);
   Ui->actionSave->setEnabled(true);
+  Ui->actionSaveAs->setEnabled(true);
   Ui->actionAddFeature->setEnabled(true);
 }
 
@@ -178,10 +182,18 @@ void FeatureModelEditor::removeFeature(bool Recursive, Feature *Feature) {
 
 /// Save the current State of the Feature Model
 void FeatureModelEditor::save() {
-  SavePath = QFileDialog::getSaveFileName(this, tr("Save File"), ModelPath,
-                                          tr("XML files (*.xml)"));
+  if(SavePath.isEmpty()){
+    SavePath = QFileDialog::getSaveFileName(this, tr("Save File"), ModelPath,
+                                            tr("XML files (*.xml)"));
+  }
   vara::feature::FeatureModelXmlWriter FMWrite{*FeatureModel};
   FMWrite.writeFeatureModel(SavePath.toStdString());
+}
+
+void FeatureModelEditor::saveAs() {
+  SavePath = QFileDialog::getSaveFileName(this, tr("Save File"), ModelPath,
+                                          tr("XML files (*.xml)"));
+  save();
 }
 
 /// Load the source files of the Feature to be selectable by the user and set
