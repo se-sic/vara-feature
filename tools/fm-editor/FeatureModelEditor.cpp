@@ -288,7 +288,7 @@ void FeatureModelEditor::addSourceFile() {
   if (!Repository.isEmpty()) {
     QString const Path =
         QFileDialog::getOpenFileName(this, tr("Select Source File"), Repository,
-                                     tr("C Files (*.c *c++ *.h)"));
+                                     tr("C Files (*.c *c++ *.h) ;; All Files (*.*)"));
     Ui->sources->addItem(Path.mid(Repository.length()));
     Ui->sources->setCurrentIndex(Ui->sources->count() - 1);
   }
