@@ -32,6 +32,7 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
           &FeatureModelEditor::addSource);
   connect(Ui->addSourceFile, &QPushButton::pressed, this,
           &FeatureModelEditor::addSourceFile);
+  connect(Ui->actionCreateNewFM, &QAction::triggered, this, &FeatureModelEditor::createNewModel);
 }
 
 /// Display the information of a Feature
@@ -314,4 +315,29 @@ void FeatureModelEditor::addSource() {
   LocationTransAction.addLocation(CurrentFeature, Range);
   LocationTransAction.commit();
   markLocation(Range);
+}
+void FeatureModelEditor::createNewModel() {
+  ModelPath = QFileDialog::getSaveFileName(this, tr("Save File"), ".",
+                                                tr("XML files (*.xml)"));
+
+  if(ModelPath.isEmpty()){
+    return;
+  }
+
+  FeatureModel = std::make_unique<vara::feature::FeatureModel>("FeatureModel",
+                                                               std::make_unique<vara::feature::RootFeature>("root"),
+                                                                   fs::path(ModelPath.toStdString()));
+
+  // create Graph view
+  buildGraph();
+
+  // create Tree View
+  buildTree();
+
+  Ui->tabWidget->addTab(Graph.get(), "GraphView");
+  Ui->tabWidget->addTab(TreeView.get(), "TreeView");
+  connect(Ui->sources, &QComboBox::currentTextChanged, this,
+          &FeatureModelEditor::loadSource);
+  Ui->actionSave->setEnabled(true);
+  Ui->actionAddFeature->setEnabled(true);
 }

@@ -50,6 +50,7 @@ public slots:
   void save();
   void featureAddDialog();
   void removeFeature(bool Recursive, vara::feature::Feature *Feature);
+  void createNewModel();
 
 private:
   void clean();
