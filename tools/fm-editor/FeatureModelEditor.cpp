@@ -301,6 +301,11 @@ void FeatureModelEditor::addSource() {
   auto Cursor = TextEdit->textCursor();
   int Start = Cursor.selectionStart();
   int End = Cursor.selectionEnd();
+
+  if(Start==End){
+    return;
+  }
+
   if (Start > End) {
     std::swap(Start, End);
   }
