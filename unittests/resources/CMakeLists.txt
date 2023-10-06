@@ -39,6 +39,7 @@ set(FEATURE_LIB_TEST_FILES
     xml/test_output_string.xml
     xml/test_revision_range.xml
     xml/test_step_function.xml
+    xml/test_three_optional_features.xml
     xml/test_with_whitespaces.xml
     yml/dune_configs.yml
 )
