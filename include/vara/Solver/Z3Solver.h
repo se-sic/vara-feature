@@ -95,6 +95,12 @@ private:
   /// The instance of the Z3 solver needed for caching the constraints and
   /// variables.
   std::unique_ptr<z3::solver> Solver;
+
+  /// Flag that indicates whether the solver state has been modified by calling
+  /// \c getNextConfiguration.
+  /// This is important for functions that want to enumerate all configurations,
+  /// like \c getAllValidConfigurations or \c getNumberValidConfigurations.
+  bool Dirty = false;
 };
 
 /// \brief This class is a visitor to convert the constraints from the

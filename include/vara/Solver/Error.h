@@ -14,6 +14,7 @@ enum SolverErrorCode {
   ALREADY_PRESENT,
   NOT_ALL_CONSTRAINTS_PROCESSED,
   PARENT_NOT_PRESENT,
+  ILLEGAL_STATE,
 };
 
 } // namespace solver
@@ -51,6 +52,9 @@ public:
       break;
     case vara::solver::PARENT_NOT_PRESENT:
       OS << "Parent feature of a feature is not present.";
+      break;
+    case vara::solver::ILLEGAL_STATE:
+      OS << "The solver is in an illegal state for this operation.";
       break;
     }
     return OS;
