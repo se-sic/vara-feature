@@ -177,11 +177,13 @@ Result<SolverErrorCode, bool> Z3Solver::hasValidConfigurations() {
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getNextConfiguration() {
-  // Add previous configuration as a constraint
+  auto CurrentConfig = getCurrentConfiguration();
+
+  // Add current configuration as a constraint to exclude it for further queries
   excludeCurrentConfiguration();
 
   // Retrieve the next configuration
-  return getCurrentConfiguration();
+  return CurrentConfig;
 }
 
 Result<SolverErrorCode, uint64_t> Z3Solver::getNumberValidConfigurations() {
