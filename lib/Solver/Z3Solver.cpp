@@ -189,8 +189,7 @@ Z3Solver::getNextConfiguration() {
 Result<SolverErrorCode, uint64_t> Z3Solver::getNumberValidConfigurations() {
   Solver->push();
   uint64_t Count = 0;
-  while (Solver->check() == z3::sat) {
-    excludeCurrentConfiguration();
+  while (getNextConfiguration()) {
     Count++;
   }
   Solver->pop();
@@ -202,10 +201,8 @@ Result<SolverErrorCode,
 Z3Solver::getAllValidConfigurations() {
   Solver->push();
   auto Vector = std::vector<std::unique_ptr<vara::feature::Configuration>>();
-  while (Solver->check() == z3::sat) {
-    auto Config = getCurrentConfiguration().extractValue();
-    Vector.insert(Vector.begin(), std::move(Config));
-    excludeCurrentConfiguration();
+  while (auto Config = getNextConfiguration()) {
+    Vector.insert(Vector.begin(), Config.extractValue());
   }
   Solver->pop();
   return Vector;
