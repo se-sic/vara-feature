@@ -231,18 +231,17 @@ Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
   }
   const z3::model M = Solver->get_model();
   z3::expr Expr = Context.bool_val(false);
-  for (auto Iterator = OptionToVariableMapping.begin();
-       Iterator != OptionToVariableMapping.end(); Iterator++) {
-    const z3::expr OptionExpr = *Iterator->getValue();
+  for (auto const& Entry : OptionToVariableMapping) {
+    const z3::expr OptionExpr = *Entry.getValue();
     const z3::expr Value = M.eval(OptionExpr, true);
     if (Value.is_bool()) {
       if (Value.is_true()) {
-        Expr = Expr || !*Iterator->getValue();
+        Expr = Expr || !OptionExpr;
       } else {
-        Expr = Expr || *Iterator->getValue();
+        Expr = Expr || OptionExpr;
       }
     } else {
-      Expr = Expr || (*Iterator->getValue() != Value);
+      Expr = Expr || (OptionExpr != Value);
     }
   }
   Solver->add(Expr);
@@ -257,11 +256,10 @@ Z3Solver::getCurrentConfiguration() {
   const z3::model M = Solver->get_model();
   auto Config = std::make_unique<vara::feature::Configuration>();
 
-  for (auto Iterator = OptionToVariableMapping.begin();
-       Iterator != OptionToVariableMapping.end(); Iterator++) {
-    const z3::expr OptionExpr = *Iterator->getValue();
+  for (auto const& Entry : OptionToVariableMapping) {
+    const z3::expr OptionExpr = *Entry.getValue();
     const z3::expr Value = M.eval(OptionExpr, true);
-    Config->setConfigurationOption(Iterator->getKey(),
+    Config->setConfigurationOption(Entry.getKey(),
                                    llvm::StringRef(Value.to_string()));
   }
   return Config;
