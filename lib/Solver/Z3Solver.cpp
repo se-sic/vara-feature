@@ -183,6 +183,9 @@ Z3Solver::getNextConfiguration() {
     Dirty = true;
   }
 
+  if (Solver->check() == z3::unsat) {
+    return UNSAT;
+  }
   return getCurrentConfiguration();
 }
 
@@ -236,9 +239,6 @@ Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature,
 }
 
 Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
-  if (Solver->check() == z3::unsat) {
-    return UNSAT;
-  }
   const z3::model M = Solver->get_model();
   z3::expr Expr = Context.bool_val(false);
   for (const auto &Entry : OptionToVariableMapping) {
@@ -260,9 +260,6 @@ Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getCurrentConfiguration() {
-  if (Solver->check() == z3::unsat) {
-    return UNSAT;
-  }
   const z3::model M = Solver->get_model();
   auto Config = std::make_unique<vara::feature::Configuration>();
 
