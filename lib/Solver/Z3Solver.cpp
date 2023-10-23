@@ -177,10 +177,10 @@ Result<SolverErrorCode, bool> Z3Solver::hasValidConfigurations() {
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getNextConfiguration() {
-  if (!Dirty) {
-    Dirty = true;
-  } else {
+  if (Dirty) {
     excludeCurrentConfiguration();
+  } else {
+    Dirty = true;
   }
 
   return getCurrentConfiguration();
@@ -241,7 +241,7 @@ Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
   }
   const z3::model M = Solver->get_model();
   z3::expr Expr = Context.bool_val(false);
-  for (auto const &Entry : OptionToVariableMapping) {
+  for (const auto &Entry : OptionToVariableMapping) {
     const z3::expr OptionExpr = *Entry.getValue();
     const z3::expr Value = M.eval(OptionExpr, true);
     if (Value.is_bool()) {
@@ -266,7 +266,7 @@ Z3Solver::getCurrentConfiguration() {
   const z3::model M = Solver->get_model();
   auto Config = std::make_unique<vara::feature::Configuration>();
 
-  for (auto const &Entry : OptionToVariableMapping) {
+  for (const auto &Entry : OptionToVariableMapping) {
     const z3::expr OptionExpr = *Entry.getValue();
     const z3::expr Value = M.eval(OptionExpr, true);
     Config->setConfigurationOption(Entry.getKey(),
