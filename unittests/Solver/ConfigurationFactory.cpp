@@ -72,6 +72,25 @@ TEST(ConfigurationFactory, GetAllConfigurations2) {
   EXPECT_EQ(Configs.size(), UniqueConfigs.size());
 }
 
+TEST(ConfigurationFactory, GetAllConfigurations3) {
+  auto FM = feature::loadFeatureModel(
+      getTestResource("test_msmr.xml"));
+  auto ConfigResult = ConfigurationFactory::getAllConfigs(*FM);
+  EXPECT_TRUE(ConfigResult);
+  auto Configs = ConfigResult.extractValue();
+
+  EXPECT_EQ(Configs.size(), 16);
+
+  auto ConfigsStrings = std::vector<string>();
+  for (auto &config : Configs) {
+    ConfigsStrings.push_back(config.get()->dumpToString());
+  }
+
+  auto UniqueConfigs =
+      std::set<string>(ConfigsStrings.begin(), ConfigsStrings.end());
+  EXPECT_EQ(Configs.size(), UniqueConfigs.size());
+}
+
 TEST(ConfigurationFactory, GetNConfigurations) {
   auto FM = getFeatureModel();
   auto ConfigResult = ConfigurationFactory::getNConfigs(*FM, 100);
