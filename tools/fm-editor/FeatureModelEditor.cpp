@@ -28,12 +28,14 @@ FeatureModelEditor::FeatureModelEditor(QWidget *Parent)
   QObject::connect(Ui->actionAddFeature, &QAction::triggered, this,
                    &FeatureModelEditor::featureAddDialog);
   connect(Ui->actionSave, &QAction::triggered, this, &FeatureModelEditor::save);
-  connect(Ui->actionSaveAs, &QAction::triggered, this, &FeatureModelEditor::saveAs);
+  connect(Ui->actionSaveAs, &QAction::triggered, this,
+          &FeatureModelEditor::saveAs);
   connect(Ui->addSource, &QPushButton::pressed, this,
           &FeatureModelEditor::addSource);
   connect(Ui->addSourceFile, &QPushButton::pressed, this,
           &FeatureModelEditor::addSourceFile);
-  connect(Ui->actionCreateNewFM, &QAction::triggered, this, &FeatureModelEditor::createNewModel);
+  connect(Ui->actionCreateNewFM, &QAction::triggered, this,
+          &FeatureModelEditor::createNewModel);
 }
 
 /// Display the information of a Feature
@@ -42,8 +44,9 @@ void FeatureModelEditor::loadFeature(const vara::feature::Feature *Feature) {
 }
 
 /// Get a Feature from an Index of the TreeView and display its information.
-void FeatureModelEditor::loadFeatureFromSelection(const QItemSelection &Selection) {
-  if ( Selection.size() != 1 ){
+void FeatureModelEditor::loadFeatureFromSelection(
+    const QItemSelection &Selection) {
+  if (Selection.size() != 1) {
     return;
   }
 
@@ -76,7 +79,9 @@ void FeatureModelEditor::loadGraph() {
   ModelPath = Ui->ModelFile->text();
   if (ModelPath.isEmpty()) {
     QString const Path = QFileDialog::getOpenFileName(
-        this, tr("Open Model"), "/home", tr("XML files (*.xml)"));
+        this, tr("Open Model"),
+        QString::fromStdString(std::filesystem::current_path().string()),
+        tr("XML files (*.xml)"));
     if (Path.isEmpty()) {
       return;
     }
@@ -124,16 +129,17 @@ void FeatureModelEditor::buildTree() {
   TreeView->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(TreeView.get(), SIGNAL(customContextMenuRequested(QPoint)), this,
           SLOT(createTreeContextMenu(QPoint)));
-  connect(TreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &FeatureModelEditor::loadFeatureFromSelection);
+  connect(TreeView->selectionModel(), &QItemSelectionModel::selectionChanged,
+          this, &FeatureModelEditor::loadFeatureFromSelection);
 }
 
 /// Build the graph view
 void FeatureModelEditor::buildGraph() {
   Graph = std::make_unique<FeatureModelGraph>(FeatureModel.get());
   for (auto &Node : *Graph->getNodes()) {
-    QObject::connect(Node.get(), &FeatureNode::clicked, this,
+    QObject::connect(Node, &FeatureNode::clicked, this,
                      &FeatureModelEditor::loadFeature);
-    QObject::connect(Node.get(), &FeatureNode::inspectSource, this,
+    QObject::connect(Node, &FeatureNode::inspectSource, this,
                      &FeatureModelEditor::inspectFeatureSources);
   }
 }
@@ -182,7 +188,7 @@ void FeatureModelEditor::removeFeature(bool Recursive, Feature *Feature) {
 
 /// Save the current State of the Feature Model
 void FeatureModelEditor::save() {
-  if(SavePath.isEmpty()){
+  if (SavePath.isEmpty()) {
     SavePath = QFileDialog::getSaveFileName(this, tr("Save File"), ModelPath,
                                             tr("XML files (*.xml)"));
   }
@@ -191,9 +197,12 @@ void FeatureModelEditor::save() {
 }
 
 void FeatureModelEditor::saveAs() {
-  SavePath = QFileDialog::getSaveFileName(this, tr("Save File"), ModelPath,
-                                          tr("XML files (*.xml)"));
-  save();
+  auto Path = QFileDialog::getSaveFileName(this, tr("Save File"), ModelPath,
+                                           tr("XML files (*.xml)"));
+  if (!Path.isEmpty()) {
+    SavePath = Path;
+    save();
+  }
 }
 
 /// Load the source files of the Feature to be selectable by the user and set
@@ -245,6 +254,7 @@ void FeatureModelEditor::loadSource(const QString &RelativePath) {
   if (File.exists()) {
     File.open(QFile::ReadOnly | QFile::Text);
     QTextStream ReadFile(&File);
+    Ui->textEdit->setLineWrapMode(QTextEdit::LineWrapMode::NoWrap);
     Ui->textEdit->setText(ReadFile.readAll());
     std::vector<vara::feature::FeatureSourceRange> Locations{};
     std::copy_if(
@@ -286,9 +296,9 @@ void FeatureModelEditor::markLocation(
 /// Load a sourcefile to then add a location from it
 void FeatureModelEditor::addSourceFile() {
   if (!Repository.isEmpty()) {
-    QString const Path =
-        QFileDialog::getOpenFileName(this, tr("Select Source File"), Repository,
-                                     tr("C Files (*.c *c++ *.h) ;; All Files (*.*)"));
+    QString const Path = QFileDialog::getOpenFileName(
+        this, tr("Select Source File"), Repository,
+        tr("C Files (*.c *c++ *.h) ;; All Files (*.*)"));
     Ui->sources->addItem(Path.mid(Repository.length()));
     Ui->sources->setCurrentIndex(Ui->sources->count() - 1);
   }
@@ -297,12 +307,16 @@ void FeatureModelEditor::addSourceFile() {
 /// Add the user selected Part of the textedit as a source for the active
 /// Feature
 void FeatureModelEditor::addSource() {
+  if (Ui->sources->currentText().isEmpty()) {
+    return;
+  }
+
   auto *TextEdit = Ui->textEdit;
   auto Cursor = TextEdit->textCursor();
   int Start = Cursor.selectionStart();
   int End = Cursor.selectionEnd();
 
-  if(Start==End){
+  if (Start == End) {
     return;
   }
 
@@ -335,15 +349,15 @@ void FeatureModelEditor::addSource() {
 }
 void FeatureModelEditor::createNewModel() {
   ModelPath = QFileDialog::getSaveFileName(this, tr("Save File"), ".",
-                                                tr("XML files (*.xml)"));
+                                           tr("XML files (*.xml)"));
 
-  if(ModelPath.isEmpty()){
+  if (ModelPath.isEmpty()) {
     return;
   }
 
-  FeatureModel = std::make_unique<vara::feature::FeatureModel>("FeatureModel",
-                                                               std::make_unique<vara::feature::RootFeature>("root"),
-                                                                   fs::path(ModelPath.toStdString()));
+  FeatureModel = std::make_unique<vara::feature::FeatureModel>(
+      "FeatureModel", std::make_unique<vara::feature::RootFeature>("root"),
+      fs::path(ModelPath.toStdString()));
 
   // create Graph view
   buildGraph();
