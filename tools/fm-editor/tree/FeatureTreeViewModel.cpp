@@ -119,10 +119,12 @@ FeatureTreeViewModel::addFeature(vara::feature::Feature *Feature,
                                  std::string Parent) {
   auto *Item = getItem(std::move(Parent));
   if (Item) {
+    emit(layoutAboutToBeChanged());
     auto NewItem = FeatureTreeItem::createFeatureTreeItem(Feature);
     Item->addChild(NewItem.get());
     auto *NewItemRaw = NewItem.get();
     Items.push_back(std::move(NewItem));
+    emit(layoutChanged());
     return NewItemRaw;
   }
 
