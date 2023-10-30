@@ -41,7 +41,7 @@ private:
   int positionRec(int CurrentDepth, const std::vector<FeatureNode *> &Children,
                   unsigned long Offset);
   vara::feature::FeatureModel *FeatureModel;
-  std::vector<std::unique_ptr<FeatureNode>> Nodes;
+  std::vector<FeatureNode *> Nodes;
   std::unique_ptr<QGraphicsScene> Scene;
 };
 

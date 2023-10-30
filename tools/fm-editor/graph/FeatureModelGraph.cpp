@@ -31,7 +31,7 @@ FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
 }
 
 void FeatureModelGraph::reload() {
-  Nodes.push_back(std::unique_ptr<FeatureNode>(EntryNode));
+  Nodes.push_back(EntryNode);
   auto *Scene = this->scene();
   Scene->clear();
   Scene->addItem(EntryNode);
@@ -49,22 +49,22 @@ void FeatureModelGraph::buildRec(FeatureNode *CurrentFeatureNode) {
   for (auto *Feature :
        CurrentFeatureNode->getFeature()->getChildren<vara::feature::Feature>(
            1)) {
-    auto Node = std::make_unique<FeatureNode>(Feature);
-    auto *Edge = new FeatureEdge(CurrentFeatureNode, Node.get());
+    auto *Node = new FeatureNode(Feature);
+    auto *Edge = new FeatureEdge(CurrentFeatureNode, Node);
     scene()->addItem(Edge);
-    scene()->addItem(Node.get());
-    buildRec(Node.get());
-    Nodes.push_back(std::move(Node));
+    scene()->addItem(Node);
+    Nodes.push_back(Node);
+    buildRec(Node);
   }
   for (auto *Relation : CurrentFeatureNode->getFeature()
                             ->getChildren<vara::feature::Relationship>(1)) {
     for (auto *Feature : Relation->getChildren<vara::feature::Feature>(1)) {
-      auto Node = std::make_unique<FeatureNode>(Feature);
-      auto *Edge = new FeatureEdge(CurrentFeatureNode, Node.get());
+      auto *Node = new FeatureNode(Feature);
+      auto *Edge = new FeatureEdge(CurrentFeatureNode, Node);
       scene()->addItem(Edge);
-      scene()->addItem(Node.get());
-      buildRec(Node.get());
-      Nodes.push_back(std::move(Node));
+      scene()->addItem(Node);
+      buildRec(Node);
+      Nodes.push_back(Node);
     }
   }
 }
@@ -85,7 +85,7 @@ int FeatureModelGraph::positionRec(const int CurrentDepth,
                    NextChildren.begin(),
                    [](FeatureEdge *Edge) { return Edge->targetNode(); });
     int const Depth = positionRec(CurrentDepth + 1, NextChildren, NextOffset);
-    int Width = Node->childrenWidth();
+    int const Width = Node->childrenWidth();
     Node->setPos(double(NextOffset) + Width / 2.0, 100 * CurrentDepth);
     NextOffset += Width;
     MaxDepth = MaxDepth < Depth ? Depth : MaxDepth;
@@ -162,12 +162,11 @@ void FeatureModelGraph::zoomIn() { scaleView(qreal(1.2)); }
 void FeatureModelGraph::zoomOut() { scaleView(1 / qreal(1.2)); }
 
 FeatureNode *FeatureModelGraph::addNode(Feature *Feature, FeatureNode *Parent) {
-  auto NewNode = std::make_unique<FeatureNode>(Feature);
-  auto *NewEdge = new FeatureEdge(Parent, NewNode.get());
+  auto *NewNode = new FeatureNode(Feature);
+  auto *NewEdge = new FeatureEdge(Parent, NewNode);
   scene()->addItem(NewEdge);
-  scene()->addItem(NewNode.get());
-  auto *NewNodeRaw = NewNode.get();
-  Nodes.push_back(std::move(NewNode));
+  scene()->addItem(NewNode);
+  Nodes.push_back(NewNode);
   auto NextChildren = std::vector<FeatureNode *>(EntryNode->children().size());
   auto CurrentChildren = EntryNode->children();
   std::transform(CurrentChildren.begin(), CurrentChildren.end(),
@@ -176,7 +175,7 @@ FeatureNode *FeatureModelGraph::addNode(Feature *Feature, FeatureNode *Parent) {
   positionRec(1, NextChildren, 5);
   EntryNode->setPos(EntryNode->childrenWidth() / 2.0, 10);
 
-  return NewNodeRaw;
+  return NewNode;
 }
 
 FeatureNode *FeatureModelGraph::getNode(std::string Name) {
@@ -184,7 +183,7 @@ FeatureNode *FeatureModelGraph::getNode(std::string Name) {
     return Node->getName() == Name;
   });
   if (It != Nodes.end()) {
-    return It->get();
+    return *It;
   }
 
   return nullptr;
@@ -208,7 +207,7 @@ void FeatureModelGraph::deleteNode(bool Recursive, FeatureNode *Node) {
   scene()->removeItem(Node->parent());
 
   Nodes.erase(std::find_if(Nodes.begin(), Nodes.end(),
-                           [Node](auto &N) { return N.get() == Node; }));
+                           [Node](auto &N) { return N == Node; }));
 }
 
 void FeatureModelGraph::deleteNode(bool Recursive,

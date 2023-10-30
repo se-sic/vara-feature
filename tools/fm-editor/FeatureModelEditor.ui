@@ -177,7 +177,7 @@
      <x>0</x>
      <y>0</y>
      <width>943</width>
-     <height>30</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -224,7 +224,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Save</string>
+    <string>Save As</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+S</string>
