@@ -60,23 +60,16 @@ public:
   Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getCurrentConfiguration() override;
 
-  Result<SolverErrorCode, uint64_t> getNumberValidConfigurations() override;
-
   Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getNextConfiguration() override;
-
-  Result<SolverErrorCode,
-         std::vector<std::unique_ptr<vara::feature::Configuration>>>
-  getAllValidConfigurations() override;
 
 private:
   // The Z3SolverConstraintVisitor is a friend class to access the solver and
   // the context.
   friend class Z3SolverConstraintVisitor;
 
-  /// Exclude the current configuration by adding it as a constraint
-  /// \return an error code in case of error.
-  Result<SolverErrorCode> excludeCurrentConfiguration();
+  /// Exclude the current configuration by adding it as a constraint.
+  void excludeCurrentConfiguration();
 
   /// Processes the constraints of the binary feature and ignores the 'optional'
   /// constraint if the feature is in an alternative group.
@@ -96,11 +89,8 @@ private:
   /// variables.
   std::unique_ptr<z3::solver> Solver;
 
-  /// Flag that indicates whether the solver state has been modified by calling
-  /// \c getNextConfiguration.
-  /// This is important for functions that want to enumerate all configurations,
-  /// like \c getAllValidConfigurations or \c getNumberValidConfigurations.
-  bool Dirty = false;
+  /// The current model of the SAT solver.
+  std::optional<z3::model> CurrentModel;
 };
 
 /// \brief This class is a visitor to convert the constraints from the
