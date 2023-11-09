@@ -2,8 +2,8 @@
 
 #include "z3++.h"
 
-#include "vara/Solver/ConfigurationFactory.h"
 #include "vara/Feature/FeatureModelBuilder.h"
+#include "vara/Solver/ConfigurationFactory.h"
 #include "gtest/gtest.h"
 
 namespace vara::solver {

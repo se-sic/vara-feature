@@ -73,8 +73,7 @@ TEST(ConfigurationFactory, GetAllConfigurations2) {
 }
 
 TEST(ConfigurationFactory, GetAllConfigurations3) {
-  auto FM = feature::loadFeatureModel(
-      getTestResource("test_msmr.xml"));
+  auto FM = feature::loadFeatureModel(getTestResource("test_msmr.xml"));
   auto ConfigResult = ConfigurationFactory::getAllConfigs(*FM);
   EXPECT_TRUE(ConfigResult);
   auto Configs = ConfigResult.extractValue();
