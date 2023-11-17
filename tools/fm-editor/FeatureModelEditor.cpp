@@ -163,6 +163,10 @@ void FeatureModelEditor::featureAddDialogChild(Feature *ParentFeature) {
             &FeatureModelEditor::loadFeature);
     connect(NewNode, &FeatureNode::inspectSource, this,
             &FeatureModelEditor::inspectFeatureSources);
+    connect(NewTreeItem, &FeatureTreeItem::addChildFeature, this,
+            &FeatureModelEditor::featureAddDialogChild);
+    connect(NewTreeItem, &FeatureTreeItem::removeFeature, this,
+            &FeatureModelEditor::removeFeature);
     auto Transaction = vara::feature::FeatureModelTransaction<
         vara::feature::detail::ModifyTransactionMode>::
         openTransaction(*FeatureModel);
@@ -346,17 +350,9 @@ void FeatureModelEditor::addSource() {
   LocationTransAction.commit();
   markLocation(Range);
 }
+
 void FeatureModelEditor::createNewModel() {
-  ModelPath = QFileDialog::getSaveFileName(this, tr("Save File"), ".",
-                                           tr("XML files (*.xml)"));
-
-  if (ModelPath.isEmpty()) {
-    return;
-  }
-
-  FeatureModel = std::make_unique<vara::feature::FeatureModel>(
-      "FeatureModel", std::make_unique<vara::feature::RootFeature>("root"),
-      fs::path(ModelPath.toStdString()));
+  FeatureModel = std::make_unique<vara::feature::FeatureModel>();
 
   // create Graph view
   buildGraph();

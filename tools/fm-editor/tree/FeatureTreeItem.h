@@ -100,9 +100,7 @@ public:
                            &FeatureTreeItemFeature::inspect);
     ContextMenu->addAction("Add Child", this,
                            &FeatureTreeItemFeature::addChild);
-    RemoveAction = std::make_unique<QAction>("Remove");
-    connect(RemoveAction.get(), &QAction::triggered, this,
-            &FeatureTreeItemFeature::remove, Qt::QueuedConnection);
+    ContextMenu->addAction("Delete", this, &FeatureTreeItemFeature::remove);
   }
   ~FeatureTreeItemFeature() override = default;
 
