@@ -177,35 +177,47 @@ Result<SolverErrorCode, bool> Z3Solver::hasValidConfigurations() {
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getNextConfiguration() {
-  // Add previous configuration as a constraint
-  excludeCurrentConfiguration();
+  if (Dirty) {
+    excludeCurrentConfiguration();
+  } else {
+    Dirty = true;
+  }
 
-  // Retrieve the next configuration
+  if (Solver->check() == z3::unsat) {
+    return UNSAT;
+  }
   return getCurrentConfiguration();
 }
 
 Result<SolverErrorCode, uint64_t> Z3Solver::getNumberValidConfigurations() {
+  if (Dirty) {
+    return Error(ILLEGAL_STATE);
+  }
+
   Solver->push();
   uint64_t Count = 0;
-  while (Solver->check() == z3::sat) {
-    excludeCurrentConfiguration();
+  while (getNextConfiguration()) {
     Count++;
   }
   Solver->pop();
+  Dirty = false;
   return Count;
 }
 
 Result<SolverErrorCode,
        std::vector<std::unique_ptr<vara::feature::Configuration>>>
 Z3Solver::getAllValidConfigurations() {
+  if (Dirty) {
+    return Error(ILLEGAL_STATE);
+  }
+
   Solver->push();
   auto Vector = std::vector<std::unique_ptr<vara::feature::Configuration>>();
-  while (Solver->check() == z3::sat) {
-    auto Config = getCurrentConfiguration().extractValue();
-    Vector.insert(Vector.begin(), std::move(Config));
-    excludeCurrentConfiguration();
+  while (auto Config = getNextConfiguration()) {
+    Vector.insert(Vector.begin(), Config.extractValue());
   }
   Solver->pop();
+  Dirty = false;
   return Vector;
 }
 
@@ -227,23 +239,19 @@ Z3Solver::setBinaryFeatureConstraints(const feature::BinaryFeature &Feature,
 }
 
 Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
-  if (Solver->check() == z3::unsat) {
-    return UNSAT;
-  }
   const z3::model M = Solver->get_model();
   z3::expr Expr = Context.bool_val(false);
-  for (auto Iterator = OptionToVariableMapping.begin();
-       Iterator != OptionToVariableMapping.end(); Iterator++) {
-    const z3::expr OptionExpr = *Iterator->getValue();
+  for (const auto &Entry : OptionToVariableMapping) {
+    const z3::expr OptionExpr = *Entry.getValue();
     const z3::expr Value = M.eval(OptionExpr, true);
     if (Value.is_bool()) {
       if (Value.is_true()) {
-        Expr = Expr || !*Iterator->getValue();
+        Expr = Expr || !OptionExpr;
       } else {
-        Expr = Expr || *Iterator->getValue();
+        Expr = Expr || OptionExpr;
       }
     } else {
-      Expr = Expr || (*Iterator->getValue() != Value);
+      Expr = Expr || (OptionExpr != Value);
     }
   }
   Solver->add(Expr);
@@ -252,17 +260,13 @@ Result<SolverErrorCode> Z3Solver::excludeCurrentConfiguration() {
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getCurrentConfiguration() {
-  if (Solver->check() == z3::unsat) {
-    return UNSAT;
-  }
   const z3::model M = Solver->get_model();
   auto Config = std::make_unique<vara::feature::Configuration>();
 
-  for (auto Iterator = OptionToVariableMapping.begin();
-       Iterator != OptionToVariableMapping.end(); Iterator++) {
-    const z3::expr OptionExpr = *Iterator->getValue();
+  for (const auto &Entry : OptionToVariableMapping) {
+    const z3::expr OptionExpr = *Entry.getValue();
     const z3::expr Value = M.eval(OptionExpr, true);
-    Config->setConfigurationOption(Iterator->getKey(),
+    Config->setConfigurationOption(Entry.getKey(),
                                    llvm::StringRef(Value.to_string()));
   }
   return Config;

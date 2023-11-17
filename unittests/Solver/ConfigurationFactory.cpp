@@ -2,6 +2,8 @@
 
 #include "vara/Feature/ConstraintBuilder.h"
 #include "vara/Feature/FeatureModelBuilder.h"
+
+#include "Utils/UnittestHelper.h"
 #include "gtest/gtest.h"
 
 namespace vara::solver {
@@ -49,6 +51,44 @@ TEST(ConfigurationFactory, GetAllConfigurations) {
   auto ConfigResult = ConfigurationFactory::getAllConfigs(*FM);
   EXPECT_TRUE(ConfigResult);
   EXPECT_EQ(ConfigResult.extractValue().size(), 6 * 63);
+}
+
+TEST(ConfigurationFactory, GetAllConfigurations2) {
+  auto FM = feature::loadFeatureModel(
+      getTestResource("test_three_optional_features.xml"));
+  auto ConfigResult = ConfigurationFactory::getAllConfigs(*FM);
+  EXPECT_TRUE(ConfigResult);
+  auto Configs = ConfigResult.extractValue();
+
+  EXPECT_EQ(Configs.size(), 8);
+
+  auto ConfigsStrings = std::vector<string>();
+  for (auto &config : Configs) {
+    ConfigsStrings.push_back(config.get()->dumpToString());
+  }
+
+  auto UniqueConfigs =
+      std::set<string>(ConfigsStrings.begin(), ConfigsStrings.end());
+  EXPECT_EQ(Configs.size(), UniqueConfigs.size());
+}
+
+TEST(ConfigurationFactory, GetAllConfigurations3) {
+  auto FM = feature::loadFeatureModel(
+      getTestResource("test_msmr.xml"));
+  auto ConfigResult = ConfigurationFactory::getAllConfigs(*FM);
+  EXPECT_TRUE(ConfigResult);
+  auto Configs = ConfigResult.extractValue();
+
+  EXPECT_EQ(Configs.size(), 16);
+
+  auto ConfigsStrings = std::vector<string>();
+  for (auto &config : Configs) {
+    ConfigsStrings.push_back(config.get()->dumpToString());
+  }
+
+  auto UniqueConfigs =
+      std::set<string>(ConfigsStrings.begin(), ConfigsStrings.end());
+  EXPECT_EQ(Configs.size(), UniqueConfigs.size());
 }
 
 TEST(ConfigurationFactory, GetNConfigurations) {

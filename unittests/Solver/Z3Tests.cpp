@@ -115,7 +115,7 @@ TEST(Z3Solver, TestGetNextConfiguration) {
   S->addFeature(*FM->getFeature("Foo"));
   S->addFeature(*FM->getFeature("Num1"));
 
-  for (int Count = 0; Count < 3; Count++) {
+  for (int Count = 0; Count < 4; Count++) {
     auto C = S->getNextConfiguration();
     EXPECT_TRUE(C);
     auto Config = C.extractValue();
