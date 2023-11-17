@@ -116,6 +116,9 @@ public:
         assert(Nested.value() < Class.size());
         return Class[Class.size() - Nested.value() - 1];
       }
+      if (Class.empty()) {
+        return "";
+      }
       std::stringstream StrS;
       StrS << Class[0];
       for (size_t Idx = 1; Idx < Class.size(); ++Idx) {
@@ -158,6 +161,9 @@ public:
 
     static llvm::SmallVector<llvm::StringRef, 1>
     splitClass(llvm::StringRef Class) {
+      if (Class.empty()) {
+        return {};
+      }
       llvm::SmallVector<llvm::StringRef, 1> Split;
       Class.split(Split, "::");
       return Split;
