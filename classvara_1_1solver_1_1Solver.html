@@ -124,18 +124,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad68150fe76547de9c3fd31b71f41aab1"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classvara_1_1Result.html">Result</a>&lt; <a class="el" href="namespacevara_1_1solver.html#a0e7ac101241b60cc23e0f9eadac40b91">SolverErrorCode</a>, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1solver_1_1Solver.html#ad68150fe76547de9c3fd31b71f41aab1">hasValidConfigurations</a> ()=0</td></tr>
 <tr class="memdesc:ad68150fe76547de9c3fd31b71f41aab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if the current constraint system (i.e., its features and its constraints) has valid configurations.  <a href="classvara_1_1solver_1_1Solver.html#ad68150fe76547de9c3fd31b71f41aab1">More...</a><br /></td></tr>
 <tr class="separator:ad68150fe76547de9c3fd31b71f41aab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abecc205f69bdfb4a70880ae6c8664563"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classvara_1_1Result.html">Result</a>&lt; <a class="el" href="namespacevara_1_1solver.html#a0e7ac101241b60cc23e0f9eadac40b91">SolverErrorCode</a>, uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1solver_1_1Solver.html#abecc205f69bdfb4a70880ae6c8664563">getNumberValidConfigurations</a> ()=0</td></tr>
-<tr class="memdesc:abecc205f69bdfb4a70880ae6c8664563"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of valid configurations of the current constraint system (i.e., its features and its constraints).  <a href="classvara_1_1solver_1_1Solver.html#abecc205f69bdfb4a70880ae6c8664563">More...</a><br /></td></tr>
-<tr class="separator:abecc205f69bdfb4a70880ae6c8664563"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac113fad2cc32ed062384812730548a5"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classvara_1_1Result.html">Result</a>&lt; <a class="el" href="namespacevara_1_1solver.html#a0e7ac101241b60cc23e0f9eadac40b91">SolverErrorCode</a>, std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1Configuration.html">vara::feature::Configuration</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1solver_1_1Solver.html#aac113fad2cc32ed062384812730548a5">getCurrentConfiguration</a> ()=0</td></tr>
 <tr class="memdesc:aac113fad2cc32ed062384812730548a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current configuration.  <a href="classvara_1_1solver_1_1Solver.html#aac113fad2cc32ed062384812730548a5">More...</a><br /></td></tr>
 <tr class="separator:aac113fad2cc32ed062384812730548a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbf1ad39ea8e085514dbba4482664766"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classvara_1_1Result.html">Result</a>&lt; <a class="el" href="namespacevara_1_1solver.html#a0e7ac101241b60cc23e0f9eadac40b91">SolverErrorCode</a>, std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1Configuration.html">vara::feature::Configuration</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1solver_1_1Solver.html#afbf1ad39ea8e085514dbba4482664766">getNextConfiguration</a> ()=0</td></tr>
 <tr class="memdesc:afbf1ad39ea8e085514dbba4482664766"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method returns the next configuration or an error in case of an error.  <a href="classvara_1_1solver_1_1Solver.html#afbf1ad39ea8e085514dbba4482664766">More...</a><br /></td></tr>
 <tr class="separator:afbf1ad39ea8e085514dbba4482664766"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af70ef877a8849fbf496ecf3316e12098"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classvara_1_1Result.html">Result</a>&lt; <a class="el" href="namespacevara_1_1solver.html#a0e7ac101241b60cc23e0f9eadac40b91">SolverErrorCode</a>, std::vector&lt; std::unique_ptr&lt; <a class="el" href="classvara_1_1feature_1_1Configuration.html">vara::feature::Configuration</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvara_1_1solver_1_1Solver.html#af70ef877a8849fbf496ecf3316e12098">getAllValidConfigurations</a> ()=0</td></tr>
-<tr class="memdesc:af70ef877a8849fbf496ecf3316e12098"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all valid configurations.  <a href="classvara_1_1solver_1_1Solver.html#af70ef877a8849fbf496ecf3316e12098">More...</a><br /></td></tr>
-<tr class="separator:af70ef877a8849fbf496ecf3316e12098"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class represents an interface for solvers. </p>
@@ -461,37 +455,6 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="af70ef877a8849fbf496ecf3316e12098"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af70ef877a8849fbf496ecf3316e12098">&#9670;&nbsp;</a></span>getAllValidConfigurations()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classvara_1_1Result.html">Result</a>&lt;<a class="el" href="namespacevara_1_1solver.html#a0e7ac101241b60cc23e0f9eadac40b91">SolverErrorCode</a>, std::vector&lt;std::unique_ptr&lt;<a class="el" href="classvara_1_1feature_1_1Configuration.html">vara::feature::Configuration</a>&gt; &gt; &gt; vara::solver::Solver::getAllValidConfigurations </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Returns all valid configurations. </p>
-<p>In comparison to <code>getNumberValidConfigurations</code>, this method returns the configurations instead of a number of configurations.</p>
-<dl class="section return"><dt>Returns</dt><dd>an error if an error occurs while retrieving the configurations. Otherwise, it will return the configurations. </dd></dl>
-
-<p>Implemented in <a class="el" href="classvara_1_1solver_1_1Z3Solver.html#acee819ded3325e0f1d0393a92bc579aa">vara::solver::Z3Solver</a>.</p>
-
-</div>
-</div>
 <a id="aac113fad2cc32ed062384812730548a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aac113fad2cc32ed062384812730548a5">&#9670;&nbsp;</a></span>getCurrentConfiguration()</h2>
 
@@ -553,37 +516,6 @@ Public Member Functions</h2></td></tr>
 <p>Implemented in <a class="el" href="classvara_1_1solver_1_1Z3Solver.html#a4a9588859bd095a543edba766a2a3894">vara::solver::Z3Solver</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="ConfigurationFactory_8h_source.html#l00033">vara::solver::ConfigurationIterable::ConfigurationIterator::operator++()</a>.</p>
-
-</div>
-</div>
-<a id="abecc205f69bdfb4a70880ae6c8664563"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abecc205f69bdfb4a70880ae6c8664563">&#9670;&nbsp;</a></span>getNumberValidConfigurations()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classvara_1_1Result.html">Result</a>&lt;<a class="el" href="namespacevara_1_1solver.html#a0e7ac101241b60cc23e0f9eadac40b91">SolverErrorCode</a>, uint64_t&gt; vara::solver::Solver::getNumberValidConfigurations </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Returns the number of valid configurations of the current constraint system (i.e., its features and its constraints). </p>
-<p>In principle, this is a #SAT call (i.e., enumerating all configurations).</p>
-<dl class="section return"><dt>Returns</dt><dd>an error if the number of valid configurations can not be retried. This can be the case if there are still constraints left that were not included into the solver because of missing variables. </dd></dl>
-
-<p>Implemented in <a class="el" href="classvara_1_1solver_1_1Z3Solver.html#a77f128d8fbf083847d5fac7d0839d133">vara::solver::Z3Solver</a>.</p>
 
 </div>
 </div>
@@ -661,7 +593,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Nov 17 2023 09:48:44 for vara-feature by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Fri Nov 17 2023 10:20:14 for vara-feature by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>
