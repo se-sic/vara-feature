@@ -1,4 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classvara_1_1feature_1_1ConstraintVisitor.html" title=" " alt="" coords="5,5,187,47"/>
-<area shape="rect" id="node2" href="$classvara_1_1solver_1_1Z3SolverConstraintVisitor.html" title="This class is a visitor to convert the constraints from the feature model into constraints for Z3." alt="" coords="235,5,467,47"/>
-</map>

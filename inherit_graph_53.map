@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,196,47"/>
+<area shape="rect" id="node1" href="$classvara_1_1solver_1_1Solver.html" title="This class represents an interface for solvers." alt="" coords="5,5,153,32"/>
+<area shape="rect" id="node2" href="$classvara_1_1solver_1_1Z3Solver.html" title="The Z3 solver implementation for handling constraints." alt="" coords="201,5,367,32"/>
 </map>
