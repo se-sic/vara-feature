@@ -9,7 +9,7 @@
 class FeatureTreeViewModel : public QAbstractItemModel {
 public:
   FeatureTreeViewModel(vara::feature::FeatureModel *Model, QObject *Parent)
-      : QAbstractItemModel(Parent), Model(Model) {
+      : QAbstractItemModel(Parent) {
     auto UniqueRoot = FeatureTreeItem::createFeatureTreeItem(Model->getRoot());
     RootItem = UniqueRoot.get();
     Items.push_back(std::move(UniqueRoot));
@@ -67,8 +67,6 @@ private:
       buildRecursive(RawChild);
     }
   }
-
-  vara::feature::FeatureModel *Model;
   FeatureTreeItem *RootItem;
   std::vector<std::unique_ptr<FeatureTreeItem>> Items;
 };

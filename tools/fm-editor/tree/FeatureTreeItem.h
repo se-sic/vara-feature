@@ -16,7 +16,7 @@ class FeatureTreeItem : public QObject {
   Q_OBJECT
 
 public:
-  FeatureTreeItem *child(int Row) {
+  FeatureTreeItem *child(size_t Row) {
     if (Row < 0 || Row > Children.size()) {
 
       return nullptr;
