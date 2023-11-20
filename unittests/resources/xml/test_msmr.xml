@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="SingleLocalSingle" root="root">
+    <binaryOptions>
+        <configurationOption>
+            <name>root</name>
+            <parent></parent>
+            <optional>False</optional>
+        </configurationOption>
+        <configurationOption>
+            <name>Slow</name>
+            <outputString>--slow</outputString>
+            <parent>root</parent>
+            <optional>True</optional>
+        </configurationOption>
+        <configurationOption>
+            <name>Header</name>
+            <outputString>--header</outputString>
+            <parent>root</parent>
+            <optional>True</optional>
+        </configurationOption>
+        <configurationOption>
+            <name>Extern</name>
+            <outputString>--extern</outputString>
+            <parent>root</parent>
+            <optional>True</optional>
+            <locations>
+                <sourceRange category="necessary">
+                    <path>src/MultiSharedMultipleRegions/FeatureHeader.cpp</path>
+                    <start>
+                        <line>3</line>
+                        <column>6</column>
+                    </start>
+                    <end>
+                        <line>3</line>
+                        <column>18</column>
+                    </end>
+                </sourceRange>
+            </locations>
+        </configurationOption>
+        <configurationOption>
+            <name>Cpp</name>
+            <outputString>--cpp</outputString>
+            <parent>root</parent>
+            <optional>True</optional>
+        </configurationOption>
+    </binaryOptions>
+</vm>

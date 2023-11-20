@@ -17,7 +17,7 @@ class ConfigurationIterable {
 public:
   class ConfigurationIterator {
   public:
-    using iterator_category = std::forward_iterator_tag;
+    using iterator_category = std::input_iterator_tag;
     using difference_type = std::ptrdiff_t;
     using value_type = std::unique_ptr<vara::feature::Configuration>;
     using pointer = std::unique_ptr<vara::feature::Configuration> *;
@@ -90,8 +90,34 @@ public:
                 std::vector<std::unique_ptr<vara::feature::Configuration>>>
   getAllConfigs(feature::FeatureModel &Model,
                 const vara::solver::SolverType Type = SolverType::Z3) {
-    auto S = SolverFactory::initializeSolver(Model, Type);
-    return S->getAllValidConfigurations();
+    auto V = std::vector<std::unique_ptr<vara::feature::Configuration>>();
+    for (auto Config : ConfigurationFactory::getConfigIterator(Model, Type)) {
+      if (!Config) {
+        return Error(Config.getError());
+      }
+      V.emplace_back(Config.extractValue());
+    }
+    return V;
+  }
+
+  /// This method returns the number of configurations of the given feature
+  /// model.
+  /// Note that this method needs to enumerate all configurations first.
+  /// If you need to access the configurations afterwards, prefer to call
+  /// \c getAllConfigs and check the result's size.
+  ///
+  /// \param Model the given model containing the features and constraints
+  /// \param Type the type of solver to use
+  ///
+  /// \returns the number of configurations for the given model
+  static Result<SolverErrorCode, uint64_t>
+  getNumConfigs(feature::FeatureModel &Model,
+                const vara::solver::SolverType Type = SolverType::Z3) {
+    auto Configs = getAllConfigs(Model, Type);
+    if (!Configs) {
+      return Error(Configs.getError());
+    }
+    return Configs.extractValue().size();
   }
 
   /// This method returns not all but the specified amount of configurations.

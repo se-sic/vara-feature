@@ -117,15 +117,6 @@ public:
   /// the current constraint system is solvable (\c true) or not (\c false).
   virtual Result<SolverErrorCode, bool> hasValidConfigurations() = 0;
 
-  /// Returns the number of valid configurations of the current constraint
-  /// system (i.e., its features and its constraints). In principle, this is a
-  /// #SAT call (i.e., enumerating all configurations).
-  ///
-  /// \returns an error if the number of valid configurations can not be
-  /// retried. This can be the case if there are still constraints left that
-  /// were not included into the solver because of missing variables.
-  virtual Result<SolverErrorCode, uint64_t> getNumberValidConfigurations() = 0;
-
   /// Returns the current configuration.
   ///
   /// \returns the current configuration found by the solver an error code in
@@ -140,16 +131,6 @@ public:
   /// unsatisfiable).
   virtual Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getNextConfiguration() = 0;
-
-  /// Returns all valid configurations. In comparison to \c
-  /// getNumberValidConfigurations, this method returns the configurations
-  /// instead of a number of configurations.
-  ///
-  /// \returns an error if an error occurs while retrieving the configurations.
-  /// Otherwise, it will return the configurations.
-  virtual Result<SolverErrorCode,
-                 std::vector<std::unique_ptr<vara::feature::Configuration>>>
-  getAllValidConfigurations() = 0;
 };
 
 } // namespace vara::solver
