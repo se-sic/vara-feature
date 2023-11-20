@@ -19,7 +19,8 @@ public:
   }
   ~FeatureTreeViewModel() override {
     delete RootItem;
-    std::destroy(Items.begin(), Items.end()); }
+    std::destroy(Items.begin(), Items.end());
+  }
 
   std::vector<std::unique_ptr<FeatureTreeItem>> *getItems();
   [[nodiscard]] QVariant data(const QModelIndex &Index,
