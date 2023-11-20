@@ -11,11 +11,15 @@ public:
   FeatureTreeViewModel(vara::feature::FeatureModel *Model, QObject *Parent)
       : QAbstractItemModel(Parent) {
     auto UniqueRoot = FeatureTreeItem::createFeatureTreeItem(Model->getRoot());
-    RootItem = UniqueRoot.get();
+    RootItem = new FeatureTreeItemFeature(nullptr);
+    RootItem->addChild(UniqueRoot.get());
+    auto RawRoot = UniqueRoot.get();
     Items.push_back(std::move(UniqueRoot));
-    buildRecursive(RootItem);
+    buildRecursive(RawRoot);
   }
-  ~FeatureTreeViewModel() override { std::destroy(Items.begin(), Items.end()); }
+  ~FeatureTreeViewModel() override {
+    delete RootItem;
+    std::destroy(Items.begin(), Items.end()); }
 
   std::vector<std::unique_ptr<FeatureTreeItem>> *getItems();
   [[nodiscard]] QVariant data(const QModelIndex &Index,
