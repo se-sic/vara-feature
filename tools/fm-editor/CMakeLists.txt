@@ -55,8 +55,7 @@ add_custom_target(
 file(
   WRITE "${CMAKE_CURRENT_BINARY_DIR}/fm-editor_autogen/.clang-tidy"
   "
-  ---
-  Checks: '-*,llvm-twine-local'
+Checks: '-*,llvm-twine-local'
   ...
   "
 )
