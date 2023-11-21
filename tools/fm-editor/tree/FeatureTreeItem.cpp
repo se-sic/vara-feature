@@ -81,6 +81,9 @@ std::vector<FeatureTreeItem *> FeatureTreeItem::getChildrenRecursive() {
 }
 
 QVariant FeatureTreeItemFeature::data(int Column) const {
+  if (Item == nullptr) {
+    return {};
+  }
   switch (Column) {
   case 0:
     return QString::fromStdString(Item->getName().str());
