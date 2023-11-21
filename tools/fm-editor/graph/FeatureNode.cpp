@@ -107,14 +107,14 @@ void FeatureNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *Event) {
 void FeatureNode::inspect() { emit(inspectSource(Feature)); }
 
 int FeatureNode::width() const {
-  const QFontMetrics fm((QFont()));
+  const QFontMetrics Fm((QFont()));
 
-  return fm.boundingRect(getQName()).width();
+  return Fm.boundingRect(getQName()).width();
 }
 
 int FeatureNode::childrenWidth() const {
   if (ChildEdges.empty()) {
-    return width() + 1.5 * widthAdjust;
+    return width() + int(1.5 * widthAdjust);
   }
 
   int Result = 0;
