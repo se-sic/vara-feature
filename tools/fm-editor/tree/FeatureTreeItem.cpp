@@ -7,26 +7,28 @@
 QVariant numericValue(vara::feature::Feature *Item) {
   if (Item->getKind() == vara::feature::Feature::FeatureKind::FK_NUMERIC) {
     auto *NumItem = llvm::dyn_cast<vara::feature::NumericFeature>(Item);
-    string Result = "[";
-    if (std::holds_alternative<vara::feature::NumericFeature::ValueRangeType>(
-            NumItem->getValues())) {
-      auto Range = std::get<vara::feature::NumericFeature::ValueRangeType>(
-          NumItem->getValues());
-      Result += std::to_string(Range.first) + ", " +
-                std::to_string(Range.second) + "]";
-    } else {
-      auto Range = std::get<vara::feature::NumericFeature::ValueListType>(
-          NumItem->getValues());
-      for (auto It = Range.begin(); It != Range.end(); It++) {
-        if (It != Range.begin()) {
-          Result += ",";
+    if (NumItem != nullptr) {
+      string Result = "[";
+      if (std::holds_alternative<vara::feature::NumericFeature::ValueRangeType>(
+              NumItem->getValues())) {
+        auto Range = std::get<vara::feature::NumericFeature::ValueRangeType>(
+            NumItem->getValues());
+        Result += std::to_string(Range.first) + ", " +
+                  std::to_string(Range.second) + "]";
+      } else {
+        auto Range = std::get<vara::feature::NumericFeature::ValueListType>(
+            NumItem->getValues());
+        for (auto It = Range.begin(); It != Range.end(); It++) {
+          if (It != Range.begin()) {
+            Result += ",";
+          }
+          Result += std::to_string(*It.base());
         }
-        Result += std::to_string(*It.base());
+        Result += "]";
       }
-      Result += "]";
-    }
 
-    return QString::fromStdString(Result);
+      return QString::fromStdString(Result);
+    }
   }
 
   return {};
@@ -79,23 +81,20 @@ std::vector<FeatureTreeItem *> FeatureTreeItem::getChildrenRecursive() {
 }
 
 QVariant FeatureTreeItemFeature::data(int Column) const {
-  if (Item != nullptr) {
-    switch (Column) {
-    case 0:
-      return QString::fromStdString(Item->getName().str());
-    case 1:
-      return Item->isOptional() ? QVariant("✓") : QVariant("x");
-    case 2:
-      return numericValue(Item);
-    case 3:
-      return locationString(Item);
-    case 4:
-      return QString::fromStdString(Item->getOutputString().str());
-    default:
-      return {};
-    }
+  switch (Column) {
+  case 0:
+    return QString::fromStdString(Item->getName().str());
+  case 1:
+    return Item->isOptional() ? QVariant("✓") : QVariant("x");
+  case 2:
+    return numericValue(Item);
+  case 3:
+    return locationString(Item);
+  case 4:
+    return QString::fromStdString(Item->getOutputString().str());
+  default:
+    return {};
   }
-  return {};
 }
 
 void FeatureTreeItemFeature::inspect() { emit(inspectSource(Item)); }
