@@ -52,9 +52,7 @@ add_custom_target(
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../unittests/resources
 )
 
-file(
-  WRITE "${CMAKE_CURRENT_BINARY_DIR}/fm-editor_autogen/.clang-tidy"
-  "Checks: '-*,llvm-twine-local'
-  ...
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fm-editor_autogen/.clang-tidy"
+     "Checks: '-*,llvm-twine-local'
   "
 )
