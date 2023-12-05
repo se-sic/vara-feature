@@ -12,6 +12,13 @@
 
 #include <vector>
 
+enum ItemKind {
+  IK_Feature,
+  IK_Relation,
+  IK_Root
+
+};
+
 class FeatureTreeItem : public QObject {
   Q_OBJECT
 
@@ -48,10 +55,10 @@ public:
   [[nodiscard]] virtual QVariant data(int Column) const = 0;
   std::unique_ptr<FeatureTreeItem> static createFeatureTreeItem(
       vara::feature::FeatureTreeNode *Item);
-  bool booleanColumn(int Column) { return false; }
+  bool booleanColumn(int Column) { return false; };
   virtual void contextMenu(QPoint Pos) = 0;
   virtual vara::feature::FeatureTreeNode *getItem() const = 0;
-  vara::feature::FeatureTreeNode::NodeKind getKind() { return Kind; }
+  virtual ItemKind getKind() = 0;
   virtual string getName() { return ""; };
   void setParent(FeatureTreeItem *ParentItem) { this->Parent = ParentItem; }
 
@@ -61,14 +68,25 @@ signals:
   void removeFeature(bool Recursive, vara::feature::Feature *Feature);
 
 protected:
-  FeatureTreeItem(vara::feature::FeatureTreeNode::NodeKind Kind) : Kind(Kind) {}
+  FeatureTreeItem() = default;
 
   FeatureTreeItem *Parent = nullptr;
 
   std::vector<FeatureTreeItem *> Children = {};
+};
 
-private:
-  const vara::feature::FeatureTreeNode::NodeKind Kind;
+class FeatureTreeItemRoot : public FeatureTreeItem {
+  Q_OBJECT
+
+public:
+  FeatureTreeItemRoot(){};
+  [[nodiscard]] int columnCount() const override { return 5; };
+  [[nodiscard]] QVariant data(int Column) const override { return {}; };
+  void contextMenu(QPoint Pos) override{};
+  [[nodiscard]] vara::feature::FeatureTreeNode *getItem() const override {
+    return nullptr;
+  };
+  ItemKind getKind() override { return IK_Root; };
 };
 
 class FeatureTreeItemFeature : public FeatureTreeItem {
@@ -76,8 +94,7 @@ class FeatureTreeItemFeature : public FeatureTreeItem {
 
 public:
   FeatureTreeItemFeature(vara::feature::Feature *Item)
-      : FeatureTreeItem(vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE),
-        Item(Item) {
+      : FeatureTreeItem(), Item(Item) {
     ContextMenu = std::make_unique<QMenu>();
     ContextMenu->addAction("Inspect Sources", this,
                            &FeatureTreeItemFeature::inspect);
@@ -87,16 +104,20 @@ public:
     connect(RemoveAction.get(), &QAction::triggered, this,
             &FeatureTreeItemFeature::remove, Qt::QueuedConnection);
   }
-  virtual ~FeatureTreeItemFeature() = default;
+  ~FeatureTreeItemFeature() override = default;
 
   [[nodiscard]] QVariant data(int Column) const override;
   [[nodiscard]] int columnCount() const override { return 5; }
   bool booleanColumn(int Column) { return Column == 1; }
   void contextMenu(QPoint Pos) override;
-  vara::feature::FeatureTreeNode *getItem() const override { return Item; }
-  const vara::feature::Feature *getFeature() const { return Item; }
+  [[nodiscard]] vara::feature::FeatureTreeNode *getItem() const override {
+    return Item;
+  }
+  [[nodiscard]] const vara::feature::Feature *getFeature() const {
+    return Item;
+  }
   string getName() override { return Item->getName().str(); }
-
+  ItemKind getKind() override { return IK_Feature; }
 public slots:
   void inspect();
   void addChild();
@@ -110,10 +131,7 @@ private:
 
 class FeatureTreeItemRelation : public FeatureTreeItem {
 public:
-  FeatureTreeItemRelation(vara::feature::Relationship *Item)
-      : FeatureTreeItem(
-            vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP),
-        Item(Item) {}
+  FeatureTreeItemRelation(vara::feature::Relationship *Item) : Item(Item){};
   ~FeatureTreeItemRelation() override = default;
 
   [[nodiscard]] QVariant data(int Column) const override {
@@ -124,13 +142,13 @@ public:
   }
   [[nodiscard]] int columnCount() const override { return 1; }
   void contextMenu(QPoint Pos) override {}
-  vara::feature::FeatureTreeNode *getItem() const override { return Item; }
+  [[nodiscard]] vara::feature::FeatureTreeNode *getItem() const override {
+    return Item;
+  }
+  ItemKind getKind() override { return IK_Relation; }
 
 private:
   vara::feature::Relationship *Item;
-  static const vara::feature::FeatureTreeNode::NodeKind Kind =
-      vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP;
-
   [[nodiscard]] std::string relationType() const {
     std::string Type;
     switch (Item->getKind()) {

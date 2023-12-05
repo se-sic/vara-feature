@@ -60,9 +60,7 @@ FeatureTreeItem::createFeatureTreeItem(vara::feature::FeatureTreeNode *Item) {
 }
 
 void FeatureTreeItem::addChild(FeatureTreeItem *Child) {
-  if (!Children.empty() &&
-      Children[0]->getKind() ==
-          vara::feature::FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
+  if (!Children.empty() && Children[0]->getKind() == ItemKind::IK_Relation) {
     Children[0]->addChild(Child);
   } else {
     Children.push_back(Child);

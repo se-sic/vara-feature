@@ -55,8 +55,7 @@ void FeatureModelEditor::loadFeatureFromSelection(
   if (Index.isValid()) {
     auto *Item = static_cast<FeatureTreeItem *>(Index.internalPointer())
                      ->child(Index.row());
-    if (Item->getKind() ==
-        vara::feature::FeatureTreeNode::NodeKind::NK_FEATURE) {
+    if (Item->getKind() == ItemKind::IK_Feature) {
       loadFeature(dynamic_cast<FeatureTreeItemFeature *>(Item)->getFeature());
     }
   }

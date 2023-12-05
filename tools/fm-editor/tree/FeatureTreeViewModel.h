@@ -11,7 +11,7 @@ public:
   FeatureTreeViewModel(vara::feature::FeatureModel *Model, QObject *Parent)
       : QAbstractItemModel(Parent) {
     auto UniqueRoot = FeatureTreeItem::createFeatureTreeItem(Model->getRoot());
-    RootItem = new FeatureTreeItemFeature(nullptr);
+    RootItem = new FeatureTreeItemRoot();
     RootItem->addChild(UniqueRoot.get());
     auto RawRoot = UniqueRoot.get();
     Items.push_back(std::move(UniqueRoot));
