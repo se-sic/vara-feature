@@ -81,23 +81,23 @@ std::vector<FeatureTreeItem *> FeatureTreeItem::getChildrenRecursive() {
 }
 
 QVariant FeatureTreeItemFeature::data(int Column) const {
-  if (Item == nullptr) {
-    return {};
+  if (Item != nullptr) {
+    switch (Column) {
+    case 0:
+      return QString::fromStdString(Item->getName().str());
+    case 1:
+      return Item->isOptional() ? QVariant("✓") : QVariant("x");
+    case 2:
+      return numericValue(Item);
+    case 3:
+      return locationString(Item);
+    case 4:
+      return QString::fromStdString(Item->getOutputString().str());
+    default:
+      return {};
+    }
   }
-  switch (Column) {
-  case 0:
-    return QString::fromStdString(Item->getName().str());
-  case 1:
-    return Item->isOptional() ? QVariant("✓") : QVariant("x");
-  case 2:
-    return numericValue(Item);
-  case 3:
-    return locationString(Item);
-  case 4:
-    return QString::fromStdString(Item->getOutputString().str());
-  default:
-    return {};
-  }
+  return {};
 }
 
 void FeatureTreeItemFeature::inspect() { emit(inspectSource(Item)); }
