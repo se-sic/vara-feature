@@ -203,6 +203,28 @@ TEST_F(FeatureModelTransactionModifyTest, addFeatureToModel) {
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
 }
 
+TEST_F(FeatureModelTransactionModifyTest, addFeatureToModelChildren) {
+  size_t FMSizeBefore = FM->size();
+
+  auto FT = FeatureModelModifyTransaction::openTransaction(*FM);
+  FT.addFeature(std::make_unique<BinaryFeature>("ab"), FM->getRoot(),
+                {FM->getFeature("a")});
+
+  EXPECT_EQ(FMSizeBefore, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_FALSE(FM->getFeature("ab")); // Change should not be visible
+
+  FT.commit(); // Commit changes
+
+  EXPECT_EQ(FMSizeBefore + 1, FM->size());
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_FALSE(llvm::isa<RootFeature>(FM->getFeature("a")->getParentFeature()));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("ab")->getParentFeature()));
+  EXPECT_TRUE(FM->getFeature("ab")); // Change should be visible
+  EXPECT_EQ(FM->getFeature("ab"), FM->getFeature("a")->getParentFeature());
+}
+
 TEST_F(FeatureModelTransactionModifyTest, addFeatureToModelThenAboard) {
   size_t FMSizeBefore = FM->size();
 
@@ -920,6 +942,25 @@ TEST_F(FeatureModelTransactionTest, addFeaturesToModel) {
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ab")->getParentFeature());
   EXPECT_TRUE(FM->getFeature("ac"));
   EXPECT_EQ(FM->getFeature("a"), FM->getFeature("ac")->getParentFeature());
+}
+
+TEST_F(FeatureModelTransactionTest, addFeaturesToModelChildren) {
+  size_t FMSizeBefore = FM->size();
+
+  std::vector<
+      std::tuple<std::unique_ptr<Feature>, Feature *, std::set<Feature *>>>
+      NewFeatures;
+  NewFeatures.emplace_back(
+      std::make_tuple(std::make_unique<BinaryFeature>("ab"), FM->getRoot(),
+                      std::set<Feature *>{FM->getFeature("a")}));
+
+  vara::feature::addFeatures(*FM, std::move(NewFeatures));
+
+  EXPECT_EQ(FMSizeBefore, FM->size() - 1);
+  EXPECT_TRUE(FM->getFeature("a"));
+  EXPECT_EQ(FM->getFeature("ab"), FM->getFeature("a")->getParentFeature());
+  EXPECT_TRUE(FM->getFeature("ab"));
+  EXPECT_TRUE(llvm::isa<RootFeature>(FM->getFeature("ab")->getParentFeature()));
 }
 
 TEST_F(FeatureModelTransactionTest, removeFeatureFromModel) {
