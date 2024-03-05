@@ -1,0 +1,216 @@
+#include "FeatureModelGraph.h"
+#include "vara/Feature/Feature.h"
+#include "vara/Feature/FeatureModel.h"
+#include "vara/Feature/FeatureModelTransaction.h"
+
+#include <QKeyEvent>
+#include <QRandomGenerator>
+
+#include <cmath>
+
+using vara::feature::Feature;
+
+FeatureModelGraph::FeatureModelGraph(vara::feature::FeatureModel *FeatureModel,
+                                     QWidget *Parent)
+    : QGraphicsView(Parent),
+      EntryNode(new FeatureNode(FeatureModel->getRoot())),
+      FeatureModel(FeatureModel) {
+
+  Scene = std::make_unique<QGraphicsScene>(this);
+  Scene->setItemIndexMethod(QGraphicsScene::NoIndex);
+  setScene(Scene.get());
+  setCacheMode(CacheBackground);
+  setViewportUpdateMode(BoundingRectViewportUpdate);
+  setRenderHint(QPainter::Antialiasing);
+  setTransformationAnchor(AnchorUnderMouse);
+  scale(qreal(0.8), qreal(0.8));
+  reload();
+  setDragMode(ScrollHandDrag);
+  Scene->setSceneRect(0, 0, EntryNode->childrenWidth() + 100,
+                      100 * EntryNode->childrenDepth() + 100);
+}
+
+void FeatureModelGraph::reload() {
+  Nodes.push_back(EntryNode);
+  auto *Scene = this->scene();
+  Scene->clear();
+  Scene->addItem(EntryNode);
+  buildRec(EntryNode);
+  auto NextChildren = std::vector<FeatureNode *>(EntryNode->children().size());
+  auto CurrentChildren = EntryNode->children();
+  std::transform(CurrentChildren.begin(), CurrentChildren.end(),
+                 NextChildren.begin(),
+                 [](FeatureEdge *Edge) { return Edge->targetNode(); });
+  positionRec(1, NextChildren, 5);
+  EntryNode->setPos(EntryNode->childrenWidth() / 2.0, 10);
+}
+
+void FeatureModelGraph::buildRec(FeatureNode *CurrentFeatureNode) {
+  for (auto *Feature :
+       CurrentFeatureNode->getFeature()->getChildren<vara::feature::Feature>(
+           1)) {
+    auto *Node = new FeatureNode(Feature);
+    auto *Edge = new FeatureEdge(CurrentFeatureNode, Node);
+    scene()->addItem(Edge);
+    scene()->addItem(Node);
+    Nodes.push_back(Node);
+    buildRec(Node);
+  }
+  for (auto *Relation : CurrentFeatureNode->getFeature()
+                            ->getChildren<vara::feature::Relationship>(1)) {
+    for (auto *Feature : Relation->getChildren<vara::feature::Feature>(1)) {
+      auto *Node = new FeatureNode(Feature);
+      auto *Edge = new FeatureEdge(CurrentFeatureNode, Node);
+      scene()->addItem(Edge);
+      scene()->addItem(Node);
+      buildRec(Node);
+      Nodes.push_back(Node);
+    }
+  }
+}
+
+int FeatureModelGraph::positionRec(const int CurrentDepth,
+                                   const std::vector<FeatureNode *> &Children,
+                                   const unsigned long Offset) {
+  if (Children.empty()) {
+    return CurrentDepth - 1;
+  }
+
+  int MaxDepth = CurrentDepth;
+  auto NextOffset = Offset;
+  for (FeatureNode *Node : Children) {
+    auto NextChildren = std::vector<FeatureNode *>(Node->children().size());
+    auto CurrentChildren = Node->children();
+    std::transform(CurrentChildren.begin(), CurrentChildren.end(),
+                   NextChildren.begin(),
+                   [](FeatureEdge *Edge) { return Edge->targetNode(); });
+    int const Depth = positionRec(CurrentDepth + 1, NextChildren, NextOffset);
+    int const Width = Node->childrenWidth();
+    Node->setPos(double(NextOffset) + Width / 2.0, 100 * CurrentDepth);
+    NextOffset += Width;
+    MaxDepth = MaxDepth < Depth ? Depth : MaxDepth;
+  }
+
+  return MaxDepth;
+}
+
+void FeatureModelGraph::keyPressEvent(QKeyEvent *Event) {
+  switch (Event->key()) {
+  case Qt::Key_Plus:
+    zoomIn();
+    break;
+  case Qt::Key_Minus:
+    zoomOut();
+    break;
+  default:
+    QGraphicsView::keyPressEvent(Event);
+  }
+}
+
+#if QT_CONFIG(wheelevent)
+void FeatureModelGraph::wheelEvent(QWheelEvent *Event) {
+  scaleView(pow(2., -Event->angleDelta().y() / 240.0));
+}
+#endif
+
+void FeatureModelGraph::drawBackground(QPainter *Painter, const QRectF &Rect) {
+  Q_UNUSED(Rect)
+
+  // Shadow
+  const QRectF SceneRect = this->sceneRect();
+  const QRectF RightShadow(SceneRect.right(), SceneRect.top() + 5, 5,
+                           SceneRect.height());
+  const QRectF BottomShadow(SceneRect.left() + 5, SceneRect.bottom(),
+                            SceneRect.width(), 5);
+  if (RightShadow.intersects(Rect) || RightShadow.contains(Rect)) {
+    Painter->fillRect(RightShadow, Qt::darkGray);
+  }
+  if (BottomShadow.intersects(Rect) || BottomShadow.contains(Rect)) {
+    Painter->fillRect(BottomShadow, Qt::darkGray);
+  }
+
+  // Fill
+  QLinearGradient Gradient(SceneRect.topLeft(), SceneRect.bottomRight());
+  Gradient.setColorAt(0, Qt::white);
+  Gradient.setColorAt(1, Qt::lightGray);
+  Painter->fillRect(Rect.intersected(SceneRect), Gradient);
+  Painter->setBrush(Qt::NoBrush);
+  Painter->drawRect(SceneRect);
+
+  QFont Font = Painter->font();
+  Font.setBold(true);
+  Font.setPointSize(14);
+  Painter->setFont(Font);
+  Painter->setPen(Qt::lightGray);
+  Painter->setPen(Qt::black);
+}
+
+void FeatureModelGraph::scaleView(qreal ScaleFactor) {
+  const qreal Factor = transform()
+                           .scale(ScaleFactor, ScaleFactor)
+                           .mapRect(QRectF(0, 0, 1, 1))
+                           .width();
+  if (Factor < 0.3 || Factor > 5) {
+    return;
+  }
+
+  scale(ScaleFactor, ScaleFactor);
+}
+
+void FeatureModelGraph::zoomIn() { scaleView(qreal(1.2)); }
+
+void FeatureModelGraph::zoomOut() { scaleView(1 / qreal(1.2)); }
+
+FeatureNode *FeatureModelGraph::addNode(Feature *Feature, FeatureNode *Parent) {
+  auto *NewNode = new FeatureNode(Feature);
+  auto *NewEdge = new FeatureEdge(Parent, NewNode);
+  scene()->addItem(NewEdge);
+  scene()->addItem(NewNode);
+  Nodes.push_back(NewNode);
+  auto NextChildren = std::vector<FeatureNode *>(EntryNode->children().size());
+  auto CurrentChildren = EntryNode->children();
+  std::transform(CurrentChildren.begin(), CurrentChildren.end(),
+                 NextChildren.begin(),
+                 [](FeatureEdge *Edge) { return Edge->targetNode(); });
+  positionRec(1, NextChildren, 5);
+  EntryNode->setPos(EntryNode->childrenWidth() / 2.0, 10);
+
+  return NewNode;
+}
+
+FeatureNode *FeatureModelGraph::getNode(std::string Name) {
+  auto It = std::find_if(Nodes.begin(), Nodes.end(), [&Name](const auto &Node) {
+    return Node->getName() == Name;
+  });
+  if (It != Nodes.end()) {
+    return *It;
+  }
+
+  return nullptr;
+}
+
+void FeatureModelGraph::deleteNode(bool Recursive, FeatureNode *Node) {
+  auto *Parent = Node->parent()->sourceNode();
+  if (Recursive) {
+    for (auto *Child : Node->children()) {
+      deleteNode(true, Child->targetNode());
+    }
+  } else {
+    for (auto *Child : Node->children()) {
+      Child->setSourceNode(Parent);
+    }
+
+    Node->children().clear();
+  }
+  Parent->removeChild(Node);
+  scene()->removeItem(Node);
+  scene()->removeItem(Node->parent());
+
+  Nodes.erase(std::find_if(Nodes.begin(), Nodes.end(),
+                           [Node](auto &N) { return N == Node; }));
+}
+
+void FeatureModelGraph::deleteNode(bool Recursive,
+                                   vara::feature::Feature *Feature) {
+  deleteNode(Recursive, getNode(Feature->getName().str()));
+}
