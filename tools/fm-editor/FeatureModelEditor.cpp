@@ -216,7 +216,9 @@ void FeatureModelEditor::inspectFeatureSources(
     vara::feature::Feature *Feature) {
   CurrentFeature = Feature;
   if (Repository.isEmpty()) {
-    Repository = QFileDialog::getExistingDirectory();
+    Repository = QFileDialog::getExistingDirectory(
+        this, tr("Select Repository"),
+        QString::fromStdString(std::filesystem::current_path().string()));
   }
   Ui->sources->clear();
   QSet<QString> Locations = {};
