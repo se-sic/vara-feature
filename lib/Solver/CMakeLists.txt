@@ -1,4 +1,4 @@
-set(SOLVER_LIB_SRC Z3Solver.cpp SolverFactory.cpp)
+set(SOLVER_LIB_SRC BitBlastingZ3Solver.cpp Z3Solver.cpp SolverFactory.cpp)
 
 set(LLVM_LINK_COMPONENTS Core Support)
 
