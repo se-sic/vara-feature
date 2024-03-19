@@ -19,7 +19,7 @@ public:
   createSolverVariable(z3::context &Context) = 0;
 
   virtual void
-  addConstraintsToSolver(z3::solver *Solver,
+  addConstraintsToSolver(z3::context &Context, z3::solver *Solver,
                          llvm::StringMap<z3::expr *> &FeatureVariables) = 0;
 
 protected:

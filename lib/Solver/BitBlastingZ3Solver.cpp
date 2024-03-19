@@ -15,8 +15,10 @@ public:
   }
 
   void addConstraintsToSolver(
-      z3::solver *Solver,
-      llvm::StringMap<z3::expr *> &FeatureVariables) override {}
+      z3::context &Context, z3::solver *Solver,
+      llvm::StringMap<z3::expr *> &FeatureVariables) override {
+    Solver->add(*FeatureVariables[F->getName()]);
+  }
 };
 
 class BinaryEncoder : public FeatureEncoder {
@@ -31,14 +33,14 @@ public:
   }
 
   void addConstraintsToSolver(
-      z3::solver *Solver,
+      z3::context &Context, z3::solver *Solver,
       llvm::StringMap<z3::expr *> &FeatureVariables) override {
-    const auto *Var = FeatureVariables[F->getName()];
-    const auto *ParentVar = FeatureVariables[F->getParentFeature()->getName()];
-    Solver->add(z3::implies(*Var, *ParentVar));
+    const auto Var = *FeatureVariables[F->getName()];
+    const auto ParentVar = *FeatureVariables[F->getParentFeature()->getName()];
+    Solver->add(z3::implies(Var, ParentVar));
 
     if (!IsInAlternativeGroup && !F->isOptional()) {
-      Solver->add(z3::implies(*ParentVar, *Var));
+      Solver->add(z3::implies(ParentVar, Var));
     }
   }
 
@@ -58,7 +60,7 @@ public:
   }
 
   void addConstraintsToSolver(
-      z3::solver *Solver,
+      z3::context &Context, z3::solver *Solver,
       llvm::StringMap<z3::expr *> &FeatureVariables) override {
     assert(false); // "Not implemented!"
   }
@@ -70,11 +72,10 @@ class RangeEncoder : public FeatureEncoder {
 public:
   explicit RangeEncoder(const Feature &F,
                         const NumericFeature::ValueRangeType &ValueRange)
-      : FeatureEncoder(F) {
-    const bool IsSigned = ValueRange.first < 0;
-    BitLength = std::ceil(std::log2(std::max(std::abs(ValueRange.first),
-                                             std::abs(ValueRange.first))) +
-                          1);
+      : FeatureEncoder(F), MinVal(ValueRange.first), MaxVal(ValueRange.second),
+        IsSigned(MinVal < 0) {
+    BitLength =
+        std::ceil(std::log2(std::max(std::abs(MinVal), std::abs(MaxVal))) + 1);
     if (IsSigned) {
       BitLength += 1;
     }
@@ -87,12 +88,22 @@ public:
   }
 
   void addConstraintsToSolver(
-      z3::solver *Solver,
+      z3::context &Context, z3::solver *Solver,
       llvm::StringMap<z3::expr *> &FeatureVariables) override {
-    assert(false); // "Not implemented!"
+    const auto Var = *FeatureVariables[F->getName()];
+    const auto Min = Context.bv_val(MinVal, BitLength);
+    const auto Max = Context.bv_val(MaxVal, BitLength);
+    Solver->add(Var >= Min);
+    Solver->add(Var <= Max);
   }
 
+  [[nodiscard]] uint16_t getBitLength() const { return BitLength; }
+
+  void setBitLength(const uint16_t NewBitLength) { BitLength = NewBitLength; }
+
 private:
+  int64_t MinVal, MaxVal;
+  bool IsSigned;
   uint16_t BitLength;
 };
 
