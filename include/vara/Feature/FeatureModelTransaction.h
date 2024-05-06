@@ -91,7 +91,7 @@ public:
   /// \returns a pointer to the inserted Feature in CopyMode, otherwise,
   ///          nothing.
   decltype(auto) addFeature(std::unique_ptr<Feature> NewFeature,
-                            Feature *Parent = nullptr) {
+                            FeatureTreeNode *Parent = nullptr) {
     if constexpr (IsCopyMode) {
       return this->addFeatureImpl(std::move(NewFeature), Parent);
     } else {
@@ -321,11 +321,11 @@ public:
 
 private:
   AddFeatureToModel(std::unique_ptr<Feature> NewFeature,
-                    Feature *Parent = nullptr)
+                    FeatureTreeNode *Parent = nullptr)
       : NewFeature(std::move(NewFeature)), Parent(Parent) {}
 
   std::unique_ptr<Feature> NewFeature;
-  Feature *Parent;
+  FeatureTreeNode *Parent;
 };
 
 //===----------------------------------------------------------------------===//
@@ -829,7 +829,7 @@ protected:
   // Modifications
 
   Result<FTErrorCode, Feature *>
-  addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
+  addFeatureImpl(std::unique_ptr<Feature> NewFeature, FeatureTreeNode *Parent) {
     if (!FM) {
       return ERROR;
     }
@@ -968,6 +968,28 @@ private:
     return FM->getFeature(F.getName());
   }
 
+  [[nodiscard]] FeatureTreeNode *translateFeature(FeatureTreeNode &F) {
+    if (F.getKind() == FeatureTreeNode::NodeKind::NK_RELATIONSHIP) {
+      FeatureTreeNode *Parent = F.getParent();
+      auto *ParentFeature = llvm::dyn_cast<Feature, FeatureTreeNode>(Parent);
+      if (ParentFeature == nullptr) {
+        // The Parent of a Relationship should always be a Feature
+        abort();
+      }
+      ParentFeature = FM->getFeature(ParentFeature->getName());
+      Relationship *Base = *ParentFeature->getChildren<Relationship>(0).begin();
+      Base = *Base->getChildren<Relationship>(0).begin();
+      return Base;
+    }
+    auto *CastF = llvm::dyn_cast<Feature, FeatureTreeNode>(&F);
+    if (CastF == nullptr) {
+      // There are only Features and Relationship nodes if F was not a
+      // Relationship it has to be a Feature
+      abort();
+    }
+    return FM->getFeature(CastF->getName());
+  }
+
   std::unique_ptr<FeatureModel> FM;
 };
 
@@ -1008,7 +1030,8 @@ protected:
   //===--------------------------------------------------------------------===//
   // Modifications
 
-  void addFeatureImpl(std::unique_ptr<Feature> NewFeature, Feature *Parent) {
+  void addFeatureImpl(std::unique_ptr<Feature> NewFeature,
+                      FeatureTreeNode *Parent) {
     assert(FM && "FeatureModel is null.");
 
     Modifications.push_back(
