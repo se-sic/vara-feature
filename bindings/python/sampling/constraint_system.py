@@ -32,6 +32,19 @@ class Relationship:
         return f"Relationship(kind={self.kind}, parent={parent_name}, children={children_names})"
 
 
+def add_distance_constraint(solver: Solver, option_to_var: Dict[vf.feature.Feature, int], target_distance: int,
+                            candidate: int = None):
+    """Add a constraint to ensure that the number of selected options equals the target distance and include the
+    candidate."""
+    vars_list = [var for feature, var in option_to_var.items() if not isinstance(feature, vf.feature.RootFeature)]
+    clauses = CardEnc.equals(lits=vars_list, bound=target_distance)
+
+    for clause in clauses:
+        solver.add_clause(clause)
+    if candidate:
+        solver.add_clause([candidate])
+
+
 class ConstraintSystem:
     def __init__(self):
         self.id_pool = IDPool()
@@ -85,8 +98,8 @@ class ConstraintSystem:
 
         return clause
 
-    def detect_exclude(self, A: vf.feature.Feature, B: vf.feature.Feature) -> bool:
-        return B in self.excluded_constraints.get(A, [])
+    def detect_exclude(self, a: vf.feature.Feature, b: vf.feature.Feature) -> bool:
+        return b in self.excluded_constraints.get(a, [])
 
     def detect_alternatives(self, feature: vf.feature.FeatureTreeNode):
         parent = feature.parent()
@@ -159,17 +172,7 @@ class ConstraintSystem:
                 implied_var = option_to_var[implied_feature]
                 self.all_clauses.append([-feature_var, implied_var])
 
-    def add_distance_constraint(self, solver: Solver, option_to_var: Dict[vf.feature.Feature, int],
-                                target_distance: int):
-        """Add a constraint to ensure that the number of selected options equals the target distance."""
-        vars_list = [var for feature, var in option_to_var.items() if not isinstance(feature, vf.feature.RootFeature)]
-        clauses = CardEnc.equals(lits=vars_list, bound=target_distance)
-
-        for clause in clauses:
-            solver.add_clause(clause)
-
-    def build_base_solver(self, fm: vf.feature_model) -> Tuple[
-        Solver, Dict[vf.feature.Feature, int], Dict[int, vf.feature.Feature]]:
+    def build_base_solver(self, fm: vf.feature_model) -> Tuple[Solver, Dict[vf.feature.Feature, int], Dict[int, vf.feature.Feature]]:
         self.extract_constraints(fm)
         solver = Solver(name='cd19')
         option_to_var = {}
