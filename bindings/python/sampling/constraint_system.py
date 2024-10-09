@@ -1,5 +1,3 @@
-# constraint_system.py
-
 from typing import List, Dict, Tuple
 
 import vara_feature as vf
@@ -46,13 +44,14 @@ def add_distance_constraint(solver: Solver, option_to_var: Dict[vf.feature.Featu
 
 
 class ConstraintSystem:
-    def __init__(self):
+    def __init__(self, name='cd19'):
         self.id_pool = IDPool()
         self.excluded_constraints: Dict[vf.feature.Feature, List[vf.feature.Feature]] = {}
         self.implied_constraints: Dict[vf.feature.Feature, List[vf.feature.Feature]] = {}
         self.relationships: Dict[vf.feature.Feature, Relationship] = {}
         self.all_clauses = []
         self.base_solver = None
+        self.name = name
 
     def extract_constraints(self, fm: vf.feature_model):
         for c in fm.booleanConstraints:
@@ -131,12 +130,6 @@ class ConstraintSystem:
             elif isinstance(parent, vf.feature.FeatureTreeNode) and not feature in self.relationships:
                 self.detect_alternatives(parent)
 
-        elif isinstance(feature, vf.feature.NumericFeature):
-            vars_for_values = option_to_var[feature]
-            clauses = CardEnc.equals(lits=vars_for_values, bound=1, vpool=self.id_pool)
-            for clause in clauses:
-                self.all_clauses.append(clause)
-
         elif isinstance(feature, vf.feature.RootFeature):
             self.all_clauses.append([option_to_var[feature]])
 
@@ -172,9 +165,10 @@ class ConstraintSystem:
                 implied_var = option_to_var[implied_feature]
                 self.all_clauses.append([-feature_var, implied_var])
 
-    def build_base_solver(self, fm: vf.feature_model) -> Tuple[Solver, Dict[vf.feature.Feature, int], Dict[int, vf.feature.Feature]]:
+    def build_base_solver(self, fm: vf.feature_model) -> Tuple[
+        Solver, Dict[vf.feature.Feature, int], Dict[int, vf.feature.Feature]]:
         self.extract_constraints(fm)
-        solver = Solver(name='cd19')
+        solver = Solver(self.name)
         option_to_var = {}
         var_to_option = {}
 
@@ -187,15 +181,12 @@ class ConstraintSystem:
 
         self.convert_constraints_to_clauses(option_to_var)
 
-        for clause in self.all_clauses:
-            solver.add_clause(clause)
-
+        solver.append_formula(self.all_clauses)
         self.base_solver = solver
+
         return solver, option_to_var, var_to_option
 
     def reset_solver(self) -> Solver:
         self.base_solver.delete()
-        self.base_solver = Solver(name='cd19')
-        for clause in self.all_clauses:
-            self.base_solver.add_clause(clause)
+        self.base_solver = Solver(self.name, bootstrap_with=self.all_clauses)
         return self.base_solver

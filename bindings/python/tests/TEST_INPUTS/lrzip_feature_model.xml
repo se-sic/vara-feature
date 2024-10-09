@@ -1,0 +1,365 @@
+<vm name="lrzip">
+  <binaryOptions>
+    <configurationOption>
+      <name>encryption</name>
+      <outputString>encryption</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>compression</name>
+      <outputString>compression</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>compressionBzip2</name>
+      <outputString>compressionBzip2</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>compression</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionGzip</options>
+        <options>compressionLzo</options>
+        <options>compressionZpaq</options>
+        <options>compressionLrzip</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>compressionGzip</name>
+      <outputString>compressionGzip</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>compression</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionBzip2</options>
+        <options>compressionLzo</options>
+        <options>compressionZpaq</options>
+        <options>compressionLrzip</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>compressionLzo</name>
+      <outputString>compressionLzo</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>compression</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionBzip2</options>
+        <options>compressionGzip</options>
+        <options>compressionZpaq</options>
+        <options>compressionLrzip</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>compressionZpaq</name>
+      <outputString>compressionZpaq</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>compression</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionBzip2</options>
+        <options>compressionGzip</options>
+        <options>compressionLzo</options>
+        <options>compressionLrzip</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>compressionLrzip</name>
+      <outputString>compressionLrzip</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>compression</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>compressionBzip2</options>
+        <options>compressionGzip</options>
+        <options>compressionLzo</options>
+        <options>compressionZpaq</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level</name>
+      <outputString>level</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level1</name>
+      <outputString>level1</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>level</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>level2</options>
+        <options>level3</options>
+        <options>level4</options>
+        <options>level5</options>
+        <options>level6</options>
+        <options>level7</options>
+        <options>level8</options>
+        <options>level9</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level2</name>
+      <outputString>level2</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>level</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>level1</options>
+        <options>level3</options>
+        <options>level4</options>
+        <options>level5</options>
+        <options>level6</options>
+        <options>level7</options>
+        <options>level8</options>
+        <options>level9</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level3</name>
+      <outputString>level3</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>level</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>level1</options>
+        <options>level2</options>
+        <options>level4</options>
+        <options>level5</options>
+        <options>level6</options>
+        <options>level7</options>
+        <options>level8</options>
+        <options>level9</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level4</name>
+      <outputString>level4</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>level</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>level1</options>
+        <options>level2</options>
+        <options>level3</options>
+        <options>level5</options>
+        <options>level6</options>
+        <options>level7</options>
+        <options>level8</options>
+        <options>level9</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level5</name>
+      <outputString>level5</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>level</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>level1</options>
+        <options>level2</options>
+        <options>level3</options>
+        <options>level4</options>
+        <options>level6</options>
+        <options>level7</options>
+        <options>level8</options>
+        <options>level9</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level6</name>
+      <outputString>level6</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>level</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>level1</options>
+        <options>level2</options>
+        <options>level3</options>
+        <options>level4</options>
+        <options>level5</options>
+        <options>level7</options>
+        <options>level8</options>
+        <options>level9</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level7</name>
+      <outputString>level7</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>level</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>level1</options>
+        <options>level2</options>
+        <options>level3</options>
+        <options>level4</options>
+        <options>level5</options>
+        <options>level6</options>
+        <options>level8</options>
+        <options>level9</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level8</name>
+      <outputString>level8</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>level</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>level1</options>
+        <options>level2</options>
+        <options>level3</options>
+        <options>level4</options>
+        <options>level5</options>
+        <options>level6</options>
+        <options>level7</options>
+        <options>level9</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>level9</name>
+      <outputString>level9</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>level</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>level1</options>
+        <options>level2</options>
+        <options>level3</options>
+        <options>level4</options>
+        <options>level5</options>
+        <options>level6</options>
+        <options>level7</options>
+        <options>level8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>unlimitedWindowSize</name>
+      <outputString>unlimitedWindowSize</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>disableCompressibilityTesting</name>
+      <outputString>disableCompressibilityTesting</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions />
+  <booleanConstraints />
+  <nonBooleanConstraints />
+</vm>

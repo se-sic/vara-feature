@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<results>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level1
+		</data>
+		<data columname="Performance">
+			1
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level2
+		</data>
+		<data columname="Performance">
+			2
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level3
+		</data>
+		<data columname="Performance">
+			3
+		</data>
+	</row>
+
+</results>
+<!--
+largest relative sample-based standard deviation: 3.18331307643
+-->
