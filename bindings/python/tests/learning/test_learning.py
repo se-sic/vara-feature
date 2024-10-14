@@ -5,9 +5,8 @@ import unittest
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from sklearn.metrics import mean_squared_error
 
-from ...machine_learning import learning
+from bindings.python.ml.machine_learning import learning
 
 class TestLearning(unittest.TestCase):
     def setUp(self):
@@ -218,11 +217,10 @@ class TestLearning(unittest.TestCase):
         selected_features = ['A', 'A$$B', 'B', 'C']
         new_df = pd.concat([df, interaction_df], axis=1)
 
-        mse, mape = learning.validate_model(df, final_model, selected_features)
-        expected_mse = mean_squared_error(y, final_model.predict(new_df[selected_features]))
+        mape = learning.validate_model(df, final_model, selected_features)
+
         expected_mape = learning.calculate_mape(y, final_model.predict(new_df[selected_features]))
 
-        self.assertAlmostEqual(mse, expected_mse, places=5, msg="MSE is not as expected.")
         self.assertAlmostEqual(mape, expected_mape, places=5, msg="MAPE is not as expected.")
 
         # Test model export and load

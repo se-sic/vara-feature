@@ -1,14 +1,21 @@
+#data helper.py
 import xml.etree.ElementTree as ET
-
+import os
 import pandas as pd
 import vara_feature as vf
 import vara_feature.feature_model as FM
 
+import os
+
 
 def load_feature_model_and_extract_names(feature_model_path):
+    if not os.path.isfile(feature_model_path):
+        raise FileNotFoundError(f"The file '{feature_model_path}' does not exist.")
+
     feature_model = FM.loadFeatureModel(feature_model_path)
-    features = [feature.name.str() for feature in feature_model if not isinstance(feature, vf.feature.RootFeature)]
-    return feature_model, features
+    features = [feature for feature in feature_model if not isinstance(feature, vf.feature.RootFeature)]
+    feature_names = [feature.name.str() for feature in features]
+    return feature_model, features, feature_names
 
 
 def parse_xml_to_csv(xml_file_path, csv_file_path, features):

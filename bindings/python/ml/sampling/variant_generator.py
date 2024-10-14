@@ -1,3 +1,4 @@
+#variant generator.py
 import csv
 import random
 import sys

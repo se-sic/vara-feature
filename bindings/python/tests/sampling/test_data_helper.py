@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from ...sampling import data_helper
+from ...ml.script import data_helper
 
 TEST_INPUTS_DIR = Path(os.path.join(Path(os.path.dirname(__file__)).parent, 'TEST_INPUTS'))
 
@@ -12,9 +12,9 @@ TEST_INPUTS_DIR = Path(os.path.join(Path(os.path.dirname(__file__)).parent, 'TES
 class TestDataHelper(unittest.TestCase):
 
     def test_load_feature_model_and_extract_names(self):
-        feature_model, features = data_helper.load_feature_model_and_extract_names(
+        feature_model, features, names = data_helper.load_feature_model_and_extract_names(
             TEST_INPUTS_DIR / "simple_example_feature_model.xml")
-        self.assertEqual(features, ['A', 'B', 'C'])
+        self.assertEqual(names, ['A', 'B', 'C'])
 
     def test_parse_xml_to_csv(self):
         features = ['compression', 'compressionLrzip', 'level', 'level1', 'level2', 'level3', 'level4']

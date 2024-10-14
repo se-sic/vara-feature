@@ -1,6 +1,6 @@
 import unittest
 
-from ...sampling.configuration import Configuration, ConfigurationOption
+from bindings.python.ml.sampling.configuration import Configuration, ConfigurationOption
 
 
 class TestConfiguration(unittest.TestCase):

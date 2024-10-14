@@ -7,8 +7,8 @@ from typing import List, Dict
 import vara_feature as vf
 import vara_feature.feature_model as FM
 
-from ...sampling import variant_generator
-from ...sampling.configuration import Configuration
+from ...ml.sampling import variant_generator
+from bindings.python.ml.sampling.configuration import Configuration
 
 TEST_INPUTS_DIR = Path(os.path.join(Path(os.path.dirname(__file__)).parent, 'TEST_INPUTS'))
 
@@ -74,8 +74,8 @@ class TestVariantGenerator(unittest.TestCase):
 
                 # Generate configurations for this distance
                 generated_configs = variant_generator.generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy,
-                    sample_size=len(expected_configs), seed=self.seed, distances=[distance])
+                                                                        features_to_consider=self.features_to_consider, strategy=strategy,
+                                                                        sample_size=len(expected_configs), seed=self.seed, distances=[distance])
                 generated_set = set(str(conf) for conf in generated_configs)
                 # Compare the generated configurations with the expected ground truth
                 self.assertEqual(generated_set, expected_set,
@@ -93,13 +93,13 @@ class TestVariantGenerator(unittest.TestCase):
             with self.subTest(strategy=strategy):
                 # Generate variants for the first run
                 variants_first_run = variant_generator.generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=self.seed)
+                                                                         features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
+                                                                         seed=self.seed)
 
                 # Generate variants for the second run with the same seed
                 variants_second_run = variant_generator.generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=self.seed)
+                                                                          features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
+                                                                          seed=self.seed)
 
                 variants_first_run_str = set(str(conf) for conf in variants_first_run)
                 variants_second_run_str = set(str(conf) for conf in variants_second_run)
@@ -120,13 +120,13 @@ class TestVariantGenerator(unittest.TestCase):
         for strategy in strategies:
             with self.subTest(strategy=strategy):
                 variants_seed1 = variant_generator.generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=seed1)
+                                                                     features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
+                                                                     seed=seed1)
 
                 # Generate variants with seed2
                 variants_seed2 = variant_generator.generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=seed2)
+                                                                     features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
+                                                                     seed=seed2)
                 variants_seed1_str = set(str(conf) for conf in variants_seed1)
                 variants_seed2_str = set(str(conf) for conf in variants_seed2)
 
@@ -150,8 +150,8 @@ class TestVariantGenerator(unittest.TestCase):
             with self.subTest(strategy=strategy):
                 # Generate variants with the fixed seed
                 generated_variants = variant_generator.generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=self.seed)
+                                                                         features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
+                                                                         seed=self.seed)
 
                 generated_set = set(str(conf) for conf in generated_variants)
                 ground_truth_set = set(str(conf) for conf in self.ground_truth)

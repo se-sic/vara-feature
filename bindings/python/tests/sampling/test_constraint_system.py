@@ -4,7 +4,7 @@ from pathlib import Path
 
 import vara_feature.feature_model as FM
 
-from ...sampling.constraint_system import *
+from bindings.python.ml.sampling.constraint_system import *
 
 TEST_INPUTS_DIR = Path(os.path.join(Path(os.path.dirname(__file__)).parent, 'TEST_INPUTS'))
 
