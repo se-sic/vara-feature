@@ -15,6 +15,18 @@ namespace vara::feature {
 //                               ConstraintToken
 //===----------------------------------------------------------------------===//
 
+namespace legacy {
+// NOLINTNEXTLINE(readability-identifier-naming)
+[[nodiscard]] inline bool starts_with(llvm::StringRef Str,
+                                      llvm::StringRef Prefix) {
+#if LLVM_VERSION_MAJOR <= 14
+  return Str.startswith(Prefix);
+#else
+  return Str.starts_with(Prefix);
+#endif
+}
+} // namespace legacy
+
 class ConstraintToken {
 public:
   using PrecedenceTy = unsigned int;
@@ -187,26 +199,26 @@ private:
   static ResultTy munchOperator(const llvm::StringRef &Str) {
     switch (Str.front()) {
     case '-':
-      if (Str.startswith("->")) {
+      if (legacy::starts_with(Str, "->")) {
         return {ConstraintToken(ConstraintToken::ConstraintTokenKind::IMPLIES),
                 2};
       }
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::MINUS), 1};
     case '!':
-      if (Str.startswith("!=")) {
+      if (legacy::starts_with(Str, "!=")) {
         return {
             ConstraintToken(ConstraintToken::ConstraintTokenKind::NOT_EQUAL),
             2};
       }
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::NOT), 1};
     case '=':
-      if (Str.startswith("=>")) {
+      if (legacy::starts_with(Str, "=>")) {
         return {ConstraintToken(ConstraintToken::ConstraintTokenKind::IMPLIES),
                 2};
       }
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::EQUAL), 1};
     case '>':
-      if (Str.startswith(">=")) {
+      if (legacy::starts_with(Str, ">=")) {
         return {ConstraintToken(
                     ConstraintToken::ConstraintTokenKind::GREATER_EQUAL),
                 2};
@@ -214,11 +226,11 @@ private:
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::GREATER),
               1};
     case '<':
-      if (Str.startswith("<->") || Str.startswith("<=>")) {
+      if (legacy::starts_with(Str, "<->") || legacy::starts_with(Str, "<=>")) {
         return {
             ConstraintToken(ConstraintToken::ConstraintTokenKind::EQUIVALENT),
             3};
-      } else if (Str.startswith("<=")) {
+      } else if (legacy::starts_with(Str, "<=")) {
         return {
             ConstraintToken(ConstraintToken::ConstraintTokenKind::LESS_EQUAL),
             2};
@@ -282,7 +294,7 @@ static int64_t parseInteger(llvm::StringRef Str,
   }
 
   // If parsing failed, we return minimal or maximal value respectively.
-  if (Str.startswith("-")) {
+  if (legacy::starts_with(Str, "-")) {
     return std::numeric_limits<int64_t>::min();
   }
   return std::numeric_limits<int64_t>::max();
