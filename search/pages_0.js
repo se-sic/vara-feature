@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vara_2dfeature_1262',['vara-feature',['../index.html',1,'']]]
+  ['vara_2dfeature_1265',['vara-feature',['../index.html',1,'']]]
 ];
