@@ -6,6 +6,8 @@
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Program.h"
 
+#include <optional>
+
 static llvm::cl::OptionCategory
     FMViewerCategory("Feature model viewer options");
 
@@ -80,7 +82,12 @@ int main(int Argc, char **Argv) {
             Viewer.empty() ? llvm::errc::invalid_argument
                            : llvm::sys::findProgramByName(Viewer)) {
       llvm::errs() << "Trying '" << *P << "' program... \n";
+#if __has_include("llvm/ADT/Optional.h")
+      // To stay compatible with older llvm versions
       llvm::sys::ExecuteNoWait(*P, {*P, Filename}, llvm::None);
+#else
+      llvm::sys::ExecuteNoWait(*P, {*P, Filename}, std::nullopt);
+#endif
     } else {
       llvm::DisplayGraph(Filename);
     }

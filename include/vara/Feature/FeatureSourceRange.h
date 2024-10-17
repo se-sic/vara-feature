@@ -1,8 +1,6 @@
 #ifndef VARA_FEATURE_FEATURESOURCERANGE_H
 #define VARA_FEATURE_FEATURESOURCERANGE_H
 
-#include "llvm/ADT/None.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/Support/FormatVariadic.h"
 
@@ -17,7 +15,6 @@ namespace fs = std::experimental::filesystem;
 #include <optional>
 #include <sstream>
 #include <string>
-#include <tuple>
 #include <utility>
 
 namespace vara::feature {
