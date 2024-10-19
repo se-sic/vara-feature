@@ -4,6 +4,10 @@ from bindings.python.ml.sampling.configuration import Configuration, Configurati
 
 
 class TestConfiguration(unittest.TestCase):
+    """
+    Unit tests for the Configuration and ConfigurationOption classes.
+    """
+
     def test_str_representation_sorted(self):
         """
         Test that the string representation of Configuration has options sorted alphabetically.
@@ -96,41 +100,43 @@ class TestConfiguration(unittest.TestCase):
         """
         Test that configurations can have a subset of possible options set and still behave correctly.
         """
-        config1 = Configuration()
-        config1.set_option("A", True)
+        config_with_A = Configuration()
+        config_with_A.set_option("A", True)
 
-        config2 = Configuration()
-        config2.set_option("B", False)
+        config_with_B = Configuration()
+        config_with_B.set_option("B", False)
 
-        self.assertNotEqual(config1, config2,
+        self.assertNotEqual(config_with_A, config_with_B,
                             "Configurations with different subsets of options are incorrectly considered equal.")
 
-        self.assertNotEqual(hash(config1), hash(config2),
+        self.assertNotEqual(hash(config_with_A), hash(config_with_B),
                             "Configurations with different subsets of options should have different hashes.")
 
     def test_configuration_option_hash_equality(self):
         """
         Test that ConfigurationOption instances with the same data hash identically.
         """
-        option1 = ConfigurationOption(name="A", value=True)
-        option2 = ConfigurationOption(name="A", value=True)
-        option3 = ConfigurationOption(name="A", value=False)
+        option_true_A = ConfigurationOption(name="A", value=True)
+        option_true_A_duplicate = ConfigurationOption(name="A", value=True)
+        option_false_A = ConfigurationOption(name="A", value=False)
 
-        self.assertEqual(hash(option1), hash(option2),
+        self.assertEqual(hash(option_true_A), hash(option_true_A_duplicate),
                          "ConfigurationOption instances with identical data should have the same hash.")
-        self.assertNotEqual(hash(option1), hash(option3),
+        self.assertNotEqual(hash(option_true_A), hash(option_false_A),
                             "ConfigurationOption instances with different data should have different hashes.")
 
     def test_configuration_option_equality(self):
         """
         Test that ConfigurationOption instances with the same data are equal.
         """
-        option1 = ConfigurationOption(name="A", value=True)
-        option2 = ConfigurationOption(name="A", value=True)
-        option3 = ConfigurationOption(name="A", value=False)
+        option_true_A = ConfigurationOption(name="A", value=True)
+        option_true_A_duplicate = ConfigurationOption(name="A", value=True)
+        option_false_A = ConfigurationOption(name="A", value=False)
 
-        self.assertEqual(option1, option2, "ConfigurationOption instances with identical data should be equal.")
-        self.assertNotEqual(option1, option3, "ConfigurationOption instances with different data should not be equal.")
+        self.assertEqual(option_true_A, option_true_A_duplicate,
+                         "ConfigurationOption instances with identical data should be equal.")
+        self.assertNotEqual(option_true_A, option_false_A,
+                            "ConfigurationOption instances with different data should not be equal.")
 
     def test_configuration_with_multiple_options(self):
         """
@@ -156,7 +162,7 @@ class TestConfiguration(unittest.TestCase):
 
         self.assertTrue(option_bool.is_bool(), "Option A should be identified as boolean.")
         self.assertFalse(option_bool.is_string(), "Option A should not be identified as string.")
-        self.assertTrue(option_bool.is_int(), "Option A should be identified as integer.")
+        self.assertFalse(option_bool.is_int(), "Option A should not be identified as integer.")
 
         self.assertFalse(option_str.is_bool(), "Option B should not be identified as boolean.")
         self.assertTrue(option_str.is_string(), "Option B should be identified as string.")

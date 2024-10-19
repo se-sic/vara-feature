@@ -1,3 +1,35 @@
+"""
+Experimental Pipeline for Configuration Performance Prediction
+
+This script facilitates the experimental pipeline for predicting the performance
+of various configurations based on provided measurements and a feature model. The
+pipeline involves sampling configurations, matching them with performance data,
+training a regression model using stepwise feature selection, and validating the model.
+
+**Usage:**
+```bash
+python experimental_pipeline.py \
+    --measurements_csv path/to/measurements.csv \
+    --feature_model_xml path/to/feature_model.xml \
+    --sample_strategy random \
+    -- sample_seed 42
+    --sample_size 100 \
+    --output_dir results/
+
+Arguments:
+
+--measurements_csv: Path to the CSV file containing configurations and their performance metrics.
+--feature_model_xml: Path to the XML file defining the feature model.
+--sample_strategy: Strategy for sampling configurations (random, solver, distance, diversified-distance).
+--sample_size: Number of configurations to sample.
+--output_dir: Directory to store outputs and log files.
+Optional Arguments:
+
+--sample_seed: Random seed for sampling (default: 42).
+--max_interaction_order: Maximum order of feature interactions (default: 3).
+--margin: Margin for error improvement in feature selection (default: 0.01).
+--threshold: Threshold for model error to stop feature selection (default: 0.01).
+--learning_seed: Random seed for machine learning processes (default: 42). """
 import argparse
 import logging
 import os
@@ -5,8 +37,8 @@ import sys
 
 import pandas as pd
 
-from bindings.python.ml.machine_learning.learning import (Stepwise, export_model, validate_model)
-from bindings.python.ml.sampling.variant_generator import (generate_variants, export_configurations_to_csv)
+from bindings.python.ml.machine_learning.learning import (stepwise_learning, export_model, validate_model)
+from bindings.python.ml.sampling.variant_generator import (generate_variants, export_configurations_to_csv, sample_from_csv)
 # Importing custom modules
 from data_helper import (load_feature_model_and_extract_names, find_performance_for_configurations)
 
@@ -109,11 +141,16 @@ def main():
 
         # Step 2: Generate Sampled Configurations
         logger.info("Generating sampled configurations using variant generator.")
-        sampled_configurations = generate_variants(feature_model=feature_model, features_to_consider=features,
+
+        if sample_strategy =='random':
+            #sample from full measurements instead of generating new configurations
+            sampled_configurations = sample_from_csv(sample_size=sample_size, seed=sample_seed,
+                                                     measurements_csv=measurements_csv)
+        else:
+            sampled_configurations = generate_variants(feature_model=feature_model, features_to_consider=features,
                                                    strategy=sample_strategy, sample_size=sample_size, seed=sample_seed,
-                                                   distances=None
-                                                   # Modify if distance-specific parameters are needed
-                                                   )
+                                                   distances=None)
+
         logger.info(f"Number of configurations sampled: {len(sampled_configurations)}")
 
         # Step 3: Export Sampled Configurations to CSV
@@ -131,8 +168,8 @@ def main():
 
         # Step 5: Train the Regression Model using Stepwise Selection
         logger.info("Training the regression model using stepwise selection.")
-        model, selected_features = Stepwise(df=df_matched, max_interaction_order=max_interaction_order, margin=margin,
-                                            threshold=threshold, random_seed=learning_seed)
+        model, selected_features = stepwise_learning(df=df_matched, max_interaction_order=max_interaction_order, margin=margin,
+                                                     threshold=threshold, random_seed=learning_seed)
         # Log the selected features
         logger.info(f"Selected features: {selected_features}")
         coefs = model.coef_  # Assuming model has a coef_ attribute
