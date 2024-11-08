@@ -1,0 +1,606 @@
+<vm name="FeatureModelBinary">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>Precon</name>
+      <outputString>Precon</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children>
+        <option>SeqGS</option>
+        <option>SeqSOR</option>
+      </children>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>Solver</name>
+      <outputString>Solver</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children>
+        <option>CGSolver</option>
+        <option>BiCGSTABSolver</option>
+        <option>LoopSolver</option>
+        <option>GradientSolver</option>
+      </children>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>SeqGS</name>
+      <outputString>SeqGS</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Precon</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>SeqSOR</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>SeqSOR</name>
+      <outputString>SeqSOR</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Precon</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>SeqGS</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>CGSolver</name>
+      <outputString>CGSolver</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Solver</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>BiCGSTABSolver</options>
+        <options>LoopSolver</options>
+        <options>GradientSolver</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>BiCGSTABSolver</name>
+      <outputString>BiCGSTABSolver</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Solver</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>CGSolver</options>
+        <options>LoopSolver</options>
+        <options>GradientSolver</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>LoopSolver</name>
+      <outputString>LoopSolver</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Solver</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>CGSolver</options>
+        <options>BiCGSTABSolver</options>
+        <options>GradientSolver</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>GradientSolver</name>
+      <outputString>GradientSolver</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Solver</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>CGSolver</options>
+        <options>BiCGSTABSolver</options>
+        <options>LoopSolver</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+	<name>PreSmoothing</name>
+	<outputString>PreSmoothing</outputString>
+	<prefix />
+	<postFix />
+	<parent>root</parent>
+	<children>
+		<option>pre_0</option>
+		<option>pre_1</option>
+		<option>pre_2</option>
+		<option>pre_3</option>
+		<option>pre_4</option>
+		<option>pre_5</option>
+		<option>pre_6</option>
+	</children>
+	<impliedOptions />
+	<excludedOptions />
+	<optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>pre_0</name>
+      <outputString>pre=0</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PreSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>pre_1</options>
+        <options>pre_2</options>
+        <options>pre_3</options>
+        <options>pre_4</options>
+        <options>pre_5</options>
+        <options>pre_6</options>
+	<options>post_0</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>pre_1</name>
+      <outputString>pre=1</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PreSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>pre_0</options>
+        <options>pre_2</options>
+        <options>pre_3</options>
+        <options>pre_4</options>
+        <options>pre_5</options>
+        <options>pre_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>pre_2</name>
+      <outputString>pre=2</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PreSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>pre_0</options>
+        <options>pre_1</options>
+        <options>pre_3</options>
+        <options>pre_4</options>
+        <options>pre_5</options>
+        <options>pre_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>pre_3</name>
+      <outputString>pre=3</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PreSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>pre_0</options>
+        <options>pre_1</options>
+        <options>pre_2</options>
+        <options>pre_4</options>
+        <options>pre_5</options>
+        <options>pre_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>pre_4</name>
+      <outputString>pre=4</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PreSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>pre_0</options>
+        <options>pre_1</options>
+        <options>pre_2</options>
+        <options>pre_3</options>
+        <options>pre_5</options>
+        <options>pre_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>pre_5</name>
+      <outputString>pre=5</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PreSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>pre_0</options>
+        <options>pre_1</options>
+        <options>pre_2</options>
+        <options>pre_3</options>
+        <options>pre_4</options>
+        <options>pre_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>pre_6</name>
+      <outputString>pre=6</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PreSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>pre_0</options>
+        <options>pre_1</options>
+        <options>pre_2</options>
+        <options>pre_3</options>
+        <options>pre_4</options>
+        <options>pre_5</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+        <name>PostSmoothing</name>
+        <outputString>PostSmoothing</outputString>
+        <prefix />
+        <postFix />
+        <parent>root</parent>
+        <children>
+                <option>post_0</option>
+                <option>post_1</option>
+                <option>post_2</option>
+                <option>post_3</option>
+                <option>post_4</option>
+                <option>post_5</option>
+                <option>post_6</option>
+        </children>
+        <impliedOptions />
+        <excludedOptions />
+        <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>post_0</name>
+      <outputString>post=0</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PostSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>post_1</options>
+        <options>post_2</options>
+        <options>post_3</options>
+        <options>post_4</options>
+        <options>post_5</options>
+        <options>post_6</options>
+	<options>pre_0</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>post_1</name>
+      <outputString>post=1</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PostSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>post_0</options>
+        <options>post_2</options>
+        <options>post_3</options>
+        <options>post_4</options>
+        <options>post_5</options>
+        <options>post_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>post_2</name>
+      <outputString>post=2</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PostSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>post_0</options>
+        <options>post_1</options>
+        <options>post_3</options>
+        <options>post_4</options>
+        <options>post_5</options>
+        <options>post_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>post_3</name>
+      <outputString>post=3</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PostSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>post_0</options>
+        <options>post_1</options>
+        <options>post_2</options>
+        <options>post_4</options>
+        <options>post_5</options>
+        <options>post_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>post_4</name>
+      <outputString>post=4</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PostSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>post_0</options>
+        <options>post_1</options>
+        <options>post_2</options>
+        <options>post_3</options>
+        <options>post_5</options>
+        <options>post_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>post_5</name>
+      <outputString>post=5</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PostSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>post_0</options>
+        <options>post_1</options>
+        <options>post_2</options>
+        <options>post_3</options>
+        <options>post_4</options>
+        <options>post_6</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>post_6</name>
+      <outputString>post=6</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>PostSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>post_0</options>
+        <options>post_1</options>
+        <options>post_2</options>
+        <options>post_3</options>
+        <options>post_4</options>
+        <options>post_5</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>Cells</name>
+      <outputString>Cells</outputString>
+      <prefix />
+      <postfix />
+      <parent>root</parent>
+      <children>
+	<option>cells_50</option>
+	<option>cells_51</option>
+	<option>cells_52</option>
+	<option>cells_53</option>
+	<option>cells_54</option>
+	<option>cells_55</option>
+      </children>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>cells_50</name>
+      <outputString>cells=50</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Cells</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>cells_51</options>
+        <options>cells_52</options>
+        <options>cells_53</options>
+        <options>cells_54</options>
+        <options>cells_55</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>cells_51</name>
+      <outputString>cells=51</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Cells</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>cells_50</options>
+        <options>cells_52</options>
+        <options>cells_53</options>
+        <options>cells_54</options>
+        <options>cells_55</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>cells_52</name>
+      <outputString>cells=52</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Cells</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>cells_50</options>
+        <options>cells_51</options>
+        <options>cells_53</options>
+        <options>cells_54</options>
+        <options>cells_55</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>cells_53</name>
+      <outputString>cells=53</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Cells</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>cells_50</options>
+        <options>cells_51</options>
+        <options>cells_52</options>
+        <options>cells_54</options>
+        <options>cells_55</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>cells_54</name>
+      <outputString>cells=54</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Cells</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>cells_50</options>
+        <options>cells_51</options>
+        <options>cells_52</options>
+        <options>cells_53</options>
+        <options>cells_55</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>cells_55</name>
+      <outputString>cells=55</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>Cells</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>cells_50</options>
+        <options>cells_51</options>
+        <options>cells_52</options>
+        <options>cells_53</options>
+        <options>cells_54</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions />
+  <booleanConstraints />
+  <nonBooleanConstraints />
+</vm>
