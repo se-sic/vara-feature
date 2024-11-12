@@ -5,7 +5,7 @@ from typing import List
 
 import pandas as pd
 
-from bindings.python.ml.script import data_helper
+from ml.script import data_helper
 
 # Define the directory containing test input files
 TEST_INPUTS_DIR = Path(__file__).resolve().parent.parent / 'TEST_INPUTS'

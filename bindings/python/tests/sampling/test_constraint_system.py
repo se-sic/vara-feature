@@ -3,8 +3,8 @@ from pathlib import Path
 
 import vara_feature.feature_model as FM
 
-from bindings.python.ml.sampling.constraint_system import *
 
+from ml.sampling.constraint_system import *
 # Define test inputs directory
 TEST_INPUTS_DIR = Path(__file__).resolve().parent.parent / 'TEST_INPUTS'
 

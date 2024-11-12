@@ -7,8 +7,8 @@ from typing import List, Dict
 import vara_feature as vf
 import vara_feature.feature_model as FM
 
-from bindings.python.ml.sampling.configuration import Configuration
-from bindings.python.ml.sampling.variant_generator import generate_variants, sample_from_csv
+from ml.sampling.configuration import Configuration
+from ml.sampling.variant_generator import generate_variants, sample_from_csv
 
 # Define test inputs directory
 TEST_INPUTS_DIR = Path(os.path.join(Path(__file__).parent.parent, 'TEST_INPUTS'))
@@ -46,9 +46,9 @@ class TestVariantGenerator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Load the feature model and ground truth configurations once for all tests."""
-        cls.fm = FM.loadFeatureModel(TEST_INPUTS_DIR / "VP9.xml")
+        cls.fm = FM.loadFeatureModel(TEST_INPUTS_DIR / "lrzip.xml")
         cls.features_to_consider = [feature for feature in cls.fm if not isinstance(feature, vf.feature.RootFeature)]
-        cls.ground_truth = load_ground_truth_csv(TEST_INPUTS_DIR / 'VP9.csv')
+        cls.ground_truth = load_ground_truth_csv(TEST_INPUTS_DIR / 'lrzip.csv')
         cls.seed = 42  # Fixed seed for deterministic tests
 
         # Precompute ground truth configurations grouped by distance

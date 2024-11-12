@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 
-from bindings.python.ml.machine_learning import learning
+from ml.machine_learning import learning
 
 
 class TestLearning(unittest.TestCase):
