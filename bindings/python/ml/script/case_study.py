@@ -8,7 +8,7 @@ training a regression model using stepwise feature selection, and validating the
 
 **Usage:**
 ```bash
-python experimental_pipeline.py \
+python case_study.py \
     --measurements_csv path/to/measurements.csv \
     --feature_model_xml path/to/feature_model.xml \
     --sample_strategy random \
