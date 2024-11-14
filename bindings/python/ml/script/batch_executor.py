@@ -1,30 +1,30 @@
-import os
 import argparse
-sample_sizes = {
-    '7z': [39, 600, 4091],
-    'BerkeleyDBC': [15, 97, 343],
-    'Dune': [25, 265, 1071],
-    'Hipacc': [50, 843, 4601],
-    'JavaGC': [32, 468, 3504],
-    'LLVM': [11, 55, 165],
-    'Polly': [28, 345, 2172],
-    'VP9': [31, 483, 3893],
-    'lrzip': [18, 90, 178],
-    'x264': [12, 65, 212]
-}
+import os
 
-measurement_feature_pairs = [
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/7z.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/7z.xml'),
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/lrzip.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/lrzip.xml'),
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/Dune.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/Dune.xml'),
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/BerkeleyDBC.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/BerkeleyDBC.xml'),
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/Hipacc.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/Hipacc.xml'),
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/LLVM.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/LLVM.xml'),
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/Polly.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/Polly.xml'),
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/x264.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/x264.xml'),
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/JavaGC.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/JavaGC.xml'),
-    ('~/vara-feature/bindings/python/ml/sampling/measurements/VP9.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/VP9.xml')
-]
+sample_sizes = {'7z': [39, 600, 4091], 'BerkeleyDBC': [15, 97, 343], 'Dune': [25, 265, 1071], 'Hipacc': [50, 843, 4601],
+    'JavaGC': [32, 468, 3504], 'LLVM': [11, 55, 165], 'Polly': [28, 345, 2172], 'VP9': [31, 483, 3893],
+    'lrzip': [18, 90, 178], 'x264': [12, 65, 212]}
+
+measurement_feature_pairs = [('~/vara-feature/bindings/python/ml/sampling/measurements/7z.csv',
+                              '~/vara-feature/bindings/python/ml/sampling/feature_models/7z.xml'), (
+'~/vara-feature/bindings/python/ml/sampling/measurements/lrzip.csv',
+'~/vara-feature/bindings/python/ml/sampling/feature_models/lrzip.xml'), (
+'~/vara-feature/bindings/python/ml/sampling/measurements/Dune.csv',
+'~/vara-feature/bindings/python/ml/sampling/feature_models/Dune.xml'), (
+'~/vara-feature/bindings/python/ml/sampling/measurements/BerkeleyDBC.csv',
+'~/vara-feature/bindings/python/ml/sampling/feature_models/BerkeleyDBC.xml'), (
+'~/vara-feature/bindings/python/ml/sampling/measurements/Hipacc.csv',
+'~/vara-feature/bindings/python/ml/sampling/feature_models/Hipacc.xml'), (
+'~/vara-feature/bindings/python/ml/sampling/measurements/LLVM.csv',
+'~/vara-feature/bindings/python/ml/sampling/feature_models/LLVM.xml'), (
+'~/vara-feature/bindings/python/ml/sampling/measurements/Polly.csv',
+'~/vara-feature/bindings/python/ml/sampling/feature_models/Polly.xml'), (
+'~/vara-feature/bindings/python/ml/sampling/measurements/x264.csv',
+'~/vara-feature/bindings/python/ml/sampling/feature_models/x264.xml'), (
+'~/vara-feature/bindings/python/ml/sampling/measurements/JavaGC.csv',
+'~/vara-feature/bindings/python/ml/sampling/feature_models/JavaGC.xml'), (
+'~/vara-feature/bindings/python/ml/sampling/measurements/VP9.csv',
+'~/vara-feature/bindings/python/ml/sampling/feature_models/VP9.xml')]
 
 sampling_strategies = ['distance', 'diversified-distance', 'random']
 
@@ -72,11 +72,9 @@ output_dir = f"results/{os.path.splitext(os.path.basename(measurement_csv))[0]}_
 os.makedirs(output_dir, exist_ok=True)
 
 # Execute the command
-command = (
-    f"python case_study.py --measurements_csv {measurement_csv} "
-    f"--feature_model_xml {feature_model_xml} --sample_seed {seed} "
-    f"--sample_strategy {selected_strategy} --sample_size {sample_size} "
-    f"--max_interaction_order 3 --margin 0.01 --threshold 0.01 "
-    f"--learning_seed 42 --output_dir {output_dir}"
-)
+command = (f"python case_study.py --measurements_csv {measurement_csv} "
+           f"--feature_model_xml {feature_model_xml} --sample_seed {seed} "
+           f"--sample_strategy {selected_strategy} --sample_size {sample_size} "
+           f"--max_interaction_order 3 --margin 0.01 --threshold 0.01 "
+           f"--learning_seed 42 --output_dir {output_dir}")
 os.system(command)

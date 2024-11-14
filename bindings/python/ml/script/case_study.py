@@ -36,9 +36,9 @@ import os
 import sys
 
 import pandas as pd
-
 from ml.machine_learning.learning import (stepwise_learning, export_model, validate_model)
 from ml.sampling.variant_generator import (generate_variants, export_configurations_to_csv, sample_from_csv)
+
 # Importing custom modules
 from data_helper import (load_feature_model_and_extract_names, find_performance_for_configurations)
 
@@ -142,14 +142,14 @@ def main():
         # Step 2: Generate Sampled Configurations
         logger.info("Generating sampled configurations using variant generator.")
 
-        if sample_strategy =='random':
-            #sample from full measurements instead of generating new configurations
+        if sample_strategy == 'random':
+            # sample from full measurements instead of generating new configurations
             sampled_configurations = sample_from_csv(sample_size=sample_size, seed=sample_seed,
                                                      measurements_csv=measurements_csv)
         else:
             sampled_configurations = generate_variants(feature_model=feature_model, features_to_consider=features,
-                                                   strategy=sample_strategy, sample_size=sample_size, seed=sample_seed,
-                                                   distances=None)
+                                                       strategy=sample_strategy, sample_size=sample_size,
+                                                       seed=sample_seed, distances=None)
 
         logger.info(f"Number of configurations sampled: {len(sampled_configurations)}")
 
@@ -167,8 +167,8 @@ def main():
 
         # Step 5: Train the Regression Model using Stepwise Selection
         logger.info("Training the regression model using stepwise selection.")
-        model, selected_features = stepwise_learning(df=df_matched, max_interaction_order=max_interaction_order, margin=margin,
-                                                     threshold=threshold, random_seed=learning_seed)
+        model, selected_features = stepwise_learning(df=df_matched, max_interaction_order=max_interaction_order,
+                                                     margin=margin, threshold=threshold, random_seed=learning_seed)
         # Log the selected features
         logger.info(f"Selected features: {selected_features}")
         coefs = model.coef_  # Assuming model has a coef_ attribute
@@ -192,8 +192,7 @@ def main():
         # Step 9: Predict Performance for All Configurations
         logger.info("Predicting performance for all configurations.")
         # Ensure all interaction terms are present
-        validation_error = validate_model(df=df_all_configs, model=model,
-                                          selected_features=selected_features)
+        validation_error = validate_model(df=df_all_configs, model=model, selected_features=selected_features)
         logger.info(f"Validation Error: {validation_error}")
 
         logger.info("Experimental pipeline completed successfully.")

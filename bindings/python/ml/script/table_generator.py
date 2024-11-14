@@ -1,177 +1,166 @@
+import argparse
 import os
 import re
 import sys
-import argparse
 from statistics import mean
 
-# Define the sampling strategies
-sampling_strategies = [
-    'distance',
-    'diversified-distance',
-    'random',
-    'solver'
-]
-
-# Define measurement-feature pairs
-measurement_feature_pairs = [
-    ('../sampling/measurements/7z.csv', '../sampling/feature_models/7z.xml'),
-    ('../sampling/measurements/lrzip.csv', '../sampling/feature_models/lrzip.xml'),
-    ('../sampling/measurements/Dune.csv', '../sampling/feature_models/Dune.xml'),
-    ('../sampling/measurements/BerkeleyDBC.csv', '../sampling/feature_models/BerkeleyDBC.xml'),
-    ('../sampling/measurements/Hipacc.csv', '../sampling/feature_models/Hipacc.xml'),
-    ('../sampling/measurements/LLVM.csv', '../sampling/feature_models/LLVM.xml'),
-    ('../sampling/measurements/Polly.csv', '../sampling/feature_models/Polly.xml'),
-    ('../sampling/measurements/x264.csv', '../sampling/feature_models/x264.xml'),
-    ('../sampling/measurements/JavaGC.csv', '../sampling/feature_models/JavaGC.xml'),
-    ('../sampling/measurements/VP9.csv', '../sampling/feature_models/VP9.xml')
-]
-
-# Define sample sizes (t values)
-sample_sizes = [1, 2, 3]  # Adjust this list as needed
-
-# Base output directory
-base_output_dir = '../experiments_output_randomSeed_1'
-
-# Log file name (assuming it's consistent across all runs)
-LOG_FILE_NAME = 'run.log'
-
-# LaTeX table output file
-LATEX_TABLE_FILE = 'validation_errors_table_seed1.tex'
-
-# Regular expression pattern to extract Validation Error
+# Define regular expressions and configuration
+completion_pattern = re.compile(r'Experimental pipeline completed successfully.')
+export_pattern = re.compile(r'Trained model exported to (\S+)')
 error_pattern = re.compile(r'Validation Error:\s+([\d\.]+)')
 
-# LaTeX formatting constants
-PERCENT = "\\%"
-NEW_LINE = "\\\\"
+sampling_strategies = ['distance', 'diversified-distance', 'random', 'solver']
+sample_sizes = [1, 2, 3]
+
+LATEX_TABLE_FILE = 'validation_errors_table.tex'
 
 
-def extract_validation_error(log_file_path):
-    """
-    Extracts Validation Error value from the given log file.
-
-    :param log_file_path: Path to the log file.
-    :return: Validation Error float.
-    """
+def extract_log_data(log_file_path):
+    """Extract relevant data from the log file."""
     if not os.path.isfile(log_file_path):
         print(f"Warning: Log file {log_file_path} does not exist.", file=sys.stderr)
-        return
+        return None
+
+    validation_error = None
+    completed_successfully = False
+    configuration_details = None
+
     with open(log_file_path, 'r') as file:
         for line in file:
-            match = error_pattern.search(line)
-            if match:
+            if completion_pattern.search(line):
+                completed_successfully = True
+            if export_match := export_pattern.search(line):
+                configuration_details = export_match.group(1)
+            if error_match := error_pattern.search(line):
                 try:
-                    error = float(match.group(1))
-                    break
+                    validation_error = float(error_match.group(1))
                 except ValueError:
                     print(f"Warning: Could not convert extracted error to float in line: {line.strip()}",
                           file=sys.stderr)
-    return error
+                    return None
+
+    if not completed_successfully or validation_error is None or configuration_details is None:
+        return None
+
+    # Extract model, sample size, strategy, and seed from the directory path
+    try:
+        parts = configuration_details.split('/')
+        config_dir = parts[-2]  # This assumes the format results/model_t=sample_strategy_seed
+        model, t_part, strategy, seed_str = config_dir.split('_')
+        sample_size = int(t_part.split('=')[1])
+        seed = int(seed_str)
+    except ValueError as e:
+        print(f"Warning: Could not extract configuration details from {configuration_details}: {e}", file=sys.stderr)
+        return None
+
+    return model, sample_size, strategy, seed, validation_error
+
+
+def collect_validation_errors(logs_directory):
+    """Collect validation errors from all logs in the specified directory."""
+    data = {}
+
+    for log_filename in os.listdir(logs_directory):
+        if log_filename.endswith('.log'):
+            log_file_path = os.path.join(logs_directory, log_filename)
+            result = extract_log_data(log_file_path)
+            if result:
+                model, sample_size, strategy, seed, validation_error = result
+
+                # Initialize data storage if necessary
+                if model not in data:
+                    data[model] = {}
+                if strategy not in data[model]:
+                    data[model][strategy] = {size: [] for size in sample_sizes}
+
+                data[model][strategy][sample_size].append(validation_error)
+
+    # Calculate means
+    means = {}
+    for model in data:
+        means[model] = {}
+        for strategy in data[model]:
+            means[model][strategy] = {}
+            for size in sample_sizes:
+                if data[model][strategy][size]:
+                    means[model][strategy][size] = mean(data[model][strategy][size])
+                else:
+                    means[model][strategy][size] = None
+
+    return means
 
 
 def generate_latex_table(data, output_file):
-    """
-    Generates a complete LaTeX document with a table of mean Validation Errors.
-
-    :param data: Nested dictionary containing mean errors for each configuration.
-                 Format: {measurement: {strategy: {t_key: mean_error}}}
-    :param output_file: Path to the output LaTeX file.
-    """
+    """Generate a LaTeX table with the collected mean validation errors."""
     with open(output_file, 'w') as tex_file:
-        # Begin LaTeX document
         tex_file.write("\\documentclass{article}\n")
         tex_file.write("\\usepackage{booktabs}\n")
-        tex_file.write("\\usepackage[margin=1in]{geometry}\n")
-        tex_file.write("\\usepackage{caption}\n")
+        tex_file.write("\\usepackage{multirow}\n")
         tex_file.write("\\begin{document}\n\n")
+
+        # Center the table on the page
+        tex_file.write("\\begin{center}\n")
 
         tex_file.write("\\begin{table}[ht]\n")
         tex_file.write("\\centering\n")
 
-        # Define number of strategies for table columns
-        tex_file.write("\\begin{tabular}{l" + " c" * len(sampling_strategies) + "}\n")
+        # Define the number of columns (strategies * sample sizes + 1 for model names)
+        num_columns = len(sampling_strategies) * len(sample_sizes) + 1
+        tex_file.write("\\begin{tabular}{" + "l" + " c" * (num_columns - 1) + "}\n")
         tex_file.write("\\toprule\n")
 
-        # Header
-        header = "Case Study & " + " & ".join(
-            [strategy.capitalize().replace('-', ' ') for strategy in sampling_strategies]) + " \\\\\n"
+        # Header row with strategy names and sample sizes
+        header = "Model & " + " & ".join(
+            f"\\multicolumn{{3}}{{c}}{{{strategy.capitalize()}}}" for strategy in sampling_strategies) + " \\\\\n"
         tex_file.write(header)
+
+        # Sub-header with sample size
+        sub_header = " & " + " & ".join(
+            [f"$t={size}$" for _ in sampling_strategies for size in sample_sizes]) + " \\\\\n"
+        tex_file.write("\\midrule\n")
+        tex_file.write(sub_header)
         tex_file.write("\\midrule\n")
 
-        # Table Rows
-        for measurement_csv, feature_xml in measurement_feature_pairs:
-            measurement = os.path.splitext(os.path.basename(measurement_csv))[0]
-            # For simplicity, using only measurement as case study (ignoring feature)
-            case_study = f"{measurement}"
-            tex_file.write(f"\\textbf{{{case_study}}} & " + " & ".join([""] * len(sampling_strategies)) + " \\\\\n")
-            for size in sample_sizes:
-                t_key = f"t={size}"
-                row = f"$t={size}$"
-                for strategy in sampling_strategies:
-                    mean_error = data.get(measurement, {}).get(strategy, {}).get(t_key, None)
+        # Table rows
+        for model in data:
+            row = f"\\textbf{{{model}}}"
+            for strategy in sampling_strategies:
+                for size in sample_sizes:
+                    mean_error = data[model].get(strategy, {}).get(size, None)
                     if mean_error is not None:
-                        row += f" & {mean_error:.2f}{PERCENT}"
+                        row += f" & {mean_error:.2f}\\%"
                     else:
                         row += " & --"
-                row += " \\\\\n"
-                tex_file.write(row)
+            row += " \\\\\n"
+            tex_file.write(row)
+
         tex_file.write("\\bottomrule\n")
         tex_file.write("\\end{tabular}\n")
         tex_file.write("\\caption{Mean Validation Errors for Different Configurations}\n")
         tex_file.write("\\label{tab:validation_errors}\n")
         tex_file.write("\\end{table}\n\n")
 
+        # End centering environment
+        tex_file.write("\\end{center}\n")
+
         tex_file.write("\\end{document}\n")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Generate LaTeX table of mean Validation Errors from experiment logs.")
+    parser.add_argument('logs_directory', type=str, help='Directory containing log files.')
     parser.add_argument('--output', type=str, default=LATEX_TABLE_FILE, help='Output LaTeX file name.')
     args = parser.parse_args()
 
-    # Data structure to hold mean Validation Errors
-    # Format: {measurement: {strategy: {t_key: mean_error}}}
-    data = {}
+    # Collect validation errors
+    data = collect_validation_errors(args.logs_directory)
 
-    for measurement_csv, feature_xml in measurement_feature_pairs:
-        measurement = os.path.splitext(os.path.basename(measurement_csv))[0]
-        # Initialize measurement in data dictionary
-        if measurement not in data:
-            data[measurement] = {}
-        for size in sample_sizes:
-            t_key = f"t={size}"
-            for strategy in sampling_strategies:
-                # Initialize strategy in measurement dictionary
-                if strategy not in data[measurement]:
-                    data[measurement][strategy] = {}
+    # Check if data was found
+    if not data:
+        print("No valid data found! Please check your log files.", file=sys.stderr)
+        return
 
-                # Determine seed range based on strategy
-                if strategy == 'solver':
-                    seeds = [42]  # Only one run for 'solver' strategy
-                else:
-                    seeds = range(1, 101)  # Seeds 1 to 100 for other strategies
-
-                errors = []
-                for seed in seeds:
-                    # Construct the experiment directory name
-                    output_dir = os.path.join(base_output_dir, f"{measurement}_t={size}_{strategy}_seed{seed}")
-                    log_file_path = os.path.join(output_dir, LOG_FILE_NAME)
-
-                    # Extract validation errors from the log file
-                    run_error = extract_validation_error(log_file_path)
-
-                    if run_error:
-
-                        errors.append(run_error)
-
-                # Calculate mean error if any errors were found
-                if errors:
-                    mean_error = mean(errors)
-                    data[measurement][strategy][t_key] = mean_error
-                else:
-                    data[measurement][strategy][t_key] = None  # Indicate missing data
-
-    # Generate LaTeX table with the collected data
+    # Generate LaTeX table
     generate_latex_table(data, args.output)
     print(f"LaTeX table generated at {args.output}")
 
