@@ -156,7 +156,6 @@ def main():
         # Step 3: Export Sampled Configurations to CSV
         sampled_csv_path = os.path.join(output_dir, 'sampled_configurations.csv')
         export_configurations_to_csv(configurations=sampled_configurations, features=features,
-                                     # Replace with actual feature objects if necessary
                                      file_path=sampled_csv_path)
         logger.info(f"Sampled configurations exported to {sampled_csv_path}")
 

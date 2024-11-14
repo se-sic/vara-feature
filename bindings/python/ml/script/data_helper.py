@@ -113,7 +113,7 @@ def find_performance_for_configurations(measurements_csv_path: str, sampling_csv
 
     # Ensure that the feature columns (excluding 'Performance') match
     if df_measurements.columns[:-1].tolist() != df_sampling.columns.tolist():
-        raise ValueError("Columns in tests CSV do not match columns in output CSV.")
+        raise ValueError("Columns in measurement CSV do not match columns in sampling CSV.")
 
     matched_data = []
     for _, config_row in df_sampling.iterrows():

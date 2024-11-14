@@ -1,7 +1,5 @@
-import subprocess
 import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
+import argparse
 sample_sizes = {
     '7z': [39, 600, 4091],
     'BerkeleyDBC': [15, 97, 343],
@@ -12,78 +10,73 @@ sample_sizes = {
     'Polly': [28, 345, 2172],
     'VP9': [31, 483, 3893],
     'lrzip': [18, 90, 178],
-    'X264': [12, 65, 212]
+    'x264': [12, 65, 212]
 }
 
-
-sampling_strategies = [ 'distance', 'diversified-distance', 'random', 'solver']
-
 measurement_feature_pairs = [
-    ('../sampling/measurements/7z.csv', '../sampling/feature_models/7z.xml'),
-    ('../sampling/measurements/lrzip.csv', '../sampling/feature_models/lrzip.xml'),
-    ('../sampling/measurements/Dune.csv', '../sampling/feature_models/Dune.xml'),
-    ('../sampling/measurements/BerkeleyDBC.csv', '../sampling/feature_models/BerkeleyDBC.xml'),
-    ('../sampling/measurements/Hipacc.csv', '../sampling/feature_models/Hipacc.xml'),
-    ('../sampling/measurements/LLVM.csv', '../sampling/feature_models/LLVM.xml'),
-    ('../sampling/measurements/Polly.csv', '../sampling/feature_models/Polly.xml'),
-    ('../sampling/measurements/x264.csv', '../sampling/feature_models/x264.xml'),
-    ('../sampling/measurements/JavaGC.csv', '../sampling/feature_models/JavaGC.xml'),
-    ('../sampling/measurements/VP9.csv', '../sampling/feature_models/VP9.xml')
+    ('ml/sampling/measurements/7z.csv', 'ml/sampling/feature_models/7z.xml'),
+    ('ml/sampling/measurements/lrzip.csv', 'ml/sampling/feature_models/lrzip.xml'),
+    ('ml/sampling/measurements/Dune.csv', 'ml/sampling/feature_models/Dune.xml'),
+    ('ml/sampling/measurements/BerkeleyDBC.csv', 'ml/sampling/feature_models/BerkeleyDBC.xml'),
+    ('ml/sampling/measurements/Hipacc.csv', 'ml/sampling/feature_models/Hipacc.xml'),
+    ('ml/sampling/measurements/LLVM.csv', 'ml/sampling/feature_models/LLVM.xml'),
+    ('ml/sampling/measurements/Polly.csv', 'ml/sampling/feature_models/Polly.xml'),
+    ('ml/sampling/measurements/x264.csv', 'ml/sampling/feature_models/x264.xml'),
+    ('ml/sampling/measurements/JavaGC.csv', 'ml/sampling/feature_models/JavaGC.xml'),
+    ('ml/sampling/measurements/VP9.csv', 'ml/sampling/feature_models/VP9.xml')
 ]
 
-# Output directory base
-base_output_dir = '../first_run/'
+sampling_strategies = ['distance', 'diversified-distance', 'random']
 
+parser = argparse.ArgumentParser(description='Run experiment based on Slurm job array.')
+parser.add_argument('--index', type=int, required=True, help='Job array index from Slurm')
 
-def run_experiment(measurement_csv, feature_model_xml, sample_size, t, strategy, sample_seed):
-    measurement_name = os.path.splitext(os.path.basename(measurement_csv))[0]
+args = parser.parse_args()
 
-    output_dir = os.path.join(
-        base_output_dir,
-        f"{measurement_name}_t={t}_{strategy}_seed{sample_seed}"
-    )
-    os.makedirs(output_dir, exist_ok=True)
-    command = [
-        'python', 'case_study.py',
-        '--measurements_csv', measurement_csv,
-        '--feature_model_xml', feature_model_xml,
-        '--sample_seed', str(sample_seed),
-        '--sample_strategy', strategy,
-        '--sample_size', str(sample_size),
-        '--max_interaction_order', '3',
-        '--margin', '0.01',
-        '--threshold', '0.01',
-        '--learning_seed', '42',
-        '--output_dir', output_dir
-    ]
-    try:
-        print(f"Starting: Measurement={measurement_csv}, FeatureModel={feature_model_xml}, "
-              f"SampleSize={sample_size}, Strategy={strategy}, SampleSeed={sample_seed}")
-        subprocess.run(command, check=True)
-        print(f"Completed: Output at {output_dir}\n")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed: Measurement={measurement_csv}, FeatureModel={feature_model_xml}, "
-              f"SampleSize={sample_size}, Strategy={strategy}, SampleSeed={sample_seed}")
-        print(f"Error: {e}\n")
+total_measurements = len(measurement_feature_pairs)
+n_seeds = 100
+n_sampling_strategies = len(sampling_strategies)
+sample_size = 3
 
+# Calculate indices for the first segment: Distance, Diversified-Distance, and Random
+job_id = args.index - 1
 
-# Define the maximum number of workers (threads)
-max_workers = 4  # Adjust based on your CPU cores and resource availability
+if job_id < total_measurements * n_seeds * n_sampling_strategies * sample_size:
+    measurement_index = job_id // (n_seeds * n_sampling_strategies * sample_size)
+    remaining_index = job_id % (n_seeds * n_sampling_strategies * sample_size)
 
-with ThreadPoolExecutor(max_workers=max_workers) as executor:
-    futures = []
-    for measurement_csv, feature_model_xml in measurement_feature_pairs:
-        # Determine which sample sizes to use based on the file name
-        file_key = os.path.splitext(os.path.basename(measurement_csv))[0]
-        for i,sample_size in  enumerate(sample_sizes.get(file_key, []),start = 1):
-            strategy = 'solver' # Solver strategy is deterministic
-            futures.append(
-                executor.submit(run_experiment, measurement_csv, feature_model_xml, sample_size, i, strategy, 42))
-            for strategy in sampling_strategies:
-                for seed in range(1, 100):  # Run seeds from 1 to 100
-                    futures.append(
-                        executor.submit(run_experiment, measurement_csv, feature_model_xml, sample_size, i, strategy,
-                                        seed))
+    sample_size_index = remaining_index // (n_seeds * n_sampling_strategies)
+    strategy_and_seed_index = remaining_index % (n_seeds * n_sampling_strategies)
 
-    for future in as_completed(futures):
-        future.result()  # To catch exceptions if any
+    strategy_index = strategy_and_seed_index // n_seeds
+    seed_index = strategy_and_seed_index % n_seeds
+
+    selected_strategy = sampling_strategies[strategy_index]  # (0, 1, 2) -> (distance, diversified-distance, random)
+    seed = seed_index + 1
+
+# Calculate indices for the second segment: Solver
+else:
+    adjusted_index = job_id - total_measurements * n_seeds * n_sampling_strategies * sample_size
+    measurement_index = adjusted_index // sample_size
+    sample_size_index = adjusted_index % sample_size
+
+    selected_strategy = 'solver'
+    seed = 1
+
+# Retrieve files and sample size
+measurement_csv, feature_model_xml = measurement_feature_pairs[measurement_index]
+sample_size = sample_sizes[os.path.splitext(os.path.basename(measurement_csv))[0]][sample_size_index]
+
+# Construct the output directory
+output_dir = f"results/{os.path.splitext(os.path.basename(measurement_csv))[0]}_t={sample_size_index + 1}_{selected_strategy}_{seed}"
+os.makedirs(output_dir, exist_ok=True)
+
+# Execute the command
+command = (
+    f"python ml/script/case_study.py --measurements_csv {measurement_csv} "
+    f"--feature_model_xml {feature_model_xml} --sample_seed {seed} "
+    f"--sample_strategy {selected_strategy} --sample_size {sample_size} "
+    f"--max_interaction_order 3 --margin 0.01 --threshold 0.01 "
+    f"--learning_seed 42 --output_dir {output_dir}"
+)
+os.system(command)
