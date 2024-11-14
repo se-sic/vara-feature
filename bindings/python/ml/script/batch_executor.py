@@ -73,7 +73,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Execute the command
 command = (
-    f"python ml/script/case_study.py --measurements_csv {measurement_csv} "
+    f"python case_study.py --measurements_csv {measurement_csv} "
     f"--feature_model_xml {feature_model_xml} --sample_seed {seed} "
     f"--sample_strategy {selected_strategy} --sample_size {sample_size} "
     f"--max_interaction_order 3 --margin 0.01 --threshold 0.01 "
