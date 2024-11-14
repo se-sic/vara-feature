@@ -14,16 +14,16 @@ sample_sizes = {
 }
 
 measurement_feature_pairs = [
-    ('ml/sampling/measurements/7z.csv', 'ml/sampling/feature_models/7z.xml'),
-    ('ml/sampling/measurements/lrzip.csv', 'ml/sampling/feature_models/lrzip.xml'),
-    ('ml/sampling/measurements/Dune.csv', 'ml/sampling/feature_models/Dune.xml'),
-    ('ml/sampling/measurements/BerkeleyDBC.csv', 'ml/sampling/feature_models/BerkeleyDBC.xml'),
-    ('ml/sampling/measurements/Hipacc.csv', 'ml/sampling/feature_models/Hipacc.xml'),
-    ('ml/sampling/measurements/LLVM.csv', 'ml/sampling/feature_models/LLVM.xml'),
-    ('ml/sampling/measurements/Polly.csv', 'ml/sampling/feature_models/Polly.xml'),
-    ('ml/sampling/measurements/x264.csv', 'ml/sampling/feature_models/x264.xml'),
-    ('ml/sampling/measurements/JavaGC.csv', 'ml/sampling/feature_models/JavaGC.xml'),
-    ('ml/sampling/measurements/VP9.csv', 'ml/sampling/feature_models/VP9.xml')
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/7z.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/7z.xml'),
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/lrzip.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/lrzip.xml'),
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/Dune.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/Dune.xml'),
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/BerkeleyDBC.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/BerkeleyDBC.xml'),
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/Hipacc.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/Hipacc.xml'),
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/LLVM.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/LLVM.xml'),
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/Polly.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/Polly.xml'),
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/x264.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/x264.xml'),
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/JavaGC.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/JavaGC.xml'),
+    ('~/vara-feature/bindings/python/ml/sampling/measurements/VP9.csv', '~/vara-feature/bindings/python/ml/sampling/feature_models/VP9.xml')
 ]
 
 sampling_strategies = ['distance', 'diversified-distance', 'random']
