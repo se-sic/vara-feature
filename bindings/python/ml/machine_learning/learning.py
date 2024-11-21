@@ -173,11 +173,9 @@ def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, th
             break  # No improvement
 
         # Identify all features with the minimal error
-        best_candidates = [f for f, e in new_errors.items() if e == min_error]
-
+        best_candidates = sorted([f for f, e in new_errors.items() if e == min_error])
         # Randomly select one feature among the best candidates
         best_feature = random.choice(best_candidates)
-
         best_features.add(best_feature)
         remaining_features.discard(best_feature)
 
