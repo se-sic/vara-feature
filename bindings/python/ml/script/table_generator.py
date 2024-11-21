@@ -102,12 +102,8 @@ def generate_latex_table(data, output_file):
         tex_file.write("\\usepackage{booktabs}\n")
         tex_file.write("\\usepackage{multirow}\n")
         tex_file.write("\\begin{document}\n\n")
-
-        # Center the table on the page
-        tex_file.write("\\begin{center}\n")
-
         tex_file.write("\\begin{table}[ht]\n")
-        tex_file.write("\\centering\n")
+        tex_file.write("\\begin{adjustbox}{max width=1.1\\textwidth,center}\n")
 
         # Define the number of columns (strategies * sample sizes + 1 for model names)
         num_columns = len(sampling_strategies) * len(sample_sizes) + 1
@@ -141,13 +137,10 @@ def generate_latex_table(data, output_file):
 
         tex_file.write("\\bottomrule\n")
         tex_file.write("\\end{tabular}\n")
+        tex_file.write("\\end{adjustbox}\n")
         tex_file.write("\\caption{Mean Validation Errors for Different Configurations}\n")
         tex_file.write("\\label{tab:validation_errors}\n")
         tex_file.write("\\end{table}\n\n")
-
-        # End centering environment
-        tex_file.write("\\end{center}\n")
-
         tex_file.write("\\end{document}\n")
 
 
