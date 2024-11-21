@@ -67,8 +67,9 @@ def collect_validation_errors(logs_directory):
             if result:
                 model, sample_size, strategy, seed, validation_error = result
                 if validation_error > 1000:
-                    print(f"Warning: Validation error {validation_error} seems too high for {log_filename}.",
-                          file=sys.stderr)
+                    print(
+                        f"Warning: Validation error {validation_error} seems too high for {log_filename}. Model: {model}, sample size: {sample_size}, strategy: {strategy}, seed: {seed}",
+                        file=sys.stderr)
                     continue
 
                 # Initialize data storage if necessary
