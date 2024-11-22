@@ -162,14 +162,14 @@ def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, th
     remaining_features: Set[str] = set(initial_features)
 
     while remaining_features:
-        print(f"Remaining features: {remaining_features}") # Debugging
+        print(f"Remaining features: {sorted(remaining_features)}") # Debugging
         new_errors: Dict[str, float] = {}
         for feature in remaining_features:
             _, error = fit_and_evaluate(X, y, best_features, feature)
             new_errors[feature] = error
 
         min_error = min(new_errors.values())
-        print(f"new_errors: {new_errors}") # Debugging
+        print(f"new_errors: {sorted(new_errors)}") # Debugging
         if min_error >= current_error:
             break  # No improvement
 
