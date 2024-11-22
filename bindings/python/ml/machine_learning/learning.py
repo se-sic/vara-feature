@@ -174,9 +174,11 @@ def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, th
 
         # Identify all features with the minimal error
         best_candidates = sorted([f for f, e in new_errors.items() if e == min_error])
+        print(f"Best candidates: {best_candidates}") # Debugging
         # Randomly select one feature among the best candidates
         best_feature = random.choice(best_candidates)
         best_features.add(best_feature)
+        print(f"Selected feature: {best_feature} with error: {min_error:.2f}") # Debugging
         remaining_features.discard(best_feature)
 
         # Generate interaction terms with updated features
