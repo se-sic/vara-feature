@@ -101,6 +101,7 @@ def generate_latex_table(data, output_file):
         tex_file.write("\\documentclass{article}\n")
         tex_file.write("\\usepackage{booktabs}\n")
         tex_file.write("\\usepackage{multirow}\n")
+        tex_file.write("\\usepackage{adjustbox}\n")
         tex_file.write("\\begin{document}\n\n")
         tex_file.write("\\begin{table}[ht]\n")
         tex_file.write("\\begin{adjustbox}{max width=1.1\\textwidth,center}\n")
