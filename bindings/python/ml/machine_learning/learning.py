@@ -169,7 +169,7 @@ def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, th
             new_errors[feature] = error
 
         min_error = min(new_errors.values())
-        print(f"new_errors: {sorted(new_errors)}") # Debugging
+        print(f"new_errors: {[(a,new_errors[a]) for a in sorted(new_errors)]}") # Debugging
         if min_error >= current_error:
             break  # No improvement
 
