@@ -133,6 +133,7 @@ def fit_and_evaluate(X: pd.DataFrame, y: pd.DataFrame, features: Set[str], featu
         selected_features = sorted(features)
 
     model = fit_ols_model(X, y, selected_features)
+    print(f"Selected features: {selected_features}") # Debugging
     error = calculate_mape(y, model.predict(X[selected_features]))
 
     # for debugging
@@ -176,7 +177,7 @@ def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, th
     while remaining_features:
         print(f"Remaining features: {sorted(remaining_features)}") # Debugging
         new_errors: Dict[str, float] = {}
-        for feature in remaining_features:
+        for feature in sorted(remaining_features):
             _, error = fit_and_evaluate(X, y, best_features, feature)
             new_errors[feature] = error
 
@@ -263,6 +264,7 @@ def fit_ols_model(X: pd.DataFrame, y: pd.DataFrame, features: List[str]) -> Line
     Returns:
         LinearRegression: The fitted linear regression model.
     """
+    print(f"Features: {X[features]}") # Debugging
     model = LinearRegression().fit(X[features], y)
     return model
 
