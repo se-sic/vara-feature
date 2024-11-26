@@ -131,8 +131,20 @@ def fit_and_evaluate(X: pd.DataFrame, y: pd.DataFrame, features: Set[str], featu
         selected_features = sorted(features | {feature})
     else:
         selected_features = sorted(features)
+
     model = fit_ols_model(X, y, selected_features)
     error = calculate_mape(y, model.predict(X[selected_features]))
+
+    # for debugging
+
+    if "lossless$$variableBitrate" in selected_features and feature == "Quality$$lagInFrames_0" and 'FrameBoost$$lagInFrames_0' not in selected_features:
+        with open('multiple_objects.pkl', 'wb') as file:
+            # Step 2: Use pickle.dump() to serialize each object and write it to the file
+            pickle.dump(model, file)
+            pickle.dump(error, file)
+            pickle.dump(X, file)
+            pickle.dump(y, file)
+
     return feature, error
 
 
