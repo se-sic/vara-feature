@@ -181,9 +181,18 @@ def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, th
         for feature in sorted(remaining_features):
             # _, error = fit_and_evaluate(X, y, best_features, feature) # Debugging
             column = sorted(list(best_features)+[feature]) # Debugging
-            model = LinearRegression().fit(X[column], y) # Debugging
+            input = X[column] # Debugging
+            model = LinearRegression().fit(input, y) # Debugging
 
-            error = calculate_mape(y, model.predict(X[column])) # Debugging
+            error = calculate_mape(y, model.predict(input)) # Debugging
+
+            if "lossless$$variableBitrate" in best_features and feature == "Quality$$lagInFrames_0" and 'FrameBoost$$lagInFrames_0' not in best_features:
+                with open('multiple_objects.pkl', 'wb') as file:
+                    # Step 2: Use pickle.dump() to serialize each object and write it to the file
+                    pickle.dump(model, file)
+                    pickle.dump(error, file)
+                    pickle.dump(input, file)
+                    pickle.dump(y, file)
 
             new_errors[feature] = error
 
