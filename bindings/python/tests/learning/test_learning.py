@@ -6,8 +6,8 @@ from typing import List
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-
 from ml.machine_learning import learning
+from sklearn.linear_model import LinearRegression
 
 
 class TestLearning(unittest.TestCase):
@@ -25,9 +25,9 @@ class TestLearning(unittest.TestCase):
 
         # Initialize common feature names
         self.feature_groups = {'features_5': ['Feature1', 'Feature2', 'Feature3', 'Feature4', 'Feature5'],
-            'features_4': ['A', 'B', 'C', 'D'],
-            'interaction_features': ['A$$B', 'A$$C', 'A$$D', 'B$$C', 'B$$D', 'C$$D'],
-            'extended_interactions': ['A$$B$$C', 'A$$B$$D', 'A$$C$$D', 'B$$C$$D']}
+                               'features_4': ['A', 'B', 'C', 'D'],
+                               'interaction_features': ['A$$B', 'A$$C', 'A$$D', 'B$$C', 'B$$D', 'C$$D'],
+                               'extended_interactions': ['A$$B$$C', 'A$$B$$D', 'A$$C$$D', 'B$$C$$D']}
 
     # Helper Methods
     def generate_binary_features(self, feature_names: List[str], size: int = 100, seed: int = None) -> pd.DataFrame:
@@ -48,7 +48,7 @@ class TestLearning(unittest.TestCase):
         return pd.DataFrame(data)
 
     def generate_target_variable(self, X: pd.DataFrame, coef_dict: dict, noise_std: float = 0.5,
-            seed: int = None) -> pd.Series:
+                                 seed: int = None) -> pd.Series:
         """
         Generates a target variable based on linear combination of features and added noise.
 
@@ -95,16 +95,15 @@ class TestLearning(unittest.TestCase):
 
         model = learning.fit_ols_model(X, y, selected_features)
 
-        # Using statsmodels for expected coefficients
-        X_selected = sm.add_constant(X[selected_features])
-        ols = sm.OLS(y, X_selected).fit()
+        # Using scikit learn linear regression for expected coefficients
+        lr = LinearRegression().fit(X[selected_features], y)
 
-        self.assertAlmostEqual(ols.params['const'], model.intercept_, places=4,
+        self.assertAlmostEqual(model.params['const'], lr.intercept_, places=4,
                                msg="Intercepts do not match between custom OLS and statsmodels OLS.")
         for feature in selected_features:
-            custom_coef = ols.params[feature]
-            model_coef = model.coef_[selected_features.index(feature)]
-            self.assertAlmostEqual(custom_coef, model_coef, places=4,
+            model_coef = model.params[feature]
+            lr_coef = lr.coef_[selected_features.index(feature)]
+            self.assertAlmostEqual(lr_coef, model_coef, places=4,
                                    msg=f"Coefficient for {feature} does not match between custom OLS and statsmodels OLS.")
 
     def test_calculate_mape(self):
@@ -132,7 +131,7 @@ class TestLearning(unittest.TestCase):
         selected_features = sorted(best_features | {feature})
 
         model = learning.fit_ols_model(X, y, selected_features)
-        predicted_error = learning.calculate_mape(y, model.predict(X[selected_features]))
+        predicted_error = learning.calculate_mape(y, model.predict(sm.add_constant(X[selected_features])))
 
         self.assertEqual(feature, feature_to_add, "The returned feature does not match the input feature.")
         self.assertAlmostEqual(error, predicted_error, places=5,
@@ -150,7 +149,8 @@ class TestLearning(unittest.TestCase):
         forbidden_features = {'C$$D'}
 
         new_interactions, updated_df, updated_forbidden = learning.create_interaction_terms(df, selected_features,
-            initial_features, forbidden_features)
+                                                                                            initial_features,
+                                                                                            forbidden_features)
 
         expected_new_interactions = ['A$$C', 'A$$D', 'B$$D', 'A$$B$$C']
         self.assertListEqual(sorted(new_interactions), sorted(expected_new_interactions),
@@ -187,10 +187,10 @@ class TestLearning(unittest.TestCase):
 
         # Fit and evaluate models
         model_all = learning.fit_ols_model(df, y, sorted(features))
-        error_all = learning.calculate_mape(y, model_all.predict(df[sorted(features)]))
+        error_all = learning.calculate_mape(y, model_all.predict(sm.add_constant(df[sorted(features)])))
 
         model_refined = learning.fit_ols_model(df, y, sorted(refined_features))
-        error_refined = learning.calculate_mape(y, model_refined.predict(df[sorted(refined_features)]))
+        error_refined = learning.calculate_mape(y, model_refined.predict(sm.add_constant(df[sorted(refined_features)])))
 
         self.assertGreater(error_all, error_refined, "Error did not decrease after removing redundant features.")
         self.assertGreater(len(features), len(refined_features), "No features were deleted after backward selection.")
@@ -203,7 +203,8 @@ class TestLearning(unittest.TestCase):
         for r in range(1, len(features) + 1):
             for subset in itertools.combinations(features, r):
                 model_subset = learning.fit_ols_model(df, y, sorted(subset))
-                error_subset = learning.calculate_mape(y, model_subset.predict(df[list(sorted(subset))]))
+                error_subset = learning.calculate_mape(y,
+                                                       model_subset.predict(sm.add_constant(df[list(sorted(subset))])))
                 if error_subset < min_error:
                     min_error = error_subset
                     best_subset = subset
@@ -242,7 +243,7 @@ class TestLearning(unittest.TestCase):
         df['Performance'] = y
 
         final_model, refined_features = learning.stepwise_learning(df, margin=1e-2, threshold=1e-2,
-            random_seed=self.default_random_seed)
+                                                                   random_seed=self.default_random_seed)
 
         expected_features = {'A', 'B', 'C', 'A$$B'}
         self.assertSetEqual(set(refined_features), expected_features,
@@ -251,15 +252,13 @@ class TestLearning(unittest.TestCase):
         # Check coefficients
         expected_coefficients = {'intercept': 10.0, 'A': 8.0, 'B': -3.0, 'A$$B': 9.0, 'C': -3.0}
 
-        self.assertAlmostEqual(final_model.intercept_, expected_coefficients['intercept'], places=5,
+        self.assertAlmostEqual(final_model.params['const'], expected_coefficients['intercept'], places=5,
                                msg="Intercept is not as expected.")
-
-        coef_mapping = dict(zip(refined_features, final_model.coef_))
 
         for feature, expected_coef in expected_coefficients.items():
             if feature == 'intercept':
                 continue
-            self.assertAlmostEqual(coef_mapping.get(feature, 0), expected_coef, places=4,
+            self.assertAlmostEqual(final_model.params[feature], expected_coef, places=4,
                                    msg=f"Coefficient for {feature} is incorrect.")
 
     def test_validate_model(self):
@@ -273,14 +272,14 @@ class TestLearning(unittest.TestCase):
         df['Performance'] = y
 
         final_model, refined_features = learning.stepwise_learning(df, margin=1e-2, threshold=1e-2,
-            random_seed=self.default_random_seed)
+                                                                   random_seed=self.default_random_seed)
 
         selected_features = ['A', 'A$$B', 'B', 'C']
         validation_error = learning.validate_model(df, final_model, selected_features)
 
         # Calculate expected MAPE
         df['A$$B'] = interaction
-        predictions = final_model.predict(df[selected_features])
+        predictions = final_model.predict(sm.add_constant(df[selected_features]))
         expected_mape = learning.calculate_mape(df['Performance'], predictions)
 
         self.assertAlmostEqual(validation_error, expected_mape, places=5, msg="MAPE is not as expected.")
@@ -296,7 +295,7 @@ class TestLearning(unittest.TestCase):
         df['Performance'] = y
 
         final_model, refined_features = learning.stepwise_learning(df, margin=1e-2, threshold=1e-2,
-            random_seed=self.default_random_seed)
+                                                                   random_seed=self.default_random_seed)
 
         # Test model export and load
         model_file = 'test-model.pkl'
@@ -309,7 +308,5 @@ class TestLearning(unittest.TestCase):
         self.assertEqual(loaded_selected_features, refined_features,
                          "Selected features do not match after loading the model.")
 
-        self.assertAlmostEqual(final_model.intercept_, loaded_model.intercept_,
-                               msg="Intercepts do not match after loading the model.")
-        for new_coef, expected_coef in zip(loaded_model.coef_, final_model.coef_):
-            self.assertAlmostEqual(new_coef, expected_coef, msg="Coefficients do not match after loading the model.")
+        self.assertEqual(str(final_model.params), str(loaded_model.params),
+                         msg="Params do not match after loading the model.")

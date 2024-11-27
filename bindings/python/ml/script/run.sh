@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Activate the virtual environment
+source ~/.bashrc
 pyenv activate vara
 
 # Set Python path

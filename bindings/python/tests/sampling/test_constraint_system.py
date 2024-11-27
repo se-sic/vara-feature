@@ -2,9 +2,8 @@ import unittest
 from pathlib import Path
 
 import vara_feature.feature_model as FM
-
-
 from ml.sampling.constraint_system import *
+
 # Define test inputs directory
 TEST_INPUTS_DIR = Path(__file__).resolve().parent.parent / 'TEST_INPUTS'
 
@@ -23,7 +22,8 @@ class TestRelationship(unittest.TestCase):
 
         # Initialize a Relationship for testing
         cls.relationship = Relationship(cls.root_feature,
-            [cls.child_feature_a, cls.child_feature_b, cls.child_feature_c], Relationship.ALTERNATIVE)
+                                        [cls.child_feature_a, cls.child_feature_b, cls.child_feature_c],
+                                        Relationship.ALTERNATIVE)
 
     def test_initialization(self):
         """Test initialization of the Relationship."""
@@ -82,14 +82,14 @@ class TestConstraintSystem(unittest.TestCase):
 
         # Check excluded constraints
         expected_exclusions = {feature_aa: [feature_ac, feature_c], feature_ab: [feature_ac], feature_ac: [feature_ab],
-            feature_c: [feature_aa]}
+                               feature_c: [feature_aa]}
         self.assertEqual(self.constraint_system.excluded_constraints, expected_exclusions)
 
     def test_parse_constraint_string(self):
         """Test parsing a constraint string into clauses."""
         constraint_str = "A | B | !C"
         expected_clause = [self.constraint_system.id_pool.id("A"), self.constraint_system.id_pool.id("B"),
-            -self.constraint_system.id_pool.id("C")]
+                           -self.constraint_system.id_pool.id("C")]
 
         parsed_clause = self.constraint_system.parse_constraint_string(constraint_str)
         self.assertEqual(parsed_clause, expected_clause)
@@ -148,7 +148,8 @@ class TestConstraintSystem(unittest.TestCase):
 
         # Initialize option_to_var with mappings
         option_to_var = {feature_root: self.constraint_system.id_pool.id("root"),
-            feature_a: self.constraint_system.id_pool.id("A"), feature_b: self.constraint_system.id_pool.id("B")}
+                         feature_a: self.constraint_system.id_pool.id("A"),
+                         feature_b: self.constraint_system.id_pool.id("B")}
 
         # Add features A and B
         self.constraint_system.add_feature(feature_a, option_to_var)
@@ -156,8 +157,8 @@ class TestConstraintSystem(unittest.TestCase):
 
         # Expected clauses based on feature relationships
         expected_clauses = [[-option_to_var[feature_a], option_to_var[feature_root]],
-            [-option_to_var[feature_root], option_to_var[feature_a]],
-            [-option_to_var[feature_b], option_to_var[feature_root]], ]
+                            [-option_to_var[feature_root], option_to_var[feature_a]],
+                            [-option_to_var[feature_b], option_to_var[feature_root]], ]
 
         for clause in expected_clauses:
             self.assertIn(clause, self.constraint_system.all_clauses)
@@ -171,20 +172,22 @@ class TestConstraintSystem(unittest.TestCase):
 
         # Assume root feature "A" has children AA, AB, AC with an alternative relationship
         self.constraint_system.relationships[feature_root] = Relationship(feature_root,
-            [feature_a, feature_b, feature_c], Relationship.ALTERNATIVE)
+                                                                          [feature_a, feature_b, feature_c],
+                                                                          Relationship.ALTERNATIVE)
 
         option_to_var = {feature_root: self.constraint_system.id_pool.id("A"),
-            feature_a: self.constraint_system.id_pool.id("AA"), feature_b: self.constraint_system.id_pool.id("AB"),
-            feature_c: self.constraint_system.id_pool.id("AC")}
+                         feature_a: self.constraint_system.id_pool.id("AA"),
+                         feature_b: self.constraint_system.id_pool.id("AB"),
+                         feature_c: self.constraint_system.id_pool.id("AC")}
 
         self.constraint_system.add_relationships(option_to_var)
 
         # Expected clauses for alternative relationships
         expected_clauses = [[-option_to_var[feature_a], option_to_var[feature_root]],
-            [-option_to_var[feature_b], option_to_var[feature_root]],
-            [-option_to_var[feature_c], option_to_var[feature_root]],
-            [-option_to_var[feature_root], option_to_var[feature_a], option_to_var[feature_b],
-             option_to_var[feature_c]]]
+                            [-option_to_var[feature_b], option_to_var[feature_root]],
+                            [-option_to_var[feature_c], option_to_var[feature_root]],
+                            [-option_to_var[feature_root], option_to_var[feature_a], option_to_var[feature_b],
+                             option_to_var[feature_c]]]
 
         for clause in expected_clauses:
             self.assertIn(clause, self.constraint_system.all_clauses)
@@ -196,7 +199,8 @@ class TestConstraintSystem(unittest.TestCase):
         feature_c = self.feature_model.get_feature("C")
 
         option_to_var = {feature_a: self.constraint_system.id_pool.id("A"),
-            feature_b: self.constraint_system.id_pool.id("B"), feature_c: self.constraint_system.id_pool.id("C")}
+                         feature_b: self.constraint_system.id_pool.id("B"),
+                         feature_c: self.constraint_system.id_pool.id("C")}
 
         # Setup excluded constraints
         self.constraint_system.excluded_constraints = {feature_a: [feature_b], feature_b: [feature_c]}
@@ -207,10 +211,10 @@ class TestConstraintSystem(unittest.TestCase):
         self.constraint_system.convert_constraints_to_clauses(option_to_var)
 
         expected_exclusion_clauses = [[-option_to_var[feature_a], -option_to_var[feature_b]],
-            [-option_to_var[feature_b], -option_to_var[feature_c]]]
+                                      [-option_to_var[feature_b], -option_to_var[feature_c]]]
 
         expected_implication_clauses = [[-option_to_var[feature_a], option_to_var[feature_c]],
-            [-option_to_var[feature_c], option_to_var[feature_a]]]
+                                        [-option_to_var[feature_c], option_to_var[feature_a]]]
 
         for clause in expected_exclusion_clauses + expected_implication_clauses:
             self.assertIn(clause, self.constraint_system.all_clauses)

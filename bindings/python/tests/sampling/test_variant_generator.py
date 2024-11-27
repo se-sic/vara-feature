@@ -6,7 +6,6 @@ from typing import List, Dict
 
 import vara_feature as vf
 import vara_feature.feature_model as FM
-
 from ml.sampling.configuration import Configuration
 from ml.sampling.variant_generator import generate_variants, sample_from_csv
 
@@ -46,9 +45,9 @@ class TestVariantGenerator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Load the feature model and ground truth configurations once for all tests."""
-        cls.fm = FM.loadFeatureModel(TEST_INPUTS_DIR / "lrzip.xml")
+        cls.fm = FM.loadFeatureModel(TEST_INPUTS_DIR / "lrzip_feature_model.xml")
         cls.features_to_consider = [feature for feature in cls.fm if not isinstance(feature, vf.feature.RootFeature)]
-        cls.ground_truth = load_ground_truth_csv(TEST_INPUTS_DIR / 'lrzip.csv')
+        cls.ground_truth = load_ground_truth_csv(TEST_INPUTS_DIR / 'lrzip_measurements.csv')
         cls.seed = 42  # Fixed seed for deterministic tests
 
         # Precompute ground truth configurations grouped by distance
@@ -61,7 +60,7 @@ class TestVariantGenerator(unittest.TestCase):
         """Test sampling configurations from a CSV file."""
         sample_size = 10
         seed = 7
-        input_csv = TEST_INPUTS_DIR / 'VP9.csv'
+        input_csv = TEST_INPUTS_DIR / 'lrzip_measurements.csv'
 
         # First sampling run
         configurations_run1 = sample_from_csv(sample_size=sample_size, seed=seed, measurements_csv=input_csv)
@@ -79,17 +78,17 @@ class TestVariantGenerator(unittest.TestCase):
         ground_truth_set = set(str(conf) for conf in self.ground_truth)
         # Assert that both runs produce identical sets of configurations
         self.assertEqual(variants_run1_str, variants_run2_str,
-            "Variants sampled are not deterministic with the same seed.")
+                         "Variants sampled are not deterministic with the same seed.")
 
         self.assertNotEqual(variants_run1_str, variants_run3_str,
-            "Variants sampled are deterministic with a different seed.")
+                            "Variants sampled are deterministic with a different seed.")
 
         # Assert that the generated configurations are a subset of the ground truth
         self.assertTrue(ground_truth_set.issuperset(variants_run1_str),
-            "Variants sampled are different than ground truth.")
+                        "Variants sampled are different than ground truth.")
 
         self.assertTrue(ground_truth_set.issuperset(variants_run3_str),
-            "Variants sampled are different than ground truth.")
+                        "Variants sampled are different than ground truth.")
 
     def test_distance_sampling(self):
         """
@@ -108,12 +107,13 @@ class TestVariantGenerator(unittest.TestCase):
 
                 # Generate configurations for this distance
                 generated_configs = generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy,
-                    sample_size=len(expected_configs), seed=self.seed, distances=[distance])
+                                                      features_to_consider=self.features_to_consider, strategy=strategy,
+                                                      sample_size=len(expected_configs), seed=self.seed,
+                                                      distances=[distance])
                 generated_set = set(str(conf) for conf in generated_configs)
                 # Compare the generated configurations with the expected ground truth
                 self.assertEqual(generated_set, expected_set,
-                    f"Configurations for distance {distance} do not match ground truth for '{strategy}' strategy.")
+                                 f"Configurations for distance {distance} do not match ground truth for '{strategy}' strategy.")
 
     def test_same_seed(self):
         """
@@ -127,20 +127,20 @@ class TestVariantGenerator(unittest.TestCase):
             with self.subTest(strategy=strategy):
                 # Generate variants for the first run
                 variants_first_run = generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=self.seed)
+                                                       features_to_consider=self.features_to_consider,
+                                                       strategy=strategy, sample_size=sample_size, seed=self.seed)
 
                 # Generate variants for the second run with the same seed
                 variants_second_run = generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=self.seed)
+                                                        features_to_consider=self.features_to_consider,
+                                                        strategy=strategy, sample_size=sample_size, seed=self.seed)
 
                 variants_first_run_str = set(str(conf) for conf in variants_first_run)
                 variants_second_run_str = set(str(conf) for conf in variants_second_run)
 
                 # Assert that both runs produce identical sets of configurations
                 self.assertEqual(variants_first_run_str, variants_second_run_str,
-                    f"Variants generated with strategy '{strategy}' are not deterministic with the same seed.")
+                                 f"Variants generated with strategy '{strategy}' are not deterministic with the same seed.")
 
     def test_different_seeds(self):
         """
@@ -153,24 +153,24 @@ class TestVariantGenerator(unittest.TestCase):
         for strategy in strategies:
             with self.subTest(strategy=strategy):
                 variants_seed1 = generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=self.seed)
+                                                   features_to_consider=self.features_to_consider, strategy=strategy,
+                                                   sample_size=sample_size, seed=self.seed)
 
                 # Generate variants with seed2
                 variants_seed2 = generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=self.seed + 1)
+                                                   features_to_consider=self.features_to_consider, strategy=strategy,
+                                                   sample_size=sample_size, seed=self.seed + 1)
                 variants_seed1_str = set(str(conf) for conf in variants_seed1)
                 variants_seed2_str = set(str(conf) for conf in variants_seed2)
 
                 if strategy == 'solver':
                     # Assert that the two sets of variants are identical for 'solver' strategy
                     self.assertEqual(variants_seed1_str, variants_seed2_str,
-                        f"Variants generated with different seeds should be the same for the '{strategy}' strategy.")
+                                     f"Variants generated with different seeds should be the same for the '{strategy}' strategy.")
                 else:
                     # Assert that the two sets of variants are not identical for other strategies
                     self.assertNotEqual(variants_seed1_str, variants_seed2_str,
-                        f"Variants generated with different seeds should differ for the '{strategy}' strategy.")
+                                        f"Variants generated with different seeds should differ for the '{strategy}' strategy.")
 
     def test_all_strategies(self):
         """
@@ -183,11 +183,11 @@ class TestVariantGenerator(unittest.TestCase):
             with self.subTest(strategy=strategy):
                 # Generate variants with the fixed seed
                 generated_variants = generate_variants(feature_model=self.fm,
-                    features_to_consider=self.features_to_consider, strategy=strategy, sample_size=sample_size,
-                    seed=self.seed)
+                                                       features_to_consider=self.features_to_consider,
+                                                       strategy=strategy, sample_size=sample_size, seed=self.seed)
 
                 generated_set = set(str(conf) for conf in generated_variants)
                 ground_truth_set = set(str(conf) for conf in self.ground_truth)
 
                 self.assertEqual(generated_set, ground_truth_set,
-                    f"Generated variants for strategy '{strategy}' differ from ground truth.")
+                                 f"Generated variants for strategy '{strategy}' differ from ground truth.")

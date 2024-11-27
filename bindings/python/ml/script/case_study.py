@@ -171,13 +171,10 @@ def main():
                                                      margin=margin, threshold=threshold, random_seed=learning_seed)
         # Log the selected features
         logger.info(f"Selected features: {selected_features}")
-        coefs = model.coef_  # Assuming model has a coef_ attribute
-        intercept = model.intercept_  # Assuming model has an intercept_ attribute
-        model_expression = " + ".join(f"{coef} * {feature}" for coef, feature in zip(coefs, selected_features))
-        model_expression += f" + {intercept}"
 
         # Log the final model expression
-        logger.info(f"Final model: {model_expression}")
+        logger.info("Final model:")
+        logger.info(model.params)
 
         # Step 6: Export the Trained Model
         model_file_path = os.path.join(output_dir, 'trained_model.pkl')

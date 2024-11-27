@@ -5,8 +5,8 @@ from typing import List, Set, Tuple, Dict
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
-
+import statsmodels.api as sm
+from statsmodels.regression.linear_model import RegressionResults
 
 def create_interaction_terms(df: pd.DataFrame, selected_features: Set[str], initial_features: Set[str],
                              forbidden_features: Set[str], interaction_threshold: int = 3) -> Tuple[
@@ -134,8 +134,7 @@ def fit_and_evaluate(X: pd.DataFrame, y: pd.DataFrame, features: Set[str], featu
         selected_features = sorted(features)
 
     model = fit_ols_model(X, y, selected_features)
-    error = calculate_mape(y, model.predict(X[selected_features]))
-
+    error = calculate_mape(y, model.predict(sm.add_constant(X[selected_features])))
     return feature, error
 
 
@@ -211,7 +210,7 @@ def backward_selection(features: Set[str], X: pd.DataFrame, y: pd.DataFrame) -> 
     """
     features = sorted(features)
     current_model = fit_ols_model(X, y, features)
-    current_error = calculate_mape(y, current_model.predict(X[features]))
+    current_error = calculate_mape(y, current_model.predict(sm.add_constant(X[features])))
 
     while len(features) > 1:
         errors: pd.Series = pd.Series(dtype=float)
@@ -220,7 +219,7 @@ def backward_selection(features: Set[str], X: pd.DataFrame, y: pd.DataFrame) -> 
             reduced_features = features.copy()  # Create a copy of the original list
             reduced_features.remove(feature)
             reduced_model = fit_ols_model(X, y, reduced_features)
-            reduced_model_error = calculate_mape(y, reduced_model.predict(X[reduced_features]))
+            reduced_model_error = calculate_mape(y, reduced_model.predict(sm.add_constant((X[reduced_features]))))
 
             if reduced_model_error <= current_error:
                 errors[feature] = reduced_model_error
@@ -240,7 +239,7 @@ def backward_selection(features: Set[str], X: pd.DataFrame, y: pd.DataFrame) -> 
     return features
 
 
-def fit_ols_model(X: pd.DataFrame, y: pd.DataFrame, features: List[str]) -> LinearRegression:
+def fit_ols_model(X: pd.DataFrame, y: pd.DataFrame, features: List[str]) -> RegressionResults:
     """
     Fits an Ordinary Least Squares (OLS) linear regression model.
 
@@ -250,14 +249,19 @@ def fit_ols_model(X: pd.DataFrame, y: pd.DataFrame, features: List[str]) -> Line
         features (List[str]): List of feature names to include in the model.
 
     Returns:
-        LinearRegression: The fitted linear regression model.
+        RegressionResults: The fitted linear regression model.
     """
-    model = LinearRegression().fit(X[features], y)
+
+    x = sm.add_constant(X[features])
+
+    # fit linear regression model
+    model = sm.OLS(y, x).fit()
+
     return model
 
 
 def stepwise_learning(df: pd.DataFrame, max_interaction_order: int = 3, margin: float = 1e-2, threshold: float = 1e-2,
-                      random_seed: int = 42) -> Tuple[LinearRegression, List[str]]:
+                      random_seed: int = 42) -> Tuple[RegressionResults, List[str]]:
     """
     Performs stepwise feature selection (forward and backward) to build the final model.
 
@@ -270,7 +274,7 @@ def stepwise_learning(df: pd.DataFrame, max_interaction_order: int = 3, margin: 
 
     Returns:
         Tuple containing:
-            - final_model (LinearRegression): The final fitted linear regression model.
+            - final_model (RegressionResults): The final fitted linear regression model.
             - refined_features (List[str]): The set of selected feature names.
     """
     X = df.drop(columns=['Performance'])
@@ -282,12 +286,12 @@ def stepwise_learning(df: pd.DataFrame, max_interaction_order: int = 3, margin: 
     return final_model, refined_features
 
 
-def export_model(model: LinearRegression, selected_features: List[str], model_file: str) -> None:
+def export_model(model: RegressionResults, selected_features: List[str], model_file: str) -> None:
     """
     Exports the trained model and selected features to a file using pickle.
 
     Args:
-        model (LinearRegression): The trained linear regression model.
+        model (RegressionResults): The trained linear regression model.
         selected_features (List[str]): The list of selected feature names.
         model_file (str): Path to the file where the model will be saved.
     """
@@ -295,7 +299,7 @@ def export_model(model: LinearRegression, selected_features: List[str], model_fi
         pickle.dump((model, selected_features), f)
 
 
-def load_model(model_file: str) -> Tuple[LinearRegression, List[str]]:
+def load_model(model_file: str) -> Tuple[RegressionResults, List[str]]:
     """
     Loads a trained model and its selected features from a pickle file.
 
@@ -304,7 +308,7 @@ def load_model(model_file: str) -> Tuple[LinearRegression, List[str]]:
 
     Returns:
         Tuple containing:
-            - model (LinearRegression): The loaded linear regression model.
+            - model (RegressionResults): The loaded linear regression model.
             - selected_features (List[str]): The list of selected feature names.
     """
     with open(model_file, 'rb') as f:
@@ -312,13 +316,13 @@ def load_model(model_file: str) -> Tuple[LinearRegression, List[str]]:
     return model, selected_features
 
 
-def validate_model(df: pd.DataFrame, model: LinearRegression, selected_features: List[str]) -> float:
+def validate_model(df: pd.DataFrame, model: RegressionResults, selected_features: List[str]) -> float:
     """
     Validates the model by calculating the Mean Absolute Percentage Error (MAPE) on the given DataFrame.
 
     Args:
         df (pd.DataFrame): The DataFrame containing all measurements.
-        model (LinearRegression): The trained linear regression model.
+        model (RegressionResults): The trained linear regression model.
         selected_features (List[str]): The list of selected feature names.
 
     Returns:
@@ -334,6 +338,6 @@ def validate_model(df: pd.DataFrame, model: LinearRegression, selected_features:
         interaction_df = pd.DataFrame(interaction_columns)
         df = pd.concat([df, interaction_df], axis=1)
 
-    predictions = model.predict(df[selected_features])
+    predictions = model.predict(sm.add_constant(df[selected_features]))
     validation_error = calculate_mape(df['Performance'], predictions)
     return validation_error
