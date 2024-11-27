@@ -1,6 +1,7 @@
 import itertools
 import pickle
 import random
+from statistics import linear_regression
 from typing import List, Set, Tuple, Dict
 
 import numpy as np
@@ -178,7 +179,12 @@ def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, th
         print(f"Remaining features: {sorted(remaining_features)}") # Debugging
         new_errors: Dict[str, float] = {}
         for feature in sorted(remaining_features):
-            _, error = fit_and_evaluate(X, y, best_features, feature)
+            # _, error = fit_and_evaluate(X, y, best_features, feature) # Debugging
+            column = sorted(list(best_features)+[feature]) # Debugging
+            model = LinearRegression().fit(X[column], y) # Debugging
+
+            error = calculate_mape(y, model.predict(X[column])) # Debugging
+
             new_errors[feature] = error
 
         min_error = min(new_errors.values())
