@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Activate the virtual environment
-source ~/spl/bin/activate
+pyenv activate vara
 
 # Set Python path
 export PYTHONPATH=~/vara-feature/bindings/python

@@ -1,7 +1,6 @@
 import itertools
 import pickle
 import random
-from statistics import linear_regression
 from typing import List, Set, Tuple, Dict
 
 import numpy as np
@@ -10,7 +9,8 @@ from sklearn.linear_model import LinearRegression
 
 
 def create_interaction_terms(df: pd.DataFrame, selected_features: Set[str], initial_features: Set[str],
-        forbidden_features: Set[str], interaction_threshold: int = 3) -> Tuple[List[str], pd.DataFrame, Set[str]]:
+                             forbidden_features: Set[str], interaction_threshold: int = 3) -> Tuple[
+    List[str], pd.DataFrame, Set[str]]:
     """
     Efficiently creates interaction terms up to a specified order. Using '$$' as a separator to indicator interactions between features.
 
@@ -134,24 +134,13 @@ def fit_and_evaluate(X: pd.DataFrame, y: pd.DataFrame, features: Set[str], featu
         selected_features = sorted(features)
 
     model = fit_ols_model(X, y, selected_features)
-    print(f"Selected features: {selected_features}") # Debugging
     error = calculate_mape(y, model.predict(X[selected_features]))
-
-    # for debugging
-
-    if "lossless$$variableBitrate" in selected_features and feature == "Quality$$lagInFrames_0" and 'FrameBoost$$lagInFrames_0' not in selected_features:
-        with open('multiple_objects.pkl', 'wb') as file:
-            # Step 2: Use pickle.dump() to serialize each object and write it to the file
-            pickle.dump(model, file)
-            pickle.dump(error, file)
-            pickle.dump(X, file)
-            pickle.dump(y, file)
 
     return feature, error
 
 
 def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, threshold: float = 1e-2,
-        random_seed: int = 42, max_interaction_order: int = 3) -> Tuple[Set[str], pd.DataFrame]:
+                      random_seed: int = 42, max_interaction_order: int = 3) -> Tuple[Set[str], pd.DataFrame]:
     """
     Performs forward feature selection to identify the best set of features.
 
@@ -176,43 +165,27 @@ def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, th
     remaining_features: Set[str] = set(initial_features)
 
     while remaining_features:
-        print(f"Remaining features: {sorted(remaining_features)}") # Debugging
         new_errors: Dict[str, float] = {}
-        for feature in sorted(remaining_features):
-            # _, error = fit_and_evaluate(X, y, best_features, feature) # Debugging
-            column = sorted(list(best_features)+[feature]) # Debugging
-            input = X[column] # Debugging
-            model = LinearRegression().fit(input, y) # Debugging
-
-            error = calculate_mape(y, model.predict(input)) # Debugging
-
-            if "lossless$$variableBitrate" in best_features and feature == "Quality$$lagInFrames_0" and 'FrameBoost$$lagInFrames_0' not in best_features:
-                with open('multiple_objects.pkl', 'wb') as file:
-                    # Step 2: Use pickle.dump() to serialize each object and write it to the file
-                    pickle.dump(model, file)
-                    pickle.dump(error, file)
-                    pickle.dump(input, file)
-                    pickle.dump(y, file)
-
+        for feature in remaining_features:
+            _, error = fit_and_evaluate(X, y, best_features, feature)
             new_errors[feature] = error
 
         min_error = min(new_errors.values())
-        print(f"new_errors: {[(a,new_errors[a]) for a in sorted(new_errors)]}") # Debugging
         if min_error >= current_error:
             break  # No improvement
 
         # Identify all features with the minimal error
         best_candidates = sorted([f for f, e in new_errors.items() if e == min_error])
-        print(f"Best candidates: {best_candidates}") # Debugging
+
         # Randomly select one feature among the best candidates
         best_feature = random.choice(best_candidates)
         best_features.add(best_feature)
-        print(f"Selected feature: {best_feature} with error: {min_error:.2f}") # Debugging
+
         remaining_features.discard(best_feature)
 
         # Generate interaction terms with updated features
         interactions, X, forbidden_features = create_interaction_terms(X, best_features, set(initial_features),
-            forbidden_features, max_interaction_order)
+                                                                       forbidden_features, max_interaction_order)
         remaining_features |= set(interactions)
 
         # Check termination conditions
@@ -279,13 +252,12 @@ def fit_ols_model(X: pd.DataFrame, y: pd.DataFrame, features: List[str]) -> Line
     Returns:
         LinearRegression: The fitted linear regression model.
     """
-    print(f"Features: {X[features]}") # Debugging
     model = LinearRegression().fit(X[features], y)
     return model
 
 
 def stepwise_learning(df: pd.DataFrame, max_interaction_order: int = 3, margin: float = 1e-2, threshold: float = 1e-2,
-        random_seed: int = 42) -> Tuple[LinearRegression, List[str]]:
+                      random_seed: int = 42) -> Tuple[LinearRegression, List[str]]:
     """
     Performs stepwise feature selection (forward and backward) to build the final model.
 
@@ -304,7 +276,7 @@ def stepwise_learning(df: pd.DataFrame, max_interaction_order: int = 3, margin: 
     X = df.drop(columns=['Performance'])
     y = df['Performance']
     selected_features, X_extended = forward_selection(X, y, margin=margin, threshold=threshold, random_seed=random_seed,
-        max_interaction_order=max_interaction_order)
+                                                      max_interaction_order=max_interaction_order)
     refined_features = backward_selection(selected_features, X_extended, y)
     final_model = fit_ols_model(X_extended, y, refined_features)
     return final_model, refined_features
