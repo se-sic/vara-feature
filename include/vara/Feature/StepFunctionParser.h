@@ -112,26 +112,29 @@ private:
     }
   }
 
-  static ResultTy munchWhitespace(const llvm::StringRef &Str) {
-    auto Munch = Str.take_while(
-        [](auto C) { return C == ' ' || C == '\t' || C == '\r' || C == '\n'; });
+  static ResultTy munchWhitespace(const llvm_adapter::StringRef &Str) {
+    auto Munch = llvm_adapter::takeWhile(Str, [](auto C) {
+      return C == ' ' || C == '\t' || C == '\r' || C == '\n';
+    });
     return {StepFunctionToken(StepFunctionToken::TokenKind::WHITESPACE),
             Munch.size()};
   }
 
   static ResultTy munchNumber(const llvm_adapter::StringRef &Str) {
-    auto Munch =
-        Str.take_while([](auto C) { return llvm::isDigit(C) || C == '.'; });
-    return {
-        StepFunctionToken(StepFunctionToken::TokenKind::NUMBER, Munch.lower()),
-        Munch.size()};
+    auto Munch = llvm_adapter::takeWhile(
+        Str, [](auto C) { return llvm::isDigit(C) || C == '.'; });
+
+    return {StepFunctionToken(StepFunctionToken::TokenKind::NUMBER,
+                              llvm_adapter::toLower(Munch)),
+            Munch.size()};
   }
 
   static ResultTy munchIdentifier(const llvm_adapter::StringRef &Str) {
-    auto Munch =
-        Str.take_while([](auto C) { return llvm::isAlnum(C) || C == '_'; });
+    auto Munch = llvm_adapter::takeWhile(
+        Str, [](auto C) { return llvm::isAlnum(C) || C == '_'; });
+
     return {StepFunctionToken(StepFunctionToken::TokenKind::IDENTIFIER,
-                              Munch.str()),
+                              llvm_adapter::convertToString(Munch)),
             Munch.size()};
   }
 
