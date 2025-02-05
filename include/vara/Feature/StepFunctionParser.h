@@ -119,7 +119,7 @@ private:
             Munch.size()};
   }
 
-  static ResultTy munchNumber(const llvm::StringRef &Str) {
+  static ResultTy munchNumber(const llvm_adapter::StringRef &Str) {
     auto Munch =
         Str.take_while([](auto C) { return llvm::isDigit(C) || C == '.'; });
     return {
@@ -127,7 +127,7 @@ private:
         Munch.size()};
   }
 
-  static ResultTy munchIdentifier(const llvm::StringRef &Str) {
+  static ResultTy munchIdentifier(const llvm_adapter::StringRef &Str) {
     auto Munch =
         Str.take_while([](auto C) { return llvm::isAlnum(C) || C == '_'; });
     return {StepFunctionToken(StepFunctionToken::TokenKind::IDENTIFIER,

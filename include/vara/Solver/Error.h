@@ -30,8 +30,8 @@ public:
 
   operator bool() const { return false; }
 
-  friend llvm::raw_ostream &
-  operator<<(llvm::raw_ostream &OS,
+  friend llvm_adapter::ostream &
+  operator<<(llvm_adapter::ostream &OS,
              const Error<vara::solver::SolverErrorCode> &Error) {
     switch (Error.E) {
     case vara::solver::NOT_IMPLEMENTED:

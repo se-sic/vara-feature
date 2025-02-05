@@ -1,10 +1,9 @@
 #ifndef VARA_FEATURE_ERROR_H
 #define VARA_FEATURE_ERROR_H
 
+#include "vara/LLVMCompatability/Interface.h"
 #include "vara/Utils/Result.h"
 #include "vara/Utils/VariantUtil.h"
-
-#include "llvm/Support/raw_ostream.h"
 
 #include <cassert>
 #include <iostream>
@@ -40,8 +39,8 @@ public:
 
   operator bool() const { return false; }
 
-  friend llvm::raw_ostream &
-  operator<<(llvm::raw_ostream &OS,
+  friend llvm_adapter::ostream &
+  operator<<(llvm_adapter::ostream &OS,
              const Error<vara::feature::FTErrorCode> &Error) {
     switch (Error.E) {
     case vara::feature::ABORTED:

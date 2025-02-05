@@ -1,12 +1,9 @@
 #ifndef VARA_UTILS_RESULT_H
 #define VARA_UTILS_RESULT_H
 
-#include "vara/Utils/VariantUtil.h"
-
-#include "llvm/Support/raw_ostream.h"
+#include "vara/LLVMCompatability/Interface.h"
 
 #include <cassert>
-#include <iostream>
 #include <type_traits>
 #include <variant>
 
@@ -32,8 +29,8 @@ public:
 
   operator bool() const { return true; }
 
-  friend llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
-                                       const Ok<ValueTy> &Ok) {
+  friend llvm_adapter::ostream &operator<<(llvm_adapter::ostream &OS,
+                                           const Ok<ValueTy> &Ok) {
     OS << Ok.V;
     return OS;
   }
@@ -47,9 +44,9 @@ class Ok<void> {
 public:
   Ok() = default;
 
-  friend llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
-                                       const Ok<void> &Ok) {
-    OS << "OK";
+  friend llvm_adapter::ostream &operator<<(llvm_adapter::ostream &OS,
+                                           const Ok<void> &Ok) {
+    OS << std::string("OK");
     return OS;
   }
 };
@@ -74,8 +71,8 @@ public:
 
   operator bool() const { return false; }
 
-  friend llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
-                                       const Error<ErrorTy> &Error) {
+  friend llvm_adapter::ostream &operator<<(llvm_adapter::ostream &OS,
+                                           const Error<ErrorTy> &Error) {
     OS << Error.E;
     return OS;
   }
@@ -138,8 +135,8 @@ public:
     return std::get<Error<ErrorTy>>(Variant).extractError();
   }
 
-  friend llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
-                                       const Result<ErrorTy, ValueTy> &R) {
+  friend llvm_adapter::ostream &operator<<(llvm_adapter::ostream &OS,
+                                           const Result<ErrorTy, ValueTy> &R) {
     std::visit([&OS](auto V) { OS << V; }, R.Variant);
     return OS;
   }

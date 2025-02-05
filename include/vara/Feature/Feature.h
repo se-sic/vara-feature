@@ -295,10 +295,12 @@ inline std::ostream &operator<<(std::ostream &Out,
   return Out;
 }
 
-inline llvm::raw_ostream &operator<<(llvm::raw_ostream &Out,
-                                     const vara::feature::Feature &Feature) {
+#ifdef IN_LLVM_TREE
+inline llvm_adapter::ostream &
+operator<<(llvm_adapter::ostream &Out, const vara::feature::Feature &Feature) {
   Out << Feature.toString();
   return Out;
 }
+#endif
 
 #endif // VARA_FEATURE_FEATURE_H
