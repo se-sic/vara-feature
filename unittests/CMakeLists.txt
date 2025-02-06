@@ -1,7 +1,10 @@
 set(VARA_FEATURE_TEST_UNITS VaRAFeatureUnitTests VaRAConfigurationUnitTests
                             VaRASamplingUnitTests VaRASolverUnitTests
 )
-set(VARA_FEATURE_LIBS VaRAFeature VaRAConfiguration VaRASampling VaRASolver)
+set(VARA_FEATURE_LIBS VaRAFeature VaRAConfiguration VaRASampling)
+if(VARA_FEATURE_USE_Z3_SOLVER)
+  set(VARA_FEATURE_LIBS ${VARA_FEATURE_LIBS} VaRASolver)
+endif()
 set(VARA_FEAUTRE_TEST_WORKING_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 foreach(test_unit ${VARA_FEATURE_TEST_UNITS})
@@ -70,6 +73,8 @@ include_directories(.)
 add_subdirectory(Configuration)
 add_subdirectory(Feature)
 add_subdirectory(Sampling)
-add_subdirectory(Solver)
+if(VARA_FEATURE_USE_Z3_SOLVER)
+  add_subdirectory(Solver)
+endif()
 add_subdirectory(Utils)
 add_subdirectory(resources)
