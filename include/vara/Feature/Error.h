@@ -72,6 +72,7 @@ public:
     case vara::feature::NON_LEAF_NODE:
       OS << "Not a leaf node.";
       break;
+    case vara::feature::CONSTRAINT_MALFORMED:
       OS << "Constraint is malformed.";
       break;
     case vara::feature::RECURSIVE_EDGE:

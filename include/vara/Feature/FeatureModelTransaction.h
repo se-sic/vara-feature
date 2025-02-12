@@ -376,8 +376,9 @@ private:
 
   class UncoupleVisitor : public ConstraintVisitor {
   public:
-    void visit(PrimaryFeatureConstraint *C) override {
+    bool visit(PrimaryFeatureConstraint *C) override {
       removeConstraint(*C->getFeature(), C);
+      return true;
     }
   };
 

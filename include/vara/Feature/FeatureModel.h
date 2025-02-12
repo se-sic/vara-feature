@@ -399,6 +399,48 @@ private:
     return **BooleanConstraints.back();
   }
 
+  bool removeConstraint(Constraint *C) {
+    // TODO se-sic/VaRA#701 implement tree based comparison
+    { // Handle boolean constraints
+      auto BCIt =
+          std::find_if(BooleanConstraints.begin(), BooleanConstraints.end(),
+                       [C](const std::unique_ptr<BooleanConstraint> &UniC) {
+                         return UniC->constraint() == C;
+                       });
+      if (BCIt != BooleanConstraints.end()) {
+        BooleanConstraints.erase(BCIt);
+        return true;
+      }
+    }
+
+    { // Handle non-boolean constraints
+      auto NBCIt = std::find_if(
+          NonBooleanConstraints.begin(), NonBooleanConstraints.end(),
+          [C](const std::unique_ptr<NonBooleanConstraint> &UniC) {
+            return UniC->constraint() == C;
+          });
+      if (NBCIt != NonBooleanConstraints.end()) {
+        NonBooleanConstraints.erase(NBCIt);
+        return true;
+      }
+    }
+
+    { // Handle mixed constraints
+      auto MCIt =
+          std::find_if(MixedConstraints.begin(), MixedConstraints.end(),
+                       [C](const std::unique_ptr<MixedConstraint> &UniC) {
+                         return UniC->constraint() == C;
+                       });
+      if (MCIt != MixedConstraints.end()) {
+
+        MixedConstraints.erase(MCIt);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   using boolean_constraint_iterator =
       UniqueIterator<BooleanConstraintContainerTy>;
 
@@ -453,23 +495,6 @@ private:
                        return UniR.get() == R;
                      }));
   }
-
-  Constraint *addConstraint(std::unique_ptr<Constraint> Constraint) {
-    Constraints.push_back(std::move(Constraint));
-    return Constraints.back().get();
-  }
-
-  void removeConstraint(Constraint *C) {
-    // TODO se-sic/VaRA#701 implement tree based comparison
-    Constraints.erase(
-        std::find_if(Constraints.begin(), Constraints.end(),
-                     [C](const std::unique_ptr<Constraint> &UniC) {
-                       return UniC.get() == C;
-                     }));
-  }
-
-  /// Delete a \a Feature.
-  void removeFeature(Feature &Feature);
 
   using relationship_iterator = typename RelationshipContainerTy::iterator;
 

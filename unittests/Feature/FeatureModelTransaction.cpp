@@ -2,7 +2,7 @@
 #include "vara/Feature/FeatureModelBuilder.h"
 #include "vara/Feature/FeatureModelParser.h"
 
-#include "UnittestHelper.h"
+#include "Utils/UnittestHelper.h"
 
 #include "gtest/gtest.h"
 
