@@ -433,9 +433,6 @@ public:
     // TODO (se-passau/VaRA#790): different approches to handle constraints
     while (!F->constraints().empty()) {
       Constraint *C = *(F->constraints().begin());
-      while (C->getParent()) {
-        C = C->getParent();
-      }
       RemoveConstraintFromModel RCFM(*C);
       RCFM(FM);
     }
