@@ -23,8 +23,8 @@ public:
 
   FeatureModelBuilder(const FeatureModelBuilder &) = delete;
   FeatureModelBuilder &operator=(const FeatureModelBuilder &) = delete;
-  FeatureModelBuilder(FeatureModelBuilder &&) noexcept = delete;
-  FeatureModelBuilder &operator=(FeatureModelBuilder &&) noexcept = delete;
+  FeatureModelBuilder(FeatureModelBuilder &&) = default;
+  FeatureModelBuilder &operator=(FeatureModelBuilder &&) = default;
 
   ~FeatureModelBuilder() {
     FeatureBuilder.abort();
@@ -51,8 +51,17 @@ public:
 
   FeatureModelBuilder *addEdge(const std::string &ParentName,
                                const std::string &FeatureName) {
+    Parents[FeatureName] = ParentName;
     ModelBuilder.addChild(ParentName, FeatureName);
     return this;
+  }
+
+  [[nodiscard]] std::optional<std::string>
+  getParentName(const std::string &FeatureName) const {
+    if (const auto P = Parents.find(FeatureName); P != Parents.end()) {
+      return P->getValue();
+    }
+    return std::nullopt;
   }
 
   FeatureModelBuilder *emplaceRelationship(Relationship::RelationshipKind RK,
@@ -61,8 +70,8 @@ public:
     return this;
   }
 
-  FeatureModelBuilder *
-  addConstraint(std::unique_ptr<FeatureModel::ConstraintTy> C) {
+  template <class ConstraintTy>
+  FeatureModelBuilder *addConstraint(std::unique_ptr<ConstraintTy> C) {
     RelationBuilder.addConstraint(std::move(C));
     return this;
   }
@@ -83,7 +92,7 @@ public:
   }
 
   FeatureModelBuilder *makeRoot(const std::string &Name) {
-    ModelBuilder.setRoot(std::make_unique<RootFeature>(Name));
+    FeatureBuilder.setRoot(std::make_unique<RootFeature>(Name));
     return this;
   }
 
@@ -94,6 +103,7 @@ public:
 
 private:
   std::unique_ptr<FeatureModel> FM;
+  llvm::StringMap<std::string> Parents;
   // Modifications to initialize features as children of root.
   FeatureModelTransaction<detail::ModifyTransactionMode> FeatureBuilder;
   // Modifications to build tree structure and set FM meta information.

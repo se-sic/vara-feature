@@ -1,5 +1,1 @@
-configure_file(
-  prepare_coverage_data.py
-  prepare_coverage_data.py
-  COPYONLY
-)
+configure_file(prepare_coverage_data.py prepare_coverage_data.py COPYONLY)

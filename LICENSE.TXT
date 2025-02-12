@@ -1,5 +1,5 @@
 ==============================================================================
-vara-feature follows the License of the LLVM Project and 
+vara-feature follows the License of the LLVM Project and
 is, therefore, under the Apache License v2.0 with LLVM Exceptions:
 ==============================================================================
 

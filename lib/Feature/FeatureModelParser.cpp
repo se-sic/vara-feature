@@ -1,7 +1,9 @@
 #include "vara/Feature/FeatureModelParser.h"
+#include "vara/Feature/ConstraintBuilder.h"
 #include "vara/Feature/ConstraintParser.h"
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureSourceRange.h"
+#include "vara/Feature/StepFunctionParser.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -15,8 +17,6 @@
 #include <iostream>
 #include <regex>
 
-using std::make_unique;
-
 namespace vara::feature {
 
 std::string trim(llvm::StringRef S) { return llvm::StringRef(S).trim().str(); }
@@ -25,11 +25,13 @@ Result<FTErrorCode>
 FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                                                 bool Num = false) {
   std::string Name{"root"};
+  std::string OutputString;
   bool Opt = false;
   int64_t MinValue = 0;
   int64_t MaxValue = 0;
   std::vector<int64_t> Values;
   std::vector<FeatureSourceRange> SourceRanges;
+  std::unique_ptr<StepFunction> Step;
   for (xmlNode *Head = Node->children; Head; Head = Head->next) {
     if (Head->type == XML_ELEMENT_NODE) {
       std::string Cnt{trim(reinterpret_cast<char *>(
@@ -42,18 +44,38 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
       // the input beforehand.
       if (!xmlStrcmp(Head->name, XmlConstants::NAME)) {
         Name = Cnt;
+      } else if (!xmlStrcmp(Head->name, XmlConstants::OUTPUTSTRING)) {
+        OutputString =
+            llvm::StringRef(
+                reinterpret_cast<char *>(
+                    UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()))
+                .ltrim()
+                .str();
       } else if (!xmlStrcmp(Head->name, XmlConstants::OPTIONAL)) {
         Opt = Cnt == "True";
       } else if (!xmlStrcmp(Head->name, XmlConstants::PARENT)) {
+        if (auto P = FMB.getParentName(Name); P && *P != Cnt) {
+          llvm::errs() << llvm::formatv(
+              "Ambiguous edge to {0} from either '{1}' or '{2}'.\n", Name, *P,
+              Cnt);
+          return Error(INCONSISTENT);
+        }
         FMB.addEdge(Cnt, Name);
       } else if (!xmlStrcmp(Head->name, XmlConstants::CHILDREN)) {
         for (xmlNode *Child = Head->children; Child; Child = Child->next) {
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
-              FMB.addEdge(Name, std::string(reinterpret_cast<char *>(
-                                    std::unique_ptr<xmlChar, void (*)(void *)>(
-                                        xmlNodeGetContent(Child), xmlFree)
-                                        .get())));
+              auto FeatureName = std::string(reinterpret_cast<char *>(
+                  std::unique_ptr<xmlChar, void (*)(void *)>(
+                      xmlNodeGetContent(Child), xmlFree)
+                      .get()));
+              if (auto P = FMB.getParentName(FeatureName); P && *P != Name) {
+                llvm::errs() << llvm::formatv(
+                    "Ambiguous edge to {0} from either '{1}' or '{2}'.\n",
+                    FeatureName, *P, Name);
+                return Error(INCONSISTENT);
+              }
+              FMB.addEdge(Name, FeatureName);
             }
           }
         }
@@ -62,11 +84,12 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
-              FMB.addConstraint(make_unique<ExcludesConstraint>(
-                  make_unique<PrimaryFeatureConstraint>(
-                      make_unique<Feature>(Name)),
-                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
-                      trim(reinterpret_cast<char *>(CCnt.get()))))));
+              ConstraintBuilder CB;
+              CB.feature(Name).excludes().feature(
+                  trim(reinterpret_cast<char *>(CCnt.get())));
+              FMB.addConstraint(
+                  std::make_unique<FeatureModel::BooleanConstraint>(
+                      CB.build()));
             }
           }
         }
@@ -75,11 +98,12 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
           if (Child->type == XML_ELEMENT_NODE) {
             if (!xmlStrcmp(Child->name, XmlConstants::OPTIONS)) {
               UniqueXmlChar CCnt(xmlNodeGetContent(Child), xmlFree);
-              FMB.addConstraint(make_unique<ImpliesConstraint>(
-                  make_unique<PrimaryFeatureConstraint>(
-                      make_unique<Feature>(Name)),
-                  make_unique<PrimaryFeatureConstraint>(make_unique<Feature>(
-                      trim(reinterpret_cast<char *>(CCnt.get()))))));
+              ConstraintBuilder CB;
+              CB.feature(Name).implies().feature(
+                  trim(reinterpret_cast<char *>(CCnt.get())));
+              FMB.addConstraint(
+                  std::make_unique<FeatureModel::BooleanConstraint>(
+                      CB.build()));
             }
           }
         }
@@ -103,6 +127,8 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
                Suffix = Matches.suffix()) {
             Values.emplace_back(parseInteger(Matches.str(), Head->line));
           }
+        } else if (!xmlStrcmp(Head->name, XmlConstants::STEPFUNCTION)) {
+          Step = StepFunctionParser(Cnt, Head->line).buildStepFunction();
         }
       }
     }
@@ -114,27 +140,31 @@ FeatureModelXmlParser::parseConfigurationOption(xmlNode *Node,
   } else if (Num) {
     if (Values.empty()) {
       FMB.makeFeature<NumericFeature>(Name, std::make_pair(MinValue, MaxValue),
-                                      Opt, std::move(SourceRanges));
+                                      Opt, std::move(SourceRanges),
+                                      OutputString, std::move(Step));
     } else {
       FMB.makeFeature<NumericFeature>(Name, Values, Opt,
-                                      std::move(SourceRanges));
+                                      std::move(SourceRanges), OutputString,
+                                      std::move(Step));
     }
   } else {
-    FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges));
+    FMB.makeFeature<BinaryFeature>(Name, Opt, std::move(SourceRanges),
+                                   OutputString);
   }
   return Ok();
 }
 
 FeatureSourceRange
-FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
+FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Node) {
   fs::path Path;
   std::optional<FeatureSourceRange::FeatureSourceLocation> Start;
   std::optional<FeatureSourceRange::FeatureSourceLocation> End;
   enum FeatureSourceRange::Category Category;
-  llvm::Optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
+  std::optional<FeatureSourceRange::FeatureMemberOffset> MemberOffset;
+  std::optional<FeatureSourceRange::FeatureRevisionRange> RevisionRange;
 
   std::unique_ptr<xmlChar, void (*)(void *)> Tmp(
-      xmlGetProp(Head, XmlConstants::CATEGORY), xmlFree);
+      xmlGetProp(Node, XmlConstants::CATEGORY), xmlFree);
   if (Tmp) {
     if (xmlStrcmp(Tmp.get(), XmlConstants::NECESSARY) == 0) {
       Category = FeatureSourceRange::Category::necessary;
@@ -147,9 +177,11 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
   } else {
     Category = FeatureSourceRange::Category::necessary;
   }
-  for (xmlNode *Child = Head->children; Child; Child = Child->next) {
+  for (xmlNode *Child = Node->children; Child; Child = Child->next) {
     if (Child->type == XML_ELEMENT_NODE) {
-      if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
+      if (!xmlStrcmp(Child->name, XmlConstants::REVISIONRANGE)) {
+        RevisionRange = createFeatureRevisionRange(Child);
+      } else if (!xmlStrcmp(Child->name, XmlConstants::PATH)) {
         Path = fs::path(trim(reinterpret_cast<char *>(
             UniqueXmlChar(xmlNodeGetContent(Child), xmlFree).get())));
       } else if (!xmlStrcmp(Child->name, XmlConstants::START)) {
@@ -164,7 +196,7 @@ FeatureModelXmlParser::createFeatureSourceRange(xmlNode *Head) {
       }
     }
   }
-  return {Path, Start, End, Category, MemberOffset};
+  return {Path, Start, End, Category, MemberOffset, RevisionRange};
 }
 
 Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
@@ -181,6 +213,7 @@ Result<FTErrorCode> FeatureModelXmlParser::parseOptions(xmlNode *Node,
   return Ok();
 }
 
+template <class ConstraintTy>
 Result<FTErrorCode> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
   for (xmlNode *H = Node->children; H; H = H->next) {
     if (H->type == XML_ELEMENT_NODE) {
@@ -191,7 +224,41 @@ Result<FTErrorCode> FeatureModelXmlParser::parseConstraints(xmlNode *Node) {
                     std::string(reinterpret_cast<char *>(Cnt.get())),
                     Node->line)
                     .buildConstraint()) {
-          FMB.addConstraint(std::move(Constraint));
+          FMB.addConstraint(
+              std::make_unique<ConstraintTy>(std::move(Constraint)));
+        } else {
+          return Error(ERROR);
+        }
+      }
+    }
+  }
+  return Ok();
+}
+
+template <>
+Result<FTErrorCode>
+FeatureModelXmlParser::parseConstraints<FeatureModel::MixedConstraint>(
+    xmlNode *Node) {
+  for (xmlNode *H = Node->children; H; H = H->next) {
+    if (H->type == XML_ELEMENT_NODE) {
+      if (!xmlStrcmp(H->name, XmlConstants::CONSTRAINT)) {
+        UniqueXmlChar Cnt(xmlNodeGetContent(H), xmlFree);
+        if (auto Constraint =
+                ConstraintParser(
+                    std::string(reinterpret_cast<char *>(Cnt.get())),
+                    Node->line)
+                    .buildConstraint()) {
+          UniqueXmlChar R(xmlGetProp(H, XmlConstants::REQ), xmlFree);
+          UniqueXmlChar E(xmlGetProp(H, XmlConstants::EXPRKIND), xmlFree);
+
+          FMB.addConstraint(std::make_unique<FeatureModel::MixedConstraint>(
+              std::move(Constraint),
+              std::string(reinterpret_cast<char *>(R.get())) == "none"
+                  ? FeatureModel::MixedConstraint::Req::NONE
+                  : FeatureModel::MixedConstraint::Req::ALL,
+              std::string(reinterpret_cast<char *>(E.get())) == "neg"
+                  ? FeatureModel::MixedConstraint::ExprKind::NEG
+                  : FeatureModel::MixedConstraint::ExprKind::POS));
         } else {
           return Error(ERROR);
         }
@@ -227,13 +294,42 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
           return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::BOOLEANCONSTRAINTS)) {
-        if (!parseConstraints(H)) {
+        if (!parseConstraints<FeatureModel::BooleanConstraint>(H)) {
+          return Error(ERROR);
+        }
+      } else if (!xmlStrcmp(H->name, XmlConstants::NONBOOLEANCONSTRAINTS)) {
+        if (!parseConstraints<FeatureModel::NonBooleanConstraint>(H)) {
+          return Error(ERROR);
+        }
+      } else if (!xmlStrcmp(H->name, XmlConstants::MIXEDCONSTRAINTS)) {
+        if (!parseConstraints<FeatureModel::MixedConstraint>(H)) {
           return Error(ERROR);
         }
       }
     }
   }
   return Ok();
+}
+
+FeatureSourceRange::FeatureRevisionRange
+FeatureModelXmlParser::createFeatureRevisionRange(xmlNode *Node) {
+  std::string Introduced;
+  std::string Removed;
+  for (xmlNode *Head = Node->children; Head; Head = Head->next) {
+    if (Head->type == XML_ELEMENT_NODE) {
+      std::string Cnt{trim(reinterpret_cast<char *>(
+          UniqueXmlChar(xmlNodeGetContent(Head), xmlFree).get()))};
+      if (!xmlStrcmp(Head->name, XmlConstants::INTRODUCED)) {
+        Introduced = Cnt;
+      } else if (!xmlStrcmp(Head->name, XmlConstants::REMOVED)) {
+        Removed = Cnt;
+      }
+    }
+  }
+  if (Removed.empty()) {
+    return {Introduced};
+  }
+  return {Introduced, Removed};
 }
 
 FeatureSourceRange::FeatureSourceLocation
@@ -276,7 +372,8 @@ bool detectExclude(const Feature *A, const Feature *B) {
 Result<FTErrorCode>
 FeatureModelXmlParser::detectXMLAlternatives(FeatureModel &FM) {
   auto Transactions = FeatureModelModifyTransaction::openTransaction(FM);
-  for (auto *F : FM) {
+  const auto &FMConstRef = FM;
+  for (auto *F : FMConstRef) {
     auto Children = F->getChildren<Feature>();
     if (Children.size() > 1 &&
         std::all_of(Children.begin(), Children.end(), [Children](auto *F) {
@@ -454,13 +551,14 @@ bool FeatureModelSxfmParser::parseFeatureTree(xmlNode *FeatureTree) {
     int LastIndentationLevel = -1;
     int RootIndentation = -1;
     int OrGroupCounter = 0;
-    std::map<int, std::string> IndentationToParentMapping;
+    std::unordered_map<int, std::string> IndentationToParentMapping;
 
     // This map is used for the or group mapping
     // Each entry represents an or group as a tuple where the first value is
     // the name of the parent, the second is the relationship kind, and the
     // third a vector consisting of the name of the children
-    std::map<int, std::tuple<std::string, Relationship::RelationshipKind>>
+    std::unordered_map<int,
+                       std::tuple<std::string, Relationship::RelationshipKind>>
         OrGroupMapping;
 
     if (FeatureTree == nullptr) {
@@ -712,7 +810,8 @@ bool FeatureModelSxfmParser::parseConstraints(xmlNode *Constraints) {
     }
 
     if (auto Constraint = ConstraintParser(CnfFormula).buildConstraint()) {
-      FMB.addConstraint(std::move(Constraint));
+      FMB.addConstraint(std::make_unique<FeatureModel::BooleanConstraint>(
+          std::move(Constraint)));
     }
   }
 
@@ -759,19 +858,20 @@ std::optional<std::tuple<int, int>> FeatureModelSxfmParser::extractCardinality(
 
 std::optional<int>
 FeatureModelSxfmParser::parseCardinality(llvm::StringRef CardinalityString) {
-  std::optional<int> Result = std::optional<int>();
+  std::optional<int> Result;
   if (CardinalityString == "*") {
     // We use -1 as our magic integer to indicate that the cardinality is a
     // wildcard.
     Result = SxfmConstants::WILDCARD;
   } else {
     // Convert the string into an integer in a safe way
-    long LongNumber;
-    if (!llvm::to_integer(CardinalityString, LongNumber, 10)) {
+    int CardinalityValue;
+    if (!llvm::to_integer(CardinalityString, CardinalityValue, 10)) {
       llvm::errs() << llvm::formatv(
-          "The cardinality: '{0}' was not an integer.\n", CardinalityString);
+          "The cardinality: '{0}' was not an {1}-bit integer.\n",
+          CardinalityString, sizeof(CardinalityValue) * 8);
     } else {
-      Result = LongNumber;
+      Result = CardinalityValue;
     }
   }
 

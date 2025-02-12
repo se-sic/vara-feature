@@ -19,7 +19,7 @@ protected:
     ASSERT_TRUE(FM);
   }
 
-  std::unique_ptr<FeatureModel> FM;
+  std::unique_ptr<const FeatureModel> FM;
 };
 
 TEST_F(OrderedFeatureVectorTest, insert) {

@@ -16,6 +16,7 @@ public:
 
   static constexpr xmlChar VM[] = "vm";
   static constexpr xmlChar NAME[] = "name";
+  static constexpr xmlChar OUTPUTSTRING[] = "outputString";
   static constexpr xmlChar COMMIT[] = "commit";
   static constexpr xmlChar OPTIONAL[] = "optional";
   static constexpr xmlChar PARENT[] = "parent";
@@ -25,6 +26,9 @@ public:
   static constexpr xmlChar OPTIONS[] = "options";
   static constexpr xmlChar LOCATIONS[] = "locations";
   static constexpr xmlChar SOURCERANGE[] = "sourceRange";
+  static constexpr xmlChar REVISIONRANGE[] = "revisionRange";
+  static constexpr xmlChar INTRODUCED[] = "introduced";
+  static constexpr xmlChar REMOVED[] = "removed";
   static constexpr xmlChar MEMBEROFFSET[] = "memberOffset";
   static constexpr xmlChar PATH[] = "path";
   static constexpr xmlChar START[] = "start";
@@ -38,6 +42,8 @@ public:
   static constexpr xmlChar VALUES[] = "values";
   static constexpr xmlChar CONFIGURATIONOPTION[] = "configurationOption";
   static constexpr xmlChar CONSTRAINT[] = "constraint";
+  static constexpr xmlChar REQ[] = "req";
+  static constexpr xmlChar EXPRKIND[] = "exprKind";
   static constexpr xmlChar ROOT[] = "root";
   static constexpr xmlChar BINARYOPTIONS[] = "binaryOptions";
   static constexpr xmlChar NUMERICOPTIONS[] = "numericOptions";
@@ -81,13 +87,18 @@ public:
       "<!ELEMENT values (#PCDATA)>\n"
       "<!ELEMENT stepFunction (#PCDATA)>\n"
       "<!ELEMENT locations (sourceRange*)>\n"
-      "<!ELEMENT sourceRange (path, start, end, memberOffset?)>\n"
+      "<!ELEMENT sourceRange (revisionRange?, path, start, end, "
+      "memberOffset?)>\n"
       "<!ATTLIST sourceRange category (necessary|inessential) \"necessary\">\n"
+      "<!ELEMENT revisionRange (introduced, removed?)>\n"
+      "<!ELEMENT introduced (#PCDATA)>\n"
+      "<!ELEMENT removed (#PCDATA)>\n"
       "<!ELEMENT path (#PCDATA)>\n"
       "<!ELEMENT start (line, column)>\n"
       "<!ELEMENT end (line, column)>\n"
       "<!ELEMENT line (#PCDATA)>\n"
-      "<!ELEMENT column (#PCDATA)>";
+      "<!ELEMENT column (#PCDATA)>\n"
+      "<!ELEMENT memberOffset (#PCDATA)>";
 };
 } // namespace vara::feature
 

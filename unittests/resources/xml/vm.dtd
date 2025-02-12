@@ -1,11 +1,11 @@
 <!ELEMENT vm (binaryOptions, numericOptions?, booleanConstraints?, nonBooleanConstraints?, mixedConstraints?)>
-<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED>
+<!ATTLIST vm name CDATA #REQUIRED root CDATA #IMPLIED commit CDATA #IMPLIED>
 <!ELEMENT binaryOptions (configurationOption*)>
 <!ELEMENT numericOptions (configurationOption*)>
 <!ELEMENT booleanConstraints (constraint*)>
 <!ELEMENT nonBooleanConstraints (constraint*)>
 <!ELEMENT mixedConstraints (constraint*)>
-<!ELEMENT configurationOption (name, outputString?, (prefix | preFix)?, (postfix | postFix)?, parent?, children?, impliedOptions?, excludedOptions?, defaultValue?, optional?, ((minValue, maxValue) | values)?, stepFunction?, location?)>
+<!ELEMENT configurationOption (name, outputString?, (prefix | preFix)?, (postfix | postFix)?, parent?, children?, impliedOptions?, excludedOptions?, optional?, ((minValue, maxValue) | values)?, stepFunction?, defaultValue?, locations?)>
 <!ELEMENT constraint (#PCDATA)>
 <!ATTLIST constraint req CDATA #IMPLIED exprKind CDATA #IMPLIED>
 <!ELEMENT name (#PCDATA)>
@@ -25,9 +25,15 @@
 <!ELEMENT maxValue (#PCDATA)>
 <!ELEMENT values (#PCDATA)>
 <!ELEMENT stepFunction (#PCDATA)>
-<!ELEMENT location (path, start?, end?)>
+<!ELEMENT locations (sourceRange*)>
+<!ELEMENT sourceRange (revisionRange?, path, start, end, memberOffset?)>
+<!ATTLIST sourceRange category (necessary|inessential) "necessary">
+<!ELEMENT revisionRange (introduced, removed?)>
+<!ELEMENT introduced (#PCDATA)>
+<!ELEMENT removed (#PCDATA)>
 <!ELEMENT path (#PCDATA)>
 <!ELEMENT start (line, column)>
 <!ELEMENT end (line, column)>
 <!ELEMENT line (#PCDATA)>
 <!ELEMENT column (#PCDATA)>
+<!ELEMENT memberOffset (#PCDATA)>

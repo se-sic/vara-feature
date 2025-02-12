@@ -1,5 +1,8 @@
-add_vara_unittest(VaRAFeatureUnitTests VaRAFeatureTests
+add_vara_unittest(
+  VaRAFeatureUnitTests
+  VaRAFeatureTests
   BinaryFeature.cpp
+  ConstraintBuilder.cpp
   ConstraintParser.cpp
   Feature.cpp
   FeatureModel.cpp
@@ -8,10 +11,13 @@ add_vara_unittest(VaRAFeatureUnitTests VaRAFeatureTests
   FeatureModelParser.cpp
   FeatureModelSxfm.cpp
   FeatureModelWriter.cpp
+  FeatureRevisionRange.cpp
   FeatureSourceRange.cpp
   FeatureTreeNode.cpp
   NumericFeature.cpp
   OrderedFeatureVector.cpp
   Relationship.cpp
   RootFeature.cpp
-  )
+  StepFunction.cpp
+  StepFunctionParser.cpp
+)

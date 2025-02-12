@@ -130,7 +130,8 @@ public:
     this->removeLocationImpl(F, FSR);
   }
 
-  decltype(auto) addConstraint(std::unique_ptr<Constraint> Constraint) {
+  template <class ConstraintTy>
+  decltype(auto) addConstraint(std::unique_ptr<ConstraintTy> Constraint) {
     if constexpr (IsCopyMode) {
       return this->addConstraintImpl(std::move(Constraint));
     } else {
@@ -251,8 +252,9 @@ protected:
     FM.removeRelationship(R);
   }
 
+  template <class ConstraintTy>
   static Constraint *addConstraint(FeatureModel &FM,
-                                   std::unique_ptr<Constraint> Constraint) {
+                                   std::unique_ptr<ConstraintTy> Constraint) {
     return FM.addConstraint(std::move(Constraint));
   }
 
@@ -623,6 +625,7 @@ private:
 //                       AddConstraintToModel
 //===----------------------------------------------------------------------===//
 
+template <class ConstraintTy>
 class AddConstraintToModel : public FeatureModelModification {
   friend class FeatureModelModification;
 
@@ -640,7 +643,9 @@ public:
       return ERROR;
     }
     auto V = AddConstraintToModelVisitor(&FM);
-    InsertedConstraint->accept(V);
+    if (!InsertedConstraint->accept(V)) {
+      return MISSING_FEATURE;
+    }
     return InsertedConstraint;
   }
 
@@ -650,20 +655,25 @@ private:
   public:
     AddConstraintToModelVisitor(FeatureModel *FM) : FM(FM) {}
 
-    void visit(PrimaryFeatureConstraint *C) override {
+    bool visit(PrimaryFeatureConstraint *C) override {
       auto *F = FM->getFeature(C->getFeature()->getName());
+      if (!F) {
+        return false;
+      }
+
       AddConstraintToModel::setFeature(*C, *F);
       AddConstraintToModel::addConstraint(*F, *C);
+      return true;
     };
 
   private:
     FeatureModel *FM;
   };
 
-  AddConstraintToModel(std::unique_ptr<Constraint> NewConstraint)
+  AddConstraintToModel(std::unique_ptr<ConstraintTy> NewConstraint)
       : NewConstraint(std::move(NewConstraint)) {}
 
-  std::unique_ptr<Constraint> NewConstraint;
+  std::unique_ptr<ConstraintTy> NewConstraint;
 };
 
 //===----------------------------------------------------------------------===//
@@ -763,26 +773,34 @@ public:
     if (FM.getRoot() && FM.getRoot()->getName() == Root->getName()) {
       for (auto *C : Root->children()) {
         setParent(*C, *FM.getRoot());
-        removeEdge(*Root, *C);
         addEdge(*FM.getRoot(), *C);
       }
-      return FM.getRoot();
-    }
-    if (auto *NewRoot = llvm::dyn_cast_or_null<RootFeature>(
-            addFeature(FM, std::move(Root)));
-        NewRoot) {
-      if (FM.getRoot()) {
-        for (auto *C : FM.getRoot()->children()) {
-          setParent(*C, *NewRoot);
-          removeEdge(*FM.getRoot(), *C);
-          addEdge(*NewRoot, *C);
+      for (auto *C : FM.getRoot()->children()) {
+        if (Root->hasEdgeTo(*C)) {
+          removeEdge(*Root, *C);
         }
-        removeFeature(FM, *FM.getRoot());
       }
-      setRoot(FM, *NewRoot);
       return FM.getRoot();
     }
-    return ALREADY_PRESENT;
+    auto *InsertedRoot =
+        llvm::dyn_cast_or_null<RootFeature>(addFeature(FM, std::move(Root)));
+    if (!InsertedRoot) {
+      return ALREADY_PRESENT;
+    }
+    if (FM.getRoot()) {
+      for (auto *C : FM.getRoot()->children()) {
+        setParent(*C, *InsertedRoot);
+        addEdge(*InsertedRoot, *C);
+      }
+      for (auto *C : InsertedRoot->children()) {
+        if (FM.getRoot()->hasEdgeTo(*C)) {
+          removeEdge(*FM.getRoot(), *C);
+        }
+      }
+      removeFeature(FM, *FM.getRoot());
+    }
+    setRoot(FM, *InsertedRoot);
+    return FM.getRoot();
   }
 
 private:
@@ -815,6 +833,10 @@ public:
                              [](FeatureTreeNode *Ptr) { return Ptr; },
                          },
                          Child);
+    if (!C) {
+      return MISSING_CHILD;
+    }
+
     auto *P = std::visit(Overloaded{
                              [&FM](const std::string &Name) {
                                return llvm::dyn_cast_or_null<FeatureTreeNode>(
@@ -823,7 +845,13 @@ public:
                              [](FeatureTreeNode *Ptr) { return Ptr; },
                          },
                          Parent);
-    assert(C && P);
+    if (!P) {
+      return MISSING_PARENT;
+    }
+
+    if (C == P) {
+      return RECURSIVE_EDGE;
+    }
 
     if (C->getParent()) {
       removeEdge(*C->getParent(), *C);
@@ -955,14 +983,15 @@ protected:
         FSR)(*FM);
   }
 
+  template <class ConstraintTy>
   Result<FTErrorCode, Constraint *>
-  addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
+  addConstraintImpl(std::unique_ptr<ConstraintTy> NewConstraint) {
     if (!FM) {
       return ERROR;
     }
 
-    return FeatureModelModification::makeModification<AddConstraintToModel>(
-        std::move(NewConstraint))(*FM);
+    return FeatureModelModification::makeModification<
+        AddConstraintToModel<ConstraintTy>>(std::move(NewConstraint))(*FM);
   }
 
   void removeConstraintImpl(Constraint &RemoveConstraint) {
@@ -1087,10 +1116,11 @@ protected:
                             RemoveLocationFromFeature>(F, FSR));
   }
 
-  void addConstraintImpl(std::unique_ptr<Constraint> NewConstraint) {
+  template <class ConstraintTy>
+  void addConstraintImpl(std::unique_ptr<ConstraintTy> NewConstraint) {
     Modifications.push_back(
-        FeatureModelModification::makeUniqueModification<AddConstraintToModel>(
-            std::move(NewConstraint)));
+        FeatureModelModification::makeUniqueModification<
+            AddConstraintToModel<ConstraintTy>>(std::move(NewConstraint)));
   }
 
   void removeConstraintImpl(Constraint &RemoveConstraint) {

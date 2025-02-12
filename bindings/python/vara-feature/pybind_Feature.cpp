@@ -42,6 +42,9 @@ void init_feature_module_feature(py::module &M) {
       .def("__hash__", &vf::Feature::hash)
       .def_property_readonly("name", &vf::Feature::getName,
                              R"pbdoc(The name of the feature.)pbdoc")
+      .def_property_readonly(
+          "output_string", &vf::Feature::getOutputString,
+          R"pbdoc(Returns the output string of a feature.)pbdoc")
       .def(
           "is_root",
           [](const vf::Feature &F) { return llvm::isa<vf::RootFeature>(F); },
@@ -90,6 +93,9 @@ void init_feature_module_binary_feature(py::module &M) {
       .def(py::init<std::string, bool>())
       .def(py::init<std::string, bool,
                     std::vector<vara::feature::FeatureSourceRange>>())
+      .def(py::init<std::string, bool,
+                    std::vector<vara::feature::FeatureSourceRange>,
+                    std::string>())
       .def(
           "to_string", &vf::BinaryFeature::toString,
           R"pbdoc(Returns the string representation of a BinaryFeature.)pbdoc");
@@ -100,6 +106,9 @@ void init_feature_module_numeric_feature(py::module &M) {
       .def(py::init<std::string, vf::NumericFeature::ValuesVariantType, bool>())
       .def(py::init<std::string, vf::NumericFeature::ValuesVariantType, bool,
                     std::vector<vara::feature::FeatureSourceRange>>())
+      .def(py::init<std::string, vf::NumericFeature::ValuesVariantType, bool,
+                    std::vector<vara::feature::FeatureSourceRange>,
+                    std::string>())
       .def(
           "to_string", &vf::NumericFeature::toString,
           R"pbdoc(Returns the string representation of a NumericFeature.)pbdoc");

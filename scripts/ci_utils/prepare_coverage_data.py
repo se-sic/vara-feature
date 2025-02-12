@@ -15,7 +15,7 @@ def get_llvm_cov_binary_name() -> str:
     """
     possible_binary_names = ["llvm-cov"]
     possible_binary_names.extend(
-        ["llvm-cov-" + str(x) for x in range(14, 7, -1)])
+        ["llvm-cov-" + str(x) for x in range(15, 7, -1)])
 
     for binary_name in possible_binary_names:
         if which(binary_name) is not None:
@@ -30,7 +30,7 @@ def get_llvm_profdata_binary_name() -> str:
     """
     possible_binary_names = ["llvm-profdata"]
     possible_binary_names.extend(
-        ["llvm-profdata-" + str(x) for x in range(14, 7, -1)])
+        ["llvm-profdata-" + str(x) for x in range(15, 7, -1)])
 
     for binary_name in possible_binary_names:
         if which(binary_name) is not None:

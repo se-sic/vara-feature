@@ -1,8 +1,6 @@
 #ifndef VARA_FEATURE_FEATURESOURCERANGE_H
 #define VARA_FEATURE_FEATURESOURCERANGE_H
 
-#include "llvm/ADT/None.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/Support/FormatVariadic.h"
 
@@ -17,18 +15,39 @@ namespace fs = std::experimental::filesystem;
 #include <optional>
 #include <sstream>
 #include <string>
-#include <tuple>
 #include <utility>
 
 namespace vara::feature {
 
 //===----------------------------------------------------------------------===//
-//                               FeatureSourceRange Class
+//                          FeatureSourceRange Class
 //===----------------------------------------------------------------------===//
 
 class FeatureSourceRange {
 public:
   enum class Category { necessary, inessential };
+
+  class FeatureRevisionRange {
+  public:
+    FeatureRevisionRange(std::string Introduced, std::string Removed)
+        : Introduced(std::move(Introduced)), Removed(std::move(Removed)) {}
+    FeatureRevisionRange(std::string Introduced)
+        : Introduced(std::move(Introduced)) {}
+
+    [[nodiscard]] llvm::StringRef introducingCommit() const {
+      return Introduced;
+    }
+
+    [[nodiscard]] bool hasRemovingCommit() const { return Removed.has_value(); }
+    [[nodiscard]] llvm::StringRef removingCommit() const {
+      return Removed.has_value() ? llvm::StringRef(Removed.value())
+                                 : llvm::StringRef();
+    }
+
+  private:
+    std::string Introduced;
+    std::optional<std::string> Removed;
+  };
 
   class FeatureSourceLocation {
 
@@ -72,73 +91,103 @@ public:
   };
 
   class FeatureMemberOffset {
-    FeatureMemberOffset(std::string MemberOffset)
-        : MemberOffset(std::move(MemberOffset)) {}
-
   public:
-    static llvm::Optional<FeatureMemberOffset>
-    createFeatureMemberOffset(std::string MemberOffset) {
-      // Member offsets need to have excaptly one :: separator
-      if (isInMemberOffsetFormat(MemberOffset)) {
-        return FeatureMemberOffset(std::move(MemberOffset));
+    [[nodiscard]] static std::optional<FeatureMemberOffset>
+    createFeatureMemberOffset(llvm::StringRef MemberOffset) {
+      auto Split = splitMemberOffset(MemberOffset);
+      if (!Split.has_value()) {
+        return std::nullopt;
       }
-
-      return {};
+      return FeatureMemberOffset(splitClass(Split.value().first),
+                                 Split.value().second);
     }
 
-    static bool isInMemberOffsetFormat(llvm::StringRef PossibleMemberOffset) {
-      return PossibleMemberOffset.contains("::") &&
-             PossibleMemberOffset.count(':') == 2;
+    [[nodiscard]] static bool
+    isMemberOffsetFormat(llvm::StringRef PossibleMemberOffset) {
+      return splitMemberOffset(PossibleMemberOffset).has_value();
     }
 
-    void setMemberOffset(std::string MemberOffset) {
-      if (isInMemberOffsetFormat(MemberOffset)) {
-        this->MemberOffset = std::move(MemberOffset);
+    [[nodiscard]] std::string
+    className(std::optional<size_t> Nested = std::nullopt) const {
+      if (Nested.has_value()) {
+        assert(Nested.value() < Class.size());
+        return Class[Class.size() - Nested.value() - 1];
       }
-    }
-    [[nodiscard]] std::string fullMemberOffset() const {
-      return this->MemberOffset;
-    }
-
-    [[nodiscard]] llvm::StringRef className() const {
-      llvm::StringRef TmpRef{MemberOffset};
-      return TmpRef.substr(0, TmpRef.find_first_of(':'));
-    }
-
-    [[nodiscard]] llvm::StringRef memberName() const {
-      llvm::StringRef TmpRef{MemberOffset};
-      return TmpRef.substr(TmpRef.find_last_of(':') + 1);
+      if (Class.empty()) {
+        return "";
+      }
+      std::stringstream StrS;
+      StrS << Class[0];
+      for (size_t Idx = 1; Idx < Class.size(); ++Idx) {
+        StrS << "::" << Class[Idx];
+      }
+      return StrS.str();
     }
 
-    [[nodiscard]] std::string toString() const { return fullMemberOffset(); }
+    /// Get the number of nested classes.
+    [[nodiscard]] size_t nestingDepth() const { return Class.size(); }
+
+    [[nodiscard]] std::string memberName() const { return Member; }
+
+    [[nodiscard]] std::string toString() const {
+      return className() + "::" + memberName();
+    }
 
     inline bool operator==(const FeatureMemberOffset &Other) const {
-      return fullMemberOffset() == Other.fullMemberOffset();
+      return Member == Other.Member && Class == Other.Class;
     }
 
     inline bool operator!=(const FeatureMemberOffset &Other) const {
-      return fullMemberOffset() != Other.fullMemberOffset();
+      return !(*this == Other);
     }
 
   private:
-    std::string MemberOffset;
+    FeatureMemberOffset(const llvm::SmallVector<llvm::StringRef, 1> &Class,
+                        llvm::StringRef Member)
+        : Class{Class.begin(), Class.end()}, Member(Member.str()) {}
+
+    static std::optional<std::pair<llvm::StringRef, llvm::StringRef>>
+    splitMemberOffset(llvm::StringRef MemberOffset) {
+      auto Split = MemberOffset.rsplit("::");
+      if (Split.second.empty()) {
+        // wrong format
+        return std::nullopt;
+      }
+      return Split;
+    }
+
+    static llvm::SmallVector<llvm::StringRef, 1>
+    splitClass(llvm::StringRef Class) {
+      if (Class.empty()) {
+        return {};
+      }
+      llvm::SmallVector<llvm::StringRef, 1> Split;
+      Class.split(Split, "::");
+      return Split;
+    }
+
+    llvm::SmallVector<std::string, 1> Class;
+    std::string Member;
   };
 
   FeatureSourceRange(
       fs::path Path, std::optional<FeatureSourceLocation> Start = std::nullopt,
       std::optional<FeatureSourceLocation> End = std::nullopt,
       Category CategoryKind = Category::necessary,
-      llvm::Optional<FeatureMemberOffset> MemberOffset = llvm::None)
+      std::optional<FeatureMemberOffset> MemberOffset = std::nullopt,
+      std::optional<FeatureRevisionRange> RevisionRange = std::nullopt)
       : Path(std::move(Path)), Start(std::move(Start)), End(std::move(End)),
-        CategoryKind(CategoryKind), MemberOffset(std::move(MemberOffset)) {}
+        CategoryKind(CategoryKind), MemberOffset(std::move(MemberOffset)),
+        RevisionRange(std::move(RevisionRange)) {}
 
   FeatureSourceRange(
       fs::path Path, FeatureSourceLocation Start, FeatureSourceLocation End,
       Category CategoryKind = Category::necessary,
-      llvm::Optional<FeatureMemberOffset> MemberOffset = llvm::None)
+      std::optional<FeatureMemberOffset> MemberOffset = std::nullopt,
+      std::optional<FeatureRevisionRange> RevisionRange = std::nullopt)
       : FeatureSourceRange(std::move(Path), std::optional(std::move(Start)),
                            std::optional(std::move(End)), CategoryKind,
-                           std::move(MemberOffset)) {}
+                           std::move(MemberOffset), std::move(RevisionRange)) {}
 
   FeatureSourceRange(const FeatureSourceRange &L) = default;
   FeatureSourceRange &operator=(const FeatureSourceRange &) = default;
@@ -165,9 +214,18 @@ public:
     return End.has_value() ? &End.value() : nullptr;
   }
 
-  [[nodiscard]] bool hasMemberOffset() const { return MemberOffset.hasValue(); }
+  [[nodiscard]] bool hasMemberOffset() const {
+    return MemberOffset.has_value();
+  }
   [[nodiscard]] FeatureMemberOffset *getMemberOffset() {
-    return MemberOffset.hasValue() ? MemberOffset.getPointer() : nullptr;
+    return MemberOffset.has_value() ? &MemberOffset.value() : nullptr;
+  }
+
+  [[nodiscard]] bool hasRevisionRange() const {
+    return RevisionRange.has_value();
+  }
+  [[nodiscard]] FeatureRevisionRange *revisionRange() {
+    return RevisionRange.has_value() ? &RevisionRange.value() : nullptr;
   }
 
   [[nodiscard]] std::string toString() const {
@@ -200,7 +258,8 @@ private:
   std::optional<FeatureSourceLocation> Start;
   std::optional<FeatureSourceLocation> End;
   Category CategoryKind;
-  llvm::Optional<FeatureMemberOffset> MemberOffset;
+  std::optional<FeatureMemberOffset> MemberOffset;
+  std::optional<FeatureRevisionRange> RevisionRange;
 };
 } // namespace vara::feature
 

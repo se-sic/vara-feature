@@ -15,6 +15,18 @@ namespace vara::feature {
 //                               ConstraintToken
 //===----------------------------------------------------------------------===//
 
+namespace legacy {
+// NOLINTNEXTLINE(readability-identifier-naming)
+[[nodiscard]] inline bool starts_with(llvm::StringRef Str,
+                                      llvm::StringRef Prefix) {
+#if LLVM_VERSION_MAJOR <= 14
+  return Str.startswith(Prefix);
+#else
+  return Str.starts_with(Prefix);
+#endif
+}
+} // namespace legacy
+
 class ConstraintToken {
 public:
   using PrecedenceTy = unsigned int;
@@ -47,13 +59,15 @@ public:
   };
 
   ConstraintToken(ConstraintTokenKind Kind) : Kind(Kind) {}
-  ConstraintToken(ConstraintTokenKind Kind, std::string Value)
+  ConstraintToken(ConstraintTokenKind Kind, const std::string &Value)
       : Kind(Kind), Value(Value) {}
   virtual ~ConstraintToken() = default;
 
   [[nodiscard]] ConstraintTokenKind getKind() const { return Kind; };
 
-  [[nodiscard]] std::optional<std::string> getValue() const { return Value; }
+  [[nodiscard]] std::optional<const std::string> getValue() const {
+    return Value;
+  }
 
   [[nodiscard]] PrecedenceTy calcPrecedence() const {
     switch (Kind) {
@@ -185,26 +199,26 @@ private:
   static ResultTy munchOperator(const llvm::StringRef &Str) {
     switch (Str.front()) {
     case '-':
-      if (Str.startswith("->")) {
+      if (legacy::starts_with(Str, "->")) {
         return {ConstraintToken(ConstraintToken::ConstraintTokenKind::IMPLIES),
                 2};
       }
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::MINUS), 1};
     case '!':
-      if (Str.startswith("!=")) {
+      if (legacy::starts_with(Str, "!=")) {
         return {
             ConstraintToken(ConstraintToken::ConstraintTokenKind::NOT_EQUAL),
             2};
       }
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::NOT), 1};
     case '=':
-      if (Str.startswith("=>")) {
+      if (legacy::starts_with(Str, "=>")) {
         return {ConstraintToken(ConstraintToken::ConstraintTokenKind::IMPLIES),
                 2};
       }
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::EQUAL), 1};
     case '>':
-      if (Str.startswith(">=")) {
+      if (legacy::starts_with(Str, ">=")) {
         return {ConstraintToken(
                     ConstraintToken::ConstraintTokenKind::GREATER_EQUAL),
                 2};
@@ -212,11 +226,11 @@ private:
       return {ConstraintToken(ConstraintToken::ConstraintTokenKind::GREATER),
               1};
     case '<':
-      if (Str.startswith("<->") || Str.startswith("<=>")) {
+      if (legacy::starts_with(Str, "<->") || legacy::starts_with(Str, "<=>")) {
         return {
             ConstraintToken(ConstraintToken::ConstraintTokenKind::EQUIVALENT),
             3};
-      } else if (Str.startswith("<=")) {
+      } else if (legacy::starts_with(Str, "<=")) {
         return {
             ConstraintToken(ConstraintToken::ConstraintTokenKind::LESS_EQUAL),
             2};
@@ -263,7 +277,7 @@ private:
 /// Parse 64-bit integer in decimal or scientific notation.
 static int64_t parseInteger(llvm::StringRef Str,
                             std::optional<unsigned int> Line = std::nullopt) {
-  if (Str.contains_lower('e')) {
+  if (Str.contains_insensitive('e')) {
     // If we encounter scientific notation we try to parse the number as double.
     if (double Double; !Str.getAsDouble(Double)) {
       return parseInteger(llvm::formatv("{0:0}", Double).str());
@@ -274,13 +288,13 @@ static int64_t parseInteger(llvm::StringRef Str,
 
   if (Line.has_value()) {
     llvm::errs() << "Failed to parse integer '" << Str << "' in line "
-                 << Line.value() << ".\n";
+                 << Line.has_value() << ".\n";
   } else {
     llvm::errs() << "Failed to parse integer '" << Str << "'.\n";
   }
 
   // If parsing failed, we return minimal or maximal value respectively.
-  if (Str.startswith("-")) {
+  if (legacy::starts_with(Str, "-")) {
     return std::numeric_limits<int64_t>::min();
   }
   return std::numeric_limits<int64_t>::max();
@@ -341,14 +355,14 @@ private:
       case ConstraintToken::ConstraintTokenKind::EQUIVALENT:
       case ConstraintToken::ConstraintTokenKind::GREATER:
       case ConstraintToken::ConstraintTokenKind::GREATER_EQUAL:
-      case ConstraintToken::ConstraintTokenKind::IMPLIES: {
+      case ConstraintToken::ConstraintTokenKind::IMPLIES:
       case ConstraintToken::ConstraintTokenKind::LESS:
       case ConstraintToken::ConstraintTokenKind::LESS_EQUAL:
       case ConstraintToken::ConstraintTokenKind::MINUS:
       case ConstraintToken::ConstraintTokenKind::NOT_EQUAL:
       case ConstraintToken::ConstraintTokenKind::OR:
       case ConstraintToken::ConstraintTokenKind::PLUS:
-      case ConstraintToken::ConstraintTokenKind::STAR:
+      case ConstraintToken::ConstraintTokenKind::STAR: {
         auto NextPrecedence = peek().calcPrecedence();
         if (NextPrecedence >= Precedence) {
           return LHS;

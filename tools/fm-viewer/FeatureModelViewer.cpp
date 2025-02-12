@@ -6,12 +6,14 @@
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Program.h"
 
+#include <optional>
+
 static llvm::cl::OptionCategory
     FMViewerCategory("Feature model viewer options");
 
-static llvm::cl::list<std::string> FileNames(llvm::cl::Positional,
-                                             llvm::cl::desc("file"),
-                                             llvm::cl::cat(FMViewerCategory));
+static llvm::cl::opt<std::string> FileName(llvm::cl::Positional,
+                                           llvm::cl::desc("file"),
+                                           llvm::cl::cat(FMViewerCategory));
 
 static llvm::cl::opt<bool> Xml("xml",
                                llvm::cl::desc("Use XML format (default)."),
@@ -45,18 +47,18 @@ int main(int Argc, char **Argv) {
   const char *Overview = R"(View feature model as graph.)";
 
   llvm::cl::ParseCommandLineOptions(Argc, Argv, Overview, nullptr, FlagsEnvVar);
-  if (FileNames.size() != 1) {
-    llvm::errs() << "error: Expected single file.\n";
+  if (FileName.empty()) {
+    llvm::errs() << "error: Expected file.\n";
     return 1;
   }
 
-  if (Verify && !vara::feature::verifyFeatureModel(FileNames[0])) {
+  if (Verify && !vara::feature::verifyFeatureModel(FileName.getValue())) {
     llvm::errs() << "error: Invalid feature model.\n";
     return 1;
   }
 
   std::unique_ptr<vara::feature::FeatureModel> FM =
-      vara::feature::loadFeatureModel(FileNames[0]);
+      vara::feature::loadFeatureModel(FileName.getValue());
 
   if (!FM) {
     llvm::errs() << "error: Could not build feature model.\n";
@@ -80,7 +82,12 @@ int main(int Argc, char **Argv) {
             Viewer.empty() ? llvm::errc::invalid_argument
                            : llvm::sys::findProgramByName(Viewer)) {
       llvm::errs() << "Trying '" << *P << "' program... \n";
+#if __has_include("llvm/ADT/Optional.h")
+      // To stay compatible with older llvm versions
       llvm::sys::ExecuteNoWait(*P, {*P, Filename}, llvm::None);
+#else
+      llvm::sys::ExecuteNoWait(*P, {*P, Filename}, std::nullopt);
+#endif
     } else {
       llvm::DisplayGraph(Filename);
     }

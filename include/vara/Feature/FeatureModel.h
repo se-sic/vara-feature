@@ -6,8 +6,10 @@
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/Relationship.h"
 #include "vara/Utils/Result.h"
+#include "vara/Utils/UniqueIterator.h"
 
 #include "llvm/ADT/SmallSet.h"
+#include "llvm/ADT/StringMap.h"
 #include "llvm/Support/GraphWriter.h"
 
 #include <algorithm>
@@ -33,8 +35,6 @@ class FeatureModel {
 
 public:
   using FeatureMapTy = llvm::StringMap<std::unique_ptr<Feature>>;
-  using ConstraintTy = Constraint;
-  using ConstraintContainerTy = std::vector<std::unique_ptr<ConstraintTy>>;
   using RelationshipContainerTy = std::vector<std::unique_ptr<Relationship>>;
 
   FeatureModel(
@@ -54,15 +54,31 @@ public:
 
   [[nodiscard]] llvm::StringRef getCommit() const { return Commit; }
 
+  //===--------------------------------------------------------------------===//
+  // Features
+
   [[nodiscard]] RootFeature *getRoot() const { return Root; }
+
+  [[nodiscard]] Feature *getFeature(llvm::StringRef F) const {
+    auto SearchFeature = Features.find(F);
+    if (SearchFeature != Features.end()) {
+      return SearchFeature->getValue().get();
+    }
+    return nullptr;
+  }
 
   //===--------------------------------------------------------------------===//
   // DFS feature iterator
 
-  class DFSIterator : public std::iterator<std::forward_iterator_tag, Feature *,
-                                           ptrdiff_t, Feature **, Feature *> {
+  class DFSIterator {
 
   public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = Feature *;
+    using difference_type = ptrdiff_t;
+    using pointer = Feature **;
+    using reference = Feature *;
+
     using const_pointer = const Feature *const *;
     using const_reference = const Feature *;
 
@@ -142,22 +158,13 @@ public:
     std::set<Feature *> Visited;
   };
 
-  using ordered_feature_iterator = DFSIterator;
   using const_ordered_feature_iterator = DFSIterator;
 
-  ordered_feature_iterator begin() { return {Root}; }
   [[nodiscard]] const_ordered_feature_iterator begin() const { return {Root}; }
-
-  ordered_feature_iterator end() {
-    return {Root ? Root->getParentFeature() : nullptr};
-  }
   [[nodiscard]] const_ordered_feature_iterator end() const {
     return {Root ? Root->getParentFeature() : nullptr};
   }
 
-  llvm::iterator_range<ordered_feature_iterator> features() {
-    return llvm::make_range(begin(), end());
-  }
   [[nodiscard]] llvm::iterator_range<const_ordered_feature_iterator>
   features() const {
     return llvm::make_range(begin(), end());
@@ -166,11 +173,15 @@ public:
   //===--------------------------------------------------------------------===//
   // Unordered feature iterator
 
-  class FeatureMapIterator
-      : public std::iterator<std::forward_iterator_tag, Feature *, ptrdiff_t,
-                             Feature *, Feature *> {
+  class FeatureMapIterator {
 
   public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = Feature *;
+    using difference_type = ptrdiff_t;
+    using pointer = Feature *;
+    using reference = Feature *;
+
     using const_pointer = const Feature *;
     using const_reference = const Feature *;
 
@@ -211,13 +222,8 @@ public:
     FeatureMapTy::const_iterator MapIter;
   };
 
-  using unordered_feature_iterator = FeatureMapIterator;
   using const_unordered_feature_iterator = FeatureMapIterator;
 
-  llvm::iterator_range<unordered_feature_iterator> unorderedFeatures() {
-    return llvm::make_range(FeatureMapIterator(Features.begin()),
-                            FeatureMapIterator(Features.end()));
-  }
   [[nodiscard]] llvm::iterator_range<const_unordered_feature_iterator>
   unorderedFeatures() const {
     return llvm::make_range(FeatureMapIterator(Features.begin()),
@@ -227,30 +233,113 @@ public:
   //===--------------------------------------------------------------------===//
   // Constraints
 
-  using constraint_iterator = typename ConstraintContainerTy::iterator;
-  using const_constraint_iterator =
-      typename ConstraintContainerTy::const_iterator;
+private:
+  /// \brief Base for different constraint kinds (boolean, non-boolean, etc.).
+  class FeatureModelConstraint {
+  public:
+    virtual ~FeatureModelConstraint() = default;
 
-  [[nodiscard]] llvm::iterator_range<constraint_iterator> constraints() {
-    return llvm::make_range(Constraints.begin(), Constraints.end());
+    [[nodiscard]] Constraint *constraint() { return C.get(); }
+
+    [[nodiscard]] Constraint *operator*() { return C.get(); }
+
+    [[nodiscard]] virtual std::string toString() const { return C->toString(); }
+
+    [[nodiscard]] virtual std::string toHTML() const { return C->toHTML(); }
+
+  protected:
+    FeatureModelConstraint(std::unique_ptr<Constraint> C) : C(std::move(C)) {}
+
+  private:
+    std::unique_ptr<Constraint> C;
+  };
+
+public:
+  class BooleanConstraint : public FeatureModelConstraint {
+  public:
+    BooleanConstraint(std::unique_ptr<Constraint> C)
+        : FeatureModelConstraint(std::move(C)) {}
+  };
+
+  using BooleanConstraintContainerTy =
+      std::vector<std::unique_ptr<BooleanConstraint>>;
+  using const_boolean_constraint_iterator =
+      UniqueIterator<const BooleanConstraintContainerTy>;
+
+  [[nodiscard]] llvm::iterator_range<const_boolean_constraint_iterator>
+  booleanConstraints() const {
+    return llvm::make_range(
+        const_boolean_constraint_iterator(BooleanConstraints.begin()),
+        const_boolean_constraint_iterator(BooleanConstraints.end()));
   }
-  [[nodiscard]] llvm::iterator_range<const_constraint_iterator>
-  constraints() const {
-    return llvm::make_range(Constraints.begin(), Constraints.end());
+
+  class NonBooleanConstraint : public FeatureModelConstraint {
+  public:
+    NonBooleanConstraint(std::unique_ptr<Constraint> C)
+        : FeatureModelConstraint(std::move(C)) {}
+  };
+
+  using NonBooleanConstraintContainerTy =
+      std::vector<std::unique_ptr<NonBooleanConstraint>>;
+  using const_non_boolean_constraint_iterator =
+      UniqueIterator<const NonBooleanConstraintContainerTy>;
+
+  [[nodiscard]] llvm::iterator_range<const_non_boolean_constraint_iterator>
+  nonBooleanConstraints() const {
+    return llvm::make_range(
+        const_non_boolean_constraint_iterator(NonBooleanConstraints.begin()),
+        const_non_boolean_constraint_iterator(NonBooleanConstraints.end()));
+  }
+
+  class MixedConstraint : public FeatureModelConstraint {
+  public:
+    /// This enum indicates whether the constraint should be evaluated when
+    /// `all` boolean features are present or `none`.
+    enum class Req { ALL, NONE };
+
+    /// This enum indicates whether the whole constraint should be `negated`
+    /// or not.
+    enum class ExprKind { POS, NEG };
+
+    MixedConstraint(std::unique_ptr<Constraint> C, Req R, ExprKind E)
+        : FeatureModelConstraint(std::move(C)), R(R), E(E) {}
+
+    [[nodiscard]] Req req() { return R; }
+
+    [[nodiscard]] ExprKind exprKind() { return E; }
+
+  private:
+    Req R;
+    ExprKind E;
+  };
+
+  using MixedConstraintContainerTy =
+      std::vector<std::unique_ptr<MixedConstraint>>;
+  using const_mixed_constraint_iterator =
+      UniqueIterator<const MixedConstraintContainerTy>;
+
+  [[nodiscard]] llvm::iterator_range<const_mixed_constraint_iterator>
+  mixedConstraints() const {
+    return llvm::make_range(
+        const_mixed_constraint_iterator(MixedConstraints.begin()),
+        const_mixed_constraint_iterator(MixedConstraints.end()));
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Relationships
+
+  using const_relationship_iterator =
+      typename RelationshipContainerTy::const_iterator;
+
+  [[nodiscard]] llvm::iterator_range<const_relationship_iterator>
+  relationships() const {
+    return llvm::make_range(Relationships.begin(), Relationships.end());
   }
 
   //===--------------------------------------------------------------------===//
   // Utility
 
   void view() { ViewGraph(this, "FeatureModel-" + this->getName()); }
-
-  [[nodiscard]] Feature *getFeature(llvm::StringRef F) const {
-    auto SearchFeature = Features.find(F);
-    if (SearchFeature != Features.end()) {
-      return SearchFeature->getValue().get();
-    }
-    return nullptr;
-  }
 
   /// Create deep clone of whole data structure.
   ///
@@ -261,12 +350,96 @@ public:
   void dump() const;
 
 private:
+  void setName(std::string NewName) { Name = std::move(NewName); }
+
+  void setPath(fs::path NewPath) { Path = std::move(NewPath); }
+
+  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
+
+  //===--------------------------------------------------------------------===//
+  // Features
+
   /// Insert a \a Feature into existing model.
   ///
   /// \param[in] Feature feature to be inserted
   ///
   /// \returns ptr to inserted \a Feature
   Feature *addFeature(std::unique_ptr<Feature> Feature);
+
+  /// Delete a \a Feature.
+  void removeFeature(Feature &Feature);
+
+  RootFeature *setRoot(RootFeature &NewRoot);
+
+  using ordered_feature_iterator = DFSIterator;
+
+  [[nodiscard]] ordered_feature_iterator begin() { return {Root}; }
+  [[nodiscard]] ordered_feature_iterator end() {
+    return {Root ? Root->getParentFeature() : nullptr};
+  }
+
+  [[nodiscard]] llvm::iterator_range<ordered_feature_iterator> features() {
+    return llvm::make_range(begin(), end());
+  }
+
+  using unordered_feature_iterator = FeatureMapIterator;
+
+  [[nodiscard]] llvm::iterator_range<unordered_feature_iterator>
+  unorderedFeatures() {
+    return llvm::make_range(FeatureMapIterator(Features.begin()),
+                            FeatureMapIterator(Features.end()));
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Constraints
+
+  vara::feature::Constraint *
+  addConstraint(std::unique_ptr<BooleanConstraint> C) {
+    BooleanConstraints.push_back(std::move(C));
+    return **BooleanConstraints.back();
+  }
+
+  using boolean_constraint_iterator =
+      UniqueIterator<BooleanConstraintContainerTy>;
+
+  [[nodiscard]] llvm::iterator_range<boolean_constraint_iterator>
+  booleanConstraints() {
+    return llvm::make_range(
+        boolean_constraint_iterator(BooleanConstraints.begin()),
+        boolean_constraint_iterator(BooleanConstraints.end()));
+  }
+
+  vara::feature::Constraint *
+  addConstraint(std::unique_ptr<NonBooleanConstraint> C) {
+    NonBooleanConstraints.push_back(std::move(C));
+    return **NonBooleanConstraints.back();
+  }
+
+  using non_boolean_constraint_iterator =
+      UniqueIterator<NonBooleanConstraintContainerTy>;
+
+  [[nodiscard]] llvm::iterator_range<non_boolean_constraint_iterator>
+  nonBooleanConstraints() {
+    return llvm::make_range(
+        non_boolean_constraint_iterator(NonBooleanConstraints.begin()),
+        non_boolean_constraint_iterator(NonBooleanConstraints.end()));
+  }
+
+  vara::feature::Constraint *addConstraint(std::unique_ptr<MixedConstraint> C) {
+    MixedConstraints.push_back(std::move(C));
+    return **MixedConstraints.back();
+  }
+
+  using mixed_constraint_iterator = UniqueIterator<MixedConstraintContainerTy>;
+
+  [[nodiscard]] llvm::iterator_range<mixed_constraint_iterator>
+  mixedConstraints() {
+    return llvm::make_range(mixed_constraint_iterator(MixedConstraints.begin()),
+                            mixed_constraint_iterator(MixedConstraints.end()));
+  }
+
+  //===--------------------------------------------------------------------===//
+  // Relationships
 
   Relationship *addRelationship(std::unique_ptr<Relationship> Relationship) {
     Relationships.push_back(std::move(Relationship));
@@ -298,20 +471,20 @@ private:
   /// Delete a \a Feature.
   void removeFeature(Feature &Feature);
 
-  RootFeature *setRoot(RootFeature &NewRoot);
+  using relationship_iterator = typename RelationshipContainerTy::iterator;
 
-  void setName(std::string NewName) { Name = std::move(NewName); }
-
-  void setPath(fs::path NewPath) { Path = std::move(NewPath); }
-
-  void setCommit(std::string NewCommit) { Commit = std::move(NewCommit); }
+  [[nodiscard]] llvm::iterator_range<relationship_iterator> relationships() {
+    return llvm::make_range(Relationships.begin(), Relationships.end());
+  }
 
   std::string Name;
   RootFeature *Root;
   fs::path Path;
   std::string Commit;
   FeatureMapTy Features;
-  ConstraintContainerTy Constraints;
+  BooleanConstraintContainerTy BooleanConstraints;
+  NonBooleanConstraintContainerTy NonBooleanConstraints;
+  MixedConstraintContainerTy MixedConstraints;
   RelationshipContainerTy Relationships;
 };
 
@@ -360,8 +533,7 @@ struct GraphWriter<vara::feature::FeatureModel *> {
       O << "digraph graph_" << static_cast<void *>(G) << " {\n";
     }
     std::string GraphName =
-        llvm::formatv("Feature model for {0}\n{1}", G->getName().str(),
-                      G->getPath().string());
+        llvm::formatv("Feature model for {0}", G->getName().str());
 
     O.indent(2) << "graph [pad=.5 nodesep=2 ranksep=2 splines=true "
                    "newrank=true bgcolor=white rankdir=tb overlap=false "
@@ -432,7 +604,7 @@ struct GraphWriter<vara::feature::FeatureModel *> {
 
     std::stringstream LS;
     if (F->hasLocations()) {
-      LS << "<hr>";
+      LS << "<hr/>";
       for (const auto &Location : F->getLocations()) {
         LS << llvm::formatv("<tr><td><b>{0}</b></td></tr>",
                             DOT::EscapeString(Location.toString()))
@@ -444,8 +616,9 @@ struct GraphWriter<vara::feature::FeatureModel *> {
         "<<table align=\"center\" valign=\"middle\" border=\"0\" "
         "cellborder=\"0\" "
         "cellpadding=\"5\">{0}{1}{2}</table>>",
-        llvm::formatv("<tr><td><b>{0}</b></td></tr>",
-                      DOT::EscapeString(F->getName().str())),
+        llvm::formatv("<tr><td><b>{0} (Flag: {1})</b></td></tr>",
+                      DOT::EscapeString(F->getName().str()),
+                      F->getOutputString().trim().str()),
         CS.str(), LS.str());
   }
 
@@ -500,7 +673,7 @@ namespace vara::feature {
 template <typename... Rules>
 class FeatureModelConsistencyChecker {
 public:
-  static Result<FTErrorCode> isFeatureModelValid(FeatureModel &FM) {
+  static Result<FTErrorCode> isFeatureModelValid(const FeatureModel &FM) {
     if (auto E = (Rules::check(FM) && ... && true); !E) {
       return Error(INCONSISTENT);
     }
@@ -509,7 +682,7 @@ public:
 };
 
 struct EveryFeatureRequiresParent {
-  static bool check(FeatureModel &FM) {
+  static bool check(const FeatureModel &FM) {
     if (std::all_of(FM.unorderedFeatures().begin(),
                     FM.unorderedFeatures().end(), [](Feature *F) {
                       return llvm::isa<RootFeature>(F) || F->getParentFeature();
@@ -522,7 +695,7 @@ struct EveryFeatureRequiresParent {
 };
 
 struct CheckFeatureParentChildRelationShip {
-  static bool check(FeatureModel &FM) {
+  static bool check(const FeatureModel &FM) {
     if (std::all_of(
             FM.unorderedFeatures().begin(), FM.unorderedFeatures().end(),
             [](Feature *F) {
@@ -541,7 +714,7 @@ struct CheckFeatureParentChildRelationShip {
 };
 
 struct ExactlyOneRootNode {
-  static bool check(FeatureModel &FM) {
+  static bool check(const FeatureModel &FM) {
     if (llvm::isa_and_nonnull<RootFeature>(FM.getRoot()) &&
         1 == std::accumulate(FM.unorderedFeatures().begin(),
                              FM.unorderedFeatures().end(), 0,

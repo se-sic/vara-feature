@@ -9,12 +9,12 @@ std::string Feature::toString() const {
   StrS << "  name: \"" << Name
        << "\",\n  optional: " << (Opt ? "true" : "false") << ",\n  ";
   if (hasLocations()) {
-    StrS << "locations: "
-         << std::for_each(Locations.begin(), Locations.end(),
-                          [](const FeatureSourceRange &Fsr) {
-                            return llvm::formatv("[{0}]", Fsr.toString());
-                          })
-         << ",\n  ";
+    StrS << "locations: ";
+    std::for_each(Locations.begin(), Locations.end(),
+                  [&StrS](const FeatureSourceRange &Fsr) {
+                    StrS << llvm::formatv("[{0}]", Fsr.toString()).str();
+                  });
+    StrS << ",\n  ";
   }
   if (getParentFeature()) {
     StrS << "parent: " << getParentFeature()->getName().str() << ",\n  ";

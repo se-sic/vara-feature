@@ -1,4 +1,3 @@
-add_vara_unittest(VaRAFeatureUnitTests VaRAVariantUtilsTests
-  VariantUtil.cpp
-  Result.cpp
+add_vara_unittest(
+  VaRAFeatureUnitTests VaRAVariantUtilsTests VariantUtil.cpp Result.cpp
 )

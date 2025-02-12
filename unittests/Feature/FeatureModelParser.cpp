@@ -1,6 +1,6 @@
 #include "vara/Feature/FeatureModelParser.h"
 
-#include "UnittestHelper.h"
+#include "Utils/UnittestHelper.h"
 
 #include "llvm/Support/MemoryBuffer.h"
 
@@ -9,58 +9,56 @@
 
 namespace vara::feature {
 
-TEST(FeatureModelParser, trim) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_with_whitespaces.xml"));
-  ASSERT_TRUE(FS);
-
+std::unique_ptr<const FeatureModel> buildFeatureModel(llvm::StringRef Path) {
+  auto FS = llvm::MemoryBuffer::getFileAsStream(getTestResource(Path));
+  assert(FS);
   auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+  assert(P.verifyFeatureModel());
+  return P.buildFeatureModel();
+}
 
-  EXPECT_TRUE(P.verifyFeatureModel());
-  EXPECT_TRUE(P.buildFeatureModel());
+TEST(FeatureModelParser, trim) {
+  EXPECT_TRUE(buildFeatureModel("test_with_whitespaces.xml"));
 }
 
 TEST(FeatureModelParser, onlyChildren) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_only_children.xml"));
-  ASSERT_TRUE(FS);
-
-  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
-
-  EXPECT_TRUE(P.verifyFeatureModel());
-  EXPECT_TRUE(P.buildFeatureModel());
+  EXPECT_TRUE(buildFeatureModel("test_only_children.xml"));
 }
 
 TEST(FeatureModelParser, onlyParents) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_only_parents.xml"));
-  ASSERT_TRUE(FS);
-
-  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
-
-  EXPECT_TRUE(P.verifyFeatureModel());
-  EXPECT_TRUE(P.buildFeatureModel());
+  EXPECT_TRUE(buildFeatureModel("test_only_parents.xml"));
 }
 
 TEST(FeatureModelParser, outOfOrder) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_out_of_order.xml"));
-  ASSERT_TRUE(FS);
+  EXPECT_TRUE(buildFeatureModel("test_out_of_order.xml"));
+}
 
-  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
+TEST(FeatureModelParser, errorMismatchParentChild) {
+  EXPECT_FALSE(buildFeatureModel("error_mismatch_parent_child.xml"));
+}
 
-  EXPECT_TRUE(P.verifyFeatureModel());
-  EXPECT_TRUE(P.buildFeatureModel());
+TEST(FeatureModelParser, errorMissingChild) {
+  EXPECT_FALSE(buildFeatureModel("error_missing_child.xml"));
+}
+
+TEST(FeatureModelParser, errorMissingExclude) {
+  EXPECT_FALSE(buildFeatureModel("error_missing_exclude.xml"));
+}
+
+TEST(FeatureModelParser, errorMissingImplication) {
+  EXPECT_FALSE(buildFeatureModel("error_missing_implication.xml"));
+}
+
+TEST(FeatureModelParser, errorMissingParent) {
+  EXPECT_FALSE(buildFeatureModel("error_missing_parent.xml"));
+}
+
+TEST(FeatureModelParser, errorRootRoot) {
+  EXPECT_FALSE(buildFeatureModel("error_root_root.xml"));
 }
 
 TEST(FeatureModelParser, longRange) {
-  auto FS =
-      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_numbers.xml"));
-  ASSERT_TRUE(FS);
-
-  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
-  ASSERT_TRUE(P.verifyFeatureModel());
-  auto FM = P.buildFeatureModel();
+  auto FM = buildFeatureModel("test_numbers.xml");
   ASSERT_TRUE(FM);
 
   if (auto *F = llvm::dyn_cast_or_null<NumericFeature>(FM->getFeature("A"));
@@ -77,13 +75,7 @@ TEST(FeatureModelParser, longRange) {
 }
 
 TEST(FeatureModelParser, longList) {
-  auto FS =
-      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_numbers.xml"));
-  ASSERT_TRUE(FS);
-
-  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
-  ASSERT_TRUE(P.verifyFeatureModel());
-  auto FM = P.buildFeatureModel();
+  auto FM = buildFeatureModel("test_numbers.xml");
   ASSERT_TRUE(FM);
 
   if (auto *F = llvm::dyn_cast_or_null<NumericFeature>(FM->getFeature("B"));
@@ -99,13 +91,7 @@ TEST(FeatureModelParser, longList) {
 }
 
 TEST(FeatureModelParser, scientific) {
-  auto FS =
-      llvm::MemoryBuffer::getFileAsStream(getTestResource("test_numbers.xml"));
-  ASSERT_TRUE(FS);
-
-  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
-  ASSERT_TRUE(P.verifyFeatureModel());
-  auto FM = P.buildFeatureModel();
+  auto FM = buildFeatureModel("test_numbers.xml");
   ASSERT_TRUE(FM);
 
   if (auto *F = llvm::dyn_cast_or_null<NumericFeature>(FM->getFeature("C"));
@@ -116,6 +102,106 @@ TEST(FeatureModelParser, scientific) {
               0);
     EXPECT_EQ((std::get<NumericFeature::ValueRangeType>(F->getValues())).second,
               4000);
+  } else {
+    FAIL();
+  }
+}
+
+TEST(FeatureModelParser, booleanConstraint) {
+  auto C = OrConstraint(std::make_unique<PrimaryFeatureConstraint>(
+                            std::make_unique<BinaryFeature>("A")),
+                        std::make_unique<PrimaryFeatureConstraint>(
+                            std::make_unique<BinaryFeature>("B")));
+
+  auto FM = buildFeatureModel("test_constraints.xml");
+  ASSERT_TRUE(FM);
+
+  EXPECT_EQ(
+      FM->booleanConstraints().begin()->constraint()->getRoot()->toString(),
+      C.toString());
+}
+
+TEST(FeatureModelParser, nonBooleanConstraint) {
+  auto C = AdditionConstraint(std::make_unique<PrimaryFeatureConstraint>(
+                                  std::make_unique<BinaryFeature>("A")),
+                              std::make_unique<PrimaryFeatureConstraint>(
+                                  std::make_unique<BinaryFeature>("B")));
+
+  auto FM = buildFeatureModel("test_constraints.xml");
+  ASSERT_TRUE(FM);
+
+  EXPECT_EQ(
+      FM->nonBooleanConstraints().begin()->constraint()->getRoot()->toString(),
+      C.toString());
+}
+
+TEST(FeatureModelParser, mixedConstraint) {
+  auto C = EqualConstraint(std::make_unique<MultiplicationConstraint>(
+                               std::make_unique<PrimaryFeatureConstraint>(
+                                   std::make_unique<BinaryFeature>("A")),
+                               std::make_unique<PrimaryFeatureConstraint>(
+                                   std::make_unique<BinaryFeature>("B"))),
+                           std::make_unique<PrimaryIntegerConstraint>(0));
+
+  auto FM = buildFeatureModel("test_constraints.xml");
+  ASSERT_TRUE(FM);
+
+  EXPECT_EQ(FM->mixedConstraints().begin()->constraint()->getRoot()->toString(),
+            C.toString());
+  EXPECT_EQ(FM->mixedConstraints().begin()->req(),
+            FeatureModel::MixedConstraint::Req::ALL);
+  EXPECT_EQ(FM->mixedConstraints().begin()->exprKind(),
+            FeatureModel::MixedConstraint::ExprKind::POS);
+}
+
+TEST(FeatureModelParser, memberOffset) {
+  auto FM = buildFeatureModel("test_member_offset.xml");
+  ASSERT_TRUE(FM);
+
+  auto *Feature = FM->getFeature("A");
+  for (auto &Loc : Feature->getLocations()) {
+    ASSERT_TRUE(Loc.hasMemberOffset());
+    EXPECT_EQ(Loc.getMemberOffset()->className(), "className");
+    EXPECT_EQ(Loc.getMemberOffset()->memberName(), "methodName");
+  }
+}
+
+TEST(FeatureModelParser, revisionRange) {
+  auto FM = buildFeatureModel("test_revision_range.xml");
+  ASSERT_TRUE(FM);
+
+  auto *Feature = FM->getFeature("A");
+  for (auto &Loc : Feature->getLocations()) {
+    ASSERT_TRUE(Loc.hasRevisionRange());
+    if (Loc.revisionRange()->hasRemovingCommit()) {
+      EXPECT_EQ(Loc.revisionRange()->introducingCommit(),
+                "94fe792df46e64f438720295742b3b72c407cab6");
+      EXPECT_EQ(Loc.revisionRange()->removingCommit(),
+                "1ed40f72e772adaa3adfcc94b9f038e4f3382339");
+    } else {
+      EXPECT_EQ(Loc.revisionRange()->introducingCommit(),
+                "a7fb445f986adb2c2972df337ea46930cfc3dbf2");
+    }
+  }
+}
+
+TEST(FeatureModelParser, outputString) {
+  auto FM = buildFeatureModel("test_output_string.xml");
+  ASSERT_TRUE(FM);
+
+  auto *F = FM->getFeature("A");
+  EXPECT_EQ(F->getOutputString(), "-a");
+}
+
+TEST(FeatureModelParser, stepFunction) {
+  auto FM = buildFeatureModel("test_step_function.xml");
+  ASSERT_TRUE(FM);
+
+  if (auto *F = llvm::dyn_cast_or_null<NumericFeature>(FM->getFeature("A"));
+      F) {
+    auto *S = F->getStepFunction();
+    ASSERT_TRUE(S);
+    EXPECT_DOUBLE_EQ((*S)(12.42), 54.42);
   } else {
     FAIL();
   }
@@ -221,25 +307,6 @@ TEST(FeatureModelParser, detectXMLAlternativesOutOfOrder) {
     EXPECT_TRUE(R->hasEdgeTo(*FM->getFeature("ac")));
   } else {
     FAIL();
-  }
-}
-
-TEST(FeatureModelParser, memberOffset) {
-  auto FS = llvm::MemoryBuffer::getFileAsStream(
-      getTestResource("test_member_offset.xml"));
-  ASSERT_TRUE(FS);
-
-  auto P = FeatureModelXmlParser(FS.get()->getBuffer().str());
-
-  EXPECT_TRUE(P.verifyFeatureModel());
-  auto FM = P.buildFeatureModel();
-  EXPECT_TRUE(FM);
-
-  auto *Feature = FM->getFeature("A");
-  for (auto &Loc : Feature->getLocations()) {
-    EXPECT_TRUE(Loc.hasMemberOffset());
-    EXPECT_EQ(Loc.getMemberOffset()->memberName(), "methodName");
-    EXPECT_EQ(Loc.getMemberOffset()->className(), "className");
   }
 }
 

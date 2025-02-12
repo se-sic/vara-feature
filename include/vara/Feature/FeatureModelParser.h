@@ -7,6 +7,7 @@
 #include "libxml/tree.h"
 
 #include <memory>
+#include <unordered_map>
 
 namespace vara::feature {
 
@@ -64,12 +65,15 @@ private:
 
   Result<FTErrorCode> parseConfigurationOption(xmlNode *Node, bool Num);
   Result<FTErrorCode> parseOptions(xmlNode *Node, bool Num);
+  template <class ConstraintTy>
   Result<FTErrorCode> parseConstraints(xmlNode *Node);
   Result<FTErrorCode> parseVm(xmlNode *Node);
 
   static FeatureSourceRange::FeatureSourceLocation
   createFeatureSourceLocation(xmlNode *Node);
-  static FeatureSourceRange createFeatureSourceRange(xmlNode *Head);
+  static FeatureSourceRange::FeatureRevisionRange
+  createFeatureRevisionRange(xmlNode *Node);
+  static FeatureSourceRange createFeatureSourceRange(xmlNode *Node);
   static long parseNumber(llvm::StringRef Str);
 
   UniqueXmlDoc parseDoc();
@@ -234,7 +238,7 @@ private:
   std::string Sxfm;
   FeatureModelBuilder FMB;
   std::string Indentation = "\t";
-  std::map<std::string, std::string> IdentifierMap;
+  std::unordered_map<std::string, std::string> IdentifierMap;
 };
 
 } // namespace vara::feature

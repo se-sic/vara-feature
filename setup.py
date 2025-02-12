@@ -44,7 +44,8 @@ class CMakeBuild(build_ext):
 
         cmake_args = [
             '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-            '-DPYTHON_EXECUTABLE=' + sys.executable
+            '-DPYTHON_EXECUTABLE=' + sys.executable,
+            '-DVARA_FEATURE_USE_Z3_SOLVER=True'
         ]
 
         cfg = 'Debug' if self.debug else 'Release'
@@ -75,7 +76,7 @@ class CMakeBuild(build_ext):
 
 
 setup(name='vara_feature',
-      version='11.1.2',
+      version='11.1.3',
       author='Florian Sattler',
       author_email='sattlerf@cs.uni-saarland.de',
       description='Python bindings for vara-feature library',
