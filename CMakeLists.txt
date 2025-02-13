@@ -119,11 +119,11 @@ endif()
 
 find_program(
   VARA_FEATURE_RUN_CLANG_TIDY
-  NAMES run-clang-tidy-14.py
-        run-clang-tidy-14
+  NAMES run-clang-tidy-19.py
+        run-clang-tidy-19
         run-clang-tidy.py
         run-clang-tidy
-        clang-tidy-14
+        clang-tidy-19
         clang-tidy
   PATHS /usr/bin/ /usr/lib/llvm/*/share/clang/
 )
