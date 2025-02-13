@@ -53,11 +53,19 @@ TEST(Configuration, iteratorTest) {
   Config.setConfigurationOption("foo", "1");
   Config.setConfigurationOption("baz", "true");
   auto Iterator = Config.begin();
-  EXPECT_EQ("foo", Iterator->first());
-  EXPECT_EQ("1", Iterator->second->asString());
-  Iterator++;
-  EXPECT_EQ("baz", Iterator->first());
-  EXPECT_EQ("true", Iterator->second->asString());
+  if (Iterator->first() == "foo") {
+    EXPECT_EQ("foo", Iterator->first());
+    EXPECT_EQ("1", Iterator->second->asString());
+    Iterator++;
+    EXPECT_EQ("baz", Iterator->first());
+    EXPECT_EQ("true", Iterator->second->asString());
+  } else {
+    EXPECT_EQ("baz", Iterator->first());
+    EXPECT_EQ("true", Iterator->second->asString());
+    Iterator++;
+    EXPECT_EQ("foo", Iterator->first());
+    EXPECT_EQ("1", Iterator->second->asString());
+  }
   Iterator++;
   EXPECT_EQ(Config.end(), Iterator);
 }

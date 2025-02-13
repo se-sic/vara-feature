@@ -63,8 +63,8 @@ TEST(ConfigurationFactory, GetAllConfigurations2) {
   EXPECT_EQ(Configs.size(), 8);
 
   auto ConfigsStrings = std::vector<string>();
-  for (auto &config : Configs) {
-    ConfigsStrings.push_back(config.get()->dumpToString());
+  for (auto &Config : Configs) {
+    ConfigsStrings.push_back(Config->dumpToString());
   }
 
   auto UniqueConfigs =
@@ -81,8 +81,8 @@ TEST(ConfigurationFactory, GetAllConfigurations3) {
   EXPECT_EQ(Configs.size(), 16);
 
   auto ConfigsStrings = std::vector<string>();
-  for (auto &config : Configs) {
-    ConfigsStrings.push_back(config.get()->dumpToString());
+  for (auto &Config : Configs) {
+    ConfigsStrings.push_back(Config->dumpToString());
   }
 
   auto UniqueConfigs =

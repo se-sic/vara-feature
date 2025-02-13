@@ -2,15 +2,16 @@
 
 #include "vara/Feature/ConstraintBuilder.h"
 #include "vara/Feature/FeatureModelBuilder.h"
+#include "vara/Solver/ConfigurationFactory.h"
 #include "gtest/gtest.h"
 
 namespace vara::solver {
 
 TEST(SolverFactory, EmptyZ3SolverTest) {
   auto S = SolverFactory::initializeSolver(SolverType::Z3);
-  auto E = S->getNumberValidConfigurations();
-  EXPECT_TRUE(E);
-  EXPECT_EQ(E.extractValue(), 1);
+  auto I = ConfigurationIterable(std::move(S));
+  EXPECT_TRUE(*I.begin());
+  EXPECT_EQ(std::distance(I.begin(), I.end()), 1);
 }
 
 TEST(SolverFactory, GeneralZ3Test) {
@@ -51,9 +52,9 @@ TEST(SolverFactory, GeneralZ3Test) {
   auto FM = B.buildFeatureModel();
   auto S = SolverFactory::initializeSolver(*FM, SolverType::Z3);
 
-  auto E = S->getNumberValidConfigurations();
-  EXPECT_TRUE(E);
-  EXPECT_EQ(E.extractValue(), 6 * 63);
+  auto I = ConfigurationIterable(std::move(S));
+  EXPECT_TRUE(*I.begin());
+  EXPECT_EQ(std::distance(I.begin(), I.end()), 6 * 63);
 }
 
 } // namespace vara::solver

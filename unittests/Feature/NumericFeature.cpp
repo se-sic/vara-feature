@@ -33,7 +33,7 @@ TEST(NumericFeature, NumericFeaturePair) {
 }
 
 TEST(NumericFeature, NumericFeatureVector) {
-  NumericFeature A("A", std::vector<long>{0, 1, 2, 3});
+  NumericFeature A("A", std::vector<int64_t>{0, 1, 2, 3});
 
   ASSERT_TRUE(
       std::holds_alternative<NumericFeature::ValueListType>(A.getValues()));
