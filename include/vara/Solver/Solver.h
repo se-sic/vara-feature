@@ -131,16 +131,6 @@ public:
   /// unsatisfiable).
   virtual Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
   getNextConfiguration() = 0;
-
-  // TODO (@boehmseb): Was this initial that there is not a decl. in the class?
-  // ++ This is not part of the Solver interface, which seems also strange
-  // (wrong)
-
-  virtual Result<SolverErrorCode,
-                 std::vector<std::unique_ptr<vara::feature::Configuration>>>
-  getAllValidConfigurations() = 0;
-
-  virtual Result<SolverErrorCode, uint64_t> getNumberValidConfigurations() = 0;
 };
 
 } // namespace vara::solver

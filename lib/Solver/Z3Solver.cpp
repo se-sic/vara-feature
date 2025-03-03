@@ -183,48 +183,10 @@ Result<SolverErrorCode, bool> Z3Solver::hasValidConfigurations() {
 
 Result<SolverErrorCode, std::unique_ptr<vara::feature::Configuration>>
 Z3Solver::getNextConfiguration() {
-  if (Dirty) {
-    excludeCurrentConfiguration();
-  } else {
-    Dirty = true;
-  }
-
   if (Solver->check() == z3::unsat) {
     return UNSAT;
   }
   return getCurrentConfiguration();
-}
-
-Result<SolverErrorCode, uint64_t> Z3Solver::getNumberValidConfigurations() {
-  if (Dirty) {
-    return Error(ILLEGAL_STATE);
-  }
-
-  Solver->push();
-  uint64_t Count = 0;
-  while (getNextConfiguration()) {
-    Count++;
-  }
-  Solver->pop();
-  Dirty = false;
-  return Count;
-}
-
-Result<SolverErrorCode,
-       std::vector<std::unique_ptr<vara::feature::Configuration>>>
-Z3Solver::getAllValidConfigurations() {
-  if (Dirty) {
-    return Error(ILLEGAL_STATE);
-  }
-
-  Solver->push();
-  auto Vector = std::vector<std::unique_ptr<vara::feature::Configuration>>();
-  while (auto Config = getNextConfiguration()) {
-    Vector.insert(Vector.begin(), Config.extractValue());
-  }
-  Solver->pop();
-  Dirty = false;
-  return Vector;
 }
 
 Result<SolverErrorCode>
