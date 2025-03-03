@@ -186,8 +186,10 @@ Z3Solver::getNextConfiguration() {
   if (Solver->check() == z3::unsat) {
     return UNSAT;
   }
+
   CurrentModel = Solver->get_model();
   excludeCurrentConfiguration();
+
   return getCurrentConfiguration();
 }
 
