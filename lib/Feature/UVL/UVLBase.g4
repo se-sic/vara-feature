@@ -4,12 +4,12 @@ grammar UVLBase;
 INDENT : '<INDENT>'; // this pattern should never match in actual input
 DEDENT : '<DEDENT>'; // this pattern should also never match
 
-featureModel: namespace? NEWLINE? includes? NEWLINE? imports? NEWLINE? features? NEWLINE? constraints? EOF;
+featureModel: namespace_stmt? NEWLINE? includes? NEWLINE? imports? NEWLINE? features? NEWLINE? constraints? EOF;
 
 includes: 'include' NEWLINE INDENT includeLine* DEDENT;
 includeLine: languageLevel NEWLINE;
 
-namespace: 'namespace' reference;
+namespace_stmt: 'namespace' reference;
 
 imports: 'imports' NEWLINE INDENT importLine* DEDENT;
 importLine: ns=reference ('as' alias=reference)? NEWLINE;
