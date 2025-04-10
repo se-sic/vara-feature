@@ -1,0 +1,4 @@
+compression,compressionLrzip,level,level1,level2,level3,level4,Performance
+1,1,1,1,0,0,0,1.0
+1,1,1,0,1,0,0,2.0
+1,1,1,0,0,1,0,3.0
