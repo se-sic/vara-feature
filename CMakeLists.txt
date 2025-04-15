@@ -30,9 +30,6 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   endif()
 endif()
 
-# if(APPLE) execute_process( COMMAND xcrun --show-sdk-path OUTPUT_VARIABLE
-# MACOS_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE )
-# include_directories("${MACOS_SDK_PATH}/usr/include/c++/v1") endif()
 
 if(APPLE)
   if(NOT DEFINED CMAKE_OSX_ARCHITECTURES)
