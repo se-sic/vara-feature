@@ -247,6 +247,15 @@ if(${VARA_FEATURE_USE_Z3_SOLVER})
   include_directories(${Z3_INCLUDE_DIR})
 endif()
 
+option(VARA_BUILD_ANTLR "Build antlr" OFF)
+if(VARA_BUILD_ANTLR)
+  set(BUILD_ANTLR 1)
+endif()
+
+if (BUILD_ANTLR)
+  add_compile_definitions(ANTLR_AVAILABLE)
+endif()
+
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)

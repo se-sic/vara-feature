@@ -6,8 +6,37 @@ options { tokenVocab=UVLcppLexer; }  // Use the lexer tokens
     int opened = 0;
 }
 
-startRule: INCLUDE IDENTIFIER ';';
+COLON   : ':' ;
+DASH    : '-' ;
+LCURLY  : '{' ;
+RCURLY  : '}' ;
+LPAREN  : '(' ;
+RPAREN  : ')' ;
+//startRule: INCLUDE IDENTIFIER ';';
 
+startRule
+    : section+ EOF ;
+
+section
+    : 'features' COLON featureBlock
+    | 'constraints' COLON constraintBlock
+    ;
+
+featureBlock
+    : ID COLON LCURLY featureList RCURLY ;
+
+featureList
+    : (DASH ID)+
+    ;
+
+constraintBlock
+    : (DASH constraint)+ ;
+
+constraint
+    : ID LPAREN ID COMMA ID RPAREN
+    ;
+
+NEWLINE : [\r\n]+ -> skip ;
 OPEN_PAREN : '(' {this->opened += 1;};
 CLOSE_PAREN : ')' {this->opened -= 1;};
 OPEN_BRACK : '[' {this->opened += 1;};
