@@ -20,8 +20,30 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  add_compile_options(-stdlib=libstdc++)
+  if(APPLE)
+    # Clang on macOS must use libc++
+    add_compile_options(-stdlib=libc++)
+  elseif(UNIX AND NOT APPLE)
+    # Clang on Linux can use libstdc++ (usually default) No need to explicitly
+    # add this unless required
+    add_compile_options(-stdlib=libstdc++)
+  endif()
 endif()
+
+if(APPLE)
+  if(NOT DEFINED CMAKE_OSX_ARCHITECTURES)
+    set(CMAKE_OSX_ARCHITECTURES
+        "arm64"
+        CACHE STRING "" FORCE
+    )
+  endif()
+endif()
+
+if(APPLE)
+  set(Python3_ROOT_DIR "/opt/homebrew") # cmake-lint: disable=C0103
+endif()
+
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
 # VARA_FEATURE options
 option(VARA_FEATURE_COLORED_OUTPUT "Produce ANSI-colored output" TRUE)
@@ -150,11 +172,27 @@ if(NOT VARA_FEATURE_IN_TREE)
   # Only search for LLVM if we build out of tree
   if(DEFINED LLVM_REQUESTED_VERSION)
     message(STATUS "Using LLVM ${LLVM_REQUESTED_VERSION}")
-    find_package(LLVM ${LLVM_REQUESTED_VERSION} REQUIRED CONFIG)
+    find_package(
+      LLVM
+      ${LLVM_REQUESTED_VERSION}
+      REQUIRED
+      CONFIG
+      HINTS
+      "/opt/homebrew/opt/llvm/lib/cmake/llvm" # macOS ARM (Homebrew)
+      "/usr/lib/llvm-${LLVM_REQUESTED_VERSION}/lib/cmake/llvm" # Linux (Debian)
+      "/usr/lib/llvm/lib/cmake/llvm" # Generic fallback
+    )
   else()
     message(STATUS "Using LLVM (default)")
     set(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
-    find_package(LLVM REQUIRED CONFIG)
+    find_package(
+      LLVM
+      REQUIRED
+      CONFIG
+      HINTS
+      "/opt/homebrew/opt/llvm/lib/cmake/llvm"
+      "/usr/lib/llvm/lib/cmake/llvm"
+    )
   endif()
 
   if(NOT "${LLVM_VERSION_MAJOR}" GREATER_EQUAL "${MIN_LLVM_REQUIRED}")
