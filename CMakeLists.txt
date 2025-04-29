@@ -252,7 +252,7 @@ if(VARA_BUILD_ANTLR)
   set(BUILD_ANTLR 1)
 endif()
 
-if (BUILD_ANTLR)
+if(BUILD_ANTLR)
   add_compile_definitions(ANTLR_AVAILABLE)
 endif()
 
