@@ -35,9 +35,10 @@ set(BASE_FILE ${CMAKE_SOURCE_DIR}/lib/Feature/UVL/UVLBase.g4)
 set(GRAMMAR_FILE ${CMAKE_SOURCE_DIR}/lib/Feature/UVL/UVLcpp.g4)
 set(LEXER_FILE ${CMAKE_SOURCE_DIR}/lib/Feature/UVL/UVLcppLexer.g4)
 
-# Command to generate parser and lexer
 add_custom_command(
+  #output paths and file names
   OUTPUT ${GENERATED_DIR}/UVLcppLexer.h ${GENERATED_DIR}/UVLcppLexer.cpp
+  #The antlr command with arguments
   COMMAND ${ANTLR_COMMAND} -Dlanguage=Cpp -o ${GENERATED_DIR} ${LEXER_FILE}
   DEPENDS ${LEXER_FILE}
 )
