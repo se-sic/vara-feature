@@ -1,20 +1,3 @@
-#[[
-set(ANTLR_RUNTIME_PATH /usr/local)
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${ANTLR_RUNTIME_PATH})
-
-find_library(ANTLR_RUNTIME_LIBRARY antlr4-runtime PATHS ${ANTLR_RUNTIME_PATH}/lib)
-find_path(ANTLR_RUNTIME_INCLUDE_DIR antlr4-runtime.h PATHS ${ANTLR_RUNTIME_PATH}/include/antlr4-runtime)
-
-
-if (ANTLR_RUNTIME_LIBRARY AND ANTLR_RUNTIME_INCLUDE_DIR)
-    message(STATUS "Found ANTLR runtime at ${ANTLR_RUNTIME_PATH}")
-    include_directories(${ANTLR_RUNTIME_INCLUDE_DIR})
-else()
-    message(FATAL_ERROR "ANTLR runtime not found. Set ANTLR_RUNTIME_PATH manually.")
-endif()
-
-include_directories(${ANTLR_RUNTIME_INCLUDE_DIR})
-]]
 add_library(uvl_lib STATIC AntrlUvl.cpp)
 
 target_include_directories(uvl_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
