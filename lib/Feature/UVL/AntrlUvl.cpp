@@ -1,11 +1,10 @@
 
 #ifdef ANTLR_AVAILABLE
-#include <iostream>
-#include <fstream>
-#include <string>
-#include "antlr4-runtime.h"
 #include "UVLcppLexer.h"
-
+#include "antlr4-runtime.h"
+#include <fstream>
+#include <iostream>
+#include <string>
 
 #include "UVLcppParser.h"
 
@@ -14,8 +13,9 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   string line;
-  ifstream antlrFile ("/home/taqi457/Aatir/vara-feature/vara-feature/lib/Feature/UVL/testuvl.txt");
-  std::cout<<"Opening file"<<endl;
+  ifstream antlrFile("/home/taqi457/Aatir/vara-feature/vara-feature/lib/"
+                     "Feature/UVL/testuvl.txt");
+  std::cout << "Opening file" << endl;
   if (antlrFile.is_open()) {
     ANTLRInputStream input(antlrFile);
     UVLcppLexer lexer(&input);
@@ -26,11 +26,11 @@ int main(int argc, char *argv[]) {
       std::cout << token->toString() << std::endl;
     }
 
-    //UVLcppParser parser(&tokens);
-    //tree::ParseTree *tree = parser.;
+    // UVLcppParser parser(&tokens);
+    // tree::ParseTree *tree = parser.;
 
-    //std::cout << tree->toStringTree(&parser) << std::endl;
-    //modelicaFile.close();
+    // std::cout << tree->toStringTree(&parser) << std::endl;
+    // modelicaFile.close();
   }
 }
 #endif
