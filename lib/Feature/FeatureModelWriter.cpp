@@ -27,6 +27,7 @@ int FeatureModelXmlWriter::writeFeatureModel(std::string Path) {
   std::unique_ptr<xmlTextWriter, void (*)(xmlTextWriterPtr)> Writer(
       xmlNewTextWriterFilename(Path.data(), 0), &xmlFreeTextWriter);
   if (!Writer) {
+    llvm::errs() << "Could not create filewriter for " << Path << '\n';
     return false;
   }
 
