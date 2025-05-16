@@ -258,8 +258,8 @@ protected:
     return FM.addConstraint(std::move(Constraint));
   }
 
-  static void removeConstraint(FeatureModel &FM, Constraint *R) {
-    FM.removeConstraint(R);
+  static void removeConstraint(FeatureModel &FM, Constraint *C) {
+    FM.removeConstraint(C);
   }
 
   static void removeConstraint(Feature &F, Constraint *C) {
