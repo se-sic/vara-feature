@@ -99,7 +99,8 @@ function(check_std_filesystems varname)
   set(CMAKE_REQUIRED_FLAGS "-std=c++17 ${CMAKE_REQUIRED_FLAGS}")
   set(CMAKE_REQUIRED_QUIET FALSE)
   message(STATUS "Args: ${CMAKE_REQUIRED_FLAGS}")
-  check_cxx_source_compiles("
+  check_cxx_source_compiles(
+    "
 #include <filesystem>
 namespace fs = std::filesystem;
 int main() { return 0; }
