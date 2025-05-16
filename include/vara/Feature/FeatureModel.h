@@ -432,7 +432,6 @@ private:
                          return UniC->constraint() == C;
                        });
       if (MCIt != MixedConstraints.end()) {
-
         MixedConstraints.erase(MCIt);
         return true;
       }
