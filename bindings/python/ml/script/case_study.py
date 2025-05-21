@@ -183,7 +183,7 @@ def main():
 
         # Step 7: Load All Configurations for Prediction
         logger.info("Loading all configurations for performance prediction.")
-        df_all_configs = pd.read_csv(measurements_csv)
+        df_all_configs = pd.read_csv(measurements_csv) 
         logger.info(f"Total number of configurations: {len(df_all_configs)}")
 
         # Step 9: Predict Performance for All Configurations

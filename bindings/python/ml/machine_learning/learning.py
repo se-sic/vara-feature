@@ -2,6 +2,7 @@ import itertools
 import pickle
 import random
 from typing import List, Set, Tuple, Dict
+import re
 
 import numpy as np
 import pandas as pd
@@ -112,7 +113,22 @@ def calculate_mape(y_true: pd.DataFrame, y_pred: np.ndarray) -> float:
     Returns:
         float: The MAPE value.
     """
-    return np.mean(np.abs((np.array(y_true) - y_pred)) / np.array(y_true)) * 100
+    # Calculate MAPE 
+    # return np.mean(np.abs((np.array(y_true) - y_pred)) / np.array(y_true)) * 100
+
+    # Calculate sMAPE vielleicht doch benutzen aber mit einem epsilon sodass die summe kleiner epsilon 
+    # erst ob abs y_true kleiner epsilon dann y true = 0
+    # dann nochmal für abs y_pred dann y pred = 0
+    # dann ob die summe von beiden 0 ist dann return 0, ansonsten hast du error und kannst normal berechnen
+    # epsilon auch wieder setzen lassen (vielleicht ein prozent von der 0 frequenz von der kleinsten config)
+    # numerator = np.abs(np.array(y_true) - np.array(y_pred))
+    # denominator = (np.abs(np.array(y_true)) + np.abs(np.array(y_pred))) / 2.0
+    # return np.mean(numerator / denominator) * 100
+
+    # Calculate MAE
+    return np.mean(np.abs(np.array(y_true) - y_pred))
+
+
 
 
 def fit_and_evaluate(X: pd.DataFrame, y: pd.DataFrame, features: Set[str], feature: str = None) -> Tuple[str, float]:
@@ -133,8 +149,12 @@ def fit_and_evaluate(X: pd.DataFrame, y: pd.DataFrame, features: Set[str], featu
     else:
         selected_features = sorted(features)
 
+    #print(f"{selected_features} Selected features")
     model = fit_ols_model(X, y, selected_features)
+    #print(f"{model} Model")
     error = calculate_mape(y, model.predict(sm.add_constant(X[selected_features])))
+    # print(f"{model.predict(sm.add_constant(X[selected_features]))} Das ist y_predict")
+    # print(f"{model.predict(sm.add_constant(X[selected_features]))} Das ist xyy")
     return feature, error
 
 
@@ -164,23 +184,32 @@ def forward_selection(X: pd.DataFrame, y: pd.DataFrame, margin: float = 1e-2, th
     remaining_features: Set[str] = set(initial_features)
 
     while remaining_features:
+        #print(f"{remaining_features} Remaining features")
         new_errors: Dict[str, float] = {}
         for feature in remaining_features:
             _, error = fit_and_evaluate(X, y, best_features, feature)
+            #print(f"{error} Error")
             new_errors[feature] = error
 
         min_error = min(new_errors.values())
         if min_error >= current_error:
             break  # No improvement
 
+        #print(f"{new_errors} New errors")
+        #print(f"{min_error} Min error")
+
         # Identify all features with the minimal error
         best_candidates = sorted([f for f, e in new_errors.items() if e == min_error])
+        #print(f"{best_candidates} cand")
 
         # Randomly select one feature among the best candidates
         best_feature = random.choice(best_candidates)
+        #print(f"{best_feature} Best features")
         best_features.add(best_feature)
 
         remaining_features.discard(best_feature)
+        #print(f"{remaining_features} Remaining danach")
+        
 
         # Generate interaction terms with updated features
         interactions, X, forbidden_features = create_interaction_terms(X, best_features, set(initial_features),
@@ -255,13 +284,15 @@ def fit_ols_model(X: pd.DataFrame, y: pd.DataFrame, features: List[str]) -> Regr
     x = sm.add_constant(X[features])
 
     # fit linear regression model
-    model = sm.OLS(y, x).fit()
+    model = sm.OLS(y
+                   
+                   , x).fit()
 
     return model
 
 
 def stepwise_learning(df: pd.DataFrame, max_interaction_order: int = 3, margin: float = 1e-2, threshold: float = 1e-2,
-                      random_seed: int = 42) -> Tuple[RegressionResults, List[str]]:
+                      random_seed: int = 42) -> Tuple[Dict[str, RegressionResults], Dict[str, List[str]]]:
     """
     Performs stepwise feature selection (forward and backward) to build the final model.
 
@@ -277,13 +308,46 @@ def stepwise_learning(df: pd.DataFrame, max_interaction_order: int = 3, margin: 
             - final_model (RegressionResults): The final fitted linear regression model.
             - refined_features (List[str]): The set of selected feature names.
     """
+
+    # For Frequencies
+    num_components = len(df['Real_Part'][0])
+    X = df.drop(columns=['Real_Part', 'Imaginary_Part'])
+    models = {}
+    selected_features_all = {}
+
+    for i in range(num_components):
+        y_i_real = df['Real_Part'].apply(lambda x: x[i])
+        #print(f"{y_i_real} Meiiinneee Reealllss {i}")
+        selected_features, X_extended = forward_selection(X, y_i_real, margin=margin, threshold=threshold, random_seed=random_seed,
+                                                      max_interaction_order=max_interaction_order)
+        refined_features = backward_selection(selected_features, X_extended, y_i_real)
+        final_model_real = fit_ols_model(X_extended, y_i_real, refined_features) 
+        models[f'real_{i}'] = final_model_real
+        selected_features_all[f'real_{i}'] = refined_features
+
+        y_i_imag = df['Imaginary_Part'].apply(lambda x: x[i])
+        # print(f"{y_i_imag} Meiiinneee Imaginaaaryyys {i}")
+        selected_features, X_extended = forward_selection(X, y_i_imag, margin=margin, threshold=threshold, random_seed=random_seed,
+                                                      max_interaction_order=max_interaction_order)
+        refined_features = backward_selection(selected_features, X_extended, y_i_imag)
+        final_model_imag = fit_ols_model(X_extended, y_i_imag, refined_features)
+        models[f'imag_{i}'] = final_model_imag
+        selected_features_all[f'imag_{i}'] = refined_features
+
+        #print(f" The final model : {models} ")
+
+    return models, selected_features_all
+
+
+    # For scalar performance values
+    """ 
     X = df.drop(columns=['Performance'])
     y = df['Performance']
     selected_features, X_extended = forward_selection(X, y, margin=margin, threshold=threshold, random_seed=random_seed,
                                                       max_interaction_order=max_interaction_order)
     refined_features = backward_selection(selected_features, X_extended, y)
     final_model = fit_ols_model(X_extended, y, refined_features)
-    return final_model, refined_features
+    return final_model, refined_features """
 
 
 def export_model(model: RegressionResults, selected_features: List[str], model_file: str) -> None:
@@ -316,7 +380,7 @@ def load_model(model_file: str) -> Tuple[RegressionResults, List[str]]:
     return model, selected_features
 
 
-def validate_model(df: pd.DataFrame, model: RegressionResults, selected_features: List[str]) -> float:
+def validate_model(df: pd.DataFrame, model: Dict[str, RegressionResults], selected_features:  Dict[str, List[str]]) -> Dict[str, float]:
     """
     Validates the model by calculating the Mean Absolute Percentage Error (MAPE) on the given DataFrame.
 
@@ -328,7 +392,54 @@ def validate_model(df: pd.DataFrame, model: RegressionResults, selected_features
     Returns:
         float: The validation error (MAPE).
     """
-    interaction_columns: Dict[str, pd.Series] = {}
+    validation_errors = {}
+    # print(model)
+    
+    for model_name, model in model.items():
+        features_for_model = selected_features.get(model_name, [])
+
+        modified_df = df.copy()
+        modified_df = modified_df.drop(columns=['Real_Part', 'Imaginary_Part'])
+
+        match = re.match(r'(real|imag)_(\d+)', model_name)
+        part = match.group(1)
+        number = int(match.group(2))
+        if part == 'real':
+            entries = df['Real_Part'].apply(lambda x: x[number])
+            modified_df['Real_Part'] = entries
+
+        if part == 'imag':
+            entries = df['Imaginary_Part'].apply(lambda x: x[number])
+            modified_df['Imaginary_Part'] = entries
+
+
+        # Common code
+        interaction_columns: Dict[str, pd.Series] = {}
+        for feature in features_for_model:
+            if '$$' in feature:
+                feat = feature.split('$$')
+                interaction_columns[feature] = modified_df[feat].all(axis=1).astype(int)
+        
+        if interaction_columns:
+            interaction_df = pd.DataFrame(interaction_columns)
+            modified_df = pd.concat([modified_df, interaction_df], axis=1)
+
+        predictions = model.predict(sm.add_constant(modified_df[features_for_model]))
+
+        if part == 'real':
+            validation_error = calculate_mape(modified_df['Real_Part'], predictions)
+
+        if part == 'imag':
+            validation_error = calculate_mape(modified_df['Imaginary_Part'], predictions)
+
+        validation_errors[model_name] = validation_error
+    
+    return validation_errors
+
+
+
+    # Old version for scalarsf
+    """ interaction_columns: Dict[str, pd.Series] = {}
     for feature in selected_features:
         if '$$' in feature:
             feat = feature.split('$$')
@@ -340,4 +451,4 @@ def validate_model(df: pd.DataFrame, model: RegressionResults, selected_features
 
     predictions = model.predict(sm.add_constant(df[selected_features]))
     validation_error = calculate_mape(df['Performance'], predictions)
-    return validation_error
+    return validation_error """
