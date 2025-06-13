@@ -1,0 +1,13 @@
+[package]
+name = "rust-wrapper"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "rust_wrapper"
+crate-type = ["cdylib"]  # Use "staticlib" if you want a static lib
+
+[dependencies]
+oxidd = "0.10.0"
+oxidd-dump = "0.5.0" 
+

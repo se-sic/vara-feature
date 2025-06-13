@@ -321,3 +321,9 @@ endif()
 
 add_subdirectory(unittests)
 add_subdirectory(scripts)
+
+#OXIDD 
+add_subdirectory(external/oxidd)
+include_directories(external/oxidd/include)
+add_executable(bdd_main BDD/main.cpp)
+target_link_libraries(bdd_main PRIVATE oxidd)
