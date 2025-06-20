@@ -1,18 +1,4 @@
-#include <vector>
-#include <queue>
-#include "vara/Feature/FeatureModelParser.h"
-#include "random"
-#include <unordered_map>
-#include "vara/Feature/FeatureModel.h"
-#include "vara/Feature/Relationship.h"
-
-using namespace vara::feature;
-using std::vector;
-using std::unique_ptr;
-using std::random_device;
-using std::unordered_map;
-using std::queue;
-using std::find;
+#include "Sampler.hpp"
 
 enum class NodeType { AND, OR, XOR };
 

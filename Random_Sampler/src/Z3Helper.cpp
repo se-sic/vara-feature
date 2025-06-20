@@ -1,11 +1,4 @@
-#include "Z3Solver.h"
-#include <z3++.h>
-#include <vector>
-#include <string>
-#include <map>
-#include <iostream>
-#include "tinyxml2.h" 
-using namespace tinyxml2;
+#include "Z3Helper.hpp"
 
 std::vector<z3::expr> parseConstraints(z3::context &ctx, const std::vector<std::string> &constraints) {
     std::vector<z3::expr> parsed;

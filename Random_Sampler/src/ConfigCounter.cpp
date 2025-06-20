@@ -1,8 +1,5 @@
-#include "Z3Solver.h"
-#include <z3++.h>
-#include <vector>
-#include <string>
-#include <iostream>
+#include "ConfigCounter.hpp"
+#include "Z3Helper.hpp"
 
 std::vector<std::string> generate_fd_constraints(const std::vector<std::string> &vars) {
     std::vector<std::string> constraints;
@@ -27,9 +24,9 @@ int count_valid_configs(const std::vector<std::string> &vars) {
 
 int count_valid_configs_from_xml(const std::string &xmlPath) {
     Z3Solver solver;
-    addXmlConstraintsToSolver(solver, xmlPath);
+    addXmlConstraintsToSolver(solver, xmlPath); //call aus Z3Helper.cpp
 
-    int count = 0;
+    int count = 0; //TODO: Hashmap unordered_map<Feature *, int> cc, um die Anzahl der Konfigurationen pro Feature zu zählen
     z3::solver &z3s = solver.getRawSolver();
     std::vector<z3::expr> trackedVars;
 
@@ -60,6 +57,7 @@ int main(int argc, char** argv) {
     std::string xmlPath = argv[1];
     int totalConfigs = count_valid_configs_from_xml(xmlPath);
 
-    std::cout << "Gültige Konfigurationen: " << totalConfigs << std::endl;
+    std::cout << "Gültige Konfigurationen: " << totalConfigs << std::endl; //TODO: unordered_map<Feature *, int> cc ausgeben statt ein volles int --> Zahl zumal für ein int zu hoch bei großen FDs, maybe auf u_int64_t umstellen
     return 0;
 }
+

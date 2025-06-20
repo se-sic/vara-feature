@@ -1,41 +1,44 @@
-#include "oxidd/bdd.hpp"
-#include "oxidd/capi.h"
-#include <iostream>
+#include "GraphViz.hpp"
 
 using oxidd::bdd_manager;
 using oxidd::bdd_function;
 using oxidd::capi::oxidd_bdd_manager_t;
 using oxidd::capi::oxidd_bdd_t;
+using std::string;
+using std::vector;
+using std::pair;
 
-int visBDD() {
-    bdd_manager manager(32,320,1);
 
-    bdd_function a = manager.new_var();
-    bdd_function b = manager.new_var();
-    bdd_function c = manager.new_var();
-    bdd_function f = a & b | c;
+int visBDD(const bdd_manager &manager, const bdd_function &f, const vector<pair<bdd_function, string>> &vars, 
+           string &filepath = "../results/bdd.dot", string &funcname, int num_func) {
 
     const oxidd_bdd_manager_t* ptr_manager = reinterpret_cast<const oxidd_bdd_manager_t*>(&manager);
-    const oxidd_bdd_t* ptr_a = reinterpret_cast<const oxidd_bdd_t*>(&a);
-    const oxidd_bdd_t* ptr_b = reinterpret_cast<const oxidd_bdd_t*>(&b);
-    const oxidd_bdd_t* ptr_c = reinterpret_cast<const oxidd_bdd_t*>(&c);
     const oxidd_bdd_t* ptr_f = reinterpret_cast<const oxidd_bdd_t*>(&f);
+    const oxidd_bdd_t functions[] = { *ptr_f };
+    const char *function_names[] = { funcname.c_str() };
 
-    const oxidd_bbd_t functions[] = { *ptr_f };
-    const char* names[] = { "f" };
+    vector<oxidd_bdd_t> var_bdds;
+    vector<const char*> var_names;
+    vector<string> var_names_str;
 
-    const oxidd_bdd_t vars[] = { *ptr_a, *ptr_b, *ptr_c };
-    const char* var_names[] = { "a", "b", "c" };
+    for(const auto &[bdd, name]: vars) {
+        var_bbds.push_back(*reinterpret_cast<const oxidd_bdd_t*>(&bdd));
+        var_names_str.push_back(name);
+    }
+
+    for(const auto &n: var_names_str) {
+        var_names.push_back(n.c_str());
+    }
 
     bool check = oxidd_bdd_manager_dump_all_dot_file(
         *ptr_manager,
-        "../results/bdd.dot",
+        filepath.c_str(),
         functions,
-        names,
-        1,
-        vars,
-        var_names,
-        3
+        function_names,
+        function_names.size(),
+        var_bbds.data(),
+        var_names.data(),
+        var_bdds.size()
     );
 
     if(!check) {
