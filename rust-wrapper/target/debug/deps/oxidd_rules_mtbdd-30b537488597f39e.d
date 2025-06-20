@@ -1,8 +1,0 @@
-/Users/oracionoftime/Documents/UdS/BA/vara-feature/rust-wrapper/target/debug/deps/liboxidd_rules_mtbdd-30b537488597f39e.rmeta: /Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/lib.rs /Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/terminal/mod.rs /Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/terminal/int64.rs /Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/apply_rec.rs
-
-/Users/oracionoftime/Documents/UdS/BA/vara-feature/rust-wrapper/target/debug/deps/oxidd_rules_mtbdd-30b537488597f39e.d: /Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/lib.rs /Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/terminal/mod.rs /Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/terminal/int64.rs /Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/apply_rec.rs
-
-/Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/lib.rs:
-/Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/terminal/mod.rs:
-/Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/terminal/int64.rs:
-/Users/oracionoftime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oxidd-rules-mtbdd-0.5.0/src/apply_rec.rs:

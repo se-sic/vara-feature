@@ -16,7 +16,6 @@
 [submodule "external/z3"]
 	path = external/z3
 	url = https://github.com/fabianbs96/z3.git	
-	
 [submodule "external/oxidd"]
 	path = external/oxidd
 	url = https://github.com/OxiDD/oxidd.git
