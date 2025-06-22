@@ -96,4 +96,14 @@ void addXmlConstraintsToSolver(Z3Solver &solver, const std::string &xmlPath) {
         }
     }
 
+    XMLElement* impl = opt->FirstChildElement("impliedOptions");
+    if (impl) {
+        for (XMLElement* entry = impl->FirstChildElement("options"); entry; entry = entry->NextSiblingElement("options")) {
+            const char* target = entry->GetText();
+            if (vars.count(src) && vars.count(target)) {
+                z3s.add(z3::implies(vars[src], vars[target]));
+            }
+        }
+    }
+
 }
