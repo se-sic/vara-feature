@@ -1,8 +1,8 @@
-#include "ConfigCounter.hpp"
-#include "Z3Helper.hpp"
-#include "FeatureDiagram.hpp"
-#include "GraphViz.hpp"
-#include "Sampler.hpp"
+#include "../include/ConfigCounter.hpp"
+#include "../include/Z3Helper.hpp"
+#include "../include/FeatureDiagram.hpp"
+#include "../include/GraphViz.hpp"
+#include "../include/Sampler.hpp"
 #include <iostream>
 #include <unordered_map>
 #include <random>
@@ -18,11 +18,9 @@ int main(int argc, char** argv) {
     }
 
     std::string xmlPath = argv[1];
-    int cc = count_valid_configs_from_xml(xmlPath); //TODO 
 
     unique_ptr<FeatureModel> fd = parseFromFile(xmlPath);
-
-    unordered_map<Feature *, int> configCount; //Placeholder
+    std::unordered_map<Feature*, int> cc = count_valid_configs_from_featureModel(xmlPath, fd.get());
 
     oxidd::bdd_manager mgr;
     unordered_map<std::string, oxidd::bdd_function> featureVars;

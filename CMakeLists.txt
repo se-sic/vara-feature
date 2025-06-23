@@ -325,5 +325,5 @@ add_subdirectory(scripts)
 #OXIDD 
 add_subdirectory(external/oxidd)
 include_directories(external/oxidd/include)
-* add_executable(bdd_main BDD/main.cpp)
-target_link_libraries(Random_Sampler/src/GraphViz.cpp PRIVATE oxidd)
+
+add_subdirectory(Random_Sampler)

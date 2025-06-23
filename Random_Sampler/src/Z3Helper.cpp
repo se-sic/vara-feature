@@ -1,9 +1,25 @@
+#include "vara/Solver/Z3Solver.h"
+#include <z3++.h>
+#include <vector>
+#include <string>
+#include <map>
+#include <iostream>
+#include <tinyxml2.h>
 #include "Z3Helper.hpp"
+
+using vara::solver::Z3Solver;
+using tinyxml2::XMLDocument;
+using tinyxml2::XMLElement;
+using tinyxml2::XML_SUCCESS;
 
 std::vector<z3::expr> parseConstraints(z3::context &ctx, const std::vector<std::string> &constraints) {
     std::vector<z3::expr> parsed;
     for (const auto &str : constraints) {
-        parsed.push_back(ctx.parse_string(str.c_str()));
+        z3::expr_vector exp = ctx.parse_string(str.c_str());
+
+        for (int i=0; i < exp.size(); i++) {
+            parsed.push_back(exp[i]);
+        }
     }
     return parsed;
 }
@@ -35,6 +51,17 @@ void addXmlConstraintsToSolver(Z3Solver &solver, const std::string &xmlPath) {
                 z3s.add(z3::implies(vars[src], !vars[target]));
             }
         }
+
+        XMLElement* impl = opt->FirstChildElement("impliedOptions");
+        if (impl) {
+        for (XMLElement* entry = impl->FirstChildElement("options"); entry; entry = entry->NextSiblingElement("options")) {
+            const char* target = entry->GetText();
+            if (vars.count(src) && vars.count(target)) {
+                z3s.add(z3::implies(vars[src], vars[target]));
+            }
+        }
+    }
+        
     }
 
     XMLElement *bcon = doc.FirstChildElement("vm")->FirstChildElement("booleanConstraints");
@@ -92,16 +119,6 @@ void addXmlConstraintsToSolver(Z3Solver &solver, const std::string &xmlPath) {
                 z3s.add(e);
             } catch (...) {
                 std::cerr << "Warnung: konnte nonBooleanConstraint nicht parsen: " << exprStr << std::endl;
-            }
-        }
-    }
-
-    XMLElement* impl = opt->FirstChildElement("impliedOptions");
-    if (impl) {
-        for (XMLElement* entry = impl->FirstChildElement("options"); entry; entry = entry->NextSiblingElement("options")) {
-            const char* target = entry->GetText();
-            if (vars.count(src) && vars.count(target)) {
-                z3s.add(z3::implies(vars[src], vars[target]));
             }
         }
     }

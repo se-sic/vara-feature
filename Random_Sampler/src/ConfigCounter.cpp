@@ -1,12 +1,15 @@
-#include "Z3Solver.h"
-#include "FeatureDiagram.h"
-#include "FeatureModel.h"
+#include "vara/Solver/Z3Solver.h"
+#include "FeatureDiagram.hpp"
+#include "vara/Feature/FeatureModel.h"
 #include "Feature.h"
+#include "Z3Helper.hpp"
 
 #include <z3++.h>
 #include <unordered_map>
 #include <string>
 #include <iostream>
+
+using vara::solver::Z3Solver;
 
 std::unordered_map<Feature*, int>
 count_valid_configs_from_featureModel(const std::string& xmlPath, FeatureModel* model) {
