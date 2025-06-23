@@ -16,17 +16,15 @@ std::vector<z3::expr> parseConstraints(z3::context &ctx, const std::vector<std::
     std::vector<z3::expr> parsed;
     for (const auto &str : constraints) {
         z3::expr_vector exp = ctx.parse_string(str.c_str());
-
-        for (int i=0; i < exp.size(); i++) {
+        for (int i = 0; i < exp.size(); i++) {
             parsed.push_back(exp[i]);
         }
     }
     return parsed;
 }
 
-void addXmlConstraintsToSolver(Z3Solver &solver, const std::string &xmlPath) {
-    z3::context &ctx = solver.getContext();  
-    z3::solver &z3s = solver.getRawSolver(); 
+void addXmlConstraintsToSolver(z3::solver& solver, const std::string& xmlPath) {
+    z3::context& ctx = solver.ctx();
 
     XMLDocument doc;
     if (doc.LoadFile(xmlPath.c_str()) != XML_SUCCESS) {
@@ -35,6 +33,7 @@ void addXmlConstraintsToSolver(Z3Solver &solver, const std::string &xmlPath) {
     }
 
     std::map<std::string, z3::expr> vars;
+    std::map<std::string, z3::expr> intVars;
 
     XMLElement *root = doc.FirstChildElement("vm")->FirstChildElement("binaryOptions");
     for (XMLElement *opt = root->FirstChildElement("configurationOption"); opt; opt = opt->NextSiblingElement("configurationOption")) {
@@ -48,28 +47,29 @@ void addXmlConstraintsToSolver(Z3Solver &solver, const std::string &xmlPath) {
         if (excl) {
             for (XMLElement *entry = excl->FirstChildElement("options"); entry; entry = entry->NextSiblingElement("options")) {
                 const char *target = entry->GetText();
-                z3s.add(z3::implies(vars[src], !vars[target]));
+                solver.add(z3::implies(vars[src], !vars[target]));
             }
         }
 
         XMLElement* impl = opt->FirstChildElement("impliedOptions");
         if (impl) {
-        for (XMLElement* entry = impl->FirstChildElement("options"); entry; entry = entry->NextSiblingElement("options")) {
-            const char* target = entry->GetText();
-            if (vars.count(src) && vars.count(target)) {
-                z3s.add(z3::implies(vars[src], vars[target]));
+            for (XMLElement* entry = impl->FirstChildElement("options"); entry; entry = entry->NextSiblingElement("options")) {
+                const char* target = entry->GetText();
+                if (vars.count(src) && vars.count(target)) {
+                    solver.add(z3::implies(vars[src], vars[target]));
+                }
             }
         }
-    }
-        
     }
 
     XMLElement *bcon = doc.FirstChildElement("vm")->FirstChildElement("booleanConstraints");
     if (bcon) {
         for (XMLElement *c = bcon->FirstChildElement("constraint"); c; c = c->NextSiblingElement("constraint")) {
             std::string exprStr = c->GetText();
-            z3::expr e = ctx.parse_string(exprStr.c_str());
-            z3s.add(e);
+            z3::expr_vector exprs = ctx.parse_string(exprStr.c_str());
+            for (unsigned i = 0; i < exprs.size(); ++i) {
+                solver.add(exprs[i]);
+            }
         }
     }
 
@@ -82,7 +82,7 @@ void addXmlConstraintsToSolver(Z3Solver &solver, const std::string &xmlPath) {
             size_t cpos = exprStr.find(")");
             std::string left = exprStr.substr(a + 1, b - a - 1);
             std::string right = exprStr.substr(b + 2, cpos - b - 2);
-            z3s.add(!(vars[left] && vars[right]));
+            solver.add(!(vars[left] && vars[right]));
         }
     }
 
@@ -106,7 +106,7 @@ void addXmlConstraintsToSolver(Z3Solver &solver, const std::string &xmlPath) {
             for (size_t i = 1; i < values.size(); ++i) {
                 allowed = allowed || (var == values[i]);
             }
-            z3s.add(allowed);
+            solver.add(allowed);
         }
     }
 
@@ -115,12 +115,14 @@ void addXmlConstraintsToSolver(Z3Solver &solver, const std::string &xmlPath) {
         for (XMLElement* c = nbRoot->FirstChildElement("constraint"); c; c = c->NextSiblingElement("constraint")) {
             std::string exprStr = c->GetText();
             try {
-                z3::expr e = ctx.parse_string(exprStr.c_str());
-                z3s.add(e);
+                z3::expr_vector exprs = ctx.parse_string(exprStr.c_str());
+                for (unsigned i = 0; i < exprs.size(); ++i) {
+                    solver.add(exprs[i]);
+                }
             } catch (...) {
                 std::cerr << "Warnung: konnte nonBooleanConstraint nicht parsen: " << exprStr << std::endl;
             }
         }
     }
-
 }
+
