@@ -25,16 +25,9 @@ int main(int argc, char** argv) {
     oxidd::bdd_manager mgr;
     unordered_map<std::string, oxidd::bdd_function> featureVars;
     vector<pair<oxidd::bdd_function, std::string>> varList;
-
-    for(const auto &feats: fd->getFeatures()) {
-        auto name = feats.getName().str();
-        auto var = mgr.new_var();
-        featureVars[name] = var;
-        varList.emplace_back(var, name);
-    }
     
-    random device rd;
-    unordered_map<Feature * , bool> sample = sampleRandomly(*fd, configCount, std::random_device());
+    std::random_device rd;
+    unordered_map<Feature * , bool> sample = sampleRandomly(*fd, cc, rd);
 
 
     for (const auto &entry : sample) {

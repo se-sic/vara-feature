@@ -10,7 +10,7 @@ using std::pair;
 
 
 int visBDD(const bdd_manager &manager, const bdd_function &f, const vector<pair<bdd_function, string>> &vars, 
-           string &filepath = "../results/bdd.dot", string &funcname, int num_func) {
+           const string &filepath = "../results/bdd.dot", string &funcname, int num_func) {
 
     const oxidd_bdd_manager_t* ptr_manager = reinterpret_cast<const oxidd_bdd_manager_t*>(&manager);
     const oxidd_bdd_t* ptr_f = reinterpret_cast<const oxidd_bdd_t*>(&f);
@@ -22,7 +22,7 @@ int visBDD(const bdd_manager &manager, const bdd_function &f, const vector<pair<
     vector<string> var_names_str;
 
     for(const auto &[bdd, name]: vars) {
-        var_bbds.push_back(*reinterpret_cast<const oxidd_bdd_t*>(&bdd));
+        var_bdds.push_back(*reinterpret_cast<const oxidd_bdd_t*>(&bdd));
         var_names_str.push_back(name);
     }
 
@@ -35,8 +35,8 @@ int visBDD(const bdd_manager &manager, const bdd_function &f, const vector<pair<
         filepath.c_str(),
         functions,
         function_names,
-        function_names.size(),
-        var_bbds.data(),
+        1,
+        var_bdds.data(),
         var_names.data(),
         var_bdds.size()
     );
