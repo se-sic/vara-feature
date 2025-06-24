@@ -1,6 +1,6 @@
 //This is the common part of the grammar. grammar
 grammar UVLBase;
-options { tokenVocab=UVLcppLexer; }  // Use the lexer tokens
+
 INDENT : '<INDENT>'; // this pattern should never match in actual input
 DEDENT : '<DEDENT>'; // this pattern should also never match
 

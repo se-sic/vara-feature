@@ -1,10 +1,10 @@
-features:
-  Root:
-    - FeatureA
-    - FeatureB
-  FeatureA:
-    - FeatureC
-  FeatureB: {}
-constraints:
-  - requires(FeatureA, FeatureC)
-  - excludes(FeatureA, FeatureB)
+features
+    Root
+        optional
+            FeatureA
+                optional
+                    FeatureC
+        mandatory
+            FeatureB
+constraints
+    FeatureC => FeatureB

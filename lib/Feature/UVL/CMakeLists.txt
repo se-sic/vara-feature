@@ -1,84 +1,57 @@
-#[[
-set(ANTLR_RUNTIME_PATH /usr/local)
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${ANTLR_RUNTIME_PATH})
+# minimum required CMAKE version
+cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 
-find_library(ANTLR_RUNTIME_LIBRARY antlr4-runtime PATHS ${ANTLR_RUNTIME_PATH}/lib)
-find_path(ANTLR_RUNTIME_INCLUDE_DIR antlr4-runtime.h PATHS ${ANTLR_RUNTIME_PATH}/include/antlr4-runtime)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+# compiler must be 17
+set(CMAKE_CXX_STANDARD 17)
 
-if (ANTLR_RUNTIME_LIBRARY AND ANTLR_RUNTIME_INCLUDE_DIR)
-    message(STATUS "Found ANTLR runtime at ${ANTLR_RUNTIME_PATH}")
-    include_directories(${ANTLR_RUNTIME_INCLUDE_DIR})
-else()
-    message(FATAL_ERROR "ANTLR runtime not found. Set ANTLR_RUNTIME_PATH manually.")
-endif()
+# required if linking to static library
+add_definitions(-DANTLR4CPP_STATIC)
 
-include_directories(${ANTLR_RUNTIME_INCLUDE_DIR})
-]]
-add_library(uvl_lib STATIC AntrlUvl.cpp)
+# using /MD flag for antlr4_runtime (for Visual C++ compilers only)
+set(ANTLR4_WITH_STATIC_CRT OFF)
 
-target_include_directories(uvl_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# Specify the version of the antlr4 library needed for this project. By default
+# the latest version of antlr4 will be used.  You can specify a specific, stable
+# version by setting a repository tag value or a link to a zip file containing
+# the libary source. set(ANTLR4_TAG 4.13.2) set(ANTLR4_ZIP_REPOSITORY
+# https://github.com/antlr/antlr4/archive/refs/tags/4.13.2.zip)
 
-find_file(
-  ANTLR_JAR
-  NAMES antlr-4.13.1-complete.jar
-  PATHS /usr/local/lib /usr/share/java /usr/lib ~/Downloads
-  DOC "Path to the ANTLR jar"
+# add external build for antlrcpp
+include(ExternalAntlr4Cpp)
+# add antlr4cpp artifacts to project environment
+include_directories(${ANTLR4_INCLUDE_DIRS})
+
+# set variable pointing to the antlr tool that supports C++ this is not required
+# if the jar file can be found under PATH environment
+set(ANTLR_EXECUTABLE /usr/local/lib/antlr-4.13.1-complete.jar)
+# add macros to generate ANTLR Cpp code from grammar
+find_package(ANTLR REQUIRED)
+
+# Call macro to add lexer and grammar to your build dependencies.
+
+# antlr_target(SampleGrammarLexer UVLcppLexer.g4 LEXER PACKAGE antlrcpptest)
+antlr_target(
+  UVLCppParser
+  UVLcpp.g4
+  PACKAGE
+  antlrcpp
+  VISITOR
 )
+# DEPENDS_ANTLR SampleGrammarLexer COMPILE_FLAGS -lib
+# ${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
 
-find_path(
-  ANTLR4_RUNTIME_INCLUDE_DIR
-  NAMES antlr4-runtime.h
-  PATHS /usr/local/include/antlr4-runtime /usr/include
+# Call macro to add lexer and grammar to your build dependencies.
+# antlr_target(UVLCppParser UVLcpp.g4 VISITOR)
+
+# include generated files in project environment
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+# include_directories(${ANTLR_SampleGrammarParser_OUTPUT_DIR})
+
+# add generated grammar to demo binary target
+add_executable(
+  AntlrTest AntrlUvl.cpp ${ANTLR_UVLCppParser_CXX_OUTPUTS}
+            ${ANTLR_UVLCppParser_CXX_OUTPUTS}
 )
-message(ANTLR_JAR = "${ANTLR4_RUNTIME_INCLUDE_DIR}")
-
-include_directories(${ANTLR4_RUNTIME_INCLUDE_DIR})
-
-add_library(ANTLR4_RUNTIME STATIC IMPORTED)
-set_target_properties(
-  ANTLR4_RUNTIME
-  PROPERTIES IMPORTED_LOCATION ${ANTLR_RUNTIME_LIBRARY}
-             INTERFACE_INCLUDE_DIRECTORIES ${ANTLR_RUNTIME_INCLUDE_DIR}
-)
-
-# set(ANTLR_JAR /usr/local/lib/antlr-4.13.1-complete.jar)
-set(ANTLR_COMMAND java -jar ${ANTLR_JAR})
-set(LEXER_GENERATED_DIR ${CMAKE_BINARY_DIR}/lexer)
-set(GENERATED_DIR ${CMAKE_BINARY_DIR}/generated)
-
-# Define grammar file
-set(BASE_FILE ${CMAKE_SOURCE_DIR}/lib/Feature/UVL/UVLBase.g4)
-set(GRAMMAR_FILE ${CMAKE_SOURCE_DIR}/lib/Feature/UVL/UVLcpp.g4)
-set(LEXER_FILE ${CMAKE_SOURCE_DIR}/lib/Feature/UVL/UVLcppLexer.g4)
-
-add_custom_command(
-  OUTPUT ${GENERATED_DIR}/UVLcppLexer.h ${GENERATED_DIR}/UVLcppLexer.cpp
-  COMMAND ${ANTLR_COMMAND} -Dlanguage=Cpp -o ${GENERATED_DIR} ${LEXER_FILE}
-  DEPENDS ${LEXER_FILE}
-)
-
-# Generate lexer/parser files
-add_custom_command(
-  OUTPUT ${GENERATED_DIR}/UVLcppParser.cpp
-  COMMAND ${ANTLR_COMMAND} -Dlanguage=Cpp -lib ${GENERATED_DIR} -o
-          ${GENERATED_DIR} ${GRAMMAR_FILE}
-  DEPENDS ${GRAMMAR_FILE}
-  COMMENT "Generating ANTLR lexer/parser from ${GRAMMAR_FILE}"
-)
-message(STATUS "Generated directory is: ${GENERATED_DIR}")
-
-include_directories(${LEXER_OUTPUT_DIR} ${GENERATED_DIR})
-
-add_library(
-  UVLParserLib STATIC ${GENERATED_DIR}/UVLcppLexer.cpp
-                      ${GENERATED_DIR}/UVLcppParser.cpp
-)
-target_link_libraries(UVLParserLib PRIVATE antlr4-runtime)
-target_include_directories(UVLParserLib PRIVATE ${GENERATED_DIR})
-
-add_executable(AntlrTest AntrlUvl.cpp)
-target_link_libraries(AntlrTest PRIVATE UVLParserLib antlr4-runtime)
-
-# Add ANTLR runtime
-#
+target_link_libraries(AntlrTest VaRAFeature antlr4_static)
