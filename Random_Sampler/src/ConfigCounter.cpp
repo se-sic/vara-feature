@@ -19,7 +19,8 @@ count_valid_configs_from_featureModel(const std::string& xmlPath, FeatureModel* 
     z3::context ctx;
     z3::solver solver(ctx);
 
-    addXmlConstraintsToSolver(solver, xmlPath);
+    Z3_solver raw_solver = solver;
+    addXmlConstraintsToSolver(raw_solver, xmlPath);
 
     std::unordered_map<std::string, z3::expr> allVars;
 
@@ -67,7 +68,7 @@ int main(int argc, char** argv) {
               << total << "\n\n";
     for (const auto& [f, n] : featureCounts) {
         double percent = (100.0 * n) / total;
-        std::cout << "Feature \"" <<f->getName() << "\": " 
+        std::cout << "Feature \"" << std::string(f->getName()) << "\": "95
                   << n << "x (" << percent << "%)" << std::endl;
     }
 
