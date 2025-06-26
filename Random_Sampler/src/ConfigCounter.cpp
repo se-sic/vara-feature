@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
               << total << "\n\n";
     for (const auto& [f, n] : featureCounts) {
         double percent = (100.0 * n) / total;
-        std::cout << "Feature \"" << std::string(f->getName()) << "\": "95
+        std::cout << "Feature \"" << std::string(f->getName()) << "\": "
                   << n << "x (" << percent << "%)" << std::endl;
     }
 
