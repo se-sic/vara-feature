@@ -3,15 +3,12 @@
         {
             "name": "Mac",
             "includePath": [
-                "/users/oracionoftime/Documents/Uds/BA/Bitch/vara-feature/include",
-                "/users/oracionoftime/Documents/Uds/BA/Bitch/vara-feature/Random_Sampler/include",
-                "/opt/homebrew/opt/llvm/include/",
-                "/opt/homebrew/opt/llvm/lib",
-                "/opt/homebrew/Cellar/tinyxml2/11.0.0/include",
+                "/Users/oracionoftime/Documents/UdS/BA/Bitch/vara-feature/Random_Sampler/include",
+                "/opt/homebrew/opt/llvm/include",
+                "${workspaceFolder}/include",
                 "${workspaceFolder}/**"
             ],
             "defines": [],
-            "compilerPath": "/opt/homebrew/opt/llvm/bin/clang++",
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "macos-clang-arm64"

@@ -8,7 +8,7 @@ namespace vara::solver {
 
 Result<SolverErrorCode>
 Z3Solver::addFeature(const feature::Feature &FeatureToAdd,
-                     bool IsInAlternativeGroup) {
+                    ) {
   // Check whether the parent feature is already added
   vara::feature::Feature *Parent = FeatureToAdd.getParentFeature();
   if (Parent != nullptr && OptionToVariableMapping.find(Parent->getName()) ==

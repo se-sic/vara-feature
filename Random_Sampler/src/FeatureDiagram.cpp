@@ -1,9 +1,10 @@
 #include "FeatureDiagram.hpp"
 
 unique_ptr<FeatureModel> parseFromFile(const string &filename) {
+    std::cout << "Parsing feature model from file: " << filename << "\n";
     ifstream file(filename);
     if (!file) {
-        cerr << "Error parsing feature model from file: " << filename << "\n";
+        cerr << "Errors parsing feature model from file: " << filename << "\n";
         return nullptr;
     }
 

@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/Relationship.h"
+#include "NodeType.hpp"
 
 using namespace vara::feature;
 using std::vector;
@@ -18,5 +19,6 @@ using std::queue;
 using std::find;
 
 unordered_map<Feature * , bool> sampleRandomly(const FeatureModel &fd, unordered_map<Feature *, int> &cc, random_device &rd);
+NodeType checkType(const FeatureModel &fd,  FeatureTreeNode *f);
 
 #endif // RANDOM_SAMPLER_HPP

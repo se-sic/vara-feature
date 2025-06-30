@@ -16,7 +16,8 @@ using std::vector;
 using std::pair;
 
 int visBDD(const oxidd::bdd_manager &manager, const oxidd::bdd_function &f, 
-           const std::vector<pair<oxidd::bdd_function, std::string>> &vars, 
-           std::string &filepath = "../results/bdd.dot", std::string &funcname, int num_func );
+           const std::vector<pair<oxidd::bdd_function, std::string>> &vars,
+           std::string &funcname, int num_func, 
+           const std::string &filepath = "../results/bdd.dot");
 
 #endif // GRAPHVIZ_BDD_HPP

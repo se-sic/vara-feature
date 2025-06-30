@@ -9,8 +9,9 @@ using std::vector;
 using std::pair;
 
 
-int visBDD(const bdd_manager &manager, const bdd_function &f, const vector<pair<bdd_function, string>> &vars, 
-           const string &filepath = "../results/bdd.dot", string &funcname, int num_func) {
+int visBDD(const bdd_manager &manager, const bdd_function &f, const vector<pair<bdd_function, string>> &vars,
+           string &funcname, int num_func,
+           const string &filepath) {
 
     const oxidd_bdd_manager_t* ptr_manager = reinterpret_cast<const oxidd_bdd_manager_t*>(&manager);
     const oxidd_bdd_t* ptr_f = reinterpret_cast<const oxidd_bdd_t*>(&f);

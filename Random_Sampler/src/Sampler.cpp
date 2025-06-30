@@ -1,21 +1,41 @@
 #include "Sampler.hpp"
+#include "NodeType.hpp"
 
-enum class NodeType { AND, OR, XOR };
-
-NodeType checkType(const FeatureModel &fd, const Feature *f) {
-    auto relations = fd.relationships();
-    for (const auto &rel : relations) {
-        if (rel->getParent() == f) {
-            switch (rel->getKind()) {
-                case vara::feature::Relationship::RelationshipKind::RK_ALTERNATIVE:
+NodeType checkType( const FeatureModel &fd,  FeatureTreeNode *f) {
+    // for(auto &rs : fd.relationships()) {
+    //     if(rs->getParent() != f) {
+    //         continue;
+    //     }
+    //     switch (rs->getKind()) {
+    //         case Relationship::RelationshipKind::RK_ALTERNATIVE:
+    //             return NodeType::XOR;
+    //             break;
+    //         case Relationship::RelationshipKind::RK_OR:
+    //             return NodeType::OR;
+    //             break;
+    //         default:
+    //             if(f->isLeaf()) {
+    //                 return NodeType::LEAF; 
+    //             }
+    //             return NodeType::AND;
+    //             break;
+    //     }
+    // }
+    auto rltsp = f->getChildren<Relationship>();
+     if (!rltsp.empty()) {
+        auto *rel = *rltsp.begin();
+            switch(rel->getKind()) {
+                case Relationship::RelationshipKind::RK_ALTERNATIVE:
                     return NodeType::XOR;
-                case vara::feature::Relationship::RelationshipKind::RK_OR:
+                case Relationship::RelationshipKind::RK_OR:
                     return NodeType::OR;
                 default:
-                    return NodeType::AND;
+                    if(f->isLeaf()) {
+                        return NodeType::LEAF; 
+                    }
+                    return NodeType::AND; // fallback
+                }
             }
-        }
-    }
     return NodeType::AND;
 }
 
@@ -47,10 +67,10 @@ unordered_map<Feature * , bool> sampleRandomly(const FeatureModel &fd, unordered
         }
 
         NodeType type = checkType(fd, f);
-        auto children = f->getChildren<Feature>();
 
         switch(type) {
             case NodeType::AND: {
+                std::cout << "Sampling AND node: " << f->getName().str() << std::endl;
                 for(Feature *c : children) {
                     q.push(c);
                     if(!c->isOptional()){
@@ -68,6 +88,7 @@ unordered_map<Feature * , bool> sampleRandomly(const FeatureModel &fd, unordered
                 break;
             }
              case NodeType::OR: {
+                std::cout << "Sampling OR node: " << f->getName().str() << std::endl;
                 vector<Feature *> s;
                 while(s.empty()) {
                     s.clear();
@@ -99,7 +120,7 @@ unordered_map<Feature * , bool> sampleRandomly(const FeatureModel &fd, unordered
                     weights.push_back(static_cast<double>(numCCchild->second));
                 }
 
-                std::discrete_distribution<double> dist(weights.begin(), weights.end());
+                std::discrete_distribution<int> dist(weights.begin(), weights.end());
                 Feature *c_prime = childVec[dist(rd)];
                 for(Feature *c: children) {
                     if(c == c_prime) {
@@ -109,6 +130,9 @@ unordered_map<Feature * , bool> sampleRandomly(const FeatureModel &fd, unordered
                         sample[c] = false;
                     }
                 }
+                break;
+            }
+            case NodeType::LEAF: {
                 break;
             }
         }
