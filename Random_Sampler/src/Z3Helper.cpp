@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // // #include "vara/Solver/Z3Solver.h"
 // // #include <z3++.h>
 // // #include <vector>
@@ -125,4 +126,6 @@
 //         }
 //     }
 // }
+=======
+>>>>>>> 097d91b9d21b2d8907d6dacf1f0f1469e41cefb1
 
