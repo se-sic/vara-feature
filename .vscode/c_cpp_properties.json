@@ -4,6 +4,8 @@
             "name": "Mac",
             "includePath": [
                 "/Users/oracionoftime/Documents/UdS/BA/Bitch/vara-feature/Random_Sampler/include",
+                "/Users/oracionoftime/Documents/UdS/BA/Bitch/vara-feature/external/oxidd/bindings/cpp/include/oxidd",
+                "/Users/oracionoftime/Documents/UdS/BA/Bitch/vara-feature/BDD/include",
                 "/opt/homebrew/opt/llvm/include",
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/**"

@@ -16,3 +16,6 @@ CMakeLists.txt.user
 *.srctrlbm
 *.srctrldb
 *.srctrlprj
+
+#Ignore vsCode workspace changes
+.vscode/
