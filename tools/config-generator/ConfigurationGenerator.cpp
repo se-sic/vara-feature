@@ -21,10 +21,7 @@ enum class ConfigurationGenerationChoice : unsigned {
   SAMPLE_SET,
 };
 
-enum class OutputFormat : unsigned {
-  YAML,
-  CSV
-};
+enum class OutputFormat : unsigned { YAML, CSV };
 
 static llvm::cl::opt<ConfigurationGenerationChoice, false>
     ConfigurationGenerationOption(
@@ -41,17 +38,13 @@ static llvm::cl::opt<ConfigurationGenerationChoice, false>
         llvm::cl::init(ConfigurationGenerationChoice::ALL), llvm::cl::Optional,
         llvm::cl::cat(ConfigCreatorCategory));
 
-static llvm::cl::opt<OutputFormat, false>
-    OutputFormatOption(
-        "format",
-        llvm::cl::desc("The way how the configurations should output."),
-        llvm::cl::values(
-            clEnumValN(OutputFormat::YAML, "yaml",
-                       "Generate as YAML format"),
-            clEnumValN(OutputFormat::CSV, "csv",
-                       "Generate as CSV format")),
-        llvm::cl::init(OutputFormat::YAML), llvm::cl::Optional,
-        llvm::cl::cat(ConfigCreatorCategory));
+static llvm::cl::opt<OutputFormat, false> OutputFormatOption(
+    "format", llvm::cl::desc("The way how the configurations should output."),
+    llvm::cl::values(
+        clEnumValN(OutputFormat::YAML, "yaml", "Generate as YAML format"),
+        clEnumValN(OutputFormat::CSV, "csv", "Generate as CSV format")),
+    llvm::cl::init(OutputFormat::YAML), llvm::cl::Optional,
+    llvm::cl::cat(ConfigCreatorCategory));
 
 static llvm::cl::opt<std::string>
     CsvInputFilePath("csv", llvm::cl::desc("Path to the csv input file."),
@@ -121,13 +114,14 @@ int main(int Argc, char **Argv) {
     std::string Str;
 
     switch (OutputFormatOption.getValue()) {
-      case OutputFormat::YAML:
-        Str = vara::sampling::SampleSetWriter::writeConfigurations(*FM,
-                                                                   Configurations);
-        break;
-      case OutputFormat::CSV:
-        Str = vara::sampling::SampleSetWriterCSV::writeConfigurations(*FM, Configurations);
-        break;
+    case OutputFormat::YAML:
+      Str = vara::sampling::SampleSetWriter::writeConfigurations(
+          *FM, Configurations);
+      break;
+    case OutputFormat::CSV:
+      Str = vara::sampling::SampleSetWriterCSV::writeConfigurations(
+          *FM, Configurations);
+      break;
     }
 
     std::error_code EC;

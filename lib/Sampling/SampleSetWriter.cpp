@@ -57,9 +57,9 @@ std::string vara::sampling::SampleSetWriterCSV::writeConfigurations(
 
   std::string HeaderStr = "id";
 
-  for(auto *F : FM.features()) {
-      HeaderStr.append(",");
-      HeaderStr.append(F->getName());
+  for (auto *F : FM.features()) {
+    HeaderStr.append(",");
+    HeaderStr.append(F->getName());
   }
 
   HeaderStr.append("\n");
@@ -80,7 +80,8 @@ std::string vara::sampling::SampleSetWriterCSV::writeConfigurations(
 
       auto Value = Configuration->configurationOptionValue(F->getName());
 
-      assert(Value.has_value() && "Could not retrieve option value, broken configuration option.");
+      assert(Value.has_value() &&
+             "Could not retrieve option value, broken configuration option.");
 
       ConfigRow.append(Value.value());
     }
@@ -94,7 +95,7 @@ std::string vara::sampling::SampleSetWriterCSV::writeConfigurations(
 
   OutputString << HeaderStr;
 
-  for(auto &Config: ConfigRows){
+  for (auto &Config : ConfigRows) {
     OutputString << Config;
   }
 
