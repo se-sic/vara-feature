@@ -12,6 +12,7 @@ void init_feature_location_module(py::module &M);
 void init_feature_model_module(py::module &M);
 void init_feature_model_builder_module(py::module &M);
 void init_xml_writer(py::module &M);
+void init_configuration_module(py::module &M);
 
 PYBIND11_MODULE(vara_feature, M) {
   auto LLVMModule = M.def_submodule("llvm_util");
@@ -27,4 +28,6 @@ PYBIND11_MODULE(vara_feature, M) {
   init_xml_writer(FMWriterModule);
   auto FeatureModelBuilderModule = M.def_submodule("feature_model_builder");
   init_feature_model_builder_module(FeatureModelBuilderModule);
+  auto ConfigurationModule = M.def_submodule("configuration");
+  init_configuration_module(ConfigurationModule);
 }

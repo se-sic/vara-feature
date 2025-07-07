@@ -3,6 +3,7 @@
 #include "z3++.h"
 
 #include "vara/Feature/FeatureModelBuilder.h"
+#include "vara/Solver/ConfigurationFactory.h"
 #include "gtest/gtest.h"
 
 namespace vara::solver {
@@ -54,10 +55,6 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   V = S->hasValidConfigurations();
   EXPECT_TRUE(V);
   EXPECT_TRUE(V.extractValue());
-  // Enumerate the solutions
-  auto Enumerate = S->getNumberValidConfigurations();
-  EXPECT_TRUE(Enumerate);
-  EXPECT_EQ(2, Enumerate.extractValue());
 
   E = S->addFeature(*FM->getFeature("B"));
   EXPECT_TRUE(E);
@@ -68,37 +65,10 @@ TEST(Z3Solver, AddFeatureObjectTest) {
   EXPECT_FALSE(E);
   EXPECT_EQ(SolverErrorCode::ALREADY_PRESENT, E.getError());
 
-  // Enumerate the solutions
-  Enumerate = S->getNumberValidConfigurations();
-  EXPECT_TRUE(Enumerate);
-  EXPECT_EQ(6, Enumerate.extractValue());
-
   E = S->addFeature(*FM->getFeature("C"));
   EXPECT_TRUE(E);
   V = S->hasValidConfigurations();
   EXPECT_TRUE(V.extractValue());
-  Enumerate = S->getNumberValidConfigurations();
-  EXPECT_TRUE(Enumerate);
-  EXPECT_EQ(6, Enumerate.extractValue());
-}
-
-TEST(Z3Solver, TestAllValidConfigurations) {
-  std::unique_ptr<Z3Solver> S = Z3Solver::create();
-  vara::feature::FeatureModelBuilder B;
-  B.makeRoot("root");
-  B.makeFeature<vara::feature::BinaryFeature>("Foo", true);
-  B.addEdge("root", "Foo");
-  std::vector<int64_t> Values{0, 1};
-  B.makeFeature<vara::feature::NumericFeature>("Num1", Values);
-  auto FM = B.buildFeatureModel();
-
-  S->addFeature(*FM->getFeature("root"));
-  S->addFeature(*FM->getFeature("Foo"));
-  S->addFeature(*FM->getFeature("Num1"));
-
-  auto C = S->getAllValidConfigurations();
-  EXPECT_TRUE(C);
-  EXPECT_EQ(C.extractValue().size(), 4);
 }
 
 TEST(Z3Solver, TestGetNextConfiguration) {
@@ -115,7 +85,7 @@ TEST(Z3Solver, TestGetNextConfiguration) {
   S->addFeature(*FM->getFeature("Foo"));
   S->addFeature(*FM->getFeature("Num1"));
 
-  for (int Count = 0; Count < 3; Count++) {
+  for (int Count = 0; Count < 4; Count++) {
     auto C = S->getNextConfiguration();
     EXPECT_TRUE(C);
     auto Config = C.extractValue();
@@ -158,9 +128,9 @@ TEST(Z3Solver, AddImpliesConstraint) {
   S->addFeature(*FM->getFeature("a"));
   S->addFeature(*FM->getFeature("b"));
   S->addConstraint(*C);
-  auto E = S->getNumberValidConfigurations();
-  EXPECT_TRUE(E);
-  EXPECT_EQ(E.extractValue(), 6);
+  auto I = ConfigurationIterable(std::move(S));
+  EXPECT_TRUE(*I.begin());
+  EXPECT_EQ(std::distance(I.begin(), I.end()), 6);
 }
 
 TEST(Z3Solver, AddAlternative) {
@@ -203,9 +173,10 @@ TEST(Z3Solver, AddAlternative) {
   for (const auto &R : FM->relationships()) {
     S->addRelationship(*R);
   }
-  auto E = S->getNumberValidConfigurations();
-  EXPECT_TRUE(E);
-  EXPECT_EQ(E.extractValue(), 63);
+
+  auto I = ConfigurationIterable(std::move(S));
+  EXPECT_TRUE(*I.begin());
+  EXPECT_EQ(std::distance(I.begin(), I.end()), 63);
 }
 
 } // namespace vara::solver
