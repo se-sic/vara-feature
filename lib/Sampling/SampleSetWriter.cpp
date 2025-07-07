@@ -49,4 +49,56 @@ std::string vara::sampling::SampleSetWriter::writeConfigurations(
   Output << ConfigurationStringMap;
   return Str;
 }
+
+std::string vara::sampling::SampleSetWriterCSV::writeConfigurations(
+    const vara::feature::FeatureModel &FM,
+    std::vector<std::unique_ptr<vara::feature::Configuration>>
+        &Configurations) {
+
+  std::string HeaderStr = "id";
+
+  for (auto *F : FM.features()) {
+    HeaderStr.append(",");
+    HeaderStr.append(F->getName());
+  }
+
+  HeaderStr.append("\n");
+
+  std::vector<std::string> ConfigRows;
+  ConfigRows.reserve(Configurations.size());
+
+  for (size_t ConfigurationCount = 0;
+       ConfigurationCount < Configurations.size(); ConfigurationCount++) {
+
+    auto &Configuration = Configurations.at(ConfigurationCount);
+    std::string ConfigRow = std::to_string(ConfigurationCount);
+
+    for (auto *F : FM.features()) {
+      auto FeatureName = F->getName();
+
+      ConfigRow.append(",");
+
+      auto Value = Configuration->configurationOptionValue(F->getName());
+
+      assert(Value.has_value() &&
+             "Could not retrieve option value, broken configuration option.");
+
+      ConfigRow.append(Value.value());
+    }
+    ConfigRow.append("\n");
+    ConfigRows.push_back(ConfigRow);
+  }
+
+  // Write configurations to a string in YAML format
+  std::string Str;
+  llvm::raw_string_ostream OutputString(Str);
+
+  OutputString << HeaderStr;
+
+  for (auto &Config : ConfigRows) {
+    OutputString << Config;
+  }
+
+  return Str;
+}
 } // namespace vara::sampling
