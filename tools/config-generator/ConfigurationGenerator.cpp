@@ -21,6 +21,11 @@ enum class ConfigurationGenerationChoice : unsigned {
   SAMPLE_SET,
 };
 
+enum class OutputFormat : unsigned {
+  YAML,
+  CSV
+};
+
 static llvm::cl::opt<ConfigurationGenerationChoice, false>
     ConfigurationGenerationOption(
         "type",
@@ -34,6 +39,18 @@ static llvm::cl::opt<ConfigurationGenerationChoice, false>
             clEnumValN(ConfigurationGenerationChoice::SAMPLE_SET, "sample",
                        "Read the sample set from a file.")),
         llvm::cl::init(ConfigurationGenerationChoice::ALL), llvm::cl::Optional,
+        llvm::cl::cat(ConfigCreatorCategory));
+
+static llvm::cl::opt<OutputFormat, false>
+    OutputFormatOption(
+        "format",
+        llvm::cl::desc("The way how the configurations should output."),
+        llvm::cl::values(
+            clEnumValN(OutputFormat::YAML, "yaml",
+                       "Generate as YAML format"),
+            clEnumValN(OutputFormat::CSV, "csv",
+                       "Generate as CSV format")),
+        llvm::cl::init(OutputFormat::YAML), llvm::cl::Optional,
         llvm::cl::cat(ConfigCreatorCategory));
 
 static llvm::cl::opt<std::string>
@@ -101,9 +118,18 @@ int main(int Argc, char **Argv) {
   }
 
   if (!OutputFilePath.empty() && !Configurations.empty()) {
-    const std::string Str =
-        vara::sampling::SampleSetWriter::writeConfigurations(*FM,
-                                                             Configurations);
+    std::string Str;
+
+    switch (OutputFormatOption.getValue()) {
+      case OutputFormat::YAML:
+        Str = vara::sampling::SampleSetWriter::writeConfigurations(*FM,
+                                                                   Configurations);
+        break;
+      case OutputFormat::CSV:
+        Str = vara::sampling::SampleSetWriterCSV::writeConfigurations(*FM, Configurations);
+        break;
+    }
+
     std::error_code EC;
     auto Out = llvm::raw_fd_ostream(OutputFilePath.getValue(), EC);
     if (EC) {
