@@ -144,7 +144,7 @@ Z3Solver::addRelationship(const feature::Relationship &R) {
 }
 
 Result<SolverErrorCode>
-Z3Solver::addConstraint(feature::Constraint &ConstraintToAdd) {
+Z3Solver:: addConstraint(feature::Constraint &ConstraintToAdd) {
   Z3SolverConstraintVisitor SCV(this);
   const bool Succ = SCV.addConstraint(&ConstraintToAdd);
   if (!Succ) {
