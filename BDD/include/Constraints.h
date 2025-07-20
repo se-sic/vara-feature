@@ -8,10 +8,6 @@
 #include "BDD/include/BDDFactory.h"
 #include <unordered_map>
 
-#include "vara/Feature/FeatureModel.h"
-#include "BDD/include/BDDFactory.h"
-#include <unordered_map>
-
 namespace oxidd::capi {
 
 class BDDConstraintVisitor : public vara::feature::ConstraintVisitor {

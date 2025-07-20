@@ -1,7 +1,7 @@
 #include "vara/Feature/FeatureModel.h"
 #include "BDD/include/BDDFactory.h"
 #include <unordered_map>
-#include "BDD/include/Cosnstraints.h"
+#include "BDD/include/Constraints.h"
 
 namespace oxidd::capi {
 
