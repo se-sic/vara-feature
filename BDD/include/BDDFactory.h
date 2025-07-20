@@ -11,7 +11,7 @@ namespace oxidd::capi
     class BDDFactory
     {
     public:
-        static std::unique_ptr<oxidd_bdd_manager_t> 
+        static std::unique_ptr<oxidd_bdd_t> 
         modelToBdd(const vara::feature::FeatureModel &model);
 
         enum class featType {
