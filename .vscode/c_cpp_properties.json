@@ -6,6 +6,7 @@
                 "/Users/oracionoftime/Documents/UdS/BA/Bitch/vara-feature/Random_Sampler/include",
                 "/Users/oracionoftime/Documents/UdS/BA/Bitch/vara-feature/external/oxidd/bindings/cpp/include/oxidd",
                 "/Users/oracionoftime/Documents/UdS/BA/Bitch/vara-feature/BDD/include",
+                "/Users/oracionoftime/Documents/UdS/BA/Bitch/vara-feature/include/vara/Solver",
                 "/opt/homebrew/opt/llvm/include",
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/**"

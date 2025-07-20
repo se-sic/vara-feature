@@ -1,14 +1,15 @@
 #include "vara/Feature/FeatureModel.h"
 #include "BDD/include/BDDFactory.h"
 #include <unordered_map>
+#include "BDD/include/Cosnstraints.h"
 
 namespace oxidd::capi {
 
 class BDDConstraintVisitor : public vara::feature::ConstraintVisitor {
 public:
   BDDConstraintVisitor(oxidd_bdd_manager_t manager, 
-                      std::unordered_map<std::string, oxidd_bdd_t>& varMap)
-      : Manager(manager), VarMap(varMap), CurrentBDD(oxidd_bdd_false(manager)) {}
+                      std::unordered_map<std::string, oxidd_bdd_t>* varMap)
+      : Manager(manager), VarMap(*varMap), CurrentBDD(oxidd_bdd_false(manager)) {}
 
   oxidd_bdd_t addConstraint(vara::feature::Constraint* C) {
     C->accept(this);
@@ -16,7 +17,7 @@ public:
   }
 
   bool visit(vara::feature::BinaryConstraint* C) override {
-    C->getLeft()->accept(this);
+    C->getLeft()->accept(*this);
     oxidd_bdd_t left = CurrentBDD;
     
     C->getRight()->accept(this);

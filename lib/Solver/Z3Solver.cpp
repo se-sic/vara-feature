@@ -8,7 +8,7 @@ namespace vara::solver {
 
 Result<SolverErrorCode>
 Z3Solver::addFeature(const feature::Feature &FeatureToAdd,
-                    ) {
+                     bool IsInAlternativeGroup) {
   // Check whether the parent feature is already added
   vara::feature::Feature *Parent = FeatureToAdd.getParentFeature();
   if (Parent != nullptr && OptionToVariableMapping.find(Parent->getName()) ==
@@ -144,7 +144,7 @@ Z3Solver::addRelationship(const feature::Relationship &R) {
 }
 
 Result<SolverErrorCode>
-Z3Solver:: addConstraint(feature::Constraint &ConstraintToAdd) {
+Z3Solver::addConstraint(feature::Constraint &ConstraintToAdd) {
   Z3SolverConstraintVisitor SCV(this);
   const bool Succ = SCV.addConstraint(&ConstraintToAdd);
   if (!Succ) {

@@ -11,6 +11,7 @@ dist/
 venv/
 CMakeLists.txt.user
 .cache/
+.vscode/c_cpp_properties.json
 
 # Ignore sourcetrail files
 *.srctrlbm

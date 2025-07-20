@@ -5,16 +5,31 @@
 
 namespace oxidd::capi
 {
+
+    enum class featType {
+        NUMERIC,
+        BINARY
+    };
+
+    struct BDDFeat {
+        featType type;
+        std::variant<oxidd_bdd_t*, std::vector<std::pair<string,oxidd_bdd_t>>*> data;
+    };
+
     std::unique_ptr<oxidd_bdd_manager_t> BDDFactory::modelToBdd( 
         const vara::feature::FeatureModel &model) 
     {
         oxidd_bdd_manager_t manager = oxidd_bdd_manager_new(0, 0, 0);
-        std::unordered_map<std::string, oxidd_bdd_t> varMap;
+        oxidd_bdd_t finalBDD = oxidd_bdd_true(manager);
+        std::unordered_map<std::string, BDDFeat> varMap;
+        std::unordered_map<std::string, oxidd_bdd_t> binaryVarMap;
+        std::unordered_map<std::string, std::vector<std::pair<string, oxidd_bdd_t>>> numericVarMap;
+        std::vector<string> V;
 
         for (const auto &rltsps : model.relationships()) {
             for (const auto &Child : rltsps->children()) {
                 const auto *ChildFeature = (const vara::feature::Feature *)Child;
-               varMap.insert({ChildFeature->getName().str(), oxidd_bdd_new_var(manager)});
+                V.insert(V.begin(), ChildFeature->getName().str());
             }
         }
 

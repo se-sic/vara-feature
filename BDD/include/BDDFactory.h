@@ -13,6 +13,16 @@ namespace oxidd::capi
     public:
         static std::unique_ptr<oxidd_bdd_manager_t> 
         modelToBdd(const vara::feature::FeatureModel &model);
+
+        enum class featType {
+        NUMERIC,
+        BINARY
+        };
+
+        struct BDDFeat {
+        featType type;
+        std::variant<oxidd_bdd_t*, std::vector<std::pair<string, oxidd_bdd_t>>*> data;
+        };
     };
     
 } // namespace oxidd::capi

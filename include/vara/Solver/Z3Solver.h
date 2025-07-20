@@ -24,7 +24,7 @@ public:
   }
 
   static std::unique_ptr<Z3Solver> create() {
-    // The configuration of z3
+    // The configuration of z3r
     z3::config Cfg;
     Cfg.set("model", "true");
     Cfg.set("model-validate", "true");
