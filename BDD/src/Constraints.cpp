@@ -12,33 +12,35 @@ using NumericVarMap = std::unordered_map<std::string, std::vector<std::pair<std:
 
 class BDDConstraintVisitor : public vara::feature::ConstraintVisitor {
 public:
-<<<<<<< HEAD
-  BDDConstraintVisitor(oxidd_bdd_manager_t manager, 
-                      std::unordered_map<std::string, oxidd_bdd_t>* varMap)
-      : Manager(manager), VarMap(*varMap), CurrentBDD(oxidd_bdd_false(manager)) {}
-=======
   BDDConstraintVisitor(oxidd_bdd_manager_t manager,
                       GlobalVarMap* varMap,
                       BinaryVarMap* binaryVarMap,
-                      NumericVarMap* numericVarMap)
+                      NumericVarMap* numericVarMap,
+                      bool isMixedConstraint = false,
+                      bool requireAll = false)
       : Manager(manager), VarMap(varMap), 
         BinaryVarMap(binaryVarMap), NumericVarMap(numericVarMap),
-        CurrentBDD(oxidd_bdd_false(manager)) {}
->>>>>>> f56458bb (Changed Constraints.cpp)
+        CurrentBDD(oxidd_bdd_false(manager),
+        IsMixedConstraint(isMixedConstraint)
+        RequireAll(requireAll)
+        VariableConstraint(oxidd_bdd_false(manager))) {}
 
-  oxidd_bdd_t addConstraint(vara::feature::Constraint* C) {
+  oxidd_bdd_t addConstraint(vara::feature::Constraint* C, bool negate = false, bool requireAll = false) {
+    this->RequireAll = requireAll;
     C->accept(*this);
+    if (negate) {
+      CurrentBDD = oxidd_bdd_or(CurrentBDD);
+    }
+    if (IsMixedConstraint && RequireAll) {
+      CurrentBDD = oxidd_bdd_or(VariableConstraint, CurrentBDD);
+    } 
     return CurrentBDD;
   }
 
   bool visit(vara::feature::BinaryConstraint* C) override {
-<<<<<<< HEAD
-    C->getLeft()->accept(*this);
-=======
     using CK = vara::feature::Constraint::ConstraintKind;
     
     C->getLeftOperand()->accept(*this);
->>>>>>> f56458bb (Changed Constraints.cpp)
     oxidd_bdd_t left = CurrentBDD;
     
     C->getRightOperand()->accept(*this);
@@ -124,7 +126,21 @@ public:
 
   bool visit(vara::feature::PrimaryFeatureConstraint* C) override {
     std::string featureName = C->getFeature()->getName().str();
-    return handleFeatureConstraint(featureName);
+
+    if (C->getFeature()->getKind()== vara::feature::Feature::FeatureKind::FK_NUMERIC) {
+      if (IsMixedConstraint) {
+        oxidd_bdd_t var = oxidd_bdd_new_var(Manager);
+        (*BinaryVarMap) [featureName] = var;
+        VariableConstraint = oxidd_bdd_or(VariableConstraint, oxidd_bdd_not(var));
+        CurrentBDD = var;
+        return true;
+      } else {
+        return handleFeatureConstraint(featureName);
+      }
+    } else {
+      return handleFeatureConstraint(featureName);
+    }
+    
   }
 
   bool visit(vara::feature::PrimaryIntegerConstraint* C) override {
@@ -209,6 +225,9 @@ private:
   NumericVarMap* NumericVarMap;
   oxidd_bdd_t CurrentBDD;
   int tempCounter = 0;
+  bool IsMixedConstraint;
+  bool RequireAll;
+  oxidd_bdd_t VariableConstraint;
 };
 
 void processConstraints(
@@ -227,6 +246,18 @@ void processConstraints(
     bdd = oxidd_bdd_and(bdd, constraintBDD);
     return true;
   };
+
+  const auto processMixed = [&] (const auto& constraint) {
+    BDDConstraintVisitor mixedVisitor(manager, &varMap, &binaryVarMap, &numericVarMap, true);
+    oxidd_bdd_t constraintBDD = mixedVisitor.addConstraint(constraint->constraint(), 
+      constraint->exprKind() == vara::feature::FeatureModel::MixedConstraint::ExprKind::NEG,
+      constraint->req() == vara::feature::FeatureModel::MixedConstraint::Req::ALL);
+    if (constraintBDD._p == nullptr) {
+      return false;
+    }
+    bdd = oxidd_bdd_and(bdd, constraint);
+    return true;
+  }
 
   for (const auto& C : model.booleanConstraints()) if (!process(C)) break;
   for (const auto& C : model.nonBooleanConstraints()) if (!process(C)) break;
