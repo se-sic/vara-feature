@@ -180,6 +180,18 @@ class ConstraintSystem:
                 var = self.id_pool.id(feature.name.str())
                 option_to_var[feature] = var
                 var_to_option[var] = feature
+            elif isinstance(feature, vf.feature.NumericFeature):
+                #print(f"{feature.name.str()} - dir: {dir(feature)}")
+                #print(f"feature: {feature.name.str()} (type: {type(feature)})")
+                #print(feature.locations)
+                min = 1
+                max = 9
+
+                for value in range(min, max + 1):
+                    var = self.id_pool.id(f"{feature.name.str()}_{value}")
+                    option_to_var[(feature, value)] = var
+                    var_to_option[var] = (feature, value)
+
 
     def add_feature(self, feature: vf.feature.Feature, option_to_var: Dict[vf.feature.Feature, int]) -> None:
         """
@@ -267,6 +279,17 @@ class ConstraintSystem:
         var_to_option: Dict[int, vf.feature.Feature] = {}
 
         self.initialize_feature_vars(feature_model, option_to_var, var_to_option)
+
+        for feature in feature_model:
+            if isinstance(feature, vf.feature.NumericFeature):
+                min_val = 1
+                max_val = 9
+                vars_for_feature = [option_to_var[(feature, val)] for val in range(min_val, max_val + 1)]
+
+                solver.add_clause(vars_for_feature)
+                for i in range(len(vars_for_feature)):
+                    for j in range(i + 1, len(vars_for_feature)):
+                        solver.add_clause([-vars_for_feature[i], -vars_for_feature[j]])
 
         for feature in feature_model:
             self.add_feature(feature, option_to_var)

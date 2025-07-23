@@ -27,7 +27,14 @@ def export_configurations_to_csv(configurations: List[Configuration], features: 
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(feature_names)
         for configuration in configurations:
-            row = [1 if configuration.get_option_value(feature_name) else 0 for feature_name in feature_names]
+            row = []
+            for feature in features:
+                if isinstance(feature, vf.feature.NumericFeature):
+                    value = configuration.get_option_value(feature.name.str())
+                    row.append(value)
+                elif not isinstance(feature, vf.feature.RootFeature):
+                    value = configuration.get_option_value(feature.name.str())
+                    row.append(1 if value else 0)
             csv_writer.writerow(row)
 
 
@@ -45,17 +52,39 @@ def _create_configuration_from_model(model: List[int], features_to_consider: Lis
         Configuration: The resulting configuration.
     """
     binary_options = {}
+    numeric_options = {}
     for var in model:
         if var > 0:
             feature = var_to_feature.get(var)
-            if feature and feature in features_to_consider:
-                if isinstance(feature, vf.feature.BinaryFeature):  # Only consider binary features
-                    binary_options[feature.name.str()] = True
+            
+            if isinstance(feature, tuple):
+                #print(f"Processing variable {var} with feature: {feature.name.str()}")
+                feat, val = feature
+                if feat in features_to_consider:
+                    numeric_options[feat.name.str()] = val
+            else:
+                #print(f"Processing variable {var} with feature: {feature}")
+                if feature and feature in features_to_consider:
+                    #print(f"Var {var} feature name: {feature.name.str()} type: {type(feature)}")
+                    if isinstance(feature, vf.feature.BinaryFeature):  # Only consider binary features
+                        binary_options[feature.name.str()] = True
+
+                """ elif isinstance(feature, vf.feature.NumericFeature):
+                       print(f"Processing numeric feature: {feature.name.str()}")
+                       value = feature.value_for_variable(var)
+                       if value is not None:
+                           numeric_options[feature.name.str()] = value """
+
+    print(f"Creating configuration with binary options: {binary_options} and numeric options: {numeric_options}")            
 
     configuration = Configuration()
     for name, value in binary_options.items():
         configuration.set_option(name, value)
+    
+    for name, value in numeric_options.items():
+        configuration.set_option(name, value)
 
+    print(f"Created configuration: {configuration}")
     return configuration
 
 
