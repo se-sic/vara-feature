@@ -3,11 +3,13 @@
         {
             "name": "Mac",
             "includePath": [
+                "/Users/oracionoftime/Documents/UdS/BA/vara-feature/Random_Sampler/include",
+                "/Users/oracionoftime/Documents/UdS/BA/vara-feature/external/oxidd/bindings/cpp/include/oxidd",
+                "/Users/oracionoftime/Documents/UdS/BA/vara-feature/BDD/include",
+                "/Users/oracionoftime/Documents/UdS/BA/vara-feature/include/vara/Solver",
                 "/opt/homebrew/opt/llvm/include",
-                "/home/michael/Documents/vara-feature/BDD/src/Constraints.cpp",
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/**",
-                "${workspaceFolder}"
+                "${workspaceFolder}/**"
             ],
             "defines": [],
             "cStandard": "c17",

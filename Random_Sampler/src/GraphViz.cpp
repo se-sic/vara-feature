@@ -1,4 +1,5 @@
-#include "GraphViz.hpp"
+#include "GraphViz.h"
+#include "../../BDD/include/BDDFactory.h"
 
 using oxidd::bdd_manager;
 using oxidd::bdd_function;
@@ -9,21 +10,32 @@ using std::vector;
 using std::pair;
 
 
-int visBDD(const bdd_manager &manager, const bdd_function &f, const vector<pair<bdd_function, string>> &vars,
-           string &funcname, int num_func,
-           const string &filepath) {
+int visBDD(const oxidd_bdd_manager_t* manager, const oxidd_bdd_t* f, const std::unordered_map<string, oxidd::capi::BDDFactory::BDDFeat> &vars,
+           string &funcname, int num_func, const string &filepath) {
 
-    const oxidd_bdd_manager_t* ptr_manager = reinterpret_cast<const oxidd_bdd_manager_t*>(&manager);
-    const oxidd_bdd_t* ptr_f = reinterpret_cast<const oxidd_bdd_t*>(&f);
-    const oxidd_bdd_t functions[] = { *ptr_f };
+    const oxidd_bdd_t functions[] = { *f };
     const char *function_names[] = { funcname.c_str() };
 
     vector<oxidd_bdd_t> var_bdds;
     vector<const char*> var_names;
     vector<string> var_names_str;
+    oxidd_bdd_t featureVar;
 
-    for(const auto &[bdd, name]: vars) {
-        var_bdds.push_back(*reinterpret_cast<const oxidd_bdd_t*>(&bdd));
+    for(const auto &pair: vars) {
+        const auto &name = pair.first;
+        const auto &feat = pair.second;
+        if (feat.type == oxidd::capi::BDDFactory::featType::NUMERIC) {
+            auto numericFeats = std::get<std::vector<std::pair<string, oxidd_bdd_t>>*>(feat.data);
+            featureVar = std::find_if(numericFeats->begin(), numericFeats->end(), [&name](const std::pair<std::string, oxidd_bdd_t>& pair){
+                        return pair.first == name;}
+                        )->second;
+        } else if (feat.type == oxidd::capi::BDDFactory::featType::BINARY) {
+            auto* bddPointer = std::get<oxidd::capi::oxidd_bdd_t*>(feat.data);
+            featureVar = *bddPointer;
+        } else {
+            return 1;
+        }
+        var_bdds.push_back(*reinterpret_cast<const oxidd_bdd_t*>(&featureVar));
         var_names_str.push_back(name);
     }
 
@@ -32,7 +44,7 @@ int visBDD(const bdd_manager &manager, const bdd_function &f, const vector<pair<
     }
 
     bool check = oxidd_bdd_manager_dump_all_dot_file(
-        *ptr_manager,
+        *manager,
         filepath.c_str(),
         functions,
         function_names,
