@@ -58,24 +58,13 @@ def _create_configuration_from_model(model: List[int], features_to_consider: Lis
             feature = var_to_feature.get(var)
             
             if isinstance(feature, tuple):
-                #print(f"Processing variable {var} with feature: {feature.name.str()}")
                 feat, val = feature
                 if feat in features_to_consider:
                     numeric_options[feat.name.str()] = val
             else:
-                #print(f"Processing variable {var} with feature: {feature}")
                 if feature and feature in features_to_consider:
-                    #print(f"Var {var} feature name: {feature.name.str()} type: {type(feature)}")
                     if isinstance(feature, vf.feature.BinaryFeature):  # Only consider binary features
                         binary_options[feature.name.str()] = True
-
-                """ elif isinstance(feature, vf.feature.NumericFeature):
-                       print(f"Processing numeric feature: {feature.name.str()}")
-                       value = feature.value_for_variable(var)
-                       if value is not None:
-                           numeric_options[feature.name.str()] = value """
-
-    print(f"Creating configuration with binary options: {binary_options} and numeric options: {numeric_options}")            
 
     configuration = Configuration()
     for name, value in binary_options.items():
@@ -84,7 +73,6 @@ def _create_configuration_from_model(model: List[int], features_to_consider: Lis
     for name, value in numeric_options.items():
         configuration.set_option(name, value)
 
-    print(f"Created configuration: {configuration}")
     return configuration
 
 
