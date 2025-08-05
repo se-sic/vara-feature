@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="BusyBox" root="STATIC" commit="BUSYMN">
+  <binaryOptions>
+    <configurationOption>
+      <name>STATIC</name>
+      <optional>True</optional>
+    </configurationOption>
+
+    <configurationOption>
+      <name>PIE</name>
+      <optional>True</optional>
+      <excludedOptions>
+        <options>STATIC</options>
+      </excludedOptions>
+    </configurationOption>
+
+    <configurationOption>
+      <name>FEATURE_PREFER_APPLETS</name>
+      <optional>True</optional>
+    </configurationOption>
+
+    <configurationOption>
+      <name>BUILD_LIBBUSYBOX</name>
+      <excludedOptions>
+        <options>FEATURE_PREFER_APPLETS</options>
+        <options>PIE</options>
+        <options>STATIC</options>
+      </excludedOptions>
+      <optional>True</optional>
+    </configurationOption>
+
+    <configurationOption>
+      <name>FEATURE_INDIVIDUAL</name>
+      <optional>True</optional>
+      <impliedOptions>
+        <options>BUILD_LIBBUSYBOX</options>
+      </impliedOptions>
+    </configurationOption>
+
+    <configurationOption>
+      <name>FEATURE_SHARED_BUSYBOX</name>
+      <impliedOptions>
+        <options>BUILD_LIBBUSYBOX</options>
+      </impliedOptions>
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+
+  <booleanConstraints>
+    <constraint>(!PIE or !STATIC) </constraint>
+    <constraint>(!BUILD_LIBBUSYBOX or (!FEATURE_PREFER_APPLETS and !PIE and !STATIC)) </constraint>
+    <constraint>(!FEATURE_INDIVIDUAL or BUILD_LIBBUSYBOX) </constraint>
+    <constraint>(!FEATURE_SHARED_BUSYBOX or BUILD_LIBBUSYBOX) </constraint>
+  </booleanConstraints>
+</vm>
