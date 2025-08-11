@@ -5,17 +5,16 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "BDD/include/BDDFactory.h"
+#include "BDDFactory.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "vara/Utils/Result.h"
 #include "vara/Solver/Error.h"
-#include "BDD/include/Constraints.h"
+#include "Constraints.h"
 
 using vara::Result;
 using vara::solver::SolverErrorCode;
 using vara::feature::Feature;
 using oxidd::capi::BDDFactory;
-using oxidd::capi::BDDFactory::BDDFeat;
 using std::unordered_map;
 using std::string;
 using std::vector;
@@ -23,31 +22,31 @@ using std::pair;
 
 namespace oxidd::capi {
 
-    Result<SolverErrorCode>getPr(
+    Result<vara::solver::SolverErrorCode>getPr(
         oxidd_bdd_manager_t* manager,
         oxidd_bdd_t* node,
-        BDDFactory::BDDFeat* feat,
+        oxidd::capi::BDDFactory::BDDFeat* feat,
         size_t nodeCount,
         oxidd_bdd_t *oneTerminal,
         oxidd_bdd_t *zeroTerminal,
-        unordered_map<std::string, BDDFactory::BDDFeat>* varMap
+        BDDFactory& factory
     ) {
         feat->info.marked = true;
         if (node->_p == zeroTerminal->_p && node->_i == zeroTerminal->_i) {
             feat->info.satCount = 0;
-            feat->info.probability = -1.0
-            return SolverErrorCode::Success;
+            feat->info.probability = -1.0;
+            return vara::Ok<void>();
         } else if (node->_p == oneTerminal->_p && node->_i == oneTerminal->_i) {
             feat->info.satCount = 1;
             feat->info.probability = -1.0;
-            return SolverErrorCode::Success;
+            return vara::Ok<void>();
         } else {
-            oxidd_level_no_t index_node = oxidd_bdd_level_no(*node);
+            oxidd_level_no_t index_node = oxidd_bdd_level(*node);
             oxidd_bdd_pair_t cofactors = oxidd_bdd_cofactors(*node);
-            BDDFeat* trueFeat = findFeatureinBDD(&cofactors.first, varMap);
-            oxidd_level_no_t index_high = oxidd_bdd_level_no(cofactors.first);
-            BDDFeat* falseFeat = findFeatureinBDD(&cofactors.second, varMap);
-            oxidd_level_no_t index_low = oxidd_bdd_level_no(cofactors.second);
+            oxidd::capi::BDDFactory::BDDFeat* trueFeat = factory.findFeatureinBDD(&cofactors.first);
+            oxidd_level_no_t index_high = oxidd_bdd_level(cofactors.first);
+            oxidd::capi::BDDFactory::BDDFeat* falseFeat = factory.findFeatureinBDD(&cofactors.second);
+            oxidd_level_no_t index_low = oxidd_bdd_level(cofactors.second);
 
             if(trueFeat->info.marked != feat->info.marked) {
                 getPr(
@@ -57,7 +56,7 @@ namespace oxidd::capi {
                     nodeCount-1, 
                     oneTerminal, 
                     zeroTerminal, 
-                    varMap
+                    factory
                 );
             } else if(falseFeat->info.marked != feat->info.marked) {
                 getPr(
@@ -67,7 +66,7 @@ namespace oxidd::capi {
                     nodeCount-1, 
                     oneTerminal, 
                     zeroTerminal, 
-                    varMap
+                    factory
                 );
             }
 

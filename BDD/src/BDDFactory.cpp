@@ -2,42 +2,25 @@
 #include <string>
 #include <unordered_map>
 #include "vara/Feature/Feature.h"
-#include "BDD/include/BDDFactory.h"
-#include "BDD/include/BDDFeats.h"
-#include "BDD/include/Relationships.h"
-#include "BDD/include/Probabilities.h"
+#include "BDDFactory.h"
+#include "BDDFeats.h"
+#include "Relationships.h"
+#include "Probabilities.h"
+#include "Constraints.h"
 
-namespace oxidd::capi
+namespace oxidd::capi     
 {
-
-    enum class featType {
-        NUMERIC,
-        BINARY
-    };
-
-    struct nodeInfo {
-        bool marked = false;
-        size_t satCount = 0; // Number of satisfying assignments
-        double probability = 0.0; // Probability of the node
-    }
-
-    struct BDDFeat {
-    featType type;
-    std::variant<oxidd_bdd_t*, std::vector<std::pair<string, oxidd_bdd_t>>*> data;
-    nodeInfo info;
-    bool isRoot = false;
-    };
 
     oxidd_bdd_t BDDFactory::modelToBdd( 
         const vara::feature::FeatureModel &model) 
     {
         oxidd_bdd_manager_t manager = oxidd_bdd_manager_new(0, 0, 0);
         oxidd_bdd_t finalBDD = oxidd_bdd_true(manager);
-        std::unordered_map<std::string, BDDFeat> varMap;
         std::unordered_map<std::string, oxidd_bdd_t> binaryVarMap;
         std::unordered_map<string, std::vector<std::pair<string, oxidd_bdd_t>>> numericVarMap;
         std::vector<string> V;
-
+        BDDConstraintVisitor visitor = 
+            BDDConstraintVisitor(manager, &varMap, &binaryVarMap, &numericVarMap);
 
         for (const auto &rltsps : model.relationships()) {
             for (const auto &Child : rltsps->children()) {
@@ -60,18 +43,22 @@ namespace oxidd::capi
             }
         }
 
+
+
         for (auto *C : model.booleanConstraints()) {
-            oxidd_bdd_t constraintBDD = addConstraint(C->constraint(), manager, varMap);
+            oxidd_bdd_t constraintBDD = visitor.addConstraint(C->constraint());
             finalBDD = oxidd_bdd_and(finalBDD, constraintBDD);
         }
 
         for (auto *C : model.nonBooleanConstraints()) {
-            oxidd_bdd_t constraintBDD = addConstraint(C->constraint(), manager, varMap);
+            oxidd_bdd_t constraintBDD = visitor.addConstraint(C->constraint());
             finalBDD = oxidd_bdd_and(finalBDD, constraintBDD);
         }
 
         for (auto *C : model.mixedConstraints()) {
-            oxidd_bdd_t constraintBDD = addMixedConstraint(C->constraint(), C->exprKind(), C->req(), manager, varMap);
+            BDDConstraintVisitor mixedVisitor = 
+                BDDConstraintVisitor(manager, &varMap, &binaryVarMap, &numericVarMap, true, true);
+            oxidd_bdd_t constraintBDD = mixedVisitor.addConstraint(C->constraint());
             finalBDD = oxidd_bdd_and(finalBDD, constraintBDD);
         }
 
@@ -81,7 +68,8 @@ namespace oxidd::capi
             }
         }
 
-        if (oxidd_bdd_false(manager) == finalBDD) {
+        auto fb = oxidd_bdd_false(manager);
+        if (fb._i == finalBDD._i) {
             oxidd_bdd_unref(finalBDD);
             return oxidd_bdd_t{nullptr,0}; // Return an invalid BDD if the final BDD is false
         }
@@ -90,42 +78,54 @@ namespace oxidd::capi
         oxidd_bdd_t oneTerminal = oxidd_bdd_true(manager);
         oxidd_bdd_t zeroTerminal = oxidd_bdd_false(manager);
         size_t nodeCount = oxidd_bdd_node_count(finalBDD);
-        BDDFeat* root = findFeatureinBDD(&finalBDD, &varMap);
+        BDDFeat* root = findFeatureinBDD(&finalBDD);
 
-        Result<SolverErrorCode>getPr(
-            oxidd_bdd_manager_t &manager,
-            oxidd_bdd_t &finalBDD,
-            BDDFactory::BDDFeat* root,
-            size_t nodeCount,
-            oxidd_bdd_t *oneTerminal,
-            oxidd_bdd_t *zeroTerminal,
-            unordered_map<std::string, BDDFactory::BDDFeat> &varMap
-        )
+        auto R = getPr(
+            &manager,
+            &finalBDD,
+            root,
+            nodeCount,
+            &oneTerminal,
+            &zeroTerminal,
+            *this);
+
+        if (!R) { 
+            oxidd_bdd_unref(finalBDD);
+            return oxidd_bdd_t{nullptr,0}; // Return an invalid BDD if getPr fails
+        };
 
         
         return finalBDD;
     }
 
-    BDDFeat* findFeatureinBDD(
-        const oxidd_bdd_t* node,
-        std::unordered_map<std::string, BDDFeat>* varMap
-    ) {
-        for (const auto& [name, feat] : varMap) {
-            if(feat.type == featType.Binary) {
-                oxidd_bdd_t* node_ptr = std::get<oxidd_bdd_t*>(feat.data);
+    BDDFactory::BDDFeat*
+    BDDFactory::findFeatureinBDD(
+         oxidd_bdd_t* node
+    )  {
+        for (auto& [name, f] : this->varMap) {
+            if(f.type == featType::BINARY) {
+                oxidd_bdd_t* node_ptr = std::get<oxidd_bdd_t*>(f.data);
                 if(node_ptr && node_ptr->_p == node->_p && node_ptr->_i == node->_i) {
-                    return &feat;
+                    return &f;
                 }
-            } else if (feat.type == featType.Numeric) {
-                auto numericFeats = std::get<std::vector<std::pair<string, oxidd_bdd_t>>*>(feat.data);
+            } else if (f.type == featType::NUMERIC) {
+                auto numericFeats = std::get<std::vector<std::pair<string, oxidd_bdd_t>>*>(f.data);
                 if(numericFeats && !numericFeats->empty()) {
-                    const auto& [name, feat] = (*numericFeats)[0];
+                    auto& [name, feat] = (*numericFeats)[0];
                     if(feat._p == node->_p && feat._i == node->_i) {
-                        return &feat;
+                        for(auto& [name2, feat2]: this->varMap){
+                            if(name == name2){
+                                return &feat2;
+                            }
+                        }
                     } else {
-                        for (const auto& [name, feat] : *numericFeats) {
-                            if (feat._p == node->_p && feat._i == node->_i) {
-                                return &feat;
+                        for (auto& [name3, feat3] : *numericFeats) {
+                            if (feat3._p == node->_p && feat3._i == node->_i) {
+                                for(auto& [name4, feat4]: this->varMap){
+                                    if(name3 == name4){
+                                        return &feat4;
+                                    }
+                                }
                             }
                         }
                     }

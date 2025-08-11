@@ -327,3 +327,4 @@ add_subdirectory(external/oxidd)
 include_directories(external/oxidd/include)
 
 add_subdirectory(Random_Sampler)
+add_subdirectory(BDD)

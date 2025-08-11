@@ -33,14 +33,8 @@ int main(int argc, char* argv[]) {
 
     std::string filePath = argv[1];
 
-    auto FMResult = vara::feature::FeatureModelXmlParser::parseFile(filePath);
-
-    if (!FMResult) {
-        std::cerr << "Error parsing feature model.\n";
-        return 1;
-    }
-
-    std::unique_ptr<vara::feature::FeatureModel> featureModel = std::move(*FMResult);
+    vara::feature::FeatureModelXmlParser Parser(filePath);
+    std::unique_ptr<vara::feature::FeatureModel> featureModel= Parser.buildFeatureModel();
 
     // oxidd::bdd_manager mgr(32, 320, 1);
 
@@ -76,12 +70,12 @@ int main(int argc, char* argv[]) {
     std::unordered_map<std::string, oxidd::bdd_function> featureVars;
     std::vector<std::pair<oxidd::bdd_function, std::string>> varList;
 
-    oxidd_bdd_t finalBDD = oxidd_bdd_t BDDFactory::modelToBdd(*featureModel); 
-    std::unordered_map<oxidd_level_no_t , bool> sample = 
-        oxidd::capi::generateConfiguration(
-            fd->getRoot()->getBDD(),
-            &fd->getRoot()->getVarMap()
-        );
+    oxidd::capi::BDDFactory factory;
+    oxidd_bdd_t finalBDD = factory.modelToBdd(*featureModel); 
+    auto sample =  oxidd::capi::generateConfiguration(
+                finalBDD,
+                factory
+            );
 
     return 0;
 

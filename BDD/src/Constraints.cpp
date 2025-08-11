@@ -1,35 +1,21 @@
-#include "BDD/include/BDDFactory.h"
+#include "BDDFactory.h"
 #include "vara/Feature/FeatureModel.h"
 #include <algorithm>
 #include <unordered_map>
-#include "BDD/include/Constraints.h"
+#include "Constraints.h"
+
+
+using GlobalVarMap = std::unordered_map<std::string, oxidd::capi::BDDFactory::BDDFeat>;
+using BinaryVarMap = std::unordered_map<std::string, oxidd::capi::oxidd_bdd_t>;
+using NumericVarMap = std::unordered_map<std::string, std::vector<std::pair<std::string, oxidd::capi::oxidd_bdd_t>>>;
 
 namespace oxidd::capi {
 
-using GlobalVarMap = std::unordered_map<std::string, oxidd_bdd_t>;
-using BinaryVarMap = std::unordered_map<std::string, oxidd_bdd_t>;
-using NumericVarMap = std::unordered_map<std::string, std::vector<std::pair<std::string, oxidd_bdd_t>>>;
-
-class BDDConstraintVisitor : public vara::feature::ConstraintVisitor {
-public:
-  BDDConstraintVisitor(oxidd_bdd_manager_t manager,
-                      GlobalVarMap* varMap,
-                      BinaryVarMap* binaryVarMap,
-                      NumericVarMap* numericVarMap,
-                      bool isMixedConstraint = false,
-                      bool requireAll = false)
-      : Manager(manager), VarMap(varMap), 
-        BinaryVarMap(binaryVarMap), NumericVarMap(numericVarMap),
-        CurrentBDD(oxidd_bdd_false(manager),
-        IsMixedConstraint(isMixedConstraint)
-        RequireAll(requireAll)
-        VariableConstraint(oxidd_bdd_false(manager))) {}
-
-  oxidd_bdd_t addConstraint(vara::feature::Constraint* C, bool negate = false, bool requireAll = false) {
+  oxidd_bdd_t BDDConstraintVisitor::addConstraint(vara::feature::Constraint* C, bool negate, bool requireAll) {
     this->RequireAll = requireAll;
     C->accept(*this);
     if (negate) {
-      CurrentBDD = oxidd_bdd_or(CurrentBDD);
+      CurrentBDD = oxidd_bdd_or(oxidd_bdd_false(Manager), CurrentBDD); //TODO --> DONE?
     }
     if (IsMixedConstraint && RequireAll) {
       CurrentBDD = oxidd_bdd_or(VariableConstraint, CurrentBDD);
@@ -37,7 +23,7 @@ public:
     return CurrentBDD;
   }
 
-  bool visit(vara::feature::BinaryConstraint* C) override {
+  bool BDDConstraintVisitor::visit(vara::feature::BinaryConstraint* C) {
     using CK = vara::feature::Constraint::ConstraintKind;
     
     C->getLeftOperand()->accept(*this);
@@ -107,7 +93,7 @@ public:
     return true;
   }
 
-  bool visit(vara::feature::UnaryConstraint* C) override {
+  bool BDDConstraintVisitor::visit(vara::feature::UnaryConstraint* C) {
     using CK = vara::feature::Constraint::ConstraintKind;
     
     C->getOperand()->accept(*this);
@@ -124,7 +110,7 @@ public:
     }
   }
 
-  bool visit(vara::feature::PrimaryFeatureConstraint* C) override {
+  bool BDDConstraintVisitor::visit(vara::feature::PrimaryFeatureConstraint* C) {
     std::string featureName = C->getFeature()->getName().str();
 
     if (C->getFeature()->getKind()== vara::feature::Feature::FeatureKind::FK_NUMERIC) {
@@ -143,13 +129,13 @@ public:
     
   }
 
-  bool visit(vara::feature::PrimaryIntegerConstraint* C) override {
+  bool BDDConstraintVisitor::visit(vara::feature::PrimaryIntegerConstraint* C) {
     CurrentBDD = oxidd_bdd_false(Manager);
     return true;
   }
 
-private:
-  bool isNumericComparison(vara::feature::BinaryConstraint* C) {
+
+  bool BDDConstraintVisitor::isNumericComparison(vara::feature::BinaryConstraint* C) {
     using namespace vara::feature;
     return (dynamic_cast<NumericConstraint*>(C->getLeftOperand()) ||
             dynamic_cast<PrimaryIntegerConstraint*>(C->getLeftOperand())) &&
@@ -157,7 +143,7 @@ private:
             dynamic_cast<PrimaryIntegerConstraint*>(C->getRightOperand()));
   }
 
-  oxidd_bdd_t handleNumericExpr(vara::feature::BinaryConstraint* C, 
+  oxidd_bdd_t BDDConstraintVisitor::handleNumericExpr(vara::feature::BinaryConstraint* C, 
                               const std::string& op) {
     std::string left = getOperandName(C->getLeftOperand());
     std::string right = getOperandName(C->getRightOperand());
@@ -165,18 +151,32 @@ private:
     
     // Check if we already have this constraint
     auto it = VarMap->find(constraintName);
+    oxidd_bdd_t child;
     if (it != VarMap->end()) {
-      return it->second;
+      auto feat = it->second;  //TODO: prolly wrong --> DONE?
+      if(feat.type == BDDFactory::featType::BINARY) {
+        oxidd_bdd_t* node_ptr = std::get<oxidd_bdd_t*>(feat.data);
+        CurrentBDD =  *node_ptr;
+      } else if(feat.type == BDDFactory::featType::NUMERIC) {
+        auto numericFeats = std::get<std::vector<std::pair<string, oxidd_bdd_t>>*>(feat.data);
+         child = std::find_if(numericFeats->begin(), numericFeats->end(), [&](const std::pair<std::string, oxidd_bdd_t>& pair){
+            return pair.first == constraintName;}
+          )->second;
+        if (child._p != nullptr) {
+          CurrentBDD = child;
+        }
+      }
+      return oxidd_bdd_t{nullptr, 0};
     }
-    
+
+
     // Create new variable for this constraint
     oxidd_bdd_t var = oxidd_bdd_new_var(Manager);
     (*BinaryVarMap)[constraintName] = var;
-    (*VarMap)[constraintName] = var;
     return var;
   }
 
-  oxidd_bdd_t createTempVarForOperation(vara::feature::BinaryConstraint* C) {
+  oxidd_bdd_t BDDConstraintVisitor::createTempVarForOperation(vara::feature::BinaryConstraint* C) {
     using CK = vara::feature::Constraint::ConstraintKind;
     static const std::unordered_map<CK, std::string> opMap = {
       {CK::CK_ADDITION, "add"},
@@ -189,14 +189,13 @@ private:
     return createTempVar(tempName);
   }
 
-  oxidd_bdd_t createTempVar(const std::string& name) {
+  oxidd_bdd_t BDDConstraintVisitor::createTempVar(const std::string& name) {
     oxidd_bdd_t var = oxidd_bdd_new_var(Manager);
     (*BinaryVarMap)[name] = var;
-    (*VarMap)[name] = var;
     return var;
   }
 
-  std::string getOperandName(vara::feature::Constraint* operand) {
+  std::string BDDConstraintVisitor::getOperandName(vara::feature::Constraint* operand) {
     using namespace vara::feature;
     
     if (auto fc = dynamic_cast<PrimaryFeatureConstraint*>(operand)) {
@@ -208,34 +207,35 @@ private:
     return "const_0";
   }
 
-  bool handleFeatureConstraint(const std::string& name) {
+  bool BDDConstraintVisitor::handleFeatureConstraint(const std::string& name) {
     auto it = VarMap->find(name);
-    if (it != VarMap->end()) {
-      CurrentBDD = it->second;
+    oxidd_bdd_t child;
+    if (it != VarMap->end()) { //TODO --> DONE?
+      auto feat = it->second;
+      if(feat.type == BDDFactory::featType::BINARY) {
+        oxidd_bdd_t* node_ptr = std::get<oxidd_bdd_t*>(feat.data);
+        CurrentBDD = *node_ptr;
+      } else if(feat.type == BDDFactory::featType::NUMERIC) {
+        auto numericFeats = std::get<std::vector<std::pair<string, oxidd_bdd_t>>*>(feat.data);
+          child = std::find_if(numericFeats->begin(), numericFeats->end(), [&](const std::pair<std::string, oxidd_bdd_t>& pair){
+            return pair.first == name;}
+          )->second;
+          if (child._p != nullptr) {
+          CurrentBDD = child;
+        }
+      }
       return true;
     }
-    
     CurrentBDD = createTempVar(name);
     return true;
   }
-
-  oxidd_bdd_manager_t Manager;
-  GlobalVarMap* VarMap;
-  BinaryVarMap* BinaryVarMap;
-  NumericVarMap* NumericVarMap;
-  oxidd_bdd_t CurrentBDD;
-  int tempCounter = 0;
-  bool IsMixedConstraint;
-  bool RequireAll;
-  oxidd_bdd_t VariableConstraint;
-};
 
 void processConstraints(
     oxidd_bdd_manager_t manager,
     oxidd_bdd_t& bdd,
     GlobalVarMap& varMap,
-    BinaryVarMap& binaryVarMap,
-    NumericVarMap& numericVarMap,
+    ::BinaryVarMap& binaryVarMap,
+    ::NumericVarMap& numericVarMap,
     const vara::feature::FeatureModel& model) {
   
   BDDConstraintVisitor visitor(manager, &varMap, &binaryVarMap, &numericVarMap);
@@ -255,9 +255,9 @@ void processConstraints(
     if (constraintBDD._p == nullptr) {
       return false;
     }
-    bdd = oxidd_bdd_and(bdd, constraint);
+    bdd = oxidd_bdd_and(bdd, constraintBDD);
     return true;
-  }
+  };
 
   for (const auto& C : model.booleanConstraints()) if (!process(C)) break;
   for (const auto& C : model.nonBooleanConstraints()) if (!process(C)) break;

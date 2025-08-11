@@ -5,11 +5,14 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "BDD/include/BDDFactory.h"
+#include "BDDFactory.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "vara/Utils/Result.h"
 #include "vara/Solver/Error.h"
-#include "BDD/include/Constraints.h"
+#include "Constraints.h"
+#include "BDDFeats.h"
+#include "Relationships.h"
+#include "BDDFactory.h"
 
 using vara::Result;
 using vara::solver::SolverErrorCode;
@@ -25,7 +28,7 @@ namespace oxidd::capi {
     Result<SolverErrorCode>FeatureToBdd(
         const oxidd_bdd_manager_t manager,
         const bool isInXOR,
-        const Feature feature,
+        const Feature& feature,
         unordered_map<string, BDDFactory::BDDFeat> *varMap,
         unordered_map<string, oxidd_bdd_t> *binaryVarMap,
         unordered_map<string, vector<pair<string,oxidd_bdd_t>>> *numericVarMap,
@@ -53,9 +56,10 @@ namespace oxidd::capi {
 
                 const auto vals = F->getValues();
                 if (std::holds_alternative<vara::feature::NumericFeature::ValueListType>(vals)) {
+                    auto& list = std::get<vara::feature::NumericFeature::ValueListType>(vals);
                     if(auto R = addFeatureToBdd(
                             F->getName().str(),
-                            &std::get<vara::feature::NumericFeature::ValueListType>(vals),
+                            &list,
                             varMap,
                             numericVarMap,
                             manager,
@@ -67,14 +71,14 @@ namespace oxidd::capi {
                     auto Range = std::get<vara::feature::NumericFeature::ValueRangeType>(vals);
                     auto *StepFunction = F->getStepFunction();
                     auto Step = Range.first;
-                    std::vector<int64_t> Values;
+                    vara::feature::NumericFeature::ValueListType Values;
                     while (Step <= Range.second) {
                         Values.insert(Values.begin(), Step);
                         Step = StepFunction->next(Step);
                     }
                     if(auto R = addFeatureToBdd(
                             F->getName().str(),
-                            &std::get<vara::feature::NumericFeature::ValueListType>(vals),
+                            &Values,
                             varMap,
                             numericVarMap,
                             manager,
@@ -118,7 +122,7 @@ namespace oxidd::capi {
             case Feature::FeatureKind::FK_UNKNOWN:
                 return SolverErrorCode::NOT_SUPPORTED;
         }
-    }
+    };
 
     Result<SolverErrorCode> addFeatureToBdd(
         const string featureName,
@@ -186,7 +190,7 @@ namespace oxidd::capi {
         *finalBDD = oxidd_bdd_and(*finalBDD, numericConstraint);
 
         return vara::Ok<void>();
-    }
+    };
 
     Result<SolverErrorCode> addFeatureToBdd(
         const string featureName, 
@@ -211,11 +215,11 @@ namespace oxidd::capi {
         };
 
         return vara::Ok<void>();
-    }
+    };
 
     Result<SolverErrorCode> addBinaryConstraints(
-        const string parentName,
-        const string featureName, 
+        const string& parentName,
+        const string& featureName, 
         const bool isInXOR,
         const bool isOptional,
         unordered_map<std::string, BDDFactory::BDDFeat> *varMap,

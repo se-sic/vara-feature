@@ -5,11 +5,11 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "BDD/include/BDDFactory.h"
+#include "BDDFactory.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "vara/Utils/Result.h"
 #include "vara/Solver/Error.h"
-#include "BDD/include/Constraints.h"
+#include "Constraints.h"
 #include "vara/Feature/Relationship.h"
 
 using vara::Result;

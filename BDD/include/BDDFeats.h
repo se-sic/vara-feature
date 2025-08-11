@@ -8,11 +8,11 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "BDD/include/BDDFactory.h"
+#include "BDDFactory.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "vara/Utils/Result.h"
 #include "vara/Solver/Error.h"
-#include "BDD/include/Constraints.h"
+#include "Constraints.h"
 
 using vara::Result;
 using vara::solver::SolverErrorCode;
@@ -32,6 +32,30 @@ namespace oxidd::capi {
         unordered_map<string, oxidd_bdd_t> *binaryVarMap,
         unordered_map<string, vector<pair<string,oxidd_bdd_t>>> *numericVarMap,
         oxidd_bdd_t *finalBDD);
+
+    Result<SolverErrorCode> addFeatureToBdd(
+    const string featureName,
+    const vara::feature::NumericFeature::ValueListType *vals,
+    unordered_map<std::string, BDDFactory::BDDFeat> *varMap,
+    unordered_map<string, vector<pair<string, oxidd_bdd_t>>> *numericVarMap,
+    oxidd_bdd_manager_t manager,
+    oxidd_bdd_t *finalBDD);
+
+    Result<SolverErrorCode> addFeatureToBdd(
+        const string featureName, 
+        unordered_map<std::string, BDDFactory::BDDFeat> *varMap,
+        unordered_map<string, oxidd_bdd_t> *binaryVarMap,
+        oxidd_bdd_manager_t manager);
+
+    Result<SolverErrorCode> addBinaryConstraints(
+    const std::string& parentName,
+    const std::string& featureName,
+    bool isInXOR,
+    bool isOptional,
+    std::unordered_map<std::string, BDDFactory::BDDFeat>* varMap,
+    oxidd_bdd_t* finalBDD);
+
+
 
 } // namespace oxidd::capi
 
