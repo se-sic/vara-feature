@@ -27,8 +27,8 @@ public:
                        bool requireAll = false)
     : Manager(manager),
       VarMap(varMap),
-      BinaryVarMap(binaryVarMap),
-      NumericVarMap(numericVarMap),
+      binaryVarMap(binaryVarMap), 
+      numericVarMap(numericVarMap),
       CurrentBDD(oxidd_bdd_false(manager)),
       IsMixedConstraint(isMixedConstraint),
       RequireAll(requireAll),
@@ -54,8 +54,8 @@ private:
 
   oxidd_bdd_manager_t Manager;
   GlobalVarMap*  VarMap;
-  BinaryVarMap*  BinaryVarMap;
-  NumericVarMap* NumericVarMap;
+  BinaryVarMap*  binaryVarMap;
+  NumericVarMap* numericVarMap;
 
   oxidd_bdd_t CurrentBDD;
   int         tempCounter = 0;

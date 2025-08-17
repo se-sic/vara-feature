@@ -14,18 +14,28 @@ namespace oxidd::capi
     oxidd_bdd_t BDDFactory::modelToBdd( 
         const vara::feature::FeatureModel &model) 
     {
+        std::cout << model.<< std::endl;
         oxidd_bdd_manager_t manager = oxidd_bdd_manager_new(0, 0, 0);
+        std::cout<< manager._p << std::endl;
         oxidd_bdd_t finalBDD = oxidd_bdd_true(manager);
+        std::cout<< "finalBDD"<< std::endl;
         std::unordered_map<std::string, oxidd_bdd_t> binaryVarMap;
+        std::cout<< "binary"<< std::endl;
         std::unordered_map<string, std::vector<std::pair<string, oxidd_bdd_t>>> numericVarMap;
+        std::cout<< "numeric"<< std::endl;
         std::vector<string> V;
         BDDConstraintVisitor visitor = 
             BDDConstraintVisitor(manager, &varMap, &binaryVarMap, &numericVarMap);
+        
+        std::cout<< "visitor"<< std::endl;
+
 
         for (const auto &rltsps : model.relationships()) {
+            std::cout<< "ChildFeature->getName().str()" << std::endl;
             for (const auto &Child : rltsps->children()) {
                 const auto *ChildFeature = (const vara::feature::Feature *)Child;
                 V.insert(V.begin(), ChildFeature->getName().str());
+                std::cout<< ChildFeature->getName().str() << std::endl;
             }
         }
 

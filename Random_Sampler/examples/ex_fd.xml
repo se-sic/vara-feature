@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE vm SYSTEM "vm.dtd">
 <vm name="ABC" root="test/path/to/root/" commit="DABAD00">
   <binaryOptions>
     <configurationOption>

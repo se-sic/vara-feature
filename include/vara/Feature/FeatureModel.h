@@ -333,6 +333,7 @@ public:
 
   [[nodiscard]] llvm::iterator_range<const_relationship_iterator>
   relationships() const {
+    std::cout << Relationships.empty() << std::endl;
     return llvm::make_range(Relationships.begin(), Relationships.end());
   }
 
