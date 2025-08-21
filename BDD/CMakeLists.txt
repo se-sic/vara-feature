@@ -6,8 +6,6 @@ add_library(bdd STATIC
   src/Probabilities.cpp     # add if it exists
 )
 
-target_compile_features(bdd PUBLIC cxx_std_17)
-
 # Public include path so dependents can `#include "BDDFactory.h"`
 target_include_directories(bdd
   PUBLIC
@@ -31,3 +29,5 @@ target_link_libraries(bdd
     VaRAFeature      # if BDD uses these symbols
     VaRASampling     # if needed
 )
+
+target_compile_features(bdd PUBLIC cxx_std_20)

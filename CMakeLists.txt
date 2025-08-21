@@ -12,7 +12,7 @@ endif()
 
 # CMake CXX options
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -325,6 +325,7 @@ add_subdirectory(scripts)
 #OXIDD 
 add_subdirectory(external/oxidd)
 include_directories(external/oxidd/include)
-
+include_directories(${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include)
+include_directories(${CMAKE_BINARY_DIR}/external/oxidd/inlcude)
 add_subdirectory(Random_Sampler)
 add_subdirectory(BDD)

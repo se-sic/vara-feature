@@ -38,10 +38,6 @@ foreach(OXIDD_SEARCH_PATH
   endif()
 endforeach()
 
-if(NOT OXIDD_LIB_PATH)
-  message(FATAL_ERROR "OXIDD library not found. Tried paths...")
-endif()
-
 add_executable(random_sampler
   src/main.cpp
   src/BDDSampler.cpp
@@ -68,6 +64,8 @@ target_link_libraries(random_sampler PRIVATE
   ${TINYXML2_LIB}  
   ${OXIDD_LIB_PATH}
 )
-
+target_compile_features(random_sampler PUBLIC cxx_std_20)
+include_directories(${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include)
+include_directories(${CMAKE_BINARY_DIR}/external/oxidd/include)
 message(STATUS "Using TinyXML2 library: ${TINYXML2_LIB}")
 message(STATUS "Using OXIDD library: ${OXIDD_LIB_PATH}")

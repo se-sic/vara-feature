@@ -41,13 +41,14 @@ namespace oxidd::capi {
 
         // 1. Initialisierung: Zufällige Belegung für Variablen vor der Wurzelebene
         // (Diese Variablen sind redundant und haben keinen Einfluss auf die Gültigkeit)
-        for (uint32_t i = 0; i < oxidd_bdd_level(ROOT); ++i) {
+        oxidd_level_no_t root_level = oxidd_bdd_node_level(ROOT);
+        for (uint32_t i = 0; i < root_level; ++i) {
             sample[i] = (random() < 0.5);
         }
 
         // 2. Traversierung des BDDs bis zum "true"-Terminalknoten
         while (trav._p != nullptr && !is_bdd_true(trav, manager)) {
-            uint32_t ind = oxidd_bdd_level(trav); // Aktuelle Ebene
+            uint32_t ind = oxidd_bdd_node_level(trav); // Aktuelle Ebene
             oxidd_bdd_pair_t cofactors = oxidd_bdd_cofactors(trav); // High- und Low-Kinder
             auto trav_feat = factory.findFeatureinBDD(&trav); // Feature-Info (enthält probability)
 
@@ -63,7 +64,7 @@ namespace oxidd::capi {
 
             // 3. Zufällige Belegung für Variablen zwischen aktueller und nächster Ebene
             // (Reduzierte Knoten – haben keinen Einfluss auf die Gültigkeit)
-            for (uint32_t i = ind + 1; i < oxidd_bdd_level(ROOT); ++i) {
+            for (uint32_t i = ind + 1; i < oxidd_bdd_node_level(ROOT); ++i) {
                 sample[i] = (random() < 0.5);
             }
         }
