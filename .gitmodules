@@ -19,3 +19,6 @@
 [submodule "external/oxidd"]
 	path = external/oxidd
 	url = https://github.com/OxiDD/oxidd.git
+[submodule "oxidd"]
+	path = oxidd
+	url = https://github.com/oxidd/oxidd
