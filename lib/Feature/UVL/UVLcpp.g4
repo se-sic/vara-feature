@@ -132,7 +132,7 @@ NEWLINE
      }*/
 
      std::size_t nextChar = _input->LA(1);
-     std::size_t nextNextChar = _input->LA(2);
+     std::size_t nextNextChar = _input->LA(1);
 
 
      if (opened > 0 || nextChar == '\r' || nextChar == '\n' || (nextChar == '/' && nextNextChar == '/')) {
