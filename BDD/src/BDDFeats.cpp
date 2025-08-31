@@ -1,194 +1,87 @@
 #include "BDDFeats.h"
 
 namespace oxidd::capi {
-
     Result<SolverErrorCode>FeatureToBdd(
-        const oxidd_bdd_manager_t manager,
+        const oxidd_bdd_manager_t* mgr,
         const bool isInXOR,
         const Feature& feature,
-        unordered_map<string, BDDFactory::BDDFeat> *varMap,
-        unordered_map<string, oxidd_bdd_t> *binaryVarMap,
-        unordered_map<string, vector<pair<string,oxidd_bdd_t>>> *numericVarMap,
-        oxidd_bdd_t *finalBDD) {
-
-        Feature *Parent = feature.getParentFeature();
-        bool isOptional = feature.isOptional();
-        string parentName = Parent ? Parent->getName().str() : "";
-        string featureName = feature.getName().str();
-    
-        if(Parent != nullptr && varMap->find(Parent->getName().str()) == varMap->end()) {
-            return SolverErrorCode::PARENT_NOT_PRESENT;
-        }
-
-        if (varMap->find(featureName) != varMap->end()) {
+        std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
+        oxidd_bdd_t* finalBdd
+    ){
+        bool isOpt = feature.isOptional();
+        Feature* parent = feature.getParentFeature();
+        std::string featureName = feature.getName().str();
+        std::string parentName = parent ? parent->getName().str() : "";
+        oxidd_var_no_t id = oxidd_bdd_manager_name_to_var(*mgr, featureName.c_str());
+        oxidd_var_no_t parentId = parent ? oxidd_bdd_manager_name_to_var(*mgr, parentName.c_str()) : invalid_var_no;
+        // If ID is already in the varMap, return back to the next feature
+        if(varMap->find(id) != varMap.end()) {
             return SolverErrorCode::ALREADY_PRESENT;
         }
-
+        // Sanity check: Only consider Binary and root features, else return NOT_SUPPORTED
         switch(feature.getKind()) {
             case Feature::FeatureKind::FK_NUMERIC: {
-                const auto *F = llvm::dyn_cast<vara::feature::NumericFeature>(&feature);
-                if (!F) {
+                std::cerr << "Numeric features are not supported. Please choose a different feature diagram." << std::endl;
                 return SolverErrorCode::NOT_SUPPORTED;
-                }
-
-                const auto vals = F->getValues();
-                if (std::holds_alternative<vara::feature::NumericFeature::ValueListType>(vals)) {
-                    auto& list = std::get<vara::feature::NumericFeature::ValueListType>(vals);
-                    if(auto R = addFeatureToBdd(
-                            F->getName().str(),
-                            &list,
-                            varMap,
-                            numericVarMap,
-                            manager,
-                            finalBDD);
-                        !R) {
-                        return R;
-                    }
-                } else {
-                    auto Range = std::get<vara::feature::NumericFeature::ValueRangeType>(vals);
-                    auto *StepFunction = F->getStepFunction();
-                    auto Step = Range.first;
-                    vara::feature::NumericFeature::ValueListType Values;
-                    while (Step <= Range.second) {
-                        Values.insert(Values.begin(), Step);
-                        Step = StepFunction->next(Step);
-                    }
-                    if(auto R = addFeatureToBdd(
-                            F->getName().str(),
-                            &Values,
-                            varMap,
-                            numericVarMap,
-                            manager,
-                            finalBDD);
-                        !R) {
-                        return R;
-                    }
-                }
-                break;
             }
             case Feature::FeatureKind::FK_BINARY: {
-                if (!llvm::isa<vara::feature::BinaryFeature>(&feature)) {
+                if(!llvm::isa<vara::feature::BinaryFeature>(&feature)) {
+                    std::cerr << "Feature is not a binary feature." << std::endl;
                     return SolverErrorCode::NOT_SUPPORTED;
                 }
+                // Add binary feature to the varMap
                 addFeatureToBdd(
                     featureName,
                     varMap,
-                    binaryVarMap,
-                    manager);
+                    id,
+                    manager
+                );
+                // Add binary constraints according to Z3 ruless
                 if(auto R = addBinaryConstraints(
-                        parentName,
-                        featureName,
-                        isInXOR,
-                        isOptional,
-                        varMap,
-                        finalBDD);
-                    !R) {
+                    parentId,
+                    id,
+                    isInXOR,
+                    isOpt,
+                    varMap,
+                    finalBDD
+                ); !R) {
                     return R;
                 }
                 break;
             }
+            // If root feature, add it to varMap and then add it as AND to the finalBdd
             case Feature::FeatureKind::FK_ROOT: {
-                addFeatureToBdd(featureName, varMap, binaryVarMap, manager);
-                assert(varMap->find(featureName) != varMap->end() &&
-                    "Root feature should be present in the varMap");
-                auto* rootPointer = std::get<oxidd::capi::oxidd_bdd_t*>((varMap)->at(featureName).data);
-                oxidd_bdd_t root = *rootPointer;
-                *finalBDD = oxidd_bdd_and(*finalBDD, root);
+                (*varMap)[id] = BDDFactory::BDDFeat{
+                    .bddNode = oxidd_bdd_var(manager, id),
+                    .isRoot = true,
+                    .name = featureName,
+                    .marked = false,
+                    .satCount = 0,
+                    .probability = {},
+                };
+
+                *finalBdd = oxidd_bdd_and(*finalBdd, varMap->at(id).bddNode);
                 break;
             }
-            case Feature::FeatureKind::FK_UNKNOWN:
+            case default {
+                std::cerr << "Unknown feature kind encountered." << std::endl;
                 return SolverErrorCode::NOT_SUPPORTED;
         }
-    };
-
+    }
+    // Add binary feature to the varMap
     Result<SolverErrorCode> addFeatureToBdd(
         const string featureName,
-        const vara::feature::NumericFeature::ValueListType *vals,
-        unordered_map<std::string, BDDFactory::BDDFeat> *varMap,
-        unordered_map<string, vector<pair<string, oxidd_bdd_t>>> *numericVarMap,
-        oxidd_bdd_manager_t manager,
-        oxidd_bdd_t *finalBDD) {
-
-        if (varMap->find(featureName) != varMap->end()) {
-            return SolverErrorCode::ALREADY_PRESENT;
-        }
-
-        //Add numeric feature to the numericVarMap
-        vector<pair<string,oxidd_bdd_t>> valueVars;
-        oxidd_bdd_t orValues = oxidd_bdd_false(manager);
-
-        valueVars.push_back({featureName, oxidd_bdd_new_var(manager)});
-
-        //Create BDD variables for each value in the numeric feature
-        //Also considers an OR over all values of the feature in form: (val1 v val2 v ... v valN)
-        for(auto &val : *vals) {
-            string valName = featureName + "_" + std::to_string(val);
-            oxidd_bdd_t valVar = oxidd_bdd_new_var(manager);
-            valueVars.push_back({valName, valVar});
-
-            orValues = oxidd_bdd_or(orValues, valVar);
-        };
-        if (numericVarMap->find(featureName) == numericVarMap->end()) {
-            (*numericVarMap)[featureName]=valueVars;
-        }
-
-        //Add numeric feature to the varMap
-        (*varMap)[featureName] = BDDFactory::BDDFeat{
-            .type = BDDFactory::featType::NUMERIC,
-            .data = &(*numericVarMap)[featureName]
-        };
-
-        //Add numeric values as constraints to the finalBDD
-        auto* numericFeats = std::get<std::vector<std::pair<string, oxidd_bdd_t>>*>(varMap->at(featureName).data);
-        //This is an equivalence over all values of the feature in form: feature <=> (val1 v val2 v ... v valN)
-        oxidd_bdd_t minimalConstraint = oxidd_bdd_equiv(
-            std::find_if(numericFeats->begin(), numericFeats->end(), [&](const std::pair<std::string, oxidd_bdd_t>& pair) {
-                return pair.first == featureName;}
-                )->second, orValues);
-
-        //This is an AND over all values of the feature in form: ¬(valI ∧ valJ) for all i != j
-        oxidd_bdd_t maximalConstraint = oxidd_bdd_true(manager);
-
-        for (size_t i=0; i < (*vals).size(); ++i) {
-            for(size_t j=i+1; j < (*vals).size(); ++j) {
-                oxidd_bdd_t notTwo = oxidd_bdd_not(
-                    oxidd_bdd_and(
-                        std::find_if(numericFeats->begin(), numericFeats->end(), [&](const std::pair<std::string, oxidd_bdd_t>& pair) {
-                            return pair.first == featureName + "_" + std::to_string((*vals)[i]);}
-                            )->second,
-                        std::find_if(numericFeats->begin(), numericFeats->end(), [&](const std::pair<std::string, oxidd_bdd_t>& pair) {
-                            return pair.first == featureName + "_" + std::to_string((*vals)[j]);}
-                            )->second));
-                maximalConstraint = oxidd_bdd_and(maximalConstraint, notTwo);
-            }
-        }
-
-        oxidd_bdd_t numericConstraint = oxidd_bdd_and(minimalConstraint, maximalConstraint);
-        *finalBDD = oxidd_bdd_and(*finalBDD, numericConstraint);
-
-        return vara::Ok<void>();
-    };
-
-    Result<SolverErrorCode> addFeatureToBdd(
-        const string featureName, 
-        unordered_map<std::string, BDDFactory::BDDFeat> *varMap,
-        unordered_map<string, oxidd_bdd_t> *binaryVarMap,
-        oxidd_bdd_manager_t manager) {
-
-        if (varMap->find(featureName) != varMap->end()) {
-            return SolverErrorCode::ALREADY_PRESENT;
-        }
-
-        //Add binary feature to the binaryVarMap
-        oxidd_bdd_t binaryVar = oxidd_bdd_new_var(manager);
-        if(binaryVarMap->find(featureName) == binaryVarMap->end()) {
-            (*binaryVarMap)[featureName] = binaryVar;
-        }
-
-        //Add binary feature to the varMap
-        (*varMap)[featureName] = BDDFactory::BDDFeat{
-            .type = BDDFactory::featType::BINARY,
-            .data = &(*binaryVarMap)[featureName]
+        unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
+        oxidd_var_no_t id,
+        oxidd_bdd_manager_t manager
+    ){
+        (*varMap)[id] = BDDFactory::BDDFeat{
+            .bddNode = oxidd_bdd_var(manager, id),
+            .isRoot = false,
+            .name = featureName,
+            .marked = false,
+            .satCount = 0,
+            .probability = {},
         };
 
         return vara::Ok<void>();
