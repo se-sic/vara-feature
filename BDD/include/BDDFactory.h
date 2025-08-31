@@ -1,42 +1,37 @@
 #ifndef OXIDD_BDD_FACTORY
 #define OXIDD_BDD_FACTORY
 
-#include "oxidd/bdd.hpp"
-#include "oxidd/capi.h"
-#include "vara/Feature/FeatureModel.h"
+#include <vector>
+#include <string>
+#include <unordered_map>
 #include "vara/Feature/Feature.h"
-
+#include "Probabilities.h"
 
 namespace oxidd::capi
 {
     class BDDFactory
     {
         public:
-            enum class featType {
-            NUMERIC,
-            BINARY
-            };
-
-            struct nodeInfo {
-                bool marked = false;
-                size_t satCount = 0; // Number of satisfying assignments
-                double probability = 0.0; // Probability of the node
-            };
-
             struct BDDFeat {
-            featType type;
-            std::variant<oxidd_bdd_t*, std::vector<std::pair<string, oxidd_bdd_t>>*> data;
-            nodeInfo info;
-            bool isRoot = false;
+                oxidd_bdd_t bddNode;                   // BDD node representing the feature
+                bool isRoot = false;                   // Is it the root feature?
+                std::string name = "";                 // Feature name
+                bool marked = false;                   // Marking for probability calculation
+                size_t satCount = 0;                   // Number of satisfying assignments
+                std::optional<double> probability = {} // Probability of the node
             };
-
-            std::unordered_map<std::string, BDDFeat> varMap;
 
             BDDFeat* findFeatureinBDD(
                 oxidd_bdd_t* node
             );
 
-            oxidd_bdd_t modelToBdd(const vara::feature::FeatureModel &model);
+            oxidd_bdd_t BDDFactory::modelToBdd(const vara::feature::FeatureModel &model);
+            void BDDFactory::fillManager(const vara::feature::FeatureModel &model);
+
+            std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat> varMap;
+            oxidd_bdd_manager_t manager = oxidd_bdd_manager_new(0, 0, 0);
+            oxidd_bdd_t finalBdd = oxidd_bdd_true(manager); 
+
     };
     
 } // namespace oxidd::capi

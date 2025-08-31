@@ -1,14 +1,14 @@
-#include "BDDFactory.h"
-#include "vara/Feature/FeatureModel.h"
-#include <algorithm>
-#include <unordered_map>
-#include "Constraints.h"
+// #include "BDDFactory.h"
+// #include "vara/Feature/FeatureModel.h"
+// #include <algorithm>
+// #include <unordered_map>
+// #include "Constraints.h"
 
 // Alias-Definitionen für bessere Lesbarkeit
 using GlobalVarMap = std::unordered_map<std::string, oxidd::capi::BDDFactory::BDDFeat>;
 using BinaryVarMap = std::unordered_map<std::string, oxidd::capi::oxidd_bdd_t>;
 
-namespace oxidd::capi {
+// namespace oxidd::capi {
 
 /**
  * Fügt einen Constraint zur BDD hinzu und berücksichtigt dabei, ob der Constraint negiert werden soll.
@@ -35,8 +35,8 @@ bool BDDConstraintVisitor::visit(vara::feature::BinaryConstraint* C) {
     C->getLeftOperand()->accept(*this);
     oxidd_bdd_t left = CurrentBDD;
     
-    C->getRightOperand()->accept(*this);
-    oxidd_bdd_t right = CurrentBDD;
+//     C->getRightOperand()->accept(*this);
+//     oxidd_bdd_t right = CurrentBDD;
 
     // Wende die entsprechende BDD-Operation basierend auf dem Constraint-Typ an
     switch(C->getKind()) {
@@ -200,4 +200,4 @@ void processConstraints(
     }
 }
 
-} // namespace oxidd::capi
+// } // namespace oxidd::capi

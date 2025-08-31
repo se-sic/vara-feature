@@ -49,23 +49,33 @@ add_executable(random_sampler
   ../BDD/src/BDDFactory.cpp
 )
 
+# Includes
 target_include_directories(random_sampler PRIVATE 
   ${CMAKE_SOURCE_DIR}/Random_Sampler/include
-  ${CMAKE_SOURCE_DIR}/external/oxidd/include
-  ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
   ${CMAKE_SOURCE_DIR}/include/vara/Solver
-  ${TinyXML2_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../BDD/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+
+  # OxiDD bindings + generated C API
+  ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
+  ${CMAKE_BINARY_DIR}/external/oxidd/include
 )
+
+# Libraries
+find_package(tinyxml2 REQUIRED)
 
 target_link_libraries(random_sampler PRIVATE
   bdd
-  ${LLVM_LIBS}
   VaRAFeature
-  ${TINYXML2_LIB}  
-  ${OXIDD_LIB_PATH}
+  VaRASampling
+  VaRAConfiguration
+  oxidd_ffi_c               # from add_subdirectory(external/oxidd)
+  tinyxml2::tinyxml2
+  ${LLVM_LIBS}
 )
+
+# Ensure capi.h is generated before compile
+add_dependencies(random_sampler oxidd-capi-header)
+
+# Enforce C++20
 target_compile_features(random_sampler PUBLIC cxx_std_20)
-include_directories(${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include)
-include_directories(${CMAKE_BINARY_DIR}/external/oxidd/include)
-message(STATUS "Using TinyXML2 library: ${TINYXML2_LIB}")
-message(STATUS "Using OXIDD library: ${OXIDD_LIB_PATH}")

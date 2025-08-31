@@ -4,7 +4,7 @@
 #include <cstdlib> //for RAND_MAX
 #include <unordered_map>
 
-namespace oxidd::capi {
+// namespace oxidd::capi {
 
 // Globale Variablen zur Speicherung der aktuellen Stichprobe und
 // Knotenwahrscheinlichkeiten
