@@ -294,6 +294,26 @@ add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
 
+# Satisfy coverage symbols from libs (e.g., libcsv.a) on macOS
+if(APPLE)
+  execute_process(
+    COMMAND ${CMAKE_CXX_COMPILER} -print-resource-dir
+    OUTPUT_VARIABLE CLANG_RES_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  find_library(CLANG_RT_PROFILE
+    NAMES clang_rt.profile_osx
+    PATHS "${CLANG_RES_DIR}/lib/darwin"
+    REQUIRED
+  )
+  if(TARGET config-generator)
+    # Pull in gcov-compatible runtime
+    target_link_libraries(config-generator PRIVATE "${CLANG_RT_PROFILE}")
+    # also helps Clang auto-wire the symbols
+    target_link_options(config-generator PRIVATE --coverage)
+  endif()
+endif()
+
 if(${VARA_FEATURE_BUILD_PYTHON_BINDINGS})
   find_package(
     Python

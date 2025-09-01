@@ -11,7 +11,6 @@
 
 using vara::Result;
 using vara::solver::SolverErrorCode;
-using oxidd::capi::BDDFactory;
 
 namespace oxidd::capi {
 

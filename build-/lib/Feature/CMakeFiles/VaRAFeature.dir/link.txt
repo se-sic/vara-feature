@@ -1,0 +1,2 @@
+/usr/bin/ar qc libVaRAFeature.a CMakeFiles/VaRAFeature.dir/Constraint.cpp.o CMakeFiles/VaRAFeature.dir/Feature.cpp.o CMakeFiles/VaRAFeature.dir/FeatureModel.cpp.o CMakeFiles/VaRAFeature.dir/FeatureModelBuilder.cpp.o CMakeFiles/VaRAFeature.dir/FeatureModelParser.cpp.o CMakeFiles/VaRAFeature.dir/FeatureModelTransaction.cpp.o CMakeFiles/VaRAFeature.dir/FeatureModelWriter.cpp.o CMakeFiles/VaRAFeature.dir/OrderedFeatureVector.cpp.o
+/usr/bin/ranlib libVaRAFeature.a

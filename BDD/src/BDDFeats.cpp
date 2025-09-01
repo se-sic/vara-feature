@@ -10,12 +10,12 @@ namespace oxidd::capi {
     ){
         bool isOpt = feature.isOptional();
         Feature* parent = feature.getParentFeature();
-        std::string featureName = feature.getName().str();
-        std::string parentName = parent ? parent->getName().str() : "";
+        const std::string featureName = feature.getName().str();
+        const std::string parentName = parent ? parent->getName().str() : "";
         oxidd_var_no_t id = oxidd_bdd_manager_name_to_var(*mgr, featureName.c_str());
-        oxidd_var_no_t parentId = parent ? oxidd_bdd_manager_name_to_var(*mgr, parentName.c_str()) : invalid_var_no;
+        oxidd_var_no_t parentId = parent ? oxidd_bdd_manager_name_to_var(*mgr, parentName.c_str()) : 0;
         // If ID is already in the varMap, return back to the next feature
-        if(varMap->find(id) != varMap.end()) {
+        if(varMap->find(id) != varMap->end()) {
             return SolverErrorCode::ALREADY_PRESENT;
         }
         // Sanity check: Only consider Binary and root features, else return NOT_SUPPORTED
@@ -34,7 +34,7 @@ namespace oxidd::capi {
                     featureName,
                     varMap,
                     id,
-                    manager
+                    *mgr
                 );
                 // Add binary constraints according to Z3 ruless
                 if(auto R = addBinaryConstraints(
@@ -43,7 +43,7 @@ namespace oxidd::capi {
                     isInXOR,
                     isOpt,
                     varMap,
-                    finalBDD
+                    finalBdd
                 ); !R) {
                     return R;
                 }
@@ -52,7 +52,7 @@ namespace oxidd::capi {
             // If root feature, add it to varMap and then add it as AND to the finalBdd
             case Feature::FeatureKind::FK_ROOT: {
                 (*varMap)[id] = BDDFactory::BDDFeat{
-                    .bddNode = oxidd_bdd_var(manager, id),
+                    .bddNode = oxidd_bdd_var(*mgr, id),
                     .isRoot = true,
                     .name = featureName,
                     .marked = false,
@@ -63,15 +63,16 @@ namespace oxidd::capi {
                 *finalBdd = oxidd_bdd_and(*finalBdd, varMap->at(id).bddNode);
                 break;
             }
-            case default {
+            default: {
                 std::cerr << "Unknown feature kind encountered." << std::endl;
                 return SolverErrorCode::NOT_SUPPORTED;
+            }
         }
     }
     // Add binary feature to the varMap
     Result<SolverErrorCode> addFeatureToBdd(
         const string featureName,
-        unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
+        std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
         oxidd_var_no_t id,
         oxidd_bdd_manager_t manager
     ){
@@ -94,10 +95,10 @@ namespace oxidd::capi {
         oxidd_var_no_t id,
         const bool isInXOR,
         const bool isOpt,
-        unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
+        std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
         oxidd_bdd_t* finalBdd
     ){
-        if(parentId == invalid_var_no) {
+        if(parentId == NULL) {
             return SolverErrorCode::PARENT_NOT_PRESENT;
         }
 

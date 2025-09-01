@@ -5,7 +5,7 @@
 #include "BDDFactory.h"
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/Constraint.h"
-#include "vara/feature/Feature.h"
+#include "vara/Feature/Feature.h"
 #include <algorithm>
 #include <unordered_map>
 #include <string>
@@ -40,12 +40,12 @@ namespace oxidd::capi {
     bool visit(vara::feature::PrimaryFeatureConstraint* C) override;
 
   private:
-    bool isNumericComparison(vara::feature::BinaryConstraint* C);
-    oxidd_bdd_t handleNumericExpr(vara::feature::BinaryConstraint* C, const std::string& op);
-    oxidd_bdd_t createTempVarForOperation(vara::feature::BinaryConstraint* C);
-    oxidd_bdd_t createTempVar(const std::string& name);
-    std::string getOperandName(vara::feature::Constraint* operand);
-    bool handleFeatureConstraint(const std::string& name);
+    // bool isNumericComparison(vara::feature::BinaryConstraint* C);
+    // oxidd_bdd_t handleNumericExpr(vara::feature::BinaryConstraint* C, const std::string& op);
+    // oxidd_bdd_t createTempVarForOperation(vara::feature::BinaryConstraint* C);
+    // oxidd_bdd_t createTempVar(const std::string& name);
+    // std::string getOperandName(vara::feature::Constraint* operand);
+    bool handleFeatureConstraint(const oxidd_var_no_t id);
 
     oxidd_bdd_manager_t Manager;
     GlobalVarMap*  VarMap;
@@ -55,13 +55,13 @@ namespace oxidd::capi {
     bool        IsMixedConstraint = false;
     bool        RequireAll        = false;
     oxidd_bdd_t VariableConstraint;
+ }; 
 
   // One-pass application of all constraints in the model
   void processConstraints(oxidd_bdd_manager_t manager,
                           oxidd_bdd_t& bdd,
                           GlobalVarMap& varMap,
                           const vara::feature::FeatureModel& model);
-
-} // namespace oxidd::capi
+}// namespace oxidd::capi
 
 #endif // OXIDD_CONSTRAINTS

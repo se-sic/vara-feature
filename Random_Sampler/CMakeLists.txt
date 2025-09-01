@@ -43,9 +43,8 @@ add_executable(random_sampler
   src/BDDSampler.cpp
   src/GraphViz.cpp
   src/FeatureDiagram.cpp
-  src/Z3Helper.cpp
   src/Sampler.cpp
-  src/ConfigCounter.cpp
+  src/Plotter.cpp
   ../BDD/src/BDDFactory.cpp
 )
 
@@ -82,10 +81,9 @@ target_link_directories(random_sampler PRIVATE
 )
 
 target_sources(random_sampler PRIVATE
-  ${CMAKE_SOURCE_DIR}/Random_Sampler/src/ConfigCounter.cpp
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/FeatureDiagram.cpp
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/GraphViz.cpp
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/BDDSampler.cpp
-  ${CMAKE_SOURCE_DIR}/Random_Sampler/src/Z3Helper.cpp
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/Sampler.cpp
+  ${CMAKE_SOURCE_DIR}/Random_Sampler/src/Plotter.cpp
 )

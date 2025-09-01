@@ -21,27 +21,27 @@ namespace oxidd::capi {
         oxidd::capi::BDDFactory& factory
     ) {
         // Get the number of satisfying assignments for the BDD node and the total number of features
-        double sat_count = oxidd_bdd_sat_count_double(node, oxidd_bdd_manager_num_vars(manager));
-        double total_count = std::pow(2, oxidd_bdd_manager_num_vars(manager));
+        double sat_count = oxidd_bdd_sat_count_double(*node, oxidd_bdd_manager_num_vars(*manager));
+        double total_count = std::pow(2, oxidd_bdd_manager_num_vars(*manager));
         // Using Bryant's algorithm to calculate the probabilities
-        feat->info.marked = true;
+        feat->marked = true;
         // Base cases: Terminals
         if(sat_count == 0.0){
-            feat->info.satCount = 0;
+            feat->satCount = 0;
             return vara::Ok<void>();
         } else if(sat_count == total_count) {
-            feat->info.satCount = 1;
+            feat->satCount = 1;
             return vara::Ok<void>();
         } else {
             // Recursive case until base case reached
-            oxidd_level_no_t index_node = oxidd_bdd_manager_name_to_var(manager, feat->name.c_str());
+            oxidd_level_no_t index_node = oxidd_bdd_manager_name_to_var(*manager, feat->name.c_str());
             oxidd_bdd_pair_t cofactors = oxidd_bdd_cofactors(*node);
             oxidd::capi::BDDFactory::BDDFeat* trueFeat = factory.findFeatureinBDD(&cofactors.first);
-            oxidd_level_no_t index_high = oxidd_bdd_manager_name_to_var(manager, trueFeat->name.c_str());
+            oxidd_level_no_t index_high = oxidd_bdd_manager_name_to_var(*manager, trueFeat->name.c_str());
             oxidd::capi::BDDFactory::BDDFeat* falseFeat = factory.findFeatureinBDD(&cofactors.second);
-            oxidd_level_no_t index_low = foxidd_bdd_manager_name_to_var(manager, falseFeat->name.c_str());
+            oxidd_level_no_t index_low = oxidd_bdd_manager_name_to_var(*manager, falseFeat->name.c_str());
 
-            if(trueFeat->info.marked != feat->info.marked) {
+            if(trueFeat->marked != feat->marked) {
                 getPr(
                     manager,
                     &cofactors.first, 
@@ -49,7 +49,7 @@ namespace oxidd::capi {
                     trueFeat, 
                     factory
                 );
-            } else if(falseFeat->info.marked != feat->info.marked) {
+            } else if(falseFeat->marked != feat->marked) {
                 getPr(
                     manager, 
                     &cofactors.second, 
@@ -59,10 +59,10 @@ namespace oxidd::capi {
                 );
             }
 
-            double solLow =  falseFeat->info.satCount * std::pow(2, index_low - (index_node-1)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.second, oxidd_bdd_manager_num_vars(manager));
-            double solHigh = trueFeat->info.satCount * std::pow(2, index_high - (index_node-1)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.first, oxidd_bdd_manager_num_vars(manager));
-            feat->info.satCount = solLow + solHigh; //ALTERNATIVE: sat_count
-            feat->info.probability = solHigh / feat->info.satCount;
+            double solLow =  falseFeat->satCount * std::pow(2, index_low - (index_node-1)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.second, oxidd_bdd_manager_num_vars(manager));
+            double solHigh = trueFeat->satCount * std::pow(2, index_high - (index_node-1)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.first, oxidd_bdd_manager_num_vars(manager));
+            feat->satCount = solLow + solHigh; //ALTERNATIVE: sat_count
+            feat->probability = solHigh / feat->satCount;
             return vara::Ok<void>();
         } 
 

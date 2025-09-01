@@ -9,13 +9,13 @@ extern "C" {
 #include <oxidd/capi.h>
 }
 
-using Var = oxidd_var_no_t;
+using Var = oxidd::capi::oxidd_var_no_t;
 using Sample = std::unordered_map<Var, bool>;
 
 namespace oxidd::capi {
 
     // Update counts from one sample
-    static inline void update_counts(const Sample& s,
+    void update_counts(const Sample& s,
                                     std::unordered_map<Var, Freq>& acc) {
         for (const auto& [v, val] : s) {
             auto& f = acc[v];
@@ -25,14 +25,14 @@ namespace oxidd::capi {
     }
 
     // Convert counts to rows and (optionally) sort by label
-    static inline std::vector<Row>
+    std::vector<Row>
     to_rows(const std::unordered_map<Var, Freq>& acc,
             const std::unordered_map<Var, oxidd::capi::BDDFactory::BDDFeat>* names) {
         std::vector<Row> rows;
         rows.reserve(acc.size());
         for (const auto& [v, f] : acc) {
             double p = f.total ? double(f.true_count) / double(f.total) : 0.0;
-            std::string label = names ? names->at(v).name : std::to_string("NAN");
+            std::string label = names ? names->at(v).name : "NAN";
             rows.push_back({label, v, f.true_count, f.total, p});
         }
         std::sort(rows.begin(), rows.end(),
@@ -41,8 +41,8 @@ namespace oxidd::capi {
     }
 
     // Write CSV for plotting (optional)
-    static inline void write_csv(const std::vector<Row>& rows,
-                                const std::string& path = "freq.csv") {
+    void write_csv(const std::vector<Row>& rows,
+                                const std::string& path) {
         std::ofstream out(path);
         out << "label,var,true,total,p_true\n";
         for (const auto& r : rows)

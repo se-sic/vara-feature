@@ -27,8 +27,8 @@ namespace oxidd::capi {
         C->getLeftOperand()->accept(*this);
         oxidd_bdd_t left = CurrentBDD;
         
-    //     C->getRightOperand()->accept(*this);
-    //     oxidd_bdd_t right = CurrentBDD;
+        C->getRightOperand()->accept(*this);
+        oxidd_bdd_t right = CurrentBDD;
 
         // Wende die entsprechende BDD-Operation basierend auf dem Constraint-Typ an
         switch(C->getKind()) {
@@ -112,6 +112,7 @@ namespace oxidd::capi {
      */
     bool BDDConstraintVisitor::visit(vara::feature::PrimaryFeatureConstraint* C) {
         std::string featureName = C->getFeature()->getName().str();
+        oxidd_var_no_t id = oxidd_bdd_manager_name_to_var(Manager, featureName.c_str());
 
         if (C->getFeature()->getKind() == vara::feature::Feature::FeatureKind::FK_NUMERIC) {
             std::cerr << "Error: Numeric features are not supported. Feature '" << featureName 
@@ -120,7 +121,7 @@ namespace oxidd::capi {
             return false;
         }
 
-        return handleFeatureConstraint(featureName);
+        return handleFeatureConstraint(id);
     }
 
     /**
@@ -136,19 +137,12 @@ namespace oxidd::capi {
     /**
      * Verarbeitet einen Feature-Constraint.
      */
-    bool BDDConstraintVisitor::handleFeatureConstraint(const std::string& name) {
-        auto it = VarMap->find(name);
+    bool BDDConstraintVisitor::handleFeatureConstraint(const oxidd_var_no_t id) {
+        auto it = VarMap->find(id);
         if (it != VarMap->end()) {
             auto feat = it->second;
-            if(feat.type == BDDFactory::featType::BINARY) {
-                oxidd_bdd_t* node_ptr = std::get<oxidd_bdd_t*>(feat.data);
-                CurrentBDD = *node_ptr;
-                return true;
-            } else {
-                std::cerr << "Error: Numeric feature '" << name << "' found in variable map. Only binary features are supported.\n";
-                CurrentBDD = oxidd_bdd_false(Manager);
-                return false;
-            }
+            CurrentBDD = oxidd_bdd_and(oxidd_bdd_var(Manager, id), feat.bddNode);
+            return true;
         }
         
         // Falls das Feature nicht gefunden wurde, wird eine temporäre Variable erstellt

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="AB" root="test">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <children>
+        <options>A</options>
+        <options>B</options>
+      </children>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>A</name>
+      <parent>root</parent>
+      <optional>False</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions>
+    <configurationOption>
+      <name>B</name>
+      <parent>root</parent>
+      <optional>False</optional>
+      <minValue>0</minValue>
+      <maxValue>100</maxValue>
+    </configurationOption>
+  </numericOptions>
+  <booleanConstraints>
+    <constraint>(A | B)</constraint>
+  </booleanConstraints>
+  <nonBooleanConstraints>
+    <constraint>(A + B)</constraint>
+  </nonBooleanConstraints>
+  <mixedConstraints>
+    <constraint req="all" exprKind="pos">((A * B) = 0)</constraint>
+  </mixedConstraints>
+</vm>

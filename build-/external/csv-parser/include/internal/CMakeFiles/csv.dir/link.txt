@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcsv.a CMakeFiles/csv.dir/basic_csv_parser.cpp.o CMakeFiles/csv.dir/col_names.cpp.o CMakeFiles/csv.dir/csv_format.cpp.o CMakeFiles/csv.dir/csv_reader.cpp.o CMakeFiles/csv.dir/csv_reader_iterator.cpp.o CMakeFiles/csv.dir/csv_row.cpp.o CMakeFiles/csv.dir/csv_row_json.cpp.o CMakeFiles/csv.dir/csv_stat.cpp.o CMakeFiles/csv.dir/csv_utility.cpp.o
+/usr/bin/ranlib libcsv.a

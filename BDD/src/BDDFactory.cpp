@@ -1,18 +1,26 @@
 #include "BDDFactory.h"
+#include <vector>
+#include <string>
+#include "Probabilities.h"
+#include "Constraints.h"
+#include "BDDFeats.h"
+#include "oxidd/capi.h"
 namespace oxidd::capi     
 { 
     oxidd_bdd_t BDDFactory::modelToBdd(
         const vara::feature::FeatureModel &model
     ) {
-       if(model.size() == 0) {
+       if(model.size()== 0) {
         std::cerr << "Feature model is empty." << std::endl;
        }
+
+       std::vector<std::string> V; // Vector to store names of features in XOR relationships
        // Add all features to manager including their names
        fillManager(model);
        // If relationshios of FM are filles, add them to the XOR vecor V for teh function "FeatureToBdd"
        if(!model.relationships().empty()) {
-        for(const auto &R: model.relationships()){
-            for(const auto &Child: R->children()) {
+        for(const auto &S: model.relationships()){
+            for(const auto &Child: S->children()) {
                 const auto *ChildFeature = (const vara::feature::Feature *)Child;
                 V.insert(V.begin(), ChildFeature->getName().str());
                 std::cout<< ChildFeature->getName().str() << std::endl;
@@ -20,11 +28,11 @@ namespace oxidd::capi
         }
        } else {
         std::cerr << "Feature model has no XOR relationships." << std::endl;
-        continue;
        }
+
        // For each feature, add it to the global varMap alongside constraints to the finalBdd
        for(auto *F: model.features()) { 
-        if(auto R = FeatureToBdd(
+        if(auto R = oxidd::capi::FeatureToBdd(
             &manager,
             std::find(V.begin(), V.end(), F->getName().str()) != V.end(),
             *F,
@@ -37,10 +45,10 @@ namespace oxidd::capi
 
 
        //TODO: Input Michaels Visitor ConstraintCode
-       oxidd::capi::processConstraints(
-            manager,
-            finalBdd,
-            varMap,
+        oxidd::capi::processConstraints(
+            BDDFactory::manager,
+            BDDFactory::finalBdd,
+            BDDFactory::varMap,
             model
         );
 
@@ -69,7 +77,7 @@ namespace oxidd::capi
         const vara::feature::FeatureModel &model
     ) {
         std::vector<const vara::feature::Feature*> features;
-        std::vector<str::string> names;
+        std::vector<std::string> names;
         std::vector<const char*> names_cstr;
 
         for(auto* F: model.features()) {
@@ -82,7 +90,7 @@ namespace oxidd::capi
             manager,
             names_cstr.data(),
             static_cast<oxidd_var_no_t>(features.size())
-        )
+        );
 
         // std::unordered_map<std::string, oxidd_var_no_t> featMap;
         // featMap.reserve(features.size());

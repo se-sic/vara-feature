@@ -28,7 +28,7 @@ namespace oxidd::capi {
 
     Result<SolverErrorCode> addFeatureToBdd(
         const string featureName,
-        unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
+        std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
         oxidd_var_no_t id,
         oxidd_bdd_manager_t manager
     );
@@ -38,7 +38,7 @@ namespace oxidd::capi {
         oxidd_var_no_t id,
         const bool isInXOR,
         const bool isOpt,
-        unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
+        std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
         oxidd_bdd_t* finalBdd
     );
 

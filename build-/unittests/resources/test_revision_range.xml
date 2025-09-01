@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="Children" root="test">
+  <binaryOptions>
+    <configurationOption>
+      <name>A</name>
+      <parent>root</parent>
+      <optional>True</optional>
+      <locations>
+        <sourceRange category="necessary">
+          <revisionRange>
+            <introduced>94fe792df46e64f438720295742b3b72c407cab6</introduced>
+            <removed>1ed40f72e772adaa3adfcc94b9f038e4f3382339</removed>
+          </revisionRange>
+          <path>main.c</path>
+          <start>
+            <line>6</line>
+            <column>3</column>
+          </start>
+          <end>
+            <line>6</line>
+            <column>26</column>
+          </end>
+        </sourceRange>
+        <sourceRange category="necessary">
+          <revisionRange>
+            <introduced>a7fb445f986adb2c2972df337ea46930cfc3dbf2</introduced>
+          </revisionRange>
+          <path>main.c</path>
+          <start>
+            <line>6</line>
+            <column>3</column>
+          </start>
+          <end>
+            <line>6</line>
+            <column>26</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions/>
+  <booleanConstraints/>
+</vm>

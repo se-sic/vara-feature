@@ -28,7 +28,7 @@ using std::vector;
 using std::pair;
 
 
- int main(int argc, char* argv[]) { }
+ int main(int argc, char* argv[]) { 
 
     if (argc < 2) {
         std::cerr << "Usage: ./my_program <feature_model.xml>\n";
@@ -52,7 +52,7 @@ using std::pair;
 
         auto verify = parser.verifyFeatureModel();
         if(!verify) {
-            throw std::runtime_error("Error parsing XML: " + verify);
+            throw std::runtime_error("Error parsing XML: verification failed");
         }   
 
         auto fm = parser.buildFeatureModel();
@@ -68,29 +68,29 @@ using std::pair;
     std::cout << "Feature Model loaded successfully from: " << filePath << std::endl;
 
     oxidd::capi::BDDFactory factory;
-    oxidd_bdd_t finalBDD = factory.modelToBdd(*fd);
-    oxidd_bdd_manager_t manager = oxidd_bdd_containing_manager(finalBDD);
+    oxidd::capi::oxidd_bdd_t finalBDD = factory.modelToBdd(*fd);
+    oxidd::capi::oxidd_bdd_manager_t manager = oxidd_bdd_containing_manager(finalBDD);
     std::cout << "BDD constructed successfully." << std::endl;
 
-    std::unordered_map<oxidd_var_no_t, bool> sample = generateConfiguration(
+    std::unordered_map<oxidd::capi::oxidd_var_no_t, bool> sample = generateConfiguration(
         manager, 
         finalBDD, 
         factory
     );
 
-    std::unordered_map<oxidd_var_no_t, oxidd::capi::Freq> counts;
-    auto N = 10;
+    std::unordered_map<oxidd::capi::oxidd_var_no_t, oxidd::capi::Freq> counts;
+    size_t N = 10;
 
-    for(size_t i=0; i<N; ++1) {
+    for(size_t i=0; i<N; ++i) {
         auto s = generateConfiguration(
             manager, 
             finalBDD, 
             factory
         );
-        oxidd::capi::update_counts(counts, s);
+        oxidd::capi::update_counts(s, counts);
     }
 
-    auto rows = oxidd::capi::to_rows(counts, factory.varMap);
+    auto rows = oxidd::capi::to_rows(counts, &factory.varMap);
     
     for(const auto& r : rows) {
         std::cout << r.label << " (id=" << r.v << "): "
@@ -98,6 +98,9 @@ using std::pair;
     }
 
     oxidd::capi::write_csv(rows, "freq.csv");
+
+    return 0;
+ }
 
 
 
@@ -208,5 +211,3 @@ using std::pair;
     //     var_names,
     //     3
     // );
-
-}

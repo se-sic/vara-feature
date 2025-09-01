@@ -1,0 +1,2 @@
+/usr/bin/ar qc libVaRASampling.a CMakeFiles/VaRASampling.dir/SamplingMethods.cpp.o CMakeFiles/VaRASampling.dir/SampleSetParser.cpp.o CMakeFiles/VaRASampling.dir/SampleSetWriter.cpp.o
+/usr/bin/ranlib libVaRASampling.a
