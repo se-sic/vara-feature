@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include "vara/Feature/Feature.h"
 #include "Probabilities.h"
+#include "Constraint.h"
 
 namespace oxidd::capi
 {

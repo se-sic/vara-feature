@@ -37,24 +37,12 @@ namespace oxidd::capi
 
 
        //TODO: Input Michaels Visitor ConstraintCode
-//         for (auto *C : model.booleanConstraints()) {
-//             oxidd_bdd_t constraintBDD = visitor.addConstraint(C->constraint());
-//             finalBDD = oxidd_bdd_and(finalBDD, constraintBDD);
-//         }
-
-//         for (auto *C : model.nonBooleanConstraints()) {
-//             oxidd_bdd_t constraintBDD = visitor.addConstraint(C->constraint());
-//             finalBDD = oxidd_bdd_and(finalBDD, constraintBDD);
-//         }
-
-//         for (auto *C : model.mixedConstraints()) {
-//             BDDConstraintVisitor mixedVisitor = 
-//                 BDDConstraintVisitor(manager, &varMap, &binaryVarMap, &numericVarMap, true, true);
-//             oxidd_bdd_t constraintBDD = mixedVisitor.addConstraint(C->constraint());
-//             finalBDD = oxidd_bdd_and(finalBDD, constraintBDD);
-//         }
-        
-
+       oxidd::capi::processConstraints(
+            manager,
+            finalBdd,
+            varMap,
+            model
+        );
 
         // Get the root feature from the varMap to start the probability calculation
         BDDFeat* root = findFeatureinBDD(&finalBdd);

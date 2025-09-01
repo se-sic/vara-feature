@@ -14,21 +14,18 @@
 
 namespace oxidd::capi {
 
-  using GlobalVarMap = std::unordered_map<std::string, BDDFactory::BDDFeat>;
-  using BinaryVarMap = std::unordered_map<std::string, oxidd_bdd_t>;
+  using GlobalVarMap = std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>;
 
   class BDDConstraintVisitor : public vara::feature::ConstraintVisitor {
   public:
     BDDConstraintVisitor(oxidd_bdd_manager_t manager,
                         GlobalVarMap* varMap,
-                        NumericVarMap* numericVarMap,
+                        oxidd_bdd_t finalBDD,
                         bool isMixedConstraint = false,
                         bool requireAll = false)
       : Manager(manager),
         VarMap(varMap),
-        binaryVarMap(binaryVarMap), 
-        numericVarMap(numericVarMap),
-        CurrentBDD(oxidd_bdd_false(manager)),
+        CurrentBDD(finalBDD),
         IsMixedConstraint(isMixedConstraint),
         RequireAll(requireAll),
         VariableConstraint(oxidd_bdd_false(manager)) {}
@@ -41,7 +38,6 @@ namespace oxidd::capi {
     bool visit(vara::feature::BinaryConstraint* C) override;
     bool visit(vara::feature::UnaryConstraint* C) override;
     bool visit(vara::feature::PrimaryFeatureConstraint* C) override;
-    bool visit(vara::feature::PrimaryIntegerConstraint* C) override;
 
   private:
     bool isNumericComparison(vara::feature::BinaryConstraint* C);
@@ -53,22 +49,17 @@ namespace oxidd::capi {
 
     oxidd_bdd_manager_t Manager;
     GlobalVarMap*  VarMap;
-    BinaryVarMap*  binaryVarMap;
-    NumericVarMap* numericVarMap;
 
     oxidd_bdd_t CurrentBDD;
     int         tempCounter = 0;
     bool        IsMixedConstraint = false;
     bool        RequireAll        = false;
     oxidd_bdd_t VariableConstraint;
-  };
 
   // One-pass application of all constraints in the model
   void processConstraints(oxidd_bdd_manager_t manager,
                           oxidd_bdd_t& bdd,
                           GlobalVarMap& varMap,
-                          BinaryVarMap& binaryVarMap,
-                          NumericVarMap& numericVarMap,
                           const vara::feature::FeatureModel& model);
 
 } // namespace oxidd::capi

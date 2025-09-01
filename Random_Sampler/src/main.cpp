@@ -1,5 +1,6 @@
-// //#include "ConfigCounter.hpp"
-// #include "BDDSampler.h"
+//#include "ConfigCounter.hpp"
+#include "BDDSampler.h"
+#include "Plotter.h"
 // #include "Z3Helper.hpp"
 // #include "FeatureDiagram.hpp"
 // #include "GraphViz.h"
@@ -71,15 +72,34 @@ using std::pair;
     oxidd_bdd_manager_t manager = oxidd_bdd_containing_manager(finalBDD);
     std::cout << "BDD constructed successfully." << std::endl;
 
-    for (const auto& [level, feat] : factory.varMap) {   
-        std::cout << "Feature: " << feat.name
-                  << ", Level: " << level 
-                  << ", Probability: " 
-                  << (feature->probability.has_value() ? std::to_string(feature->probability.value()) : "N/A") 
-                  << std::endl;
+    std::unordered_map<oxidd_var_no_t, bool> sample = generateConfiguration(
+        manager, 
+        finalBDD, 
+        factory
+    );
+
+    std::unordered_map<oxidd_var_no_t, oxidd::capi::Freq> counts;
+    auto N = 10;
+
+    for(size_t i=0; i<N; ++1) {
+        auto s = generateConfiguration(
+            manager, 
+            finalBDD, 
+            factory
+        );
+        oxidd::capi::update_counts(counts, s);
     }
 
+    auto rows = oxidd::capi::to_rows(counts, factory.varMap);
     
+    for(const auto& r : rows) {
+        std::cout << r.label << " (id=" << r.v << "): "
+                  << r.p << "  [" << r.t << "/" << r.n << "]\n";
+    }
+
+    oxidd::capi::write_csv(rows, "freq.csv");
+
+
 
 //     oxidd::capi::BDDFactory factory;
 //     oxidd_bdd_t finalBDD = factory.modelToBdd(*fd); 

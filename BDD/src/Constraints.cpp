@@ -1,9 +1,5 @@
 #include "Constraints.h"
 
-// Alias-Definitionen für bessere Lesbarkeit
-using GlobalVarMap = std::unordered_map<std::string, oxidd::capi::BDDFactory::BDDFeat>;
-using BinaryVarMap = std::unordered_map<std::string, oxidd::capi::oxidd_bdd_t>;
-
 namespace oxidd::capi {
 
     /**
@@ -158,7 +154,6 @@ namespace oxidd::capi {
         // Falls das Feature nicht gefunden wurde, wird eine temporäre Variable erstellt
         static oxidd_var_no_t tempVarCounter = 10000;
         oxidd_bdd_t var = oxidd_bdd_var(Manager, tempVarCounter++);
-        (*binaryVarMap)[name] = var;
         CurrentBDD = var;
         return true;
     }
@@ -170,14 +165,10 @@ namespace oxidd::capi {
         oxidd_bdd_manager_t manager,
         oxidd_bdd_t& bdd,
         GlobalVarMap& varMap,
-        BinaryVarMap& binaryVarMap,
         const vara::feature::FeatureModel& model) {
-    
-        // Create a dummy NumericVarMap since it's required by the constructor but not used
-        std::unordered_map<std::string, std::vector<std::pair<std::string, oxidd_bdd_t>>> dummyNumericVarMap;
-        
+            
         // Initialisiert den Constraint-Visitor mit all required parameters
-        BDDConstraintVisitor visitor(manager, &varMap, &binaryVarMap, &dummyNumericVarMap, false, false);
+        BDDConstraintVisitor visitor(manager, &varMap, bdd, false, false);
 
         // Lambda-Funktion zur Verarbeitung eines einzelnen Constraints
         const auto process = [&](const auto& constraint) {
