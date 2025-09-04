@@ -60,7 +60,7 @@ using std::pair;
             throw std::runtime_error("Error building Feature Model: ");
         }
 
-        (void)vara::feature::FeatureModelXmlParser::detectXMLAlternatives(*fm);
+        //(void)vara::feature::FeatureModelXmlParser::detectXMLAlternatives(*fm);
 
         return fm;
     }();

@@ -273,30 +273,24 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
     UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::NAME), xmlFree);
     FMB.setVmName(trim(reinterpret_cast<char *>(Cnt.get())));
   }
-  std::cout << "Hello I am being built" << std::endl;
   {
     UniqueXmlChar Cnt(xmlGetProp(Node, XmlConstants::ROOT), xmlFree);
     FMB.setPath(Cnt ? fs::path(trim(reinterpret_cast<char *>(Cnt.get())))
                     : fs::current_path());
   }
-  std::cout << "Hello I am being built2" << std::endl;
   {
     std::unique_ptr<xmlChar, void (*)(void *)> Cnt(
         xmlGetProp(Node, XmlConstants::COMMIT), xmlFree);
     FMB.setCommit(Cnt ? trim(reinterpret_cast<char *>(Cnt.get())) : "");
   }
-  std::cout << "Hello I am being built3" << std::endl;
   for (xmlNode *H = Node->children; H; H = H->next) {
-    std::cout << "Hello I am being built4" <<  H->type << H->name << std::endl;
     if (H->type == XML_ELEMENT_NODE) {
       if (!xmlStrcmp(H->name, XmlConstants::BINARYOPTIONS)) {
         if (!parseOptions(H)) {
-          std::cout << "Mixed biinary" << std::endl;
           return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::NUMERICOPTIONS)) {
         if (!parseOptions(H, true)) {
-          std::cout << "Mixed numeric" << std::endl;
           return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::BOOLEANCONSTRAINTS)) {
@@ -305,18 +299,15 @@ Result<FTErrorCode> FeatureModelXmlParser::parseVm(xmlNode *Node) {
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::NONBOOLEANCONSTRAINTS)) {
         if (!parseConstraints<FeatureModel::NonBooleanConstraint>(H)) {
-          std::cout << "non bool false" << std::endl;
           return Error(ERROR);
         }
       } else if (!xmlStrcmp(H->name, XmlConstants::MIXEDCONSTRAINTS)) {
         if (!parseConstraints<FeatureModel::MixedConstraint>(H)) {
-          std::cout << "Mixed false" << std::endl;
           return Error(ERROR);
         }
       }
     }
   }
-  std::cout << "Its ok I am ok " << std::endl;
   return Ok();
 }
 
@@ -450,11 +441,8 @@ FeatureModelParser::UniqueXmlDoc FeatureModelXmlParser::parseDoc() {
 
 Result<FTErrorCode> FeatureModelXmlParser::verifyFeatureModel() {
   if (!parseDoc().get()) {
-      std::cout << "False" << std::endl;
     return Error(ERROR);
   }
-  std::cout << "True" << std::endl;
-
   return Ok();
 }
 

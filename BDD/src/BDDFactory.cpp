@@ -30,6 +30,8 @@ namespace oxidd::capi
         std::cerr << "Feature model has no XOR relationships." << std::endl;
        }
 
+       std::cout << "passed relationships" << std::endl;
+
        // For each feature, add it to the global varMap alongside constraints to the finalBdd
        for(auto *F: model.features()) { 
         if(auto R = oxidd::capi::FeatureToBdd(
@@ -43,6 +45,7 @@ namespace oxidd::capi
         }
        }
 
+       std::cout << "passed features" << std::endl;
 
        //TODO: Input Michaels Visitor ConstraintCode
         oxidd::capi::processConstraints(
@@ -51,6 +54,8 @@ namespace oxidd::capi
             BDDFactory::varMap,
             model
         );
+
+        std::cout << "passed processing constraints" << std::endl;
 
         // Get the root feature from the varMap to start the probability calculation
         BDDFeat* root = findFeatureinBDD(&finalBdd);
@@ -77,20 +82,37 @@ namespace oxidd::capi
         const vara::feature::FeatureModel &model
     ) {
         std::vector<const vara::feature::Feature*> features;
-        std::vector<std::string> names;
-        std::vector<const char*> names_cstr;
 
+        features.reserve(model.size());
         for(auto* F: model.features()) {
             features.push_back(F);
+        }
+
+        std::vector<std::string> names;
+        names.reserve(features.size());
+        for (auto* F: features) {
             names.push_back(F->getName().str());
-            names_cstr.push_back(names.back().c_str());
+        }
+
+        std::vector<const char*> names_cstr;
+        names_cstr.reserve(names.size());
+        for (auto & name: names) {
+            names_cstr.push_back(name.c_str());
         }
 
         oxidd_bdd_manager_add_named_vars(
             manager,
             names_cstr.data(),
-            static_cast<oxidd_var_no_t>(features.size())
+            static_cast<oxidd_var_no_t>(names_cstr.size())
         );
+
+        for(auto & name: names) {
+            auto varNum = oxidd_bdd_manager_name_to_var(
+                manager,
+                name.c_str()
+            );
+            std::cout << "Added feature to manager: " << name.c_str() << " with id " << varNum << std::endl;
+        }
 
         // std::unordered_map<std::string, oxidd_var_no_t> featMap;
         // featMap.reserve(features.size());

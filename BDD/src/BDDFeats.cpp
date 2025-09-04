@@ -60,6 +60,8 @@ namespace oxidd::capi {
                     .probability = {},
                 };
 
+                std::cout << "Added root feature '" << featureName 
+                          << "' with id " << id << " to varMap." << std::endl;
                 *finalBdd = oxidd_bdd_and(*finalBdd, varMap->at(id).bddNode);
                 break;
             }
@@ -84,6 +86,9 @@ namespace oxidd::capi {
             .satCount = 0,
             .probability = {},
         };
+
+        std::cout << "Added binary feature '" << featureName 
+                  << "' with id " << id << " to varMap." << std::endl;
 
         return vara::Ok<void>();
     }
@@ -112,6 +117,9 @@ namespace oxidd::capi {
             oxidd_bdd_t parentToChild = oxidd_bdd_imp(parent, child);
             *finalBdd = oxidd_bdd_and(*finalBdd, parentToChild);
         }
+
+        std::cout << "Added binary constraints for feature id " << id 
+                  << " with parent id " << parentId << "." << std::endl;
 
         return vara::Ok<void>();
     }

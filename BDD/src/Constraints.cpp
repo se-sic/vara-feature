@@ -7,6 +7,16 @@ namespace oxidd::capi {
      */
     oxidd_bdd_t BDDConstraintVisitor::addConstraint(vara::feature::Constraint* C, bool negate, bool requireAll) {
         this->RequireAll = requireAll;
+        if(negate){
+            std::cout << "Negating constraint: " << C->toString() << std::endl;
+        } else {
+            std::cout << "Making constraint true " << C->toString() << std::endl;
+        }
+        if(requireAll){
+            std::cout << "Requiring all variables to be set in mixed constraint." << std::endl;
+        } else {
+            std::cout << "Not requiring all variables to be set in mixed constraint." << std::endl;
+        }
         C->accept(*this);
         if (negate) {
             CurrentBDD = oxidd_bdd_not(CurrentBDD);
@@ -163,6 +173,8 @@ namespace oxidd::capi {
             
         // Initialisiert den Constraint-Visitor mit all required parameters
         BDDConstraintVisitor visitor(manager, &varMap, bdd, false, false);
+
+        std::cout << "Processing "  << " boolean constraints.\n";
 
         // Lambda-Funktion zur Verarbeitung eines einzelnen Constraints
         const auto process = [&](const auto& constraint) {

@@ -27,7 +27,6 @@ std::unique_ptr<FeatureModel> FeatureModelBuilder::buildFeatureModel() {
                  << '\n';
     return nullptr;
   }
-  std::cout << "Fight1" << std::endl;
   return std::move(FM);
 }
 
