@@ -7,7 +7,6 @@
 // #include "Sampler.hpp"
 // #include "NodeType.hpp"
 #include "vara/Feature/FeatureModelParser.h"
-#include "vara/Feature/FeatureModelParser.h"
 #include "../../BDD/include/BDDFactory.h"
 #include <iostream>
 #include <unordered_map>

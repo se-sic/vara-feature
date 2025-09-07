@@ -69,11 +69,9 @@ target_link_libraries(random_sampler PRIVATE
   VaRASampling
   VaRAConfiguration
   oxidd_ffi_c               # from add_subdirectory(external/oxidd)
-  tinyxml2::tinyxml2
+  tinyxml2::tinyxml2        
   ${LLVM_LIBS}
   VaRAFeature
-  /opt/homebrew/Cellar/tinyxml2/11.0.0/lib/libtinyxml2.dylib
-  ${CMAKE_SOURCE_DIR}/build/external/oxidd/liboxidd_ffi_c.dylib
 )
 
 target_link_directories(random_sampler PRIVATE
