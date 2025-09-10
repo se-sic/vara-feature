@@ -8,6 +8,7 @@ namespace oxidd::capi {
         std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
         oxidd_bdd_t* finalBdd
     ){
+        std::cout << "BDD POINTER " << finalBdd->_p << std::endl;
         bool isOpt = feature.isOptional();
         Feature* parent = feature.getParentFeature();
         const std::string featureName = feature.getName().str();
@@ -59,10 +60,6 @@ namespace oxidd::capi {
                     .satCount = 0,
                     .probability = {},
                 };
-
-                std::cout << "Added root feature '" << featureName 
-                          << "' with id " << id << " to varMap." << std::endl;
-                *finalBdd = oxidd_bdd_and(*finalBdd, varMap->at(id).bddNode);
                 break;
             }
             default: {
@@ -111,6 +108,8 @@ namespace oxidd::capi {
         oxidd_bdd_t parent = varMap->at(parentId).bddNode;
 
         oxidd_bdd_t childToParent = oxidd_bdd_imp(child, parent);
+
+        std::cout << "Child to Parent BDD pointer: " << childToParent._p << std::endl;
         *finalBdd = oxidd_bdd_and(*finalBdd, childToParent);
 
         if(!isInXOR && !isOpt) {

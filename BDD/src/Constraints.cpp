@@ -7,16 +7,6 @@ namespace oxidd::capi {
      */
     oxidd_bdd_t BDDConstraintVisitor::addConstraint(vara::feature::Constraint* C, bool negate, bool requireAll) {
         this->RequireAll = requireAll;
-        if(negate){
-            std::cout << "Negating constraint: " << C->toString() << std::endl;
-        } else {
-            std::cout << "Making constraint true " << C->toString() << std::endl;
-        }
-        if(requireAll){
-            std::cout << "Requiring all variables to be set in mixed constraint." << std::endl;
-        } else {
-            std::cout << "Not requiring all variables to be set in mixed constraint." << std::endl;
-        }
         C->accept(*this);
         if (negate) {
             CurrentBDD = oxidd_bdd_not(CurrentBDD);
@@ -31,6 +21,7 @@ namespace oxidd::capi {
      * Verarbeitet binäre Constraints (AND, OR, IMPLIES, etc.).
      */
     bool BDDConstraintVisitor::visit(vara::feature::BinaryConstraint* C) {
+        //std::cout << "In new BinaryConstraint: " << C->toString() << std::endl;
         using CK = vara::feature::Constraint::ConstraintKind;
         
         // Verarbeite linken und rechten Operanden
@@ -43,22 +34,22 @@ namespace oxidd::capi {
         // Wende die entsprechende BDD-Operation basierend auf dem Constraint-Typ an
         switch(C->getKind()) {
             case CK::CK_AND:
-                CurrentBDD = oxidd_bdd_and(left, right);
+                CurrentBDD = oxidd_bdd_and(CurrentBDD, oxidd_bdd_and(left, right));
                 break;
             case CK::CK_OR:
-                CurrentBDD = oxidd_bdd_or(left, right);
+                CurrentBDD = oxidd_bdd_and(CurrentBDD, oxidd_bdd_or(left, right));
                 break;
             case CK::CK_IMPLIES:
-                CurrentBDD = oxidd_bdd_imp(left, right);
+                CurrentBDD = oxidd_bdd_and(CurrentBDD, oxidd_bdd_imp(left, right));
                 break;
             case CK::CK_EQUIVALENCE:
-                CurrentBDD = oxidd_bdd_equiv(left, right);
+                CurrentBDD = oxidd_bdd_and(CurrentBDD, oxidd_bdd_equiv(left, right));
                 break;
             case CK::CK_XOR:
-                CurrentBDD = oxidd_bdd_xor(left, right);
+                CurrentBDD = oxidd_bdd_and(CurrentBDD, oxidd_bdd_xor(left, right));
                 break;
             case CK::CK_EXCLUDES:
-                CurrentBDD = oxidd_bdd_imp(left, oxidd_bdd_not(right));
+                CurrentBDD = oxidd_bdd_and(CurrentBDD, oxidd_bdd_imp(left, oxidd_bdd_not(right)));
                 break;
 
             case CK::CK_LESS:
@@ -69,9 +60,9 @@ namespace oxidd::capi {
             case CK::CK_NOT_EQUAL: // Boolean inequality handled below
                 // For boolean comparisons, use equivalence/not equivalence
                 if (C->getKind() == CK::CK_EQUAL) {
-                    CurrentBDD = oxidd_bdd_equiv(left, right);
+                    CurrentBDD = oxidd_bdd_and(CurrentBDD, oxidd_bdd_equiv(left, right));
                 } else if (C->getKind() == CK::CK_NOT_EQUAL) {
-                    CurrentBDD = oxidd_bdd_not(oxidd_bdd_equiv(left, right));
+                    CurrentBDD = oxidd_bdd_and(CurrentBDD, oxidd_bdd_not(oxidd_bdd_equiv(left, right)));
                 } else {
                     std::cerr << "Error: Numeric comparisons (<, >, <=, >=) are not supported. Only binary constraints are supported.\n";
                     CurrentBDD = oxidd_bdd_false(Manager);
@@ -99,6 +90,7 @@ namespace oxidd::capi {
      * Verarbeitet unäre Constraints (NOT, NEG).
      */
     bool BDDConstraintVisitor::visit(vara::feature::UnaryConstraint* C) {
+        //std::cout << "In new UnaryConstraint: " << C->toString() << std::endl;
         using CK = vara::feature::Constraint::ConstraintKind;
         
         C->getOperand()->accept(*this);
@@ -121,6 +113,7 @@ namespace oxidd::capi {
      * Verarbeitet Feature-Constraints (z. B. "FeatureA").
      */
     bool BDDConstraintVisitor::visit(vara::feature::PrimaryFeatureConstraint* C) {
+        //std::cout << "In new PrimaryFeatureConstraint: " << C->toString() << std::endl;
         std::string featureName = C->getFeature()->getName().str();
         oxidd_var_no_t id = oxidd_bdd_manager_name_to_var(Manager, featureName.c_str());
 
@@ -152,13 +145,11 @@ namespace oxidd::capi {
         if (it != VarMap->end()) {
             auto feat = it->second;
             CurrentBDD = oxidd_bdd_and(oxidd_bdd_var(Manager, id), feat.bddNode);
-            return true;
-        }
-        
+        }    
         // Falls das Feature nicht gefunden wurde, wird eine temporäre Variable erstellt
-        static oxidd_var_no_t tempVarCounter = 10000;
-        oxidd_bdd_t var = oxidd_bdd_var(Manager, tempVarCounter++);
-        CurrentBDD = var;
+        // static oxidd_var_no_t tempVarCounter = 10000;
+        // oxidd_bdd_t var = oxidd_bdd_var(Manager, tempVarCounter++);
+        // CurrentBDD = var;
         return true;
     }
 
@@ -174,11 +165,10 @@ namespace oxidd::capi {
         // Initialisiert den Constraint-Visitor mit all required parameters
         BDDConstraintVisitor visitor(manager, &varMap, bdd, false, false);
 
-        std::cout << "Processing "  << " boolean constraints.\n";
-
         // Lambda-Funktion zur Verarbeitung eines einzelnen Constraints
         const auto process = [&](const auto& constraint) {
             oxidd_bdd_t constraintBDD = visitor.addConstraint(constraint->constraint());
+            //std::cout << "Processed constraint: " << constraintBDD._p << "\n";
             if (constraintBDD._p == nullptr) {
                 std::cerr << "Warning: Failed to process constraint. Skipping.\n";
                 return false;

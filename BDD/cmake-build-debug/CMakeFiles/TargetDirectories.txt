@@ -1,0 +1,3 @@
+/Users/oracionoftime/Documents/UdS/BA/vara-feature/BDD/cmake-build-debug/CMakeFiles/bdd.dir
+/Users/oracionoftime/Documents/UdS/BA/vara-feature/BDD/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/oracionoftime/Documents/UdS/BA/vara-feature/BDD/cmake-build-debug/CMakeFiles/rebuild_cache.dir

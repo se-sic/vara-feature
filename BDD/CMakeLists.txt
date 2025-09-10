@@ -10,12 +10,7 @@ add_library(bdd STATIC
 target_include_directories(bdd
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
-# OxiDD headers so BDDFactory.cpp can `#include "oxidd/capi.h"`
-target_include_directories(bdd
-  PRIVATE
-    ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
+    ${CMAKE_BINARY_DIR}/external/oxidd/include 
 )
 
 # If you need to link against OxiDD C FFI or VaRA libs, do it here:
@@ -23,9 +18,10 @@ target_include_directories(bdd
 find_package(LibXml2 REQUIRED)
 
 target_link_libraries(bdd
+  PUBLIC 
+    oxidd_ffi_c
   PRIVATE
     LibXml2::LibXml2
-    oxidd_ffi_c      # if the OxiDD C library is needed; ensure link dirs set at root
     VaRAFeature      # if BDD uses these symbols
     VaRASampling     # if needed
 )

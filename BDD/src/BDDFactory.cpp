@@ -13,7 +13,6 @@ namespace oxidd::capi
        if(model.size()== 0) {
         std::cerr << "Feature model is empty." << std::endl;
        }
-
        std::vector<std::string> V; // Vector to store names of features in XOR relationships
        // Add all features to manager including their names
        fillManager(model);
@@ -59,6 +58,7 @@ namespace oxidd::capi
 
         // Get the root feature from the varMap to start the probability calculation
         BDDFeat* root = findFeatureinBDD(&finalBdd);
+        std::cout << "Found root feature: " << (root ? root->name : "null") << std::endl;
         oxidd_var_no_t rootId = oxidd_bdd_manager_name_to_var(manager, root->name.c_str());
 
         auto R = getPr(
@@ -100,18 +100,19 @@ namespace oxidd::capi
             names_cstr.push_back(name.c_str());
         }
 
-        oxidd_bdd_manager_add_named_vars(
-            manager,
-            names_cstr.data(),
-            static_cast<oxidd_var_no_t>(names_cstr.size())
-        );
-
+        auto before = oxidd_bdd_manager_num_vars(manager);
+        oxidd::capi::oxidd_duplicate_var_name_result_t  res = oxidd_bdd_manager_add_named_vars(
+                manager,
+                names_cstr.data(),
+                static_cast<oxidd_var_no_t>(names_cstr.size())
+            );
+        
         for(auto & name: names) {
             auto varNum = oxidd_bdd_manager_name_to_var(
                 manager,
                 name.c_str()
             );
-            std::cout << "Added feature to manager: " << name.c_str() << " with id " << varNum << std::endl;
+            std::cout << "Added feature to manager: " << name.c_str() << " with id " << varNum << " and pointer " << oxidd_bdd_var(manager, varNum)._i << std::endl;
         }
 
         // std::unordered_map<std::string, oxidd_var_no_t> featMap;

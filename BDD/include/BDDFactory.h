@@ -30,8 +30,8 @@ namespace oxidd::capi
             void fillManager(const vara::feature::FeatureModel &model);
 
             std::unordered_map<oxidd_var_no_t, BDDFeat> varMap;
-            oxidd_bdd_manager_t manager = oxidd_bdd_manager_new(0, 0, 0);
-            oxidd_bdd_t finalBdd = oxidd_bdd_true(manager); 
+            oxidd_bdd_manager_t manager = oxidd_bdd_manager_new(5000, 2500, 8);
+            oxidd_bdd_t finalBdd = oxidd_bdd_true(manager);
 
     };
     

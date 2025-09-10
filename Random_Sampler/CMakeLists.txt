@@ -20,23 +20,23 @@ if(NOT TinyXML2_FOUND)
   endif()
 endif()
 
-if(APPLE)
-  set(OXIDD_LIB_EXT "dylib")
-else()
-  set(OXIDD_LIB_EXT "so")
-endif()
-set(OXIDD_LIB_NAME "liboxidd_ffi_c.${OXIDD_LIB_EXT}")
+#if(APPLE)
+#  set(OXIDD_LIB_EXT "dylib")
+#else()
+#  set(OXIDD_LIB_EXT "so")
+#endif()
+#set(OXIDD_LIB_NAME "liboxidd_ffi_c.${OXIDD_LIB_EXT}")
 
-foreach(OXIDD_SEARCH_PATH 
-  "${CMAKE_SOURCE_DIR}/build/external/oxidd"
-  "${CMAKE_SOURCE_DIR}/external/oxidd/lib"
-  "/usr/local/lib"
-)
-  if(EXISTS "${OXIDD_SEARCH_PATH}/${OXIDD_LIB_NAME}")
-    set(OXIDD_LIB_PATH "${OXIDD_SEARCH_PATH}/${OXIDD_LIB_NAME}")
-    break()
-  endif()
-endforeach()
+#foreach(OXIDD_SEARCH_PATH 
+#  "${CMAKE_SOURCE_DIR}/build/external/oxidd"
+#  "${CMAKE_SOURCE_DIR}/external/oxidd/lib"
+#  "/usr/local/lib"
+#)
+#  if(EXISTS "${OXIDD_SEARCH_PATH}/${OXIDD_LIB_NAME}")
+#    set(OXIDD_LIB_PATH "${OXIDD_SEARCH_PATH}/${OXIDD_LIB_NAME}")
+#    break()
+#  endif()
+#endforeach()
 
 add_executable(random_sampler
   src/main.cpp
@@ -45,19 +45,16 @@ add_executable(random_sampler
   src/FeatureDiagram.cpp
   src/Sampler.cpp
   src/Plotter.cpp
-  ../BDD/src/BDDFactory.cpp
+  #../BDD/src/BDDFactory.cpp
 )
 
 # Includes
 target_include_directories(random_sampler PRIVATE 
   ${CMAKE_SOURCE_DIR}/Random_Sampler/include
   ${CMAKE_SOURCE_DIR}/include/vara/Solver
-  /opt/homebrew/Cellar/tinyxml2/11.0.0/include
-)
-
-target_include_directories(random_sampler PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/../BDD/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include
+  /opt/homebrew/Cellar/tinyxml2/11.0.0/include
 )
 
 # Libraries
@@ -68,15 +65,16 @@ target_link_libraries(random_sampler PRIVATE
   VaRAFeature
   VaRASampling
   VaRAConfiguration
-  oxidd_ffi_c               # from add_subdirectory(external/oxidd)
-  tinyxml2::tinyxml2        
+  tinyxml2::tinyxml2
   ${LLVM_LIBS}
-  VaRAFeature
+  #VaRAFeature
+  #/opt/homebrew/Cellar/tinyxml2/11.0.0/lib/libtinyxml2.dylib
+  #${CMAKE_SOURCE_DIR}/build/external/oxidd/liboxidd_ffi_c.dylib
 )
 
-target_link_directories(random_sampler PRIVATE
-  ${CMAKE_SOURCE_DIR}/build/external/oxidd
-)
+#target_link_directories(random_sampler PRIVATE
+#  ${CMAKE_SOURCE_DIR}/build/external/oxidd
+#)
 
 target_sources(random_sampler PRIVATE
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/FeatureDiagram.cpp
@@ -84,4 +82,9 @@ target_sources(random_sampler PRIVATE
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/BDDSampler.cpp
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/Sampler.cpp
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/Plotter.cpp
+)
+
+set_target_properties(random_sampler PROPERTIES
+  BUILD_RPATH "${CMAKE_BINARY_DIR}/external/oxidd"
+  INSTALL_RPATH_USE_LINK_PATH TRUE
 )

@@ -13,12 +13,11 @@ endif()
 # CMake CXX options
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # CMake options
-set(CMAKE_EXPORT_COMPIL6E_COMMANDS YES)
+set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   if(APPLE)
@@ -345,9 +344,9 @@ add_subdirectory(scripts)
 
 #OXIDD 
 add_subdirectory(external/oxidd)
-include_directories(external/oxidd/include)
+#include_directories(external/oxidd/include)
 # OxiDD C++ headers (source tree)
-include_directories(${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include)
+#include_directories(${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include)
 
 # OxiDD generated C headers (build tree)
 include_directories(${CMAKE_BINARY_DIR}/external/oxidd/include)

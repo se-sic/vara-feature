@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 #include <variant>
+#include <iostream>
 
 namespace vara::feature {
 
@@ -639,11 +640,12 @@ public:
     return LHS && RHS;
   }
 
-  virtual bool visit(UnaryConstraint *C) {
-    return C->getOperand()->accept(*this);
+  virtual bool visit(UnaryConstraint *C) { return C->getOperand()->accept(*this);
   }
 
-  virtual bool visit(PrimaryIntegerConstraint *C) { return true; }
+  virtual bool visit(PrimaryIntegerConstraint *C) { 
+    std::cout << "In PrimaryIntegerConstraint header: " << C->toString() << std::endl;
+    return true; }
 
   virtual bool visit(PrimaryFeatureConstraint *C) { return true; }
 };

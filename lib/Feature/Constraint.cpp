@@ -1,17 +1,17 @@
 #include "vara/Feature/Constraint.h"
 #include "vara/Feature/Feature.h"
+#include <iostream>  
 
 namespace vara::feature {
-bool BinaryConstraint::accept(ConstraintVisitor &V) { return V.visit(this); }
+bool BinaryConstraint::accept(ConstraintVisitor &V) {  return V.visit(this); }
 
-bool UnaryConstraint::accept(ConstraintVisitor &V) { return V.visit(this); }
+bool UnaryConstraint::accept(ConstraintVisitor &V) {  return V.visit(this); }
 
-bool PrimaryIntegerConstraint::accept(ConstraintVisitor &V) {
-  return V.visit(this);
+bool PrimaryIntegerConstraint::accept(ConstraintVisitor &V) { return V.visit(this);
 }
 
-bool PrimaryFeatureConstraint::accept(ConstraintVisitor &V) {
-  return V.visit(this);
+bool PrimaryFeatureConstraint::accept(ConstraintVisitor &V) { 
+ return V.visit(this);
 }
 
 Feature *PrimaryFeatureConstraint::getFeature() const {

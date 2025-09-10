@@ -22,7 +22,7 @@ namespace oxidd::capi {
                         GlobalVarMap* varMap,
                         oxidd_bdd_t finalBDD,
                         bool isMixedConstraint = false,
-                        bool requireAll = false)
+                        bool requireAll = true)
       : Manager(manager),
         VarMap(varMap),
         CurrentBDD(finalBDD),
@@ -33,7 +33,7 @@ namespace oxidd::capi {
     // Build a BDD for a constraint. If negate==true, we negate the resulting BDD.
     oxidd_bdd_t addConstraint(vara::feature::Constraint* C,
                               bool negate = false,
-                              bool requireAll = false);
+                              bool requireAll = true);
 
     bool visit(vara::feature::BinaryConstraint* C) override;
     bool visit(vara::feature::UnaryConstraint* C) override;
@@ -53,7 +53,7 @@ namespace oxidd::capi {
     oxidd_bdd_t CurrentBDD;
     int         tempCounter = 0;
     bool        IsMixedConstraint = false;
-    bool        RequireAll        = false;
+    bool        RequireAll        = true;
     oxidd_bdd_t VariableConstraint;
  }; 
 
