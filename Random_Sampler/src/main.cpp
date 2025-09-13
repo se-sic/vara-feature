@@ -68,12 +68,25 @@ using std::pair;
 
     oxidd::capi::BDDFactory factory;
     oxidd::capi::oxidd_bdd_t finalBDD = factory.modelToBdd(*fd);
+    std::unordered_map<oxidd::capi::oxidd_var_no_t, oxidd::capi::BDDFactory::BDDFeat> map = factory.varMap;
     oxidd::capi::oxidd_bdd_manager_t manager = oxidd_bdd_containing_manager(finalBDD);
     std::cout << "BDD constructed successfully." << std::endl;
 
+
+    struct oxidd::capi::oxidd_bdd_t funcs[] = { finalBDD };
+    const char *func_names[] = { "FinalBDD" };
+
+    oxidd_bdd_manager_dump_all_dot_file(
+        manager,
+        "bdd.dot",
+        funcs,
+        func_names,
+        1
+    );
+
     std::unordered_map<oxidd::capi::oxidd_var_no_t, bool> sample = generateConfiguration(
         manager, 
-        finalBDD, 
+        map.at(0).bddNode,
         factory
     );
 

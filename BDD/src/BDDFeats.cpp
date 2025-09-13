@@ -8,13 +8,12 @@ namespace oxidd::capi {
         std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
         oxidd_bdd_t* finalBdd
     ){
-        std::cout << "BDD POINTER " << finalBdd->_p << std::endl;
         bool isOpt = feature.isOptional();
         Feature* parent = feature.getParentFeature();
         const std::string featureName = feature.getName().str();
         const std::string parentName = parent ? parent->getName().str() : "";
         oxidd_var_no_t id = oxidd_bdd_manager_name_to_var(*mgr, featureName.c_str());
-        oxidd_var_no_t parentId = parent ? oxidd_bdd_manager_name_to_var(*mgr, parentName.c_str()) : 0;
+        oxidd_var_no_t parentId = parent ? oxidd_bdd_manager_name_to_var(*mgr, parentName.c_str()) : -1;
         // If ID is already in the varMap, return back to the next feature
         if(varMap->find(id) != varMap->end()) {
             return SolverErrorCode::ALREADY_PRESENT;
@@ -60,6 +59,9 @@ namespace oxidd::capi {
                     .satCount = 0,
                     .probability = {},
                 };
+
+                *finalBdd = oxidd_bdd_and(*finalBdd, varMap->at(id).bddNode);
+                
                 break;
             }
             default: {
@@ -100,7 +102,7 @@ namespace oxidd::capi {
         std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
         oxidd_bdd_t* finalBdd
     ){
-        if(parentId == NULL) {
+        if(parentId < 0) {
             return SolverErrorCode::PARENT_NOT_PRESENT;
         }
 

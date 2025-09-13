@@ -37,6 +37,15 @@ namespace oxidd::capi
             continue; // Skip to the next feature if there is an error
         }
        }
+       oxidd_bdd_t roots[] = {finalBdd};
+         const char* root_names[] = {"root"};
+         oxidd_bdd_manager_dump_all_dot_file(
+             manager,
+             "after_features.dot",
+             roots,
+             root_names,
+             1
+         );
 
        std::cout << "passed features" << std::endl;
 
@@ -48,16 +57,22 @@ namespace oxidd::capi
             model
         );
 
+        while(true) {
+            3
+        }
+
         std::cout << "passed processing constraints" << std::endl;
 
         // Get the root feature from the varMap to start the probability calculation
-        BDDFeat* root = findFeatureinBDD(&finalBdd);
+        BDDFeat* root = findFeatureinBDD(&varMap.at(0).bddNode);
         std::cout << "Found root feature: " << (root ? root->name : "null") << std::endl;
         oxidd_var_no_t rootId = oxidd_bdd_manager_name_to_var(manager, root->name.c_str());
+        size_t nodeCount = oxidd_bdd_manager_num_inner_nodes(manager);
+        std::cout << "Total number of inner nodes in BDD: " << nodeCount << std::endl;
 
         auto R = getPr(
             &manager,
-            &finalBdd,
+            &varMap.at(0).bddNode,
             rootId,
             root,
             *this
@@ -102,7 +117,7 @@ namespace oxidd::capi
             );
         
         for(auto & name: names) {
-            auto varNum = oxidd_bdd_manager_name_to_var(
+            auto varNum =oxidd_bdd_manager_name_to_var(
                 manager,
                 name.c_str()
             );
@@ -127,8 +142,13 @@ namespace oxidd::capi
     BDDFactory::BDDFeat*  BDDFactory::findFeatureinBDD(
         oxidd_bdd_t *node
     ) {
+
+        oxidd_bdd_manager_t manager = this->manager;
+        oxidd_level_no_t level = oxidd_bdd_node_level(*node);
+        const char* cname = oxidd_bdd_manager_var_name(manager, level);
+        std::string name = cname ? std::string(cname) : "";
         for(auto& [id, f]: this->varMap) {
-            if(f.bddNode._p == node->_p && f.bddNode._i == node->_i) {
+            if(id == level) {
                 return &f;
             }
         }

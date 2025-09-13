@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug random_sampler",
+        "type": "lldb",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/random_sampler",
+        "args": ["Random_Sampler/examples/Hippacc.xml"],
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "DYLD_LIBRARY_PATH": "${workspaceFolder}/build/external/oxidd:${env:DYLD_LIBRARY_PATH}"
+        },
+        "stopOnEntry": false,
+        "terminal": "integrated"
+      }
+    ]
+  }
