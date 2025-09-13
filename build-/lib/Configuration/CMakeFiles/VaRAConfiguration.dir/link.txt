@@ -1,2 +1,0 @@
-/usr/bin/ar qc libVaRAConfiguration.a CMakeFiles/VaRAConfiguration.dir/Configuration.cpp.o
-/usr/bin/ranlib libVaRAConfiguration.a

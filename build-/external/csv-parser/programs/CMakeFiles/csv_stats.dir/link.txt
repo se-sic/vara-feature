@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wno-unknown-pragmas -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/csv_stats.dir/csv_stats.cpp.o -o ../../../bin/csv_stats   -L/opt/homebrew/opt/llvm/lib  -Wl,-rpath,/opt/homebrew/opt/llvm/lib ../include/internal/libcsv.a

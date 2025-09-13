@@ -1,4 +1,5 @@
 build/
+build-/
 .idea/
 .*.*.swp
 .clangd/
@@ -19,4 +20,5 @@ CMakeLists.txt.user
 *.srctrlprj
 
 #Ignore vsCode workspace changes
-.vscode/
+.vscode/build-/
+build/

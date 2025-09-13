@@ -1,2 +1,0 @@
-/usr/bin/ar qc libbdd.a CMakeFiles/bdd.dir/src/BDDFactory.cpp.o CMakeFiles/bdd.dir/src/Constraints.cpp.o CMakeFiles/bdd.dir/src/Relationships.cpp.o CMakeFiles/bdd.dir/src/BDDFeats.cpp.o CMakeFiles/bdd.dir/src/Probabilities.cpp.o
-/usr/bin/ranlib libbdd.a
