@@ -20,40 +20,29 @@ namespace oxidd::capi {
         oxidd::capi::BDDFactory::BDDFeat* feat,
         oxidd::capi::BDDFactory& factory
     ) {
-        std::cout << "Starting probability calculation for feature '" 
-                  << feat->name << "' (id=" << id << ").\n";
         // Get the number of satisfying assignments for the BDD node and the total number of features
         double sat_count = oxidd_bdd_sat_count_double(*node, oxidd_bdd_manager_num_vars(*manager));
-        std::cout << "Satisfying assignments for feature '" 
-                  << feat->name << "' (id=" << id << "): " << sat_count << "\n";
         double total_count = std::pow(2, oxidd_bdd_manager_num_vars(*manager));
-        std::cout << "Total possible assignments: " << total_count << "\n";
         // Using Bryant's algorithm to calculate the probabilities
         feat->marked = true;
         // Base cases: Terminals
         if(sat_count == 0.0){
-            std::cout << "terminal 0" << std::endl;
             feat->satCount = 0;
             return vara::Ok<void>();
         } else if(sat_count == total_count) {
-            std::cout << "terminal 1" << std::endl;
             feat->satCount = 1;
             return vara::Ok<void>();
         } else {
-            std::cout << "non-terminal" << std::endl;
             // Recursive case until base case reached
             oxidd_level_no_t index_node = oxidd_bdd_manager_name_to_var(*manager, feat->name.c_str());
+            //TODO: Cofactors return terminals, no idea how to fix
             oxidd_bdd_pair_t cofactors = oxidd_bdd_cofactors(*node);
             oxidd::capi::BDDFactory::BDDFeat* trueFeat = factory.findFeatureinBDD(&cofactors.first);
-            std::cout << "True feature: " << (trueFeat ? trueFeat->name : "null") << std::endl;
             oxidd_level_no_t index_high = oxidd_bdd_manager_name_to_var(*manager, trueFeat->name.c_str());
             oxidd::capi::BDDFactory::BDDFeat* falseFeat = factory.findFeatureinBDD(&cofactors.second);
-            std::cout << "False feature: " << (falseFeat ? falseFeat->name : "null") << std::endl;
             oxidd_level_no_t index_low = oxidd_bdd_manager_name_to_var(*manager, falseFeat->name.c_str());
 
             if(trueFeat->marked != feat->marked) {
-                std::cout << "Recurse on true branch of feature '" 
-                          << trueFeat->name << "' (id=" << index_high << ").\n";
                 getPr(
                     manager,
                     &cofactors.first, 
@@ -62,8 +51,6 @@ namespace oxidd::capi {
                     factory
                 );
             } else if(falseFeat->marked != feat->marked) {
-                std::cout << "Recurse on false branch of feature '" 
-                          << falseFeat->name << "' (id=" << index_low << ").\n";
                 getPr(
                     manager, 
                     &cofactors.second, 
@@ -77,13 +64,11 @@ namespace oxidd::capi {
             double solHigh = trueFeat->satCount * std::pow(2, index_high - (index_node-1)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.first, oxidd_bdd_manager_num_vars(manager));
             feat->satCount = solLow + solHigh; //ALTERNATIVE: sat_count
             feat->probability = solHigh / feat->satCount;
-            std::cout << "Feature '" << feat->name << "' (id=" << id << "): "
-                      << feat->probability.value() << "  [" << feat->satCount << "/" << total_count << "]\n";
             return vara::Ok<void>();
         } 
 
 
-
+//-------------------------------------------------------- OLD CODE --------------------------------------------------------
 //      if (node->_p == zeroTerminal->_p && node->_i == zeroTerminal->_i) {
 //          feat->info.satCount = 0;
 //          feat->info.probability = -1.0;
@@ -128,8 +113,5 @@ namespace oxidd::capi {
 //             feat->info.probability = solHigh / feat->info.satCount;
 //             return vara::Ok<void>();
 //         }
-
-      std::cout << "Finished probability calculation for feature '" 
-                << feat->probability.value() << std::endl;
     }
 }

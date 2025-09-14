@@ -76,13 +76,14 @@ using std::pair;
     struct oxidd::capi::oxidd_bdd_t funcs[] = { finalBDD };
     const char *func_names[] = { "FinalBDD" };
 
-    oxidd_bdd_manager_dump_all_dot_file(
-        manager,
-        "bdd.dot",
-        funcs,
-        func_names,
-        1
-    );
+    //DUMP BDD TO DOT FILE
+    // oxidd_bdd_manager_dump_all_dot_file(
+    //     manager,
+    //     "bdd.dot",
+    //     funcs,
+    //     func_names,
+    //     1
+    // );
 
     std::unordered_map<oxidd::capi::oxidd_var_no_t, bool> sample = generateConfiguration(
         manager, 
@@ -116,6 +117,7 @@ using std::pair;
 
 
 
+//-------------------------------------------------------- OLD CODE --------------------------------------------------------
 //     oxidd::capi::BDDFactory factory;
 //     oxidd_bdd_t finalBDD = factory.modelToBdd(*fd); 
 //     auto sample =  oxidd::capi::generateConfiguration(

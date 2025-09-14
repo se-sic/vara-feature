@@ -22,7 +22,6 @@ namespace oxidd::capi
             for(const auto &Child: S->children()) {
                 const auto *ChildFeature = (const vara::feature::Feature *)Child;
                 V.insert(V.begin(), ChildFeature->getName().str());
-                std::cout<< ChildFeature->getName().str() << std::endl;
             }
         }
        } else {
@@ -49,7 +48,6 @@ namespace oxidd::capi
 
        std::cout << "passed features" << std::endl;
 
-       //TODO: Input Michaels Visitor ConstraintCode
         oxidd::capi::processConstraints(
             BDDFactory::manager,
             BDDFactory::finalBdd,
@@ -57,15 +55,10 @@ namespace oxidd::capi
             model
         );
 
-        while(true) {
-            3
-        }
-
         std::cout << "passed processing constraints" << std::endl;
 
         // Get the root feature from the varMap to start the probability calculation
         BDDFeat* root = findFeatureinBDD(&varMap.at(0).bddNode);
-        std::cout << "Found root feature: " << (root ? root->name : "null") << std::endl;
         oxidd_var_no_t rootId = oxidd_bdd_manager_name_to_var(manager, root->name.c_str());
         size_t nodeCount = oxidd_bdd_manager_num_inner_nodes(manager);
         std::cout << "Total number of inner nodes in BDD: " << nodeCount << std::endl;
@@ -121,21 +114,7 @@ namespace oxidd::capi
                 manager,
                 name.c_str()
             );
-            std::cout << "Added feature to manager: " << name.c_str() << " with id " << varNum << " and pointer " << oxidd_bdd_var(manager, varNum)._i << std::endl;
         }
-
-        // std::unordered_map<std::string, oxidd_var_no_t> featMap;
-        // featMap.reserve(features.size());
-        // for(size_t i=0; i < features.size(); ++i) {
-        //     oxidd_var_no_t id  = oxidd_bdd_manager_name_to_var(
-        //         manager,
-        //         names_cstr[i]
-        //     );
-        //     std::string name = names[i];
-        //     featMap[name] = id;
-        // }
-
-        // return featMap;
     }
 
     // Given a BDD node, find the corresponding BDDFeat in the varMap

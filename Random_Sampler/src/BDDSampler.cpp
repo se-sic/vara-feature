@@ -26,7 +26,6 @@ namespace oxidd::capi {
 
     // Fill variables that come BEFORE the root in the ordering
     // We need to find all variables with level < root_level
-    std::cout << "Filling variables before root level: " << root_level << std::endl;
     oxidd_level_no_t total_levels = oxidd_bdd_manager_num_vars(manager);
 
     for (oxidd_level_no_t level = 0; level < root_level; level++) {

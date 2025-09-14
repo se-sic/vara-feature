@@ -86,9 +86,6 @@ namespace oxidd::capi {
             .probability = {},
         };
 
-        std::cout << "Added binary feature '" << featureName 
-                  << "' with id " << id << " to varMap." << std::endl;
-
         return vara::Ok<void>();
     }
     // Add Binary constraint acccording to Z3 rules: 
@@ -111,16 +108,12 @@ namespace oxidd::capi {
 
         oxidd_bdd_t childToParent = oxidd_bdd_imp(child, parent);
 
-        std::cout << "Child to Parent BDD pointer: " << childToParent._p << std::endl;
         *finalBdd = oxidd_bdd_and(*finalBdd, childToParent);
 
         if(!isInXOR && !isOpt) {
             oxidd_bdd_t parentToChild = oxidd_bdd_imp(parent, child);
             *finalBdd = oxidd_bdd_and(*finalBdd, parentToChild);
         }
-
-        std::cout << "Added binary constraints for feature id " << id 
-                  << " with parent id " << parentId << "." << std::endl;
 
         return vara::Ok<void>();
     }

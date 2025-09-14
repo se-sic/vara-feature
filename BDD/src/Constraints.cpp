@@ -21,7 +21,6 @@ namespace oxidd::capi {
      * Verarbeitet binäre Constraints (AND, OR, IMPLIES, etc.).
      */
     bool BDDConstraintVisitor::visit(vara::feature::BinaryConstraint* C) {
-        //std::cout << "In new BinaryConstraint: " << C->toString() << std::endl;
         using CK = vara::feature::Constraint::ConstraintKind;
         
         // Verarbeite linken und rechten Operanden
@@ -90,7 +89,6 @@ namespace oxidd::capi {
      * Verarbeitet unäre Constraints (NOT, NEG).
      */
     bool BDDConstraintVisitor::visit(vara::feature::UnaryConstraint* C) {
-        //std::cout << "In new UnaryConstraint: " << C->toString() << std::endl;
         using CK = vara::feature::Constraint::ConstraintKind;
         
         C->getOperand()->accept(*this);
@@ -113,7 +111,6 @@ namespace oxidd::capi {
      * Verarbeitet Feature-Constraints (z. B. "FeatureA").
      */
     bool BDDConstraintVisitor::visit(vara::feature::PrimaryFeatureConstraint* C) {
-        //std::cout << "In new PrimaryFeatureConstraint: " << C->toString() << std::endl;
         std::string featureName = C->getFeature()->getName().str();
         oxidd_var_no_t id = oxidd_bdd_manager_name_to_var(Manager, featureName.c_str());
 
@@ -168,7 +165,6 @@ namespace oxidd::capi {
         // Lambda-Funktion zur Verarbeitung eines einzelnen Constraints
         const auto process = [&](const auto& constraint) {
             oxidd_bdd_t constraintBDD = visitor.addConstraint(constraint->constraint());
-            //std::cout << "Processed constraint: " << constraintBDD._p << "\n";
             if (constraintBDD._p == nullptr) {
                 std::cerr << "Warning: Failed to process constraint. Skipping.\n";
                 return false;
