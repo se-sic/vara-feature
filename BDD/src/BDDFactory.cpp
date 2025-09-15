@@ -33,8 +33,7 @@ namespace oxidd::capi
        // For each feature, add it to the global varMap alongside constraints to the finalBdd
        for(auto *F: model.features()) { 
         if(auto R = oxidd::capi::FeatureToBdd(&manager,std::find(V.begin(), V.end(), F->getName().str()) != V.end(),*F,&varMap,&finalBdd); !R) {
-            continue; // Skip to the next feature if there is an error
-        }
+         }
        }
        oxidd_bdd_t roots[] = {finalBdd};
          const char* root_names[] = {"root"};
