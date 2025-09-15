@@ -3,13 +3,13 @@
 namespace oxidd::capi {
 
     /**
-     * Fügt einen Constraint zur BDD hinzu und berücksichtigt dabei, ob der Constraint negiert werden soll.
+     * Add a constraint to the BDD, optionally negating it
      */
     oxidd_bdd_t BDDConstraintVisitor::addConstraint(vara::feature::Constraint* C, bool negate, bool requireAll) {
         this->RequireAll = requireAll;
-        C->accept(*this);
+        C->accept(*this); // Visit the constraint
         if (negate) {
-            CurrentBDD = oxidd_bdd_not(CurrentBDD);
+            CurrentBDD = oxidd_bdd_not(CurrentBDD); // Negate if requested
         }
         if (IsMixedConstraint && RequireAll) {
             CurrentBDD = oxidd_bdd_and(VariableConstraint, CurrentBDD);
@@ -18,19 +18,19 @@ namespace oxidd::capi {
     }
 
     /**
-     * Verarbeitet binäre Constraints (AND, OR, IMPLIES, etc.).
+     * Visit binary constraints (AND, OR, IMPLIES, etc.)
      */
     bool BDDConstraintVisitor::visit(vara::feature::BinaryConstraint* C) {
         using CK = vara::feature::Constraint::ConstraintKind;
         
-        // Verarbeite linken und rechten Operanden
+        // Process left and right operands
         C->getLeftOperand()->accept(*this);
         oxidd_bdd_t left = CurrentBDD;
         
         C->getRightOperand()->accept(*this);
         oxidd_bdd_t right = CurrentBDD;
 
-        // Wende die entsprechende BDD-Operation basierend auf dem Constraint-Typ an
+        // Apply appropriate BDD operation based on constraint type
         switch(C->getKind()) {
             case CK::CK_AND:
                 CurrentBDD = oxidd_bdd_and(CurrentBDD, oxidd_bdd_and(left, right));
@@ -86,7 +86,7 @@ namespace oxidd::capi {
     }
 
     /**
-     * Verarbeitet unäre Constraints (NOT, NEG).
+     * // Visit unary constraints (NOT, NEG)
      */
     bool BDDConstraintVisitor::visit(vara::feature::UnaryConstraint* C) {
         using CK = vara::feature::Constraint::ConstraintKind;
@@ -108,12 +108,13 @@ namespace oxidd::capi {
     }
 
     /**
-     * Verarbeitet Feature-Constraints (z. B. "FeatureA").
+     * Visit feature constraints (e.g., "FeatureA")
      */
     bool BDDConstraintVisitor::visit(vara::feature::PrimaryFeatureConstraint* C) {
         std::string featureName = C->getFeature()->getName().str();
         oxidd_var_no_t id = oxidd_bdd_manager_name_to_var(Manager, featureName.c_str());
 
+        // Check for unsupported numeric features
         if (C->getFeature()->getKind() == vara::feature::Feature::FeatureKind::FK_NUMERIC) {
             std::cerr << "Error: Numeric features are not supported. Feature '" << featureName 
                     << "' is numeric. Only binary features are supported.\n";
@@ -135,7 +136,7 @@ namespace oxidd::capi {
     // }
 
     /**
-     * Verarbeitet einen Feature-Constraint.
+     * Handle a feature constraint by looking up its BDD variable
      */
     bool BDDConstraintVisitor::handleFeatureConstraint(const oxidd_var_no_t id) {
         auto it = VarMap->find(id);
@@ -151,7 +152,7 @@ namespace oxidd::capi {
     }
 
     /**
-     * Verarbeitet alle Constraints eines Feature-Modells und fügt sie dem BDD hinzu.
+     * Process all constraints of a feature model and add them to the BDD
      */
     void processConstraints(
         oxidd_bdd_manager_t manager,
@@ -159,21 +160,21 @@ namespace oxidd::capi {
         GlobalVarMap& varMap,
         const vara::feature::FeatureModel& model) {
             
-        // Initialisiert den Constraint-Visitor mit all required parameters
+        // Initialize constraint visitor with all required parameters
         BDDConstraintVisitor visitor(manager, &varMap, bdd, false, false);
 
-        // Lambda-Funktion zur Verarbeitung eines einzelnen Constraints
+       // Lambda function to process a single constraint
         const auto process = [&](const auto& constraint) {
             oxidd_bdd_t constraintBDD = visitor.addConstraint(constraint->constraint());
             if (constraintBDD._p == nullptr) {
                 std::cerr << "Warning: Failed to process constraint. Skipping.\n";
                 return false;
             }
-            bdd = oxidd_bdd_and(bdd, constraintBDD);
+            bdd = oxidd_bdd_and(bdd, constraintBDD); // Add constraint to main BDD
             return true;
         };
 
-        // Verarbeitet nur Boolean Constraints (andere werden nicht unterstützt)
+        // Process only Boolean constraints (others are not supported)
         for (const auto& C : model.booleanConstraints()) {
             if (!process(C)) break;
         }

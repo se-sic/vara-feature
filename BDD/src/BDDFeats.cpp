@@ -1,6 +1,8 @@
 #include "BDDFeats.h"
 
 namespace oxidd::capi {
+    
+    // Convert a feature to BDD representation and add constraints
     Result<SolverErrorCode>FeatureToBdd(
         const oxidd_bdd_manager_t* mgr,
         const bool isInXOR,
@@ -8,23 +10,28 @@ namespace oxidd::capi {
         std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
         oxidd_bdd_t* finalBdd
     ){
+        // Extract feature properties
         bool isOpt = feature.isOptional();
         Feature* parent = feature.getParentFeature();
-        const std::string featureName = feature.getName().str();
+        const std::string featureName = feature.getName();
         const std::string parentName = parent ? parent->getName().str() : "";
         oxidd_var_no_t id = oxidd_bdd_manager_name_to_var(*mgr, featureName.c_str());
         oxidd_var_no_t parentId = parent ? oxidd_bdd_manager_name_to_var(*mgr, parentName.c_str()) : -1;
+
+        ;
         // If ID is already in the varMap, return back to the next feature
         if(varMap->find(id) != varMap->end()) {
             return SolverErrorCode::ALREADY_PRESENT;
         }
-        // Sanity check: Only consider Binary and root features, else return NOT_SUPPORTED
+        // Handle different feature types: Only consider Binary and root features, else return NOT_SUPPORTED
         switch(feature.getKind()) {
             case Feature::FeatureKind::FK_NUMERIC: {
                 std::cerr << "Numeric features are not supported. Please choose a different feature diagram." << std::endl;
                 return SolverErrorCode::NOT_SUPPORTED;
             }
             case Feature::FeatureKind::FK_BINARY: {
+                // Verify it's a binary feature
+                std::cout << "now here" << std::endl;
                 if(!llvm::isa<vara::feature::BinaryFeature>(&feature)) {
                     std::cerr << "Feature is not a binary feature." << std::endl;
                     return SolverErrorCode::NOT_SUPPORTED;
@@ -51,6 +58,9 @@ namespace oxidd::capi {
             }
             // If root feature, add it to varMap and then add it as AND to the finalBdd
             case Feature::FeatureKind::FK_ROOT: {
+                // Handle root feature specially
+
+                
                 (*varMap)[id] = BDDFactory::BDDFeat{
                     .bddNode = oxidd_bdd_var(*mgr, id),
                     .isRoot = true,
@@ -77,6 +87,7 @@ namespace oxidd::capi {
         oxidd_var_no_t id,
         oxidd_bdd_manager_t manager
     ){
+        // Create BDDFeat entry for this feature
         (*varMap)[id] = BDDFactory::BDDFeat{
             .bddNode = oxidd_bdd_var(manager, id),
             .isRoot = false,
@@ -88,6 +99,7 @@ namespace oxidd::capi {
 
         return vara::Ok<void>();
     }
+
     // Add Binary constraint acccording to Z3 rules: 
     //   Add child -> parent
     //   If not in XOR and not optional, add parent -> child as well
@@ -99,17 +111,21 @@ namespace oxidd::capi {
         std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
         oxidd_bdd_t* finalBdd
     ){
+        // Check if parent exists
         if(parentId < 0) {
             return SolverErrorCode::PARENT_NOT_PRESENT;
         }
 
+        // Get BDD nodes for child and parent
         oxidd_bdd_t child = varMap->at(id).bddNode;
         oxidd_bdd_t parent = varMap->at(parentId).bddNode;
 
+        // Add constraint: child → parent
         oxidd_bdd_t childToParent = oxidd_bdd_imp(child, parent);
 
         *finalBdd = oxidd_bdd_and(*finalBdd, childToParent);
 
+        // If mandatory (not optional and not in XOR), add parent → child
         if(!isInXOR && !isOpt) {
             oxidd_bdd_t parentToChild = oxidd_bdd_imp(parent, child);
             *finalBdd = oxidd_bdd_and(*finalBdd, parentToChild);

@@ -36,8 +36,9 @@ using std::pair;
 
     std::string filePath = argv[1];
 
+    // Lambda function to load and parse the feature model
     std::unique_ptr<vara::feature::FeatureModel> fd = [&]() {
-        //reads the file in
+        // Read the file content
         std::ifstream in(filePath);
         if (!in) {
             throw std::runtime_error("Could not open file: " + filePath);
@@ -46,14 +47,16 @@ using std::pair;
         oss << in.rdbuf();
         std::string xmlContent = oss.str();
 
-        //parse the file
+        // Parse the content
         vara::feature::FeatureModelXmlParser parser(xmlContent);
 
+        // Verify the feature model is valid
         auto verify = parser.verifyFeatureModel();
         if(!verify) {
             throw std::runtime_error("Error parsing XML: verification failed");
         }   
 
+        // Build the feature model object
         auto fm = parser.buildFeatureModel();
         if(!fm) {
             throw std::runtime_error("Error building Feature Model: ");
@@ -66,34 +69,24 @@ using std::pair;
 
     std::cout << "Feature Model loaded successfully from: " << filePath << std::endl;
 
+    // Create BDD factory and convert feature model to BDD
     oxidd::capi::BDDFactory factory;
     oxidd::capi::oxidd_bdd_t finalBDD = factory.modelToBdd(*fd);
-    std::unordered_map<oxidd::capi::oxidd_var_no_t, oxidd::capi::BDDFactory::BDDFeat> map = factory.varMap;
     oxidd::capi::oxidd_bdd_manager_t manager = oxidd_bdd_containing_manager(finalBDD);
     std::cout << "BDD constructed successfully." << std::endl;
 
-
-    struct oxidd::capi::oxidd_bdd_t funcs[] = { finalBDD };
-    const char *func_names[] = { "FinalBDD" };
-
-    //DUMP BDD TO DOT FILE
-    // oxidd_bdd_manager_dump_all_dot_file(
-    //     manager,
-    //     "bdd.dot",
-    //     funcs,
-    //     func_names,
-    //     1
-    // );
-
+    // Generate a single sample configuration
     std::unordered_map<oxidd::capi::oxidd_var_no_t, bool> sample = generateConfiguration(
         manager, 
-        map.at(0).bddNode,
+        finalBDD, 
         factory
     );
 
+    // Initialize frequency counts for features
     std::unordered_map<oxidd::capi::oxidd_var_no_t, oxidd::capi::Freq> counts;
-    size_t N = 10;
+    size_t N = 10; // Number of samples to generate
 
+    // Generate multiple samples and update frequency counts
     for(size_t i=0; i<N; ++i) {
         auto s = generateConfiguration(
             manager, 
@@ -103,6 +96,7 @@ using std::pair;
         oxidd::capi::update_counts(s, counts);
     }
 
+    // Convert counts to readable rows and print them
     auto rows = oxidd::capi::to_rows(counts, &factory.varMap);
     
     for(const auto& r : rows) {
@@ -110,6 +104,7 @@ using std::pair;
                   << r.p << "  [" << r.t << "/" << r.n << "]\n";
     }
 
+    // Write the frequency data to CSV file
     oxidd::capi::write_csv(rows, "freq.csv");
 
     return 0;
@@ -117,7 +112,6 @@ using std::pair;
 
 
 
-//-------------------------------------------------------- OLD CODE --------------------------------------------------------
 //     oxidd::capi::BDDFactory factory;
 //     oxidd_bdd_t finalBDD = factory.modelToBdd(*fd); 
 //     auto sample =  oxidd::capi::generateConfiguration(

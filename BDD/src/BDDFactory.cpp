@@ -7,16 +7,23 @@
 #include "oxidd/capi.h"
 namespace oxidd::capi     
 { 
+    // Convert a feature model to a BDD representation
     oxidd_bdd_t BDDFactory::modelToBdd(
         const vara::feature::FeatureModel &model
     ) {
+        // Check if model is empty
        if(model.size()== 0) {
         std::cerr << "Feature model is empty." << std::endl;
        }
-       std::vector<std::string> V; // Vector to store names of features in XOR relationships
+
+       // Vector to store names of features in XOR relationships
+       std::vector<std::string> V; 
+
        // Add all features to manager including their names
        fillManager(model);
-       // If relationshios of FM are filles, add them to the XOR vecor V for teh function "FeatureToBdd"
+
+       // If relationshios of FM are filles, add them to the XOR vetcor V for the function "FeatureToBdd"
+       // Process XOR relationships from the feature model
        if(!model.relationships().empty()) {
         for(const auto &S: model.relationships()){
             for(const auto &Child: S->children()) {
@@ -30,13 +37,14 @@ namespace oxidd::capi
 
        std::cout << "passed relationships" << std::endl;
 
-       // For each feature, add it to the global varMap alongside constraints to the finalBdd
+       // Process each feature: add to varMap and add constraints to finalBdd
        for(auto *F: model.features()) { 
         auto R = oxidd::capi::FeatureToBdd(&manager,std::find(V.begin(), V.end(), F->getName().str()) != V.end(),*F,&varMap,&finalBdd);
         if(!R) {
             continue; // Skip to the next feature if there is an error
         }
        }
+       std::cout << "hey" << std::endl;
        oxidd_bdd_t roots[] = {finalBdd};
          const char* root_names[] = {"root"};
          oxidd_bdd_manager_dump_all_dot_file(
@@ -49,6 +57,7 @@ namespace oxidd::capi
 
        std::cout << "passed features" << std::endl;
 
+       // Process explicit constraints from the feature model
         oxidd::capi::processConstraints(
             BDDFactory::manager,
             BDDFactory::finalBdd,
@@ -58,12 +67,13 @@ namespace oxidd::capi
 
         std::cout << "passed processing constraints" << std::endl;
 
-        // Get the root feature from the varMap to start the probability calculation
+        // Find the root feature to start probability calculation
         BDDFeat* root = findFeatureinBDD(&varMap.at(0).bddNode);
         oxidd_var_no_t rootId = oxidd_bdd_manager_name_to_var(manager, root->name.c_str());
         size_t nodeCount = oxidd_bdd_manager_num_inner_nodes(manager);
         std::cout << "Total number of inner nodes in BDD: " << nodeCount << std::endl;
 
+        // Calculate probabilities for all features
         auto R = getPr(
             &manager,
             &varMap.at(0).bddNode,
@@ -80,29 +90,33 @@ namespace oxidd::capi
         return finalBdd;
     }
 
-    // Iterate over all features of the FM, get thier names and add tehem respectiveky to the bdd manager 
+    // Add all features from the model to the BDD manager
     void BDDFactory::fillManager(
         const vara::feature::FeatureModel &model
     ) {
         std::vector<const vara::feature::Feature*> features;
 
+        // Collect all features from the model
         features.reserve(model.size());
         for(auto* F: model.features()) {
             features.push_back(F);
         }
 
+        // Extract feature names
         std::vector<std::string> names;
         names.reserve(features.size());
         for (auto* F: features) {
             names.push_back(F->getName().str());
         }
 
+        // Convert to C-style strings for oxidd API
         std::vector<const char*> names_cstr;
         names_cstr.reserve(names.size());
         for (auto & name: names) {
             names_cstr.push_back(name.c_str());
         }
 
+        // Add all named variables to the BDD manager
         auto before = oxidd_bdd_manager_num_vars(manager);
         oxidd::capi::oxidd_duplicate_var_name_result_t  res = oxidd_bdd_manager_add_named_vars(
                 manager,
@@ -127,6 +141,8 @@ namespace oxidd::capi
         oxidd_level_no_t level = oxidd_bdd_node_level(*node);
         const char* cname = oxidd_bdd_manager_var_name(manager, level);
         std::string name = cname ? std::string(cname) : "";
+
+        // Search through varMap to find matching BDD node
         for(auto& [id, f]: this->varMap) {
             if(id == level) {
                 return &f;
