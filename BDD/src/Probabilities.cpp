@@ -35,17 +35,19 @@ namespace oxidd::capi {
         } else {
             // Recursive case until base case reached
             oxidd_level_no_t index_node = oxidd_bdd_manager_name_to_var(*manager, feat->name.c_str());
-            //TODO: Cofactors return terminals, no idea how to fix
-            oxidd_bdd_pair_t cofactors = oxidd_bdd_cofactors(*node);
-            oxidd::capi::BDDFactory::BDDFeat* trueFeat = factory.findFeatureinBDD(&cofactors.first);
+            oxidd_bdd_t cofactor_true = oxidd_bdd_cofactor_true(*node);
+            oxidd_bdd_t cofactor_false = oxidd_bdd_cofactor_false(*node);
+            oxidd::capi::BDDFactory::BDDFeat* trueFeat = factory.findFeatureinBDD(&cofactor_true);
+            oxidd::capi::BDDFactory::BDDFeat* falseFeat = factory.findFeatureinBDD(&cofactor_false);
+            std::cout << "True feature: " << (trueFeat ? trueFeat->name : "null") << std::endl;
             oxidd_level_no_t index_high = oxidd_bdd_manager_name_to_var(*manager, trueFeat->name.c_str());
-            oxidd::capi::BDDFactory::BDDFeat* falseFeat = factory.findFeatureinBDD(&cofactors.second);
+            std::cout << "False feature: " << (falseFeat ? falseFeat->name : "null") << std::endl;
             oxidd_level_no_t index_low = oxidd_bdd_manager_name_to_var(*manager, falseFeat->name.c_str());
 
             if(trueFeat->marked != feat->marked) {
                 getPr(
                     manager,
-                    &cofactors.first, 
+                    &cofactor_true,
                     index_high, 
                     trueFeat, 
                     factory
@@ -53,7 +55,7 @@ namespace oxidd::capi {
             } else if(falseFeat->marked != feat->marked) {
                 getPr(
                     manager, 
-                    &cofactors.second, 
+                    &cofactor_false,
                     index_low, 
                     falseFeat, 
                     factory

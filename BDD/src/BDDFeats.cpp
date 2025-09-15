@@ -37,14 +37,14 @@ namespace oxidd::capi {
                     *mgr
                 );
                 // Add binary constraints according to Z3 ruless
-                if(auto R = addBinaryConstraints(
+                auto R = addBinaryConstraints(
                     parentId,
                     id,
                     isInXOR,
                     isOpt,
                     varMap,
-                    finalBdd
-                ); !R) {
+                    finalBdd);
+                if(!R) {
                     return R;
                 }
                 break;
