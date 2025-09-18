@@ -22,3 +22,7 @@ CMakeLists.txt.user
 #Ignore vsCode workspace changes
 .vscode/build-/
 build/
+CMakeLists.txt
+CMakeCache.txt
+.vscode/launch.json
+
