@@ -54,7 +54,8 @@ namespace oxidd::capi {
                 if(!R) {
                     return R;
                 }
-                break;
+
+                return vara::Ok<void>();
             }
             // If root feature, add it to varMap and then add it as AND to the finalBdd
             case Feature::FeatureKind::FK_ROOT: {
@@ -72,7 +73,7 @@ namespace oxidd::capi {
 
                 *finalBdd = oxidd_bdd_and(*finalBdd, varMap->at(id).bddNode);
                 
-                break;
+                return vara::Ok<void>();
             }
             default: {
                 std::cerr << "Unknown feature kind encountered." << std::endl;

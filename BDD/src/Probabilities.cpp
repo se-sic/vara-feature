@@ -23,6 +23,8 @@ namespace oxidd::capi {
         // Get the number of satisfying assignments for the BDD node and the total number of features
         double sat_count = oxidd_bdd_sat_count_double(*node, oxidd_bdd_manager_num_vars(*manager));
         double total_count = std::pow(2, oxidd_bdd_manager_num_vars(*manager));
+        oxidd_bdd_t cofactor_true = oxidd_bdd_cofactor_true(*node);
+        oxidd_bdd_t cofactor_false = oxidd_bdd_cofactor_false(*node);
         // Using Bryant's algorithm to calculate the probabilities
         feat->marked = true;
         // Base cases: Terminals

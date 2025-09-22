@@ -71,12 +71,13 @@ namespace oxidd::capi
         BDDFeat* root = findFeatureinBDD(&varMap.at(0).bddNode);
         oxidd_var_no_t rootId = oxidd_bdd_manager_name_to_var(manager, root->name.c_str());
         size_t nodeCount = oxidd_bdd_manager_num_inner_nodes(manager);
+        oxidd_bdd_t node = BDDFactory::finalBdd;
         std::cout << "Total number of inner nodes in BDD: " << nodeCount << std::endl;
 
         // Calculate probabilities for all features
         auto R = getPr(
             &manager,
-            &varMap.at(0).bddNode,
+            &node,
             rootId,
             root,
             *this
