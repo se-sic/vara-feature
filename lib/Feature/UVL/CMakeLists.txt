@@ -25,7 +25,7 @@ include_directories(${ANTLR4_INCLUDE_DIRS})
 
 # set variable pointing to the antlr tool that supports C++ this is not required
 # if the jar file can be found under PATH environment
-set(ANTLR_EXECUTABLE /usr/local/lib/antlr-4.13.1-complete.jar)
+set(ANTLR_EXECUTABLE /usr/local/lib/antlr-4.13.*-complete.jar)
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
 
@@ -33,25 +33,32 @@ find_package(ANTLR REQUIRED)
 
 # antlr_target(SampleGrammarLexer UVLcppLexer.g4 LEXER PACKAGE antlrcpptest)
 antlr_target(
-  UVLCppParser
-  UVLcpp.g4
+  UVLCppLexer
+  UVLcppLexer.g4
   PACKAGE
   antlrcpp
+  LEXER
+)
+antlr_target(
+  UVLCppParser
+  UVLcppParser.g4
+  DEPENDS_ANTLR
+  UVLCppLexer
+  DEPENDS
+  ${ANTLR_UVLCppLexer_CXX_OUTPUTS}
+  PACKAGE
+  antlrcpp
+  PARSER
   VISITOR
 )
-# DEPENDS_ANTLR SampleGrammarLexer COMPILE_FLAGS -lib
-# ${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
-
-# Call macro to add lexer and grammar to your build dependencies.
-# antlr_target(UVLCppParser UVLcpp.g4 VISITOR)
 
 # include generated files in project environment
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-# include_directories(${ANTLR_SampleGrammarParser_OUTPUT_DIR})
+include_directories(${ANTLR_UVLCppLexer_OUTPUT_DIR})
 
 # add generated grammar to demo binary target
 add_executable(
-  AntlrTest AntrlUvl.cpp ${ANTLR_UVLCppParser_CXX_OUTPUTS}
+  AntlrTest AntrlUvl.cpp ${ANTLR_UVLCppLexer_CXX_OUTPUTS}
             ${ANTLR_UVLCppParser_CXX_OUTPUTS}
 )
-target_link_libraries(AntlrTest VaRAFeature antlr4_static)
+target_link_libraries(AntlrTest LINK_PRIVATE VaRAFeature antlr4_static)

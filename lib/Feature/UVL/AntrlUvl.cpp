@@ -13,13 +13,12 @@
 // this block
 
 #include "antlr4-runtime.h"
-#include "antlr4cpp_generated_src/UVLcpp/UVLcppBaseVisitor.h" +
-#include "antlr4cpp_generated_src/UVLcpp/UVLcppLexer.h"
+#include "antlr4cpp_generated_src/UVLcppLexer/UVLcppLexer.h"
+#include "antlr4cpp_generated_src/UVLcppParser/UVLcppParser.h"
+#include "antlr4cpp_generated_src/UVLcppParser/UVLcppParserBaseVisitor.h"
 #include <fstream>
 #include <iostream>
 #include <string>
-
-#include "antlr4cpp_generated_src/UVLcpp/UVLcppParser.h"
 
 using namespace antlr4;
 
@@ -27,7 +26,7 @@ using namespace antlr4;
  * according to hierarchy and type\
  *
  **/
-class FeatureVisitor : public antlrcpp::UVLcppBaseVisitor {
+class FeatureVisitor : public antlrcpp::UVLcppParserBaseVisitor {
 public:
   std::string current_parent;
   std::string previous_parent;
@@ -201,7 +200,7 @@ int main(int argc, char *argv[]) {
     line = "path to uvl file";
   }
   std::ifstream antlr_file(line);
-  std::cout << "Opening file" << std::endl;
+  std::cout << "Opening file" << line << std::endl;
   if (antlr_file.is_open()) {
     ANTLRInputStream input(antlr_file);
     antlrcpp::UVLcppLexer lexer(&input);
