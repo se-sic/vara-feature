@@ -241,6 +241,21 @@ private:
   std::unordered_map<std::string, std::string> IdentifierMap;
 };
 
+#ifdef BUILD_UVL_PARSER
+//-------------------------------------------------------------------------===//
+//                         FeatureModelUvlParser Class
+//===----------------------------------------------------------------------===//
+/// \brief Parsers for feature models in UVL.
+class FeatureModelUvlParser : public FeatureModelParser {
+public:
+  explicit FeatureModelUvlParser(std::string Uvl) : Uvl(std::move(Uvl)) {}
+  Result<FTErrorCode> verifyFeatureModel() override;
+  std::unique_ptr<FeatureModel> buildFeatureModel() override;
+
+private:
+  std::string Uvl;
+};
+#endif // BUILD_UVL_PARSER
 } // namespace vara::feature
 
 #endif // VARA_FEATURE_FEATUREMODELPARSER_H
