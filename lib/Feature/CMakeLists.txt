@@ -16,6 +16,6 @@ add_vara_library(VaRAFeature ${FEATURE_LIB_SRC})
 target_link_libraries(
   VaRAFeature LINK_PUBLIC ${LIBXML2_LIBRARIES} ${STD_FS_LIB}
 )
-if(BUILD_ANTLR)
+if(BUILD_UVL)
   add_subdirectory(UVL)
 endif()

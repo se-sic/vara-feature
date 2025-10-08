@@ -8,9 +8,7 @@
 
 #include "vara/Feature/FeatureModelBuilder.h"
 
-#include <unistd.h>
-#ifdef ANTLR_AVAILABLE
-// this block
+#ifdef BUILD_UVL_PARSER
 
 #include "antlr4-runtime.h"
 #include "antlr4cpp_generated_src/UVLcppLexer/UVLcppLexer.h"

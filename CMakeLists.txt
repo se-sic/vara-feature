@@ -247,13 +247,10 @@ if(${VARA_FEATURE_USE_Z3_SOLVER})
   include_directories(${Z3_INCLUDE_DIR})
 endif()
 
-option(VARA_BUILD_ANTLR "Build antlr" OFF)
-if(VARA_BUILD_ANTLR)
-  set(BUILD_ANTLR 1)
-endif()
-
-if(BUILD_ANTLR)
-  add_compile_definitions(ANTLR_AVAILABLE)
+option(VARA_BUILD_UVL_PARSER "Build UVL Parser" ON)
+if(VARA_BUILD_UVL_PARSER)
+  set(BUILD_UVL 1)
+  add_compile_definitions(BUILD_UVL_PARSER)
 endif()
 
 add_subdirectory(include)

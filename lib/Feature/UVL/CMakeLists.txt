@@ -1,10 +1,4 @@
-# minimum required CMAKE version
-cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
-
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-# compiler must be 17
-set(CMAKE_CXX_STANDARD 17)
 
 # required if linking to static library
 add_definitions(-DANTLR4CPP_STATIC)
@@ -25,7 +19,7 @@ include_directories(${ANTLR4_INCLUDE_DIRS})
 
 # set variable pointing to the antlr tool that supports C++ this is not required
 # if the jar file can be found under PATH environment
-set(ANTLR_EXECUTABLE /usr/local/lib/antlr-4.13.*-complete.jar)
+set(ANTLR_EXECUTABLE /usr/local/lib/antlr-4.13.2-complete.jar)
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
 
@@ -58,7 +52,7 @@ include_directories(${ANTLR_UVLCppLexer_OUTPUT_DIR})
 
 # add generated grammar to demo binary target
 add_executable(
-  AntlrTest AntrlUvl.cpp ${ANTLR_UVLCppLexer_CXX_OUTPUTS}
+  AntlrTest FeatureUVLParser.cpp ${ANTLR_UVLCppLexer_CXX_OUTPUTS}
             ${ANTLR_UVLCppParser_CXX_OUTPUTS}
 )
 target_link_libraries(AntlrTest LINK_PRIVATE VaRAFeature antlr4_static)
