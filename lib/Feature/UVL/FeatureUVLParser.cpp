@@ -5,8 +5,8 @@
 
 #include "vara/Feature/Feature.h"
 #include "vara/Feature/FeatureModel.h"
-
 #include "vara/Feature/FeatureModelBuilder.h"
+#include "vara/Feature/FeatureModelParser.h"
 
 #ifdef BUILD_UVL_PARSER
 
@@ -14,207 +14,229 @@
 #include "antlr4cpp_generated_src/UVLcppLexer/UVLcppLexer.h"
 #include "antlr4cpp_generated_src/UVLcppParser/UVLcppParser.h"
 #include "antlr4cpp_generated_src/UVLcppParser/UVLcppParserBaseVisitor.h"
-#include <fstream>
+#include "vara/Solver/Error.h"
+
 #include <iostream>
 #include <string>
 
 using namespace antlr4;
-
 /** This visitor class visits all features in the uvl file and stores them
  * according to hierarchy and type\
  *
  **/
+namespace vara::feature {
 class FeatureVisitor : public antlrcpp::UVLcppParserBaseVisitor {
 public:
-  std::string current_parent;
-  std::string previous_parent;
+  std::string CurrentParent;
+  std::string PreviousParent;
   vara::feature::FeatureModelBuilder FMB;
   std::unique_ptr<vara::feature::FeatureModel> FM;
-  std::stack<std::string> parent_stack; // To track depth of parents as we move
-                                        // further down in the tree
+  std::stack<std::string> ParentStack; // To track depth of parents as we move
+  // further down in the tree
   std::stack<std::unique_ptr<vara::feature::Constraint>>
-      constraint_stack; // To track and compile constraints as we traverse
-                        // through them
+      ConstraintStack; // To track and compile constraints as we traverse
+  // through them
+  bool Optional = false;
 
   // Feature addition impl
   antlrcpp::Any
-  visitFeature(antlrcpp::UVLcppParser::FeatureContext *ctx) override {
-    std::cout << "visitFeature" << std::endl;
-    previous_parent = current_parent;
-    current_parent = ctx->reference()->getText();
-
-    parent_stack.push(current_parent);
-    for (auto groupCtx :
-         ctx->getRuleContexts<antlrcpp::UVLcppParser::GroupContext>()) {
-      visit(groupCtx);
+  visitFeature(antlrcpp::UVLcppParser::FeatureContext *Ctx) override {
+    if (Ctx->featureCardinality()) {
+      std::cout << "Cardinality based features are not supported yet." << '\n';
+      return vara::Result<vara::solver::SolverErrorCode>(
+          vara::solver::NOT_SUPPORTED);
     }
-    parent_stack.pop();
-    return true;
+    if (Ctx->featureType()) {
+      auto FType = Ctx->featureType()->getText();
+      if (FType == "Integer") {
+        FMB.makeFeature<vara::feature::NumericFeature>(
+            Ctx->reference()->getText(), NumericFeature::ValueListType{},
+            Optional);
+      } else if (FType == "Real" || FType == "String") {
+        return vara::Result<vara::solver::SolverErrorCode>(
+            vara::solver::NOT_SUPPORTED);
+      }
+    } else {
+      FMB.makeFeature<vara::feature::BinaryFeature>(Ctx->reference()->getText(),
+                                                    Optional);
+    }
+
+    ParentStack.push(Ctx->reference()->getText());
+    for (auto *GroupCtx : Ctx->group()) {
+      visit(GroupCtx);
+    }
+    ParentStack.pop();
+    return vara::Result<bool>(true);
   }
 
   antlrcpp::Any
-  visitOrGroup(antlrcpp::UVLcppParser::OrGroupContext *ctx) override {
-    for (auto f : ctx->groupSpec()->feature()) {
-      FMB.makeFeature<vara::feature::BinaryFeature>(f->reference()->getText(),
-                                                    true);
-      FMB.addEdge(parent_stack.top(),
-                  ctx->groupSpec()->feature().front()->reference()->getText());
+  addRelationShipGroup(antlrcpp::UVLcppParser::GroupSpecContext *Ctx,
+                       Relationship::RelationshipKind RK) {
+    auto PreOptional = Optional;
+    Optional = false;
+    visitGroupSpec(Ctx);
+    for (auto *F : Ctx->feature()) {
+      FMB.addEdge(ParentStack.top(), F->reference()->getText());
     }
-    return visitGroupSpec(ctx->groupSpec());
+    FMB.emplaceRelationship(RK, ParentStack.top());
+    Optional = PreOptional;
+    return vara::Result<bool>(true);
+  }
+
+  antlrcpp::Any
+  visitOrGroup(antlrcpp::UVLcppParser::OrGroupContext *Ctx) override {
+    return addRelationShipGroup(Ctx->groupSpec(),
+                                Relationship::RelationshipKind::RK_OR);
   }
 
   antlrcpp::Any visitMandatoryGroup(
-      antlrcpp::UVLcppParser::MandatoryGroupContext *ctx) override {
-    for (auto f : ctx->groupSpec()->feature()) {
-      FMB.makeFeature<vara::feature::BinaryFeature>(f->reference()->getText(),
-                                                    false);
-      FMB.addEdge(parent_stack.top(), f->reference()->getText());
+      antlrcpp::UVLcppParser::MandatoryGroupContext *Ctx) override {
+    auto PreOptional = Optional;
+    Optional = false;
+    visitGroupSpec(Ctx->groupSpec());
+    for (auto *F : Ctx->groupSpec()->feature()) {
+      FMB.addEdge(ParentStack.top(), F->reference()->getText());
     }
-    return visitGroupSpec(ctx->groupSpec());
+    Optional = PreOptional;
+    return vara::Result<bool>(true);
   }
 
   antlrcpp::Any visitAlternativeGroup(
-      antlrcpp::UVLcppParser::AlternativeGroupContext *ctx) override {
-    FMB.makeFeature<vara::feature::BinaryFeature>(
-        ctx->groupSpec()->feature().front()->reference()->getText(), true);
-    FMB.addEdge(parent_stack.top(),
-                ctx->groupSpec()->feature().front()->reference()->getText());
-    return visitGroupSpec(ctx->groupSpec());
+      antlrcpp::UVLcppParser::AlternativeGroupContext *Ctx) override {
+    return addRelationShipGroup(Ctx->groupSpec(),
+                                Relationship::RelationshipKind::RK_ALTERNATIVE);
   }
 
   antlrcpp::Any visitOptionalGroup(
-      antlrcpp::UVLcppParser::OptionalGroupContext *ctx) override {
-    for (auto f : ctx->groupSpec()->feature()) {
-      FMB.makeFeature<vara::feature::BinaryFeature>(f->reference()->getText(),
-                                                    true);
-      FMB.addEdge(parent_stack.top(), f->reference()->getText());
+      antlrcpp::UVLcppParser::OptionalGroupContext *Ctx) override {
+    auto PreOptional = Optional;
+    Optional = true;
+    visitGroupSpec(Ctx->groupSpec());
+    for (auto *F : Ctx->groupSpec()->feature()) {
+      FMB.addEdge(ParentStack.top(), F->reference()->getText());
     }
-    return visitGroupSpec(ctx->groupSpec());
+    Optional = PreOptional;
+    return vara::Result<bool>(true);
   }
 
   antlrcpp::Any visitCardinalityGroup(
-      antlrcpp::UVLcppParser::CardinalityGroupContext *ctx) override {
-    return visitGroupSpec(ctx->groupSpec());
+      antlrcpp::UVLcppParser::CardinalityGroupContext *Ctx) override {
+    return vara::Result<vara::solver::SolverErrorCode>(
+        vara::solver::NOT_SUPPORTED);
   }
 
   antlrcpp::Any
-  visitConstraints(antlrcpp::UVLcppParser::ConstraintsContext *ctx) override {
-    for (auto &constraint : ctx->constraintLine()) {
-      visitChildren(constraint);
+  visitConstraints(antlrcpp::UVLcppParser::ConstraintsContext *Ctx) override {
+    for (auto &Constraint : Ctx->constraintLine()) {
+      visitChildren(Constraint);
       FMB.addConstraint(
           std::make_unique<vara::feature::FeatureModel::BooleanConstraint>(
-              std::move(constraint_stack.top())));
-      constraint_stack.pop();
+              std::move(ConstraintStack.top())));
+      ConstraintStack.pop();
     }
     return nullptr;
   }
 
   antlrcpp::Any visitLiteralConstraint(
-      antlrcpp::UVLcppParser::LiteralConstraintContext *ctx) override {
-    auto feature =
-        std::make_unique<vara::feature::Feature>(ctx->reference()->getText());
-    auto literal_constraint =
+      antlrcpp::UVLcppParser::LiteralConstraintContext *Ctx) override {
+    auto Feature =
+        std::make_unique<vara::feature::Feature>(Ctx->reference()->getText());
+    auto LiteralConstraint =
         std::make_unique<vara::feature::PrimaryFeatureConstraint>(
-            std::move(feature));
+            std::move(Feature));
 
-    constraint_stack.push(std::move(literal_constraint));
+    ConstraintStack.push(std::move(LiteralConstraint));
     return nullptr;
   }
 
   antlrcpp::Any visitNotConstraint(
-      antlrcpp::UVLcppParser::NotConstraintContext *ctx) override {
-    visit(ctx->constraint());
-    auto inner = std::move(constraint_stack.top());
-    constraint_stack.pop();
+      antlrcpp::UVLcppParser::NotConstraintContext *Ctx) override {
+    visit(Ctx->constraint());
+    auto Inner = std::move(ConstraintStack.top());
+    ConstraintStack.pop();
 
-    constraint_stack.push(
-        std::make_unique<vara::feature::NotConstraint>(std::move(inner)));
+    ConstraintStack.push(
+        std::make_unique<vara::feature::NotConstraint>(std::move(Inner)));
     return nullptr;
   }
 
   antlrcpp::Any visitAndConstraint(
-      antlrcpp::UVLcppParser::AndConstraintContext *ctx) override {
-    visit(ctx->constraint(0));
-    visit(ctx->constraint(1));
+      antlrcpp::UVLcppParser::AndConstraintContext *Ctx) override {
+    visit(Ctx->constraint(0));
+    visit(Ctx->constraint(1));
 
-    auto right = std::move(constraint_stack.top());
-    constraint_stack.pop();
-    auto left = std::move(constraint_stack.top());
-    constraint_stack.pop();
+    auto Right = std::move(ConstraintStack.top());
+    ConstraintStack.pop();
+    auto Left = std::move(ConstraintStack.top());
+    ConstraintStack.pop();
 
-    auto and_constraint = std::make_unique<vara::feature::AndConstraint>(
-        std::move(left), std::move(right));
-    constraint_stack.push(std::move(and_constraint));
+    auto AndConstraint = std::make_unique<vara::feature::AndConstraint>(
+        std::move(Left), std::move(Right));
+    ConstraintStack.push(std::move(AndConstraint));
     return nullptr;
   }
 
   antlrcpp::Any
-  visitOrConstraint(antlrcpp::UVLcppParser::OrConstraintContext *ctx) override {
-    visit(ctx->constraint(0));
-    visit(ctx->constraint(1));
+  visitOrConstraint(antlrcpp::UVLcppParser::OrConstraintContext *Ctx) override {
+    visit(Ctx->constraint(0));
+    visit(Ctx->constraint(1));
 
-    auto right = std::move(constraint_stack.top());
-    constraint_stack.pop();
-    auto left = std::move(constraint_stack.top());
-    constraint_stack.pop();
+    auto Right = std::move(ConstraintStack.top());
+    ConstraintStack.pop();
+    auto Left = std::move(ConstraintStack.top());
+    ConstraintStack.pop();
 
-    auto and_constraint = std::make_unique<vara::feature::OrConstraint>(
-        std::move(left), std::move(right));
-    constraint_stack.push(std::move(and_constraint));
+    auto AndConstraint = std::make_unique<vara::feature::OrConstraint>(
+        std::move(Left), std::move(Right));
+    ConstraintStack.push(std::move(AndConstraint));
     return nullptr;
   }
 
   antlrcpp::Any visitImplicationConstraint(
-      antlrcpp::UVLcppParser::ImplicationConstraintContext *ctx) {
-    visit(ctx->constraint(0));
-    auto left = std::move(constraint_stack.top());
-    constraint_stack.pop();
-    visit(ctx->constraint(1));
-    auto right = std::move(constraint_stack.top());
-    constraint_stack.pop();
+      antlrcpp::UVLcppParser::ImplicationConstraintContext *Ctx) override {
+    visit(Ctx->constraint(0));
+    auto Left = std::move(ConstraintStack.top());
+    ConstraintStack.pop();
+    visit(Ctx->constraint(1));
+    auto Right = std::move(ConstraintStack.top());
+    ConstraintStack.pop();
 
-    auto impl_constraint = std::make_unique<vara::feature::ImpliesConstraint>(
-        std::move(left), std::move(right));
-    constraint_stack.push(std::move(impl_constraint));
+    auto ImplConstraint = std::make_unique<vara::feature::ImpliesConstraint>(
+        std::move(Left), std::move(Right));
+    ConstraintStack.push(std::move(ImplConstraint));
     return nullptr;
   }
-  antlrcpp::Any
-  visitFeatureModel(antlrcpp::UVLcppParser::FeatureModelContext *ctx) override {
-    std::string featureName = ctx->getText();
 
-    current_parent = "root";
-    parent_stack.emplace("root");
-    visitChildren(ctx);
+  std::any
+  visitFeatures(antlrcpp::UVLcppParser::FeaturesContext *Context) override {
+    FMB.makeRoot(Context->feature()->reference()->getText());
+    ParentStack.push(Context->feature()->reference()->getText());
+    for (auto *F : Context->feature()->group()) {
+      visit(F);
+    }
+    return vara::Result<bool>(true);
+  }
+
+  antlrcpp::Any
+  visitFeatureModel(antlrcpp::UVLcppParser::FeatureModelContext *Ctx) override {
+    visitChildren(Ctx);
     return true;
   }
 };
 
-// argv[1] should be the file path to the uvl file
-int main(int argc, char *argv[]) {
-  std::string line;
-  if (argv[1] != NULL) {
-    line = argv[1];
-  } else {
-    line = "path to uvl file";
-  }
-  std::ifstream antlr_file(line);
-  std::cout << "Opening file" << line << std::endl;
-  if (antlr_file.is_open()) {
-    ANTLRInputStream input(antlr_file);
-    antlrcpp::UVLcppLexer lexer(&input);
-    CommonTokenStream tokens(&lexer);
+std::unique_ptr<FeatureModel> FeatureModelUvlParser::buildFeatureModel() {
+  ANTLRInputStream Input(Uvl);
+  antlrcpp::UVLcppLexer Lexer(&Input);
+  CommonTokenStream Tokens(&Lexer);
 
-    tokens.fill();
+  Tokens.fill();
 
-    antlrcpp::UVLcppParser parser(&tokens);
-    tree::ParseTree *tree = parser.featureModel();
+  antlrcpp::UVLcppParser Parser(&Tokens);
+  tree::ParseTree *Tree = Parser.featureModel();
 
-    FeatureVisitor visitor;
-    visitor.visit(tree);
-    auto test = visitor.FMB.getParentName("FeatureB");
-    auto FM = visitor.FMB.buildFeatureModel();
-  } else {
-    std::cout << "Invalid uvl file " << std::endl;
-  }
+  FeatureVisitor Visitor;
+  Visitor.visit(Tree);
+  return Visitor.FMB.buildFeatureModel();
 }
-#endif
+} // namespace vara::feature
+#endif // BUILD_UVL_PARSER
