@@ -7,12 +7,6 @@ namespace bdd::sample {
   // Helper function: Generates a random number ∈ [0,1)
   double random() { return static_cast<double>(std::rand()) / RAND_MAX; }
 
-  // Check if a BDD node is the "true" terminal node
-  bool isBddTrue(const oxidd::bdd_function &F, oxidd::bdd_manager& Manager) { //NOLINT
-    oxidd::bdd_function TrueNode = Manager.t();
-    return F == TrueNode;
-  }
-
   // Generate a random configuration by traversing the BDD
   std::unordered_map<oxidd::level_no_t, bool> generateConfiguration(const oxidd::bdd_manager &Manager, const oxidd::bdd_function& Root, BDDFactory &Factory) { //NOLINT
       oxidd::bdd_function Trav = Root;
@@ -36,7 +30,7 @@ namespace bdd::sample {
       // Main BDD traversal
       oxidd::level_no_t PrevLevel = RootLevel - 1;
 
-      while (Trav.valid() && !isBddTrue(Trav, Manager)) {
+      while (!Trav.valid()) {
         auto LevelOpt = Trav.node_level();
         if (!LevelOpt.has_value()) {
           throw std::logic_error("BDD node does not have a valid level.");

@@ -55,10 +55,10 @@ namespace bdd::sample {
  }; 
 
   // One-pass application of all constraints in the model
-  void processConstraints(oxidd::bdd_manager *Manager,
-                          oxidd::bdd_function Bdd,
-                          GlobalVarMap *VarMap,
-                          const vara::feature::FeatureModel *Model);
+  void processConstraints(const oxidd::bdd_manager &Manager,
+                          oxidd::bdd_function &Bdd,
+                          GlobalVarMap &VarMap,
+                          const vara::feature::FeatureModel &Model);
   
 } // namespace bdd::sample
 

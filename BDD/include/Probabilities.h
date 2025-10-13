@@ -13,11 +13,11 @@ using vara::solver::SolverErrorCode;
 namespace bdd::sample {
 
     Result<vara::solver::SolverErrorCode>getPr(
-        oxidd::bdd_manager *Manager,
-        oxidd::bdd_function *Node,
+        const oxidd::bdd_manager &Manager,
+        const oxidd::bdd_function &Node,
         oxidd::var_no_t Id,
-        BDDFactory::BDDFeat *Feat,
-        BDDFactory *Factory
+        BDDFactory::BDDFeat &Feat,
+        BDDFactory &Factory
     );
     
 } // namespace bdd::sample

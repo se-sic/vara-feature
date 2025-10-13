@@ -55,10 +55,10 @@ namespace bdd::sample
        bdd::sample::BDDConstraintVisitor Visitor(&Manager, &VarMap, FinalBdd, false, false);
 
        processConstraints(
-        &Manager,
+        Manager,
         FinalBdd,
-        &VarMap,
-        &Model
+        VarMap,
+        Model
        );
 
         std::cout << "passed processing constraints" << '\n';
@@ -72,11 +72,11 @@ namespace bdd::sample
 
         // Calculate probabilities for all features
         auto R = getPr(
-            &Manager,
-            &Root->BddNode,
+            Manager,
+            Root->BddNode,
             RootId,
-            Root,
-            this
+            *Root,
+            *this
         );
 
         if(!R){

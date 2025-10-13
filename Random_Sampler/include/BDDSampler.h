@@ -10,11 +10,9 @@ namespace bdd::sample {
   
   double random();
 
-  bool isBddTrue(const oxidd::bdd_function& F,  oxidd::bdd_manager Manager);
-
   std::unordered_map<oxidd::var_no_t, bool>
-  generateConfiguration(oxidd::bdd_manager Manager, 
-              oxidd::bdd_function Root, 
+  generateConfiguration(const oxidd::bdd_manager &Manager, 
+              const oxidd::bdd_function &Root, 
               BDDFactory &Factory);
 } // namespace bdd::sample
 
