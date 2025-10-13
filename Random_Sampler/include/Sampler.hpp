@@ -1,24 +1,24 @@
-#ifndef RANDOM_SAMPLER_HPP
-#define RANDOM_SAMPLER_HPP
+// #ifndef RANDOM_SAMPLER_HPP
+// #define RANDOM_SAMPLER_HPP
 
-#include <vector>
-#include <queue>
-#include "vara/Feature/FeatureModelParser.h"
-#include "random"
-#include <unordered_map>
-#include "vara/Feature/FeatureModel.h"
-#include "vara/Feature/Relationship.h"
-#include "NodeType.hpp"
+// #include <vector>
+// #include <queue>
+// #include "vara/Feature/FeatureModelParser.h"
+// #include "random"
+// #include <unordered_map>
+// #include "vara/Feature/FeatureModel.h"
+// #include "vara/Feature/Relationship.h"
+// #include "NodeType.hpp"
 
-using namespace vara::feature;
-using std::vector;
-using std::unique_ptr;
-using std::random_device;
-using std::unordered_map;
-using std::queue;
-using std::find;
+// using namespace vara::feature;
+// using std::vector;
+// using std::unique_ptr;
+// using std::random_device;
+// using std::unordered_map;
+// using std::queue;
+// using std::find;
 
-unordered_map<Feature * , bool> sampleRandomly(const FeatureModel &fd, unordered_map<Feature *, int> &cc, random_device &rd);
-NodeType checkType(const FeatureModel &fd,  FeatureTreeNode *f);
+// unordered_map<Feature * , bool> sampleRandomly(const FeatureModel &fd, unordered_map<Feature *, int> &cc, random_device &rd);
+// NodeType checkType(const FeatureModel &fd,  FeatureTreeNode *f);
 
-#endif // RANDOM_SAMPLER_HPP
+// #endif // RANDOM_SAMPLER_HPP

@@ -1,75 +1,80 @@
-#include "oxidd/capi.h"
-#include <string>
-#include <unordered_map>
 #include "BDDFactory.h"
-#include "llvm/Support/ErrorHandling.h"
-#include "vara/Utils/Result.h"
-#include "vara/Solver/Error.h"
 #include "Probabilities.h"
+#include "vara/Solver/Error.h"
+#include "vara/Utils/Result.h"
+#include <oxidd/bdd.hpp>
+#include <oxidd/bridge.hpp>
+#include <oxidd/util.hpp>
 
 using vara::Result;
 using vara::solver::SolverErrorCode;
-using oxidd::capi::BDDFactory;
+using bdd::sample::BDDFactory;
 
-namespace oxidd::capi {
+namespace bdd::sample {
 
-    Result<vara::solver::SolverErrorCode>getPr(
-        oxidd_bdd_manager_t* manager,
-        oxidd_bdd_t* node,
-        oxidd_var_no_t id,
-        oxidd::capi::BDDFactory::BDDFeat* feat,
-        oxidd::capi::BDDFactory& factory
+    Result<vara::solver::SolverErrorCode>getPr( //NOLINT 
+        oxidd::bdd_manager* Manager,
+        oxidd::bdd_function* Node,
+        oxidd::var_no_t Id,
+        BDDFactory::BDDFeat* Feat,
+        BDDFactory& Factory
     ) {
         // Get the number of satisfying assignments for the BDD node and the total number of features
-        double sat_count = oxidd_bdd_sat_count_double(*node, oxidd_bdd_manager_num_vars(*manager));
-        double total_count = std::pow(2, oxidd_bdd_manager_num_vars(*manager));
-        oxidd_bdd_t cofactor_true = oxidd_bdd_cofactor_true(*node);
-        oxidd_bdd_t cofactor_false = oxidd_bdd_cofactor_false(*node);
+        double SatCount = Node->sat_count_double(Manager->num_vars());
+        double TotalCount = std::pow(2, Manager->num_vars());
+        oxidd::bdd_function CofactorTrue = Node->cofactor_true();
+        oxidd::bdd_function CofactorFalse = Node->cofactor_false();
         // Using Bryant's algorithm to calculate the probabilities
-        feat->marked = true;
+        Feat->Marked = true;
         // Base cases: Terminals
-        if(sat_count == 0.0){
-            feat->satCount = 0;
+        if(SatCount == 0.0){
+            Feat->SatCount = 0;
             return vara::Ok<void>();
-        } else if(sat_count == total_count) {
-            feat->satCount = 1;
+        } if(SatCount == TotalCount) {
+            Feat->SatCount = 1;
             return vara::Ok<void>();
-        } else {
-            // Recursive case until base case reached
-            oxidd_level_no_t index_node = oxidd_bdd_manager_name_to_var(*manager, feat->name.c_str());
-            oxidd_bdd_t cofactor_true = oxidd_bdd_cofactor_true(*node);
-            oxidd_bdd_t cofactor_false = oxidd_bdd_cofactor_false(*node);
-            oxidd::capi::BDDFactory::BDDFeat* trueFeat = factory.findFeatureinBDD(&cofactor_true);
-            oxidd::capi::BDDFactory::BDDFeat* falseFeat = factory.findFeatureinBDD(&cofactor_false);
-            std::cout << "True feature: " << (trueFeat ? trueFeat->name : "null") << std::endl;
-            oxidd_level_no_t index_high = oxidd_bdd_manager_name_to_var(*manager, trueFeat->name.c_str());
-            std::cout << "False feature: " << (falseFeat ? falseFeat->name : "null") << std::endl;
-            oxidd_level_no_t index_low = oxidd_bdd_manager_name_to_var(*manager, falseFeat->name.c_str());
-
-            if(trueFeat->marked != feat->marked) {
+        }   // Recursive case until base case reached
+            auto Opt = Manager->name_to_var(Feat->Name);
+            if(!Opt.has_value()) {
+                return SolverErrorCode::ILLEGAL_STATE;
+            }
+            oxidd::level_no_t IndexNode = Opt.value();
+            BDDFactory::BDDFeat* TrueFeat = Factory.findFeatureinBDD(&CofactorTrue);
+            BDDFactory::BDDFeat* FalseFeat = Factory.findFeatureinBDD(&CofactorFalse);
+            auto OptHigh = Manager->name_to_var(TrueFeat->Name);
+            if(!OptHigh.has_value()) {
+                return SolverErrorCode::ILLEGAL_STATE;
+            }
+            oxidd::var_no_t IndexHigh = OptHigh.value();
+            auto OptLow = Manager->name_to_var(FalseFeat->Name);
+            if(!OptLow.has_value()) {
+                return SolverErrorCode::ILLEGAL_STATE;
+            }
+            oxidd::var_no_t IndexLow = OptLow.value();
+            if(TrueFeat->Marked != Feat->Marked) {
                 getPr(
-                    manager,
-                    &cofactor_true,
-                    index_high, 
-                    trueFeat, 
-                    factory
+                    Manager,
+                    &CofactorTrue,
+                    IndexHigh, 
+                    TrueFeat, 
+                    Factory
                 );
-            } else if(falseFeat->marked != feat->marked) {
+            } else if(FalseFeat->Marked != Feat->Marked) {
                 getPr(
-                    manager, 
-                    &cofactor_false,
-                    index_low, 
-                    falseFeat, 
-                    factory
+                    Manager, 
+                    &CofactorFalse,
+                    IndexLow, 
+                    FalseFeat, 
+                    Factory
                 );
             }
 
-            double solLow =  falseFeat->satCount * std::pow(2, index_low - (index_node-1)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.second, oxidd_bdd_manager_num_vars(manager));
-            double solHigh = trueFeat->satCount * std::pow(2, index_high - (index_node-1)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.first, oxidd_bdd_manager_num_vars(manager));
-            feat->satCount = solLow + solHigh; //ALTERNATIVE: sat_count
-            feat->probability = solHigh / feat->satCount;
+            double SolLow = static_cast<double>(FalseFeat->SatCount) * std::pow(2.0, static_cast<double>(IndexLow) - (static_cast<double>(IndexNode) - 1.0)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.second, oxidd_bdd_manager_num_vars(manager));
+            double SolHigh = static_cast<double>(TrueFeat->SatCount) * std::pow(2.0, static_cast<double>(IndexHigh) - (static_cast<double>(IndexNode) - 1.0)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.first, oxidd_bdd_manager_num_vars(manager));
+            Feat->SatCount = static_cast<size_t>(SolLow + SolHigh); //ALTERNATIVE: sat_count
+            Feat->Probability = SolHigh / static_cast<double>(Feat->SatCount);
             return vara::Ok<void>();
-        } 
+        
 
 
 //-------------------------------------------------------- OLD CODE --------------------------------------------------------
@@ -118,4 +123,4 @@ namespace oxidd::capi {
 //             return vara::Ok<void>();
 //         }
     }
-}
+} // namespace bdd::sample

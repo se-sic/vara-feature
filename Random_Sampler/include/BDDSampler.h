@@ -2,20 +2,20 @@
 #define BDD_SAMPLER_H
 
 #include "../../BDD/include/BDDFactory.h"
-#include "oxidd/capi.h"
+#include "oxidd/bdd.hpp"
 #include <cstdlib> //for RAND_MAX
 #include <unordered_map>
 
-namespace oxidd::capi {
-    
-    double random();
+namespace bdd::sample {
+  
+  double random();
 
-    bool is_bdd_true(const oxidd_bdd_t& f, oxidd_bdd_manager_t manager);
+  bool isBddTrue(const oxidd::bdd_function& F,  oxidd::bdd_manager Manager);
 
-  std::unordered_map<oxidd_var_no_t, bool>
-  generateConfiguration(oxidd_bdd_manager_t manager, 
-                        oxidd_bdd_t root, 
-                        BDDFactory &factory);
-}
+  std::unordered_map<oxidd::var_no_t, bool>
+  generateConfiguration(oxidd::bdd_manager Manager, 
+              oxidd::bdd_function Root, 
+              BDDFactory &Factory);
+} // namespace bdd::sample
 
 #endif //BDD_SAMPLER_H

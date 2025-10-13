@@ -1,78 +1,85 @@
 #include "BDDSampler.h"
-namespace oxidd::capi {
+#include "oxidd/util.hpp"
+namespace bdd::sample {
 
-  // Global variables to store current sample and node probabilities
-  std::unordered_map<oxidd_level_no_t, bool>
-      sample; // Stores variable assignments (true/false)
+  std::unordered_map<oxidd::level_no_t, bool> Sample; // NOLINT
 
   // Helper function: Generates a random number ∈ [0,1)
   double random() { return static_cast<double>(std::rand()) / RAND_MAX; }
 
   // Check if a BDD node is the "true" terminal node
-  bool is_bdd_true(const oxidd_bdd_t &f, oxidd_bdd_manager_t manager) {
-    oxidd_bdd_t true_node = oxidd_bdd_true(manager);
-    return f._p == true_node._p && f._i == true_node._i;
+  bool isBddTrue(const oxidd::bdd_function &F, oxidd::bdd_manager& Manager) { //NOLINT
+    oxidd::bdd_function TrueNode = Manager.t();
+    return F == TrueNode;
   }
 
   // Generate a random configuration by traversing the BDD
-  std::unordered_map<oxidd_var_no_t, bool>
-  generateConfiguration(oxidd_bdd_manager_t manager, oxidd_bdd_t root, BDDFactory &factory) {
+  std::unordered_map<oxidd::level_no_t, bool> generateConfiguration(const oxidd::bdd_manager &Manager, const oxidd::bdd_function& Root, BDDFactory &Factory) { //NOLINT
+      oxidd::bdd_function Trav = Root;
 
-    std::unordered_map<oxidd_var_no_t, bool> sample;
-    oxidd_bdd_t trav = root;
+      // Get the LEVEL of the root node, not the variable number
+      auto RootOpt = Root.node_level();
+      if (!RootOpt.has_value()) {
+        throw std::logic_error("Root node does not have a valid level.");
+      }
+      oxidd::level_no_t RootLevel = *RootOpt;
 
-    // Get the LEVEL of the root node, not the variable number
-    oxidd_level_no_t root_level = oxidd_bdd_node_level(root);
+      // Fill variables that come BEFORE the root in the ordering
+      // We need to find all variables with level < root_level
+      oxidd::level_no_t TotalLevels = Manager.num_vars(); // Fixed case style
 
-    // Fill variables that come BEFORE the root in the ordering
-    // We need to find all variables with level < root_level
-    oxidd_level_no_t total_levels = oxidd_bdd_manager_num_vars(manager);
-
-    for (oxidd_level_no_t level = 0; level < root_level; level++) {
-      oxidd_var_no_t var = oxidd_bdd_manager_level_to_var(manager, level);
-      sample[var] = random() < 0.5; // Random assignment for variables before root
-    }
-
-    // Main BDD traversal
-    oxidd_level_no_t prev_level = root_level - 1;
-
-    while (trav._p != nullptr && !is_bdd_true(trav, manager)) {
-      oxidd_level_no_t current_level = oxidd_bdd_node_level(trav);
-      oxidd_var_no_t current_var = oxidd_bdd_node_var(trav);
-
-      // Fill gaps between previous level and current level with random values
-      for (oxidd_level_no_t level = prev_level + 1; level < current_level;
-          level++) {
-        oxidd_var_no_t var = oxidd_bdd_manager_level_to_var(manager, level);
-        sample[var] = random() < 0.5;
+      for (oxidd::level_no_t Level = 0; Level < RootLevel; Level++) {
+        oxidd::var_no_t Var = Manager.var_to_level(Level);
+        Sample[Var] = random() < 0.5; // Random assignment for variables before root
       }
 
-      // Make probabilistic decision based on precomputed probability
-      auto trav_feat = factory.findFeatureinBDD(&trav);
-      if (!trav_feat->probability.has_value()) {
-          throw std::logic_error("Missing probability for feature: " + trav_feat->name);
+      // Main BDD traversal
+      oxidd::level_no_t PrevLevel = RootLevel - 1;
+
+      while (Trav.valid() && !isBddTrue(Trav, Manager)) {
+        auto LevelOpt = Trav.node_level();
+        if (!LevelOpt.has_value()) {
+          throw std::logic_error("BDD node does not have a valid level.");
+        }
+        oxidd::level_no_t CurrentLevel = *LevelOpt;
+        auto VarOpt = Trav.node_var();
+        if (!VarOpt.has_value()) {
+          throw std::logic_error("BDD node does not have a valid variable.");
+        }
+        oxidd::var_no_t CurrentVar = *VarOpt;
+
+        // Fill gaps between previous level and current level with random values
+        for (oxidd::level_no_t Level = PrevLevel + 1; Level < CurrentLevel; Level++) {
+          oxidd::var_no_t Var = Manager.level_to_var(Level);
+          Sample[Var] = random() < 0.5;
+        }
+
+        // Make probabilistic decision based on precomputed probability
+        auto *TravFeat = Factory.findFeatureinBDD(&Trav);
+        if (!TravFeat->Probability.has_value()) {
+            throw std::logic_error("Missing probability for feature: " + TravFeat->Name);
+        }
+
+        double Probability = std::clamp(*TravFeat->Probability, 0.0, 1.0);
+
+        // Choose branch based on probability
+        if (random() < Probability) {
+          Trav = Trav.cofactor_true(); // Take true branch
+          Sample[CurrentVar] = true; // Include feature
+        } else {
+          Trav = Trav.cofactor_false(); // Take false branch
+          Sample[CurrentVar] = false; // Exclude feature
+        }
+
+        PrevLevel = CurrentLevel;
       }
 
-      double probability = std::clamp(*trav_feat->probability, 0.0, 1.0);
-
-      // Choose branch based on probability
-      if (random() < probability) {
-        trav = oxidd_bdd_cofactor_true(trav); // Take true branch
-        sample[current_var] = true; // Include feature
-      } else {
-        trav = oxidd_bdd_cofactor_false(trav); // Take false branch
-        sample[current_var] = false; // Exclude feature
+      // Fill remaining variables after the last processed level
+      for (oxidd::level_no_t Level = PrevLevel + 1; Level < TotalLevels; Level++) {
+        oxidd::var_no_t Var = Manager.level_to_var(Level);
+        Sample[Var] = random() < 0.5;
       }
 
-      prev_level = current_level;
-    }
-
-    // Fill remaining variables after the last processed level
-    for (oxidd_level_no_t level = prev_level + 1; level < total_levels; level++) {
-      oxidd_var_no_t var = oxidd_bdd_manager_level_to_var(manager, level);
-      sample[var] = random() < 0.5;
-    }
-
-    return sample;
-  }
-} // namespace oxidd::capi
+      return Sample;
+  };
+} // namespace bdd::sample

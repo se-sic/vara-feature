@@ -1,27 +1,25 @@
 #ifndef OXIDD_CAPI_PROBABILITIES_H
 #define OXIDD_CAPI_PROBABILITIES_H
 
-#include "oxidd/capi.h"
-#include <string>
-#include <unordered_map>
+#include "oxidd/bdd.hpp"
 #include "BDDFactory.h"
-#include "llvm/Support/ErrorHandling.h"
-#include "vara/Utils/Result.h"
+#include "oxidd/util.hpp"
 #include "vara/Solver/Error.h"
+#include "vara/Utils/Result.h"
 
 using vara::Result;
 using vara::solver::SolverErrorCode;
 
-namespace oxidd::capi {
+namespace bdd::sample {
 
     Result<vara::solver::SolverErrorCode>getPr(
-        oxidd_bdd_manager_t* manager,
-        oxidd_bdd_t* node,
-        oxidd_var_no_t id,
-        oxidd::capi::BDDFactory::BDDFeat* feat,
-        oxidd::capi::BDDFactory& factory
+        oxidd::bdd_manager *Manager,
+        oxidd::bdd_function *Node,
+        oxidd::var_no_t Id,
+        BDDFactory::BDDFeat *Feat,
+        BDDFactory *Factory
     );
     
-}
+} // namespace bdd::sample
 
 #endif // OXIDD_CAPI_PROBABILITIES_H

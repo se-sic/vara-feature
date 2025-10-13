@@ -1,52 +1,46 @@
-#include <unordered_map>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <algorithm>
 #include "Plotter.h"
+#include <algorithm>
+#include <fstream>
+#include <string>
+#include <unordered_map>
 extern "C" {
-#include <oxidd/capi.h>
+#include <oxidd/bdd.hpp>
 }
 
 using Var = oxidd::capi::oxidd_var_no_t;
 using Sample = std::unordered_map<Var, bool>;
 
-namespace oxidd::capi {
-
-    // Update counts from one sample
-    void update_counts(const Sample& s,
-                                    std::unordered_map<Var, Freq>& acc) {
-        for (const auto& [v, val] : s) {
-            auto& f = acc[v];
-            f.total++;
-            if (val) f.true_count++;
+namespace bdd::sample {
+    
+    void updateCounts(const Sample& S, std::unordered_map<Var, bdd::sample::Freq>& Acc) { 
+        for (const auto& [v, val] : S) {
+            auto& F = Acc[v];
+            F.Total++;
+            if (val) { F.TrueCount++; }
         }
     }
 
     // Convert counts to rows and (optionally) sort by label
-    std::vector<Row>
-    to_rows(const std::unordered_map<Var, Freq>& acc,
-            const std::unordered_map<Var, oxidd::capi::BDDFactory::BDDFeat>* names) {
-        std::vector<Row> rows;
-        rows.reserve(acc.size());
-        for (const auto& [v, f] : acc) {
-            double p = f.total ? double(f.true_count) / double(f.total) : 0.0;
-            std::string label = names ? names->at(v).name : "NAN";
-            rows.push_back({label, v, f.true_count, f.total, p});
+    std::vector<bdd::sample::Row>
+    toRows(const std::unordered_map<Var, bdd::sample::Freq>& Acc,
+           const std::unordered_map<Var, bdd::sample::BDDFactory::BDDFeat>* Names) {
+        std::vector<bdd::sample::Row> Rows;
+        Rows.reserve(Acc.size());
+        for (const auto& [v, f] : Acc) {
+            double P = f.Total ? double(f.TrueCount) / double(f.Total) : 0.0;
+            std::string Label = Names ? Names->at(v).Name : "NAN";
+            Rows.push_back({Label, v, f.TrueCount, f.Total, P});
         }
-        std::sort(rows.begin(), rows.end(),
-                [](const Row& a, const Row& b){ return a.label < b.label; });
-        return rows;
+        std::ranges::sort(Rows,[](const Row& A, const Row& B){ return A.Label < B.Label; });
+        return Rows;
     }
 
     // Write CSV for plotting (optional)
-    void write_csv(const std::vector<Row>& rows,
-                                const std::string& path) {
-        std::ofstream out(path);
-        out << "label,var,true,total,p_true\n";
-        for (const auto& r : rows)
-            out << r.label << "," << r.v << "," << r.t << "," << r.n << "," << r.p << "\n";
+    void writeCsv(const std::vector<Row>& Rows, const std::string& Path) {
+        std::ofstream Out(Path);
+        Out << "label,var,true,total,p_true\n";
+        for (const auto& R : Rows) {
+            Out << R.Label << "," << R.V << "," << R.T << "," << R.N << "," << R.P << "\n";
+        }
     }
-}
-
+} // namespace bdd::sample

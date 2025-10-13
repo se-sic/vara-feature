@@ -1,111 +1,101 @@
-//#include "ConfigCounter.hpp"
 #include "BDDSampler.h"
-#include "Plotter.h"
-// #include "Z3Helper.hpp"
-// #include "FeatureDiagram.hpp"
-// #include "GraphViz.h"
-// #include "Sampler.hpp"
-// #include "NodeType.hpp"
-#include "vara/Feature/FeatureModelParser.h"
 #include "../../BDD/include/BDDFactory.h"
-#include <iostream>
-#include <unordered_map>
-#include <random>
-#include <string>
-#include <vector>
+#include "Plotter.h"
+#include "vara/Feature/FeatureModelParser.h"
 #include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 extern "C" {
-#include <oxidd/capi.h>
+#include <oxidd/bdd.hpp>
 }
 
-// using oxidd::bdd_manager;
-// using oxidd::bdd_function;
-// using oxidd::capi::oxidd_bdd_manager_t;
-// using oxidd::capi::oxidd_bdd_t;
 using std::string;
 using std::vector;
-using std::pair;
 
 
- int main(int argc, char* argv[]) { 
+int main(int argc, char* argv[]) noexcept(false){ 
 
     if (argc < 2) {
         std::cerr << "Usage: ./my_program <feature_model.xml>\n";
         return 1;
     }
 
-    std::string filePath = argv[1];
+    std::vector<std::string> Args(argv + 1, argv + argc);
+    std::string FilePath = Args[1]; // Use std::string constructor directly
 
     // Lambda function to load and parse the feature model
-    std::unique_ptr<vara::feature::FeatureModel> fd = [&]() {
+    std::unique_ptr<vara::feature::FeatureModel> Fd = [&]() {
         // Read the file content
-        std::ifstream in(filePath);
-        if (!in) {
-            throw std::runtime_error("Could not open file: " + filePath);
+        std::ifstream FileIn(FilePath);
+        if (!FileIn) {
+            throw std::runtime_error("Could not open file: " + FilePath);
         }
-        std::ostringstream oss;
-        oss << in.rdbuf();
-        std::string xmlContent = oss.str();
+        std::ostringstream Oss;
+        Oss << FileIn.rdbuf();
+        std::string XMLContent = Oss.str();
 
         // Parse the content
-        vara::feature::FeatureModelXmlParser parser(xmlContent);
+        vara::feature::FeatureModelXmlParser Parser(XMLContent);
 
         // Verify the feature model is valid
-        auto verify = parser.verifyFeatureModel();
-        if(!verify) {
+        auto Verify = Parser.verifyFeatureModel();
+        if(!Verify) {
             throw std::runtime_error("Error parsing XML: verification failed");
         }   
 
         // Build the feature model object
-        auto fm = parser.buildFeatureModel();
-        if(!fm) {
+        auto Fm = Parser.buildFeatureModel();
+        if(!Fm) {
             throw std::runtime_error("Error building Feature Model: ");
         }
 
         //(void)vara::feature::FeatureModelXmlParser::detectXMLAlternatives(*fm);
 
-        return fm;
+        return Fm;
     }();
 
-    std::cout << "Feature Model loaded successfully from: " << filePath << std::endl;
+    std::cout << "Feature Model loaded successfully from: " << FilePath <<'\n';
 
     // Create BDD factory and convert feature model to BDD
-    oxidd::capi::BDDFactory factory;
-    oxidd::capi::oxidd_bdd_t finalBDD = factory.modelToBdd(*fd);
-    oxidd::capi::oxidd_bdd_manager_t manager = oxidd_bdd_containing_manager(finalBDD);
-    std::cout << "BDD constructed successfully." << std::endl;
+    bdd::sample::BDDFactory Factory;
+    oxidd::bdd_function FinalBDD = Factory.modelToBdd(*Fd);
+    oxidd::bdd_manager Manager = FinalBDD.containing_manager();
+    std::cout << "BDD constructed successfully." << '\n';
 
     // Generate a single sample configuration
-    std::unordered_map<oxidd::capi::oxidd_var_no_t, bool> sample = generateConfiguration(
-        manager, 
-        finalBDD, 
-        factory
+    std::unordered_map<oxidd::capi::oxidd_var_no_t, bool> Sample = generateConfiguration(
+        Manager, 
+        FinalBDD, 
+        Factory
     );
 
     // Initialize frequency counts for features
-    std::unordered_map<oxidd::capi::oxidd_var_no_t, oxidd::capi::Freq> counts;
+    std::unordered_map<oxidd::capi::oxidd_var_no_t, bdd::sample::Freq> Counts;
     size_t N = 10; // Number of samples to generate
 
     // Generate multiple samples and update frequency counts
-    for(size_t i=0; i<N; ++i) {
-        auto s = generateConfiguration(
-            manager, 
-            finalBDD, 
-            factory
+    for(size_t I=0; I<N; ++I) {
+        auto S = generateConfiguration(
+            Manager, 
+            FinalBDD, 
+            Factory
         );
-        oxidd::capi::update_counts(s, counts);
+        bdd::sample::updateCounts(S, Counts);
     }
 
     // Convert counts to readable rows and print them
-    auto rows = oxidd::capi::to_rows(counts, &factory.varMap);
+    auto Rows = bdd::sample::toRows(Counts, &Factory.VarMap);
     
-    for(const auto& r : rows) {
-        std::cout << r.label << " (id=" << r.v << "): "
-                  << r.p << "  [" << r.t << "/" << r.n << "]\n";
+    for(const auto& R : Rows) {
+        std::cout << R.Label << " (id=" << R.V << "): "
+                  << R.P << "  [" << R.T << "/" << R.N << "]\n";
     }
 
     // Write the frequency data to CSV file
-    oxidd::capi::write_csv(rows, "freq.csv");
+    bdd::sample::writeCsv(Rows, "freq.csv");
 
     return 0;
  }
@@ -113,7 +103,7 @@ using std::pair;
 
 
 //     oxidd::capi::BDDFactory factory;
-//     oxidd_bdd_t finalBDD = factory.modelToBdd(*fd); 
+//     oxidd::bdd_function finalBDD = factory.modelToBdd(*fd); 
 //     auto sample =  oxidd::capi::generateConfiguration(
 //                 finalBDD,
 //                 factory
@@ -196,17 +186,17 @@ using std::pair;
     // oxidd::bdd_function c =  mgr.new_var();
     // oxidd::bdd_function f = a & b | ~a & c | b & ~c;
 
-    // const oxidd_bdd_manager_t* c_mgr = reinterpret_cast<const oxidd_bdd_manager_t*>(&mgr);
+    // const oxidd::bdd_manager* c_mgr = reinterpret_cast<const oxidd::bdd_manager*>(&mgr);
 
-    // const oxidd_bdd_t* c_a = reinterpret_cast<const oxidd_bdd_t*>(&a);
-    // const oxidd_bdd_t* c_b = reinterpret_cast<const oxidd_bdd_t*>(&b);
-    // const oxidd_bdd_t* c_c = reinterpret_cast<const oxidd_bdd_t*>(&c);
-    // const oxidd_bdd_t* c_f = reinterpret_cast<const oxidd_bdd_t*>(&f);
+    // const oxidd::bdd_function* c_a = reinterpret_cast<const oxidd::bdd_function*>(&a);
+    // const oxidd::bdd_function* c_b = reinterpret_cast<const oxidd::bdd_function*>(&b);
+    // const oxidd::bdd_function* c_c = reinterpret_cast<const oxidd::bdd_function*>(&c);
+    // const oxidd::bdd_function* c_f = reinterpret_cast<const oxidd::bdd_function*>(&f);
 
-    // const oxidd_bdd_t functions[] = { *c_f };
+    // const oxidd::bdd_function functions[] = { *c_f };
     // const char* function_names[] = { "Function" };
 
-    // const oxidd_bdd_t vars[] = { *c_a, *c_b, *c_c };
+    // const oxidd::bdd_function vars[] = { *c_a, *c_b, *c_c };
     // const char* var_names[] = { "a", "b", "c"};
 
     // bool check = oxidd_bdd_manager_dump_all_dot_file(

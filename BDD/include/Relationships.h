@@ -28,10 +28,10 @@
 
 // namespace oxidd::capi {
 //     Result<SolverErrorCode> RelationshipToBdd(
-//         const oxidd_bdd_manager_t manager,
+//         const oxidd::bdd_manager manager,
 //         Relationship *relationship,
 //         unordered_map<string, BDDFactory::BDDFeat> *varMap,
-//         oxidd_bdd_t *finalBDD
+//         oxidd::bdd_function *finalBDD
 //     );
 // } // namespace oxidd::capi
 

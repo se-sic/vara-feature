@@ -1,47 +1,28 @@
 #ifndef OXIDD_BDD_FEATS
 #define OXIDD_BDD_FEATS
 
-#include "oxidd/capi.h"
-#include "vara/Feature/FeatureModel.h"
-#include "vara/Feature/Feature.h"
-#include <vector>
-#include <string>
-#include <unordered_map>
 #include "BDDFactory.h"
-#include "llvm/Support/ErrorHandling.h"
-#include "vara/Utils/Result.h"
+#include "oxidd/bdd.hpp"
+#include "oxidd/util.hpp"
+#include "vara/Feature/Feature.h"
 #include "vara/Solver/Error.h"
+#include "vara/Utils/Result.h"
+#include <unordered_map>
 
 using vara::Result;
 using vara::solver::SolverErrorCode;
 using vara::feature::Feature;
-using oxidd::capi::BDDFactory;
+using bdd::sample::BDDFactory;
 
-namespace oxidd::capi {
-    Result<SolverErrorCode>FeatureToBdd(
-        const oxidd_bdd_manager_t* mgr,
-        const bool isInXOR,
-        const Feature& feature,
-        std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
-        oxidd_bdd_t* finalBdd
+namespace bdd::sample {
+    Result<SolverErrorCode>featureToBdd(
+        const oxidd::bdd_manager *Mgr,
+        bool IsInXor,
+        const Feature &Feature,
+        std::unordered_map<oxidd::level_no_t, BDDFactory::BDDFeat> *VarMap,
+        oxidd::bdd_function *FinalBdd
     );
 
-    Result<SolverErrorCode> addFeatureToBdd(
-        const string featureName,
-        std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
-        oxidd_var_no_t id,
-        oxidd_bdd_manager_t manager
-    );
-
-    Result<SolverErrorCode> addBinaryConstraints(
-        oxidd_var_no_t parentId,
-        oxidd_var_no_t id,
-        const bool isInXOR,
-        const bool isOpt,
-        std::unordered_map<oxidd_var_no_t, BDDFactory::BDDFeat>* varMap,
-        oxidd_bdd_t* finalBdd
-    );
-
-} // namespace oxidd::capi
+} // namespace bdd::sample
 
 #endif // OXIDD_BDD_FEATS

@@ -1,28 +1,25 @@
 #ifndef PLOTTER_H
 #define PLOTTER_H
 
+#include "../../BDD/include/BDDFactory.h"
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <algorithm>
-#include "../../BDD/include/BDDFactory.h"
 extern "C" {
 #include <oxidd/capi.h>
 }
 
-namespace oxidd::capi {
+namespace bdd::sample {
     using Var = oxidd::capi::oxidd_var_no_t;
     using Sample = std::unordered_map<Var, bool>;
-    struct Freq { size_t true_count = 0; size_t total = 0; };
-    struct Row { std::string label; Var v; size_t t; size_t n; double p; };
+    struct Freq { size_t TrueCount = 0; size_t Total = 0; };
+    struct Row { std::string Label; Var V; size_t T; size_t N; double P; };
 
 
-    void update_counts(const Sample& s, std::unordered_map<Var, Freq>& acc);
-    std::vector<Row>to_rows(const std::unordered_map<Var, Freq>& acc, const std::unordered_map<Var, oxidd::capi::BDDFactory::BDDFeat>* names);
-    void write_csv(const std::vector<Row>& rows, const std::string& path = "freq.csv");
-}
+    void updateCounts(const Sample& S, std::unordered_map<Var, Freq>& Acc);
+    std::vector<Row>toRows(const std::unordered_map<Var, Freq>& Acc, const std::unordered_map<Var, bdd::sample::BDDFactory::BDDFeat>* Names);
+    void writeCsv(const std::vector<Row>& Rows, const std::string& Path = "freq.csv");
+} // namespace bdd::sample
 
 
 #endif // PLOTTER_H
