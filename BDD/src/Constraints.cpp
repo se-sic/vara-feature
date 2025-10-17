@@ -1,6 +1,7 @@
 #include "Constraints.h"
 #include <oxidd/bdd.hpp>
 #include <oxidd/util.hpp>
+#include <vector>
 
 namespace bdd::sample {
 
@@ -162,7 +163,7 @@ namespace bdd::sample {
      * Process all constraints of a feature model and add them to the BDD
      */
      void processConstraints(//NOLINT 
-        const oxidd::bdd_manager &Manager,
+        oxidd::bdd_manager &Manager,
         oxidd::bdd_function &Bdd,
         GlobalVarMap &VarMap,
         const vara::feature::FeatureModel &Model) {
@@ -181,8 +182,16 @@ namespace bdd::sample {
             return true;
         };
 
+        std::string_view DiagramName = "HIPPACC"; 
+        std::vector<oxidd::bdd_function> Func = {Bdd};
+        int Cnt = 0;
         // Process only Boolean constraints (others are not supported)
         for (const auto& C : Model.booleanConstraints()) {
+            std::cout << "Processing Boolean Constraint " << ++Cnt << '\n';
+            if(Cnt > 735) {
+                auto Result = Manager.visualize(DiagramName, Func);
+            }
+            // auto Result = Manager.visualize(DiagramName, Func);
             if (!Process(C)) { break; }
         }
     }

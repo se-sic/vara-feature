@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) noexcept(false){
     }
 
     std::vector<std::string> Args(argv + 1, argv + argc);
-    std::string FilePath = Args[1]; // Use std::string constructor directly
+    std::string FilePath = Args[0]; // Use std::string constructor directly
 
     // Lambda function to load and parse the feature model
     std::unique_ptr<vara::feature::FeatureModel> Fd = [&]() {

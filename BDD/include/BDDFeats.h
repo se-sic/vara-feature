@@ -16,11 +16,11 @@ using bdd::sample::BDDFactory;
 
 namespace bdd::sample {
     Result<SolverErrorCode>featureToBdd(
-        const oxidd::bdd_manager *Mgr,
+        oxidd::bdd_manager &Mgr,
         bool IsInXor,
         const Feature &Feature,
-        std::unordered_map<oxidd::level_no_t, BDDFactory::BDDFeat> *VarMap,
-        oxidd::bdd_function *FinalBdd
+        std::unordered_map<oxidd::level_no_t, BDDFactory::BDDFeat> &VarMap,
+        oxidd::bdd_function &FinalBdd
     );
 
 } // namespace bdd::sample

@@ -43,17 +43,14 @@ namespace bdd::sample
 
        // Process each feature: add to varMap and add constraints to finalBdd
        for(auto *F: Model.features()) { 
-        auto R = featureToBdd(&Manager,std::ranges::find(V, F->getName().str()) != V.end(),*F,&VarMap,&FinalBdd);
+        auto R = featureToBdd(Manager,std::ranges::find(V, F->getName().str()) != V.end(),*F,VarMap,FinalBdd);
         if(!R) {
             continue; // Skip to the next feature if there is an error
         }
        }
 
        std::cout << "passed features" << '\n';
-
-       // Process explicit constraints from the feature model
-       bdd::sample::BDDConstraintVisitor Visitor(&Manager, &VarMap, FinalBdd, false, false);
-
+       
        processConstraints(
         Manager,
         FinalBdd,
@@ -62,6 +59,10 @@ namespace bdd::sample
        );
 
         std::cout << "passed processing constraints" << '\n';
+
+       std::string_view DaigramName = "HIPPACC";
+       std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
+       auto Result = Manager.visualize(DaigramName, Funcs);
 
         // Find the root feature to start probability calculation
         BDDFeat* Root = findFeatureinBDD(&VarMap.at(0).BddNode);
@@ -121,9 +122,9 @@ namespace bdd::sample
             for(auto & Name: Names) {
                 auto Id = Manager.name_to_var(Name);
                 if(Id.has_value()){
-                    llvm::outs() << "Variable ID for" << Name << " is " << Id.value() << "\n";
+                    llvm::outs() << "Variable ID for " << Name << " is " << Id.value() << "\n";
                 } else{
-                    llvm::errs() << "Variable ID for" << Name << " not found\n";
+                    llvm::errs() << "Variable ID for " << Name << " not found\n";
                 }
             }
         } else {

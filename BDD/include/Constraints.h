@@ -15,7 +15,7 @@ namespace bdd::sample {
 
   class BDDConstraintVisitor : public vara::feature::ConstraintVisitor {
   public:
-    BDDConstraintVisitor(const oxidd::bdd_manager *Manager,
+    BDDConstraintVisitor(oxidd::bdd_manager *Manager,
                         GlobalVarMap *VarMap,
                         oxidd::bdd_function FinalBDD,
                         bool IsMixedConstraint = false,
@@ -55,7 +55,7 @@ namespace bdd::sample {
  }; 
 
   // One-pass application of all constraints in the model
-  void processConstraints(const oxidd::bdd_manager &Manager,
+  void processConstraints(oxidd::bdd_manager &Manager,
                           oxidd::bdd_function &Bdd,
                           GlobalVarMap &VarMap,
                           const vara::feature::FeatureModel &Model);

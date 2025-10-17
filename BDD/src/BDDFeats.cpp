@@ -7,16 +7,16 @@ namespace bdd::sample {
         // Add binary feature to the varMap
     namespace {
         Result<SolverErrorCode> addFeatureToBdd(
-            const string *FeatureName,
-            std::unordered_map<oxidd::var_no_t, BDDFactory::BDDFeat> *VarMap,
+            const string &FeatureName,
+            std::unordered_map<oxidd::var_no_t, BDDFactory::BDDFeat> &VarMap,
             oxidd::var_no_t Id,
-            const oxidd::bdd_manager *Manager
+            const oxidd::bdd_manager &Manager
         ){
             // Create BDDFeat entry for this feature
-            (*VarMap)[Id] = BDDFactory::BDDFeat{
-                .BddNode = Manager->var(Id),
+            (VarMap)[Id] = BDDFactory::BDDFeat{
+                .BddNode = Manager.var(Id),
                 .IsRoot = false,
-                .Name = *FeatureName,
+                .Name = FeatureName,
                 .Marked = false,
                 .SatCount = 0,
                 .Probability = {},
@@ -33,7 +33,7 @@ namespace bdd::sample {
             oxidd::var_no_t Id,
             const bool IsInXOR,
             const bool IsOpt,
-            std::unordered_map<oxidd::var_no_t, BDDFactory::BDDFeat> *VarMap,
+            std::unordered_map<oxidd::var_no_t, BDDFactory::BDDFeat> &VarMap,
             oxidd::bdd_function &FinalBdd
         ){
             // Check if parent exists
@@ -42,8 +42,8 @@ namespace bdd::sample {
             }
 
             // Get BDD nodes for child and parent
-            oxidd::bdd_function Child = VarMap->at(Id).BddNode;
-            oxidd::bdd_function Parent = VarMap->at(ParentId).BddNode;
+            oxidd::bdd_function Child = VarMap.at(Id).BddNode;
+            oxidd::bdd_function Parent = VarMap.at(ParentId).BddNode;
 
             // Add constraint: child → parent
             oxidd::bdd_function ChildToParent = Child.imp(Parent);
@@ -62,24 +62,24 @@ namespace bdd::sample {
     
     // Convert a feature to BDD representation and add constraints
     Result<SolverErrorCode>featureToBdd(
-        const oxidd::bdd_manager* Mgr,
+        oxidd::bdd_manager &Mgr,
         const bool IsInXOR,
-        const Feature& Feature,
-        std::unordered_map<oxidd::var_no_t, BDDFactory::BDDFeat>* VarMap,
-        oxidd::bdd_function* FinalBdd
+        const Feature &Feature,
+        std::unordered_map<oxidd::var_no_t, BDDFactory::BDDFeat> &VarMap,
+        oxidd::bdd_function &FinalBdd
     ){
         // Extract feature properties
         bool IsOpt = Feature.isOptional();
         const class Feature *Parent = Feature.getParentFeature();
         const std::string FeatureName = Feature.getName().str();
         const std::string ParentName = Parent ? Parent->getName().str() : ""; // Changed 'parent' to 'Parent'
-        auto IdCheck = Mgr->name_to_var(FeatureName);
+        auto IdCheck = Mgr.name_to_var(FeatureName);
         if(!IdCheck.has_value()) {
             std::cerr << "Error: Could not find variable ID for feature '" << FeatureName << "'.\n";
             return SolverErrorCode::ILLEGAL_STATE;
         }
         oxidd::capi::oxidd_var_no_t Id = IdCheck.value();
-        auto ParentIdCheck = Parent ? Mgr->name_to_var(ParentName) : -1;
+        auto ParentIdCheck = Parent ? Mgr.name_to_var(ParentName) : -1;
         if(Parent && !ParentIdCheck.has_value()) {
             std::cerr << "Error: Could not find variable ID for parent feature '" << ParentName << "'.\n";
             return SolverErrorCode::PARENT_NOT_PRESENT;
@@ -87,7 +87,7 @@ namespace bdd::sample {
         oxidd::capi::oxidd_var_no_t ParentId = Parent ? ParentIdCheck.value() : -1;
 
         // If ID is already in the varMap, return back to the next feature
-        if(VarMap->contains(Id)) {
+        if(VarMap.contains(Id)) {
             return SolverErrorCode::ALREADY_PRESENT;
         }
         // Handle different feature types: Only consider Binary and root features, else return NOT_SUPPORTED
@@ -105,7 +105,7 @@ namespace bdd::sample {
                 }
                 // Add binary feature to the varMap
                 addFeatureToBdd(
-                    &FeatureName,
+                    FeatureName,
                     VarMap,
                     Id,
                     Mgr
@@ -117,11 +117,15 @@ namespace bdd::sample {
                     IsInXOR,
                     IsOpt,
                     VarMap,
-                    *FinalBdd);
+                    FinalBdd);
                 if(!R) {
                     return R;
                 }
 
+                // std::string Text = Mgr.var_name(Id); //NOLINT 
+                // std::string_view DaigramName = "HIPPACC";
+                // std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
+                // auto Result = Mgr.visualize(DaigramName, Funcs);
                 return vara::Ok<void>();
             }
             // If root feature, add it to varMap and then add it as AND to the finalBdd
@@ -129,8 +133,8 @@ namespace bdd::sample {
                 // Handle root feature specially
 
                 
-                (*VarMap)[Id] = BDDFactory::BDDFeat{
-                    .BddNode = Mgr->var(Id),
+                (VarMap)[Id] = BDDFactory::BDDFeat{
+                    .BddNode = Mgr.var(Id),
                     .IsRoot = true,
                     .Name = FeatureName,
                     .Marked = false,
@@ -138,7 +142,7 @@ namespace bdd::sample {
                     .Probability = {},
                 };
 
-                *FinalBdd = (*FinalBdd) & Mgr->var(Id);
+                FinalBdd = (FinalBdd) & Mgr.var(Id);
                 
                 return vara::Ok<void>();
             }
