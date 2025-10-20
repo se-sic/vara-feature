@@ -12,12 +12,12 @@ namespace bdd::sample {
         this->RequireAll = RequireAll;
         C->accept(*this); // Visit the constraint
         if (Negate) {
-            CurrentBDD = ~CurrentBDD; // Negate if requested
+            (*CurrentBDD) = ~(*CurrentBDD); // Negate if requested
         }
         if (IsMixedConstraint && RequireAll) {
-            CurrentBDD = VariableConstraint & CurrentBDD;
+            (*CurrentBDD) = VariableConstraint & (*CurrentBDD);
         } 
-        return CurrentBDD;
+        return (*CurrentBDD);
     }
 
     /**
@@ -28,30 +28,30 @@ namespace bdd::sample {
         
         // Process Left and Right operands
         C->getLeftOperand()->accept(*this);
-        oxidd::bdd_function Left  = CurrentBDD;
+        oxidd::bdd_function Left  = (*CurrentBDD);
         
         C->getRightOperand()->accept(*this);
-        oxidd::bdd_function Right = CurrentBDD;
+        oxidd::bdd_function Right = (*CurrentBDD);
 
         // Apply appropriate BDD operation based on constraint type
         switch(C->getKind()) {
             case CK::CK_AND:
-                CurrentBDD = CurrentBDD & (Left & Right);
+                (*CurrentBDD) = (*CurrentBDD) & (Left & Right);
                 break;
             case CK::CK_OR:
-                CurrentBDD = (CurrentBDD & (Left | Right));
+                (*CurrentBDD) = ((*CurrentBDD) & (Left | Right));
                 break;
             case CK::CK_IMPLIES:
-                CurrentBDD = CurrentBDD &(Left.imp(Right));
+                (*CurrentBDD) = (*CurrentBDD) &(Left.imp(Right));
                 break;
             case CK::CK_EQUIVALENCE:
-                CurrentBDD = CurrentBDD & (Left.equiv(Right));
+                (*CurrentBDD) = (*CurrentBDD) & (Left.equiv(Right));
                 break;
             case CK::CK_XOR:
-                CurrentBDD = CurrentBDD & (Left ^ Right);
+                (*CurrentBDD) = (*CurrentBDD) & (Left ^ Right);
                 break;
             case CK::CK_EXCLUDES:
-                CurrentBDD = CurrentBDD & (Left.imp(~Right));
+                (*CurrentBDD) = (*CurrentBDD) & (Left.imp(~Right));
                 break;
 
             case CK::CK_LESS:
@@ -62,12 +62,12 @@ namespace bdd::sample {
             case CK::CK_NOT_EQUAL: // Boolean inequality handled below
                 // For boolean comparisons, use equivalence/not equivalence
                 if (C->getKind() == CK::CK_EQUAL) {
-                    CurrentBDD = CurrentBDD & (Left.equiv(Right));
+                    (*CurrentBDD) = (*CurrentBDD) & (Left.equiv(Right));
                 } else if (C->getKind() == CK::CK_NOT_EQUAL) {
-                    CurrentBDD = CurrentBDD & ~(Left.equiv(Right));
+                    (*CurrentBDD) = (*CurrentBDD) & ~(Left.equiv(Right));
                 } else {
                     std::cerr << "Error: Numeric comparisons (<, >, <=, >=) are not supported. Only binary constraints are supported.\n";
-                    CurrentBDD = Manager.f();
+                    (*CurrentBDD) = Manager->f();
                     return false;
                 }
                 break;
@@ -77,12 +77,12 @@ namespace bdd::sample {
             case CK::CK_MULTIPLICATION:
             case CK::CK_DIVISION:
                 std::cerr << "Error: Arithmetic operations (+, -, *, /) are not supported. Only binary constraints are supported.\n";
-                CurrentBDD = Manager.f(); 
+                (*CurrentBDD) = Manager->f(); 
                 return false;
 
             default:
                 std::cerr << "Error: Unknown constraint type encountered. Only binary constraints are supported.\n";
-                CurrentBDD = Manager.f();
+                (*CurrentBDD) = Manager->f();
                 return false;
         }
         return true;
@@ -97,15 +97,15 @@ namespace bdd::sample {
         C->getOperand()->accept(*this);
         switch(C->getKind()) {
             case CK::CK_NOT:
-                CurrentBDD = ~CurrentBDD;
+                (*CurrentBDD) = ~(*CurrentBDD);
                 return true;
             case CK::CK_NEG:
                 std::cerr << "Error: Numeric negation (~) is not supported. Only binary constraints are supported.\n";
-                CurrentBDD = Manager.f();
+                (*CurrentBDD) = Manager->f();
                 return false;
             default:
                 std::cerr << "Error: Unknown unary constraint type encountered. Only binary constraints are supported.\n";
-                CurrentBDD = Manager.f();
+                (*CurrentBDD) = Manager->f();
                 return false;
         }
     }
@@ -115,7 +115,7 @@ namespace bdd::sample {
      */
     bool BDDConstraintVisitor::visit(vara::feature::PrimaryFeatureConstraint* C) {
         std::string FeatureName = C->getFeature()->getName().str();
-        auto IdCheck = Manager.name_to_var(FeatureName);
+        auto IdCheck = Manager->name_to_var(FeatureName);
         if (!IdCheck.has_value()) {
             std::cerr << "Error: Could not find variable ID for feature '" << FeatureName << "'.\n";
             return false;
@@ -126,7 +126,7 @@ namespace bdd::sample {
         if (C->getFeature()->getKind() == vara::feature::Feature::FeatureKind::FK_NUMERIC) {
             std::cerr << "Error: Numeric features are not supported. Feature '" << FeatureName 
                     << "' is numeric. Only binary features are supported.\n";
-            CurrentBDD = Manager.f();
+            (*CurrentBDD) = Manager->f();
             return false;
         }
 
@@ -150,7 +150,7 @@ namespace bdd::sample {
         auto It = VarMap->find(Id);
         if (It != VarMap->end()) {
             auto Feat = It->second;
-            CurrentBDD = Manager.var(Id) & Feat.BddNode;
+            (*CurrentBDD) = Manager->var(Id) & Feat.BddNode;
         }    
         // Falls das Feature nicht gefunden wurde, wird eine temporäre Variable erstellt
         // static oxidd_var_no_t tempVarCounter = 10000;
@@ -169,7 +169,7 @@ namespace bdd::sample {
         const vara::feature::FeatureModel &Model) {
             
         // Initialize constraint visitor with all required parameters
-        BDDConstraintVisitor Visitor(&Manager, &VarMap, Bdd, false, false);
+        BDDConstraintVisitor Visitor(Manager, VarMap, Bdd, false, false);
 
        // Lambda function to process a single constraint
         const auto Process = [&](const auto& Constraint) {

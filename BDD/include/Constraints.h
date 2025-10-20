@@ -15,17 +15,17 @@ namespace bdd::sample {
 
   class BDDConstraintVisitor : public vara::feature::ConstraintVisitor {
   public:
-    BDDConstraintVisitor(oxidd::bdd_manager *Manager,
-                        GlobalVarMap *VarMap,
-                        oxidd::bdd_function FinalBDD,
+    BDDConstraintVisitor(oxidd::bdd_manager &Manager,
+                        GlobalVarMap &VarMap,
+                        oxidd::bdd_function &FinalBDD,
                         bool IsMixedConstraint = false,
                         bool RequireAll = true)
-      : Manager(*Manager),
-        VarMap(VarMap),
-        CurrentBDD(std::move(FinalBDD)),
+      : Manager(&Manager),
+        VarMap(&VarMap),
+        CurrentBDD(&FinalBDD),
         IsMixedConstraint(IsMixedConstraint),
         RequireAll(RequireAll),
-        VariableConstraint(Manager->f()) {}
+        VariableConstraint(Manager.f()) {}
 
     // Build a BDD for a constraint. If negate==true, we negate the resulting BDD.
     oxidd::bdd_function addConstraint(vara::feature::Constraint* C,
@@ -44,10 +44,10 @@ namespace bdd::sample {
     // std::string getOperandName(vara::feature::Constraint* operand);
     bool handleFeatureConstraint(oxidd::var_no_t Id);
 
-    oxidd::bdd_manager Manager;
-    GlobalVarMap*  VarMap;
+    oxidd::bdd_manager *Manager;
+    GlobalVarMap *VarMap;
 
-    oxidd::bdd_function CurrentBDD;
+    oxidd::bdd_function *CurrentBDD;
     int         TempCounter = 0;
     bool        IsMixedConstraint = false;
     bool        RequireAll        = true;
