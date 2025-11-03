@@ -50,9 +50,20 @@ antlr_target(
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${ANTLR_UVLCppLexer_OUTPUT_DIR})
 
-# add generated grammar to demo binary target
-add_executable(
-  AntlrTest FeatureUVLParser.cpp ${ANTLR_UVLCppLexer_CXX_OUTPUTS}
-            ${ANTLR_UVLCppParser_CXX_OUTPUTS}
-)
-target_link_libraries(AntlrTest LINK_PRIVATE VaRAFeature antlr4_static)
+# Add UVL parser implementation and generated lexer/parser sources to the
+# VaRAFeature library so the symbols are available to other library code (e.g.,
+# FeatureModel). Also link the ANTLR runtime into VaRAFeature when building the
+# UVL parser.
+if(TARGET VaRAFeature)
+  target_sources(
+    VaRAFeature PRIVATE FeatureUVLParser.cpp ${ANTLR_UVLCppLexer_CXX_OUTPUTS}
+                        ${ANTLR_UVLCppParser_CXX_OUTPUTS}
+  )
+  # Ensure the VaRAFeature target can find the generated ANTLR headers and
+  # includes from this subdirectory's build tree.
+  target_include_directories(
+    VaRAFeature PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+                        ${ANTLR_UVLCppLexer_OUTPUT_DIR} ${ANTLR4_INCLUDE_DIRS}
+  )
+  target_link_libraries(VaRAFeature LINK_PRIVATE antlr4_static)
+endif()

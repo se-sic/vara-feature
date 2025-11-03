@@ -250,6 +250,7 @@ class FeatureModelUvlParser : public FeatureModelParser {
 public:
   explicit FeatureModelUvlParser(std::string Uvl) : Uvl(std::move(Uvl)) {}
   Result<FTErrorCode> verifyFeatureModel() override;
+  ~FeatureModelUvlParser() override;
   std::unique_ptr<FeatureModel> buildFeatureModel() override;
 
 private:

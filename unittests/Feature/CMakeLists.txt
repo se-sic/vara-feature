@@ -9,6 +9,7 @@ add_vara_unittest(
   FeatureModelBuilder.cpp
   FeatureModelTransaction.cpp
   FeatureModelParser.cpp
+  FeatureModelUVL.cpp
   FeatureModelSxfm.cpp
   FeatureModelWriter.cpp
   FeatureRevisionRange.cpp
