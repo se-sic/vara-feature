@@ -50,13 +50,22 @@ namespace bdd::sample
        }
 
        std::cout << "passed features" << '\n';
+
+       BDDConstraintVisitor Visitor(Manager, VarMap, FinalBdd, false, false);
+
        
-       processConstraints(
-        Manager,
-        FinalBdd,
-        VarMap,
-        Model
-       );
+       for (const auto &C : Model.booleanConstraints()) {
+            // auto Result = Manager.visualize(DiagramName, Func);
+            if (!processConstraints(Visitor, C, FinalBdd)) { break; }
+        }
+
+    //TODO    processConstraints(
+    //     Manager,
+    //     FinalBdd,
+    //     VarMap,
+    //     Model,
+    //     *this
+    //    );
 
         std::cout << "passed processing constraints" << '\n';
 
@@ -65,16 +74,21 @@ namespace bdd::sample
        auto Result = Manager.visualize(DaigramName, Funcs);
 
         // Find the root feature to start probability calculation
-        BDDFeat* Root = findFeatureinBDD(&VarMap.at(0).BddNode);
+        BranchType BT = BranchType::NONE;
+        BDDFeat* Root = findFeatureinBDD(&FinalBdd, BT);
         std::optional<oxidd::var_no_t> OptId = Manager.name_to_var(Root->Name);
         oxidd::var_no_t RootId = OptId.value_or(-1);
         size_t NodeCount = Manager.num_inner_nodes();
         std::cout << "Total number of inner nodes in BDD: " << NodeCount << '\n';
+        oxidd::bdd_function Test = FinalBdd;
+
+
+
 
         // Calculate probabilities for all features
         auto R = getPr(
             Manager,
-            Root->BddNode,
+            FinalBdd,
             RootId,
             *Root,
             *this
@@ -134,8 +148,10 @@ namespace bdd::sample
 
     // Given a BDD node, find the corresponding BDDFeat in the varMap
     BDDFactory::BDDFeat*  BDDFactory::findFeatureinBDD(
-        oxidd::bdd_function *Node
+        oxidd::bdd_function *Node,
+        BranchType &BranchType
     ) {
+
         oxidd::bdd_manager Manager = this->Manager;
         auto Level = Node->node_level();
         if(Level.has_value()){
@@ -147,6 +163,49 @@ namespace bdd::sample
                 }
             }
         }
+
+
+        if(BranchType == BranchType::TRUE) {
+
+            if( VarMap[VarMap.size() + 1].Name == "TRUE_TERMINAL") {
+                return &VarMap[VarMap.size() + 1];
+            }
+
+            auto *Terminal = new BDDFactory::BDDFeat{
+                .BddNode = *Node,
+                .IsRoot = false,
+                .Name = "TRUE_TERMINAL",
+                .Marked = false,
+                .SatCount = 0,
+                .Probability = {},
+            };
+
+            VarMap[VarMap.size() + 1] = *Terminal;
+
+            return Terminal;
+           
+            
+        } 
+        
+        if (BranchType == BranchType::FALSE) {
+            if( VarMap[VarMap.size() + 2].Name == "FALSE_TERMINAL") {
+                return &VarMap[VarMap.size() + 2];
+            }
+
+            auto *Terminal = new BDDFactory::BDDFeat{
+                .BddNode = *Node,
+                .IsRoot = false,
+                .Name = "FALSE_TERMINAL",
+                .Marked = false,
+                .SatCount = static_cast<size_t>(std::pow(2, Manager.num_vars())),
+                .Probability = {},
+            };
+
+            VarMap[VarMap.size() + 2] = *Terminal;
+
+            return Terminal;
+        }
+
         return nullptr;
     }
 } // namespace bdd::sample

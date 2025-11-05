@@ -14,7 +14,7 @@ namespace bdd::sample {
 
     Result<vara::solver::SolverErrorCode>getPr(
         const oxidd::bdd_manager &Manager,
-        const oxidd::bdd_function &Node,
+        oxidd::bdd_function &Node,
         oxidd::var_no_t Id,
         BDDFactory::BDDFeat &Feat,
         BDDFactory &Factory

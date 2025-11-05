@@ -14,12 +14,14 @@ namespace bdd::sample {
 
     Result<vara::solver::SolverErrorCode>getPr( //NOLINT 
         const oxidd::bdd_manager &Manager,
-        const oxidd::bdd_function &Node,
+        oxidd::bdd_function &Node,
         oxidd::var_no_t Id,
         BDDFactory::BDDFeat &Feat,
         BDDFactory &Factory
     ) {
         // Get the number of satisfying assignments for the BDD node and the total number of features
+        BDDFactory::BranchType TB = BDDFactory::BranchType::TRUE;
+        BDDFactory::BranchType FB = BDDFactory::BranchType::FALSE;
         double SatCount = Node.sat_count_double(Manager.num_vars());
         double TotalCount = std::pow(2, Manager.num_vars());
         oxidd::bdd_function CofactorTrue = Node.cofactor_true();
@@ -27,7 +29,7 @@ namespace bdd::sample {
         // Using Bryant's algorithm to calculate the probabilities
         Feat.Marked = true;
         // Base cases: Terminals
-        if(SatCount == 0.0){
+        if(SatCount == 0) {
             Feat.SatCount = 0;
             return vara::Ok<void>();
         } if(SatCount == TotalCount) {
@@ -39,19 +41,29 @@ namespace bdd::sample {
                 return SolverErrorCode::ILLEGAL_STATE;
             }
             oxidd::level_no_t IndexNode = Opt.value();
-            BDDFactory::BDDFeat* TrueFeat = Factory.findFeatureinBDD(&CofactorTrue);
-            BDDFactory::BDDFeat* FalseFeat = Factory.findFeatureinBDD(&CofactorFalse);
+            BDDFactory::BDDFeat* TrueFeat = Factory.findFeatureinBDD(&CofactorTrue, TB);
+            BDDFactory::BDDFeat* FalseFeat = Factory.findFeatureinBDD(&CofactorFalse, FB);
+            oxidd::var_no_t IndexHigh;
             auto OptHigh = Manager.name_to_var(TrueFeat->Name);
             if(!OptHigh.has_value()) {
-                return SolverErrorCode::ILLEGAL_STATE;
+                if(TrueFeat->Name != "TRUE_TERMINAL") {
+                    return SolverErrorCode::ILLEGAL_STATE;
+                }
+                IndexHigh = 0;
+            } else {
+                IndexHigh = OptHigh.value();
             }
-            oxidd::var_no_t IndexHigh = OptHigh.value();
             auto OptLow = Manager.name_to_var(FalseFeat->Name);
+            oxidd::var_no_t IndexLow;
             if(!OptLow.has_value()) {
-                return SolverErrorCode::ILLEGAL_STATE;
+                if(FalseFeat->Name != "FALSE_TERMINAL") {
+                    return SolverErrorCode::ILLEGAL_STATE;
+                }
+                IndexLow = 0;
+            } else {
+                IndexLow = OptLow.value();
             }
-            oxidd::var_no_t IndexLow = OptLow.value();
-            if(TrueFeat->Marked != Feat.Marked) {
+            if(!TrueFeat->Marked) {
                 getPr(
                     Manager,
                     CofactorTrue,
@@ -59,7 +71,7 @@ namespace bdd::sample {
                     *TrueFeat, 
                     Factory
                 );
-            } else if(FalseFeat->Marked != Feat.Marked) {
+            } if(!FalseFeat->Marked) {
                 getPr(
                     Manager, 
                     CofactorFalse,

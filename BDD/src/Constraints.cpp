@@ -1,4 +1,5 @@
 #include "Constraints.h"
+#include "BDDFactory.h"
 #include <oxidd/bdd.hpp>
 #include <oxidd/util.hpp>
 #include <vector>
@@ -10,14 +11,25 @@ namespace bdd::sample {
      */
     oxidd::bdd_function BDDConstraintVisitor::addConstraint(vara::feature::Constraint* C, bool Negate, bool RequireAll) {
         this->RequireAll = RequireAll;
-        C->accept(*this); // Visit the constraint
-        if (Negate) {
-            (*CurrentBDD) = ~(*CurrentBDD); // Negate if requested
+
+        ExprBDD = Manager->t(); // Reset ExprBDD to true
+        VariableConstraint = Manager->f(); // Reset VariableConstraint to false
+
+        if (C->accept(*this)) { // Visit the constraint
+            oxidd::bdd_function FinalExpr = ExprBDD;
+
+            if (Negate) {
+                FinalExpr= ~FinalExpr; // Negate if requested
+            }
+            if (IsMixedConstraint && RequireAll) {
+                FinalExpr = VariableConstraint | FinalExpr;
+            } 
+            (*CurrentBDD) = (*CurrentBDD) & FinalExpr;
+
+            return FinalExpr;
         }
-        if (IsMixedConstraint && RequireAll) {
-            (*CurrentBDD) = VariableConstraint & (*CurrentBDD);
-        } 
-        return (*CurrentBDD);
+
+        return Manager->f(); // Return false BDD on failure
     }
 
     /**
@@ -25,35 +37,39 @@ namespace bdd::sample {
      */
     bool BDDConstraintVisitor::visit(vara::feature::BinaryConstraint* C) {
         using CK = vara::feature::Constraint::ConstraintKind;
-        
+
+        //auto Temp = *CurrentBDD; // Save current BDD state
+
         // Process Left and Right operands
         C->getLeftOperand()->accept(*this);
-        oxidd::bdd_function Left  = (*CurrentBDD);
+        oxidd::bdd_function Left  = ExprBDD;
         
         C->getRightOperand()->accept(*this);
-        oxidd::bdd_function Right = (*CurrentBDD);
+        oxidd::bdd_function Right = ExprBDD;
 
         // Apply appropriate BDD operation based on constraint type
         switch(C->getKind()) {
             case CK::CK_AND:
-                (*CurrentBDD) = (*CurrentBDD) & (Left & Right);
+                ExprBDD = Left & Right;
                 break;
-            case CK::CK_OR:
-                (*CurrentBDD) = ((*CurrentBDD) & (Left | Right));
+            case CK::CK_OR: {
+                ExprBDD = Left | Right;
                 break;
-            case CK::CK_IMPLIES:
-                (*CurrentBDD) = (*CurrentBDD) &(Left.imp(Right));
+            }
+            case CK::CK_IMPLIES: {
+                ExprBDD = Left.imp(Right);
                 break;
+            }
             case CK::CK_EQUIVALENCE:
-                (*CurrentBDD) = (*CurrentBDD) & (Left.equiv(Right));
+                ExprBDD = Left.equiv(Right);
                 break;
             case CK::CK_XOR:
-                (*CurrentBDD) = (*CurrentBDD) & (Left ^ Right);
+                ExprBDD = Left ^ Right;
                 break;
-            case CK::CK_EXCLUDES:
-                (*CurrentBDD) = (*CurrentBDD) & (Left.imp(~Right));
+            case CK::CK_EXCLUDES: {
+                ExprBDD = Left.imp(~(Right));       
                 break;
-
+            }
             case CK::CK_LESS:
             case CK::CK_GREATER:
             case CK::CK_LESS_EQUAL:
@@ -62,12 +78,12 @@ namespace bdd::sample {
             case CK::CK_NOT_EQUAL: // Boolean inequality handled below
                 // For boolean comparisons, use equivalence/not equivalence
                 if (C->getKind() == CK::CK_EQUAL) {
-                    (*CurrentBDD) = (*CurrentBDD) & (Left.equiv(Right));
+                    ExprBDD = Left.equiv(Right);
                 } else if (C->getKind() == CK::CK_NOT_EQUAL) {
-                    (*CurrentBDD) = (*CurrentBDD) & ~(Left.equiv(Right));
+                    ExprBDD = ~(Left.equiv(Right));
                 } else {
                     std::cerr << "Error: Numeric comparisons (<, >, <=, >=) are not supported. Only binary constraints are supported.\n";
-                    (*CurrentBDD) = Manager->f();
+                    ExprBDD = Manager->f();
                     return false;
                 }
                 break;
@@ -77,14 +93,15 @@ namespace bdd::sample {
             case CK::CK_MULTIPLICATION:
             case CK::CK_DIVISION:
                 std::cerr << "Error: Arithmetic operations (+, -, *, /) are not supported. Only binary constraints are supported.\n";
-                (*CurrentBDD) = Manager->f(); 
+                ExprBDD = Manager->f(); 
                 return false;
 
             default:
                 std::cerr << "Error: Unknown constraint type encountered. Only binary constraints are supported.\n";
-                (*CurrentBDD) = Manager->f();
+                ExprBDD = Manager->f();
                 return false;
         }
+
         return true;
     }
 
@@ -97,15 +114,15 @@ namespace bdd::sample {
         C->getOperand()->accept(*this);
         switch(C->getKind()) {
             case CK::CK_NOT:
-                (*CurrentBDD) = ~(*CurrentBDD);
+                ExprBDD = ~ExprBDD;
                 return true;
             case CK::CK_NEG:
                 std::cerr << "Error: Numeric negation (~) is not supported. Only binary constraints are supported.\n";
-                (*CurrentBDD) = Manager->f();
+                ExprBDD = Manager->f();
                 return false;
             default:
                 std::cerr << "Error: Unknown unary constraint type encountered. Only binary constraints are supported.\n";
-                (*CurrentBDD) = Manager->f();
+                ExprBDD = Manager->f();
                 return false;
         }
     }
@@ -120,7 +137,7 @@ namespace bdd::sample {
             std::cerr << "Error: Could not find variable ID for feature '" << FeatureName << "'.\n";
             return false;
         }
-        oxidd::var_no_t Id = IdCheck.value();
+        oxidd::var_no_t Id = IdCheck.value(); //NOLINT
 
         // Check for unsupported numeric features
         if (C->getFeature()->getKind() == vara::feature::Feature::FeatureKind::FK_NUMERIC) {
@@ -130,7 +147,14 @@ namespace bdd::sample {
             return false;
         }
 
-        return handleFeatureConstraint(Id);
+        oxidd::bdd_function Var = Manager->var(Id);
+        ExprBDD = Var;
+
+        if(IsMixedConstraint) {
+            VariableConstraint = VariableConstraint | ~Var;
+        }
+
+        return true;
     }
 
     /**
@@ -150,7 +174,11 @@ namespace bdd::sample {
         auto It = VarMap->find(Id);
         if (It != VarMap->end()) {
             auto Feat = It->second;
-            (*CurrentBDD) = Manager->var(Id) & Feat.BddNode;
+            auto Res = Manager->var(Id);
+            (*CurrentBDD) = Manager->var(Id) & (*CurrentBDD);
+            // std::string_view DiagramNameEnd = "HandleBDD"; 
+            // std::vector<oxidd::bdd_function> FuncEnd = {*CurrentBDD};
+            // auto ResultEnd = Manager->visualize(DiagramNameEnd, FuncEnd);
         }    
         // Falls das Feature nicht gefunden wurde, wird eine temporäre Variable erstellt
         // static oxidd_var_no_t tempVarCounter = 10000;
@@ -162,38 +190,60 @@ namespace bdd::sample {
     /**
      * Process all constraints of a feature model and add them to the BDD
      */
-     void processConstraints(//NOLINT 
-        oxidd::bdd_manager &Manager,
-        oxidd::bdd_function &Bdd,
-        GlobalVarMap &VarMap,
-        const vara::feature::FeatureModel &Model) {
-            
+    //  bool processConstraints(  //NOLINT
+    //     // TODO oxidd::bdd_manager &Manager,
+    //     // TODO oxidd::bdd_function &Bdd,
+    //     // TODO GlobalVarMap &VarMap,
+    //     // TODO const vara::feature::FeatureModel &Model,
+    //     // TODO BDDFactory &Factory
+    //     BDDConstraintVisitor &Visitor,
+    //     const auto &Constraint,
+    //     oxidd::bdd_function &Bdd
+    //     ) {
+    //         oxidd::bdd_function ConstraintBDD = Visitor.addConstraint(Constraint->constraint());
+    //          if (ConstraintBDD.is_invalid()) {
+    //             std::cerr << "Warning: Failed to process constraint. Skipping.\n";
+    //             return false;
+    //             }
+    //          Bdd = Bdd & ConstraintBDD;
+    //          return true;
+    //     }
+
         // Initialize constraint visitor with all required parameters
-        BDDConstraintVisitor Visitor(Manager, VarMap, Bdd, false, false);
-
+        // TODO BDDConstraintVisitor Visitor(Manager, VarMap, Bdd, false, false);
+        // TODO int Cnt = 0;
        // Lambda function to process a single constraint
-        const auto Process = [&](const auto& Constraint) {
-            oxidd::bdd_function ConstraintBDD = Visitor.addConstraint(Constraint->constraint());
-            if (ConstraintBDD.is_invalid()) {
-                std::cerr << "Warning: Failed to process constraint. Skipping.\n";
-                return false;
-            }
-            Bdd = Bdd & ConstraintBDD; // Add constraint to main BDD
-            return true;
-        };
+        //TODO const auto Process = [&](const auto& Constraint) {
+            //TODO oxidd::bdd_function ConstraintBDD = Visitor.addConstraint(Constraint->constraint());
+            //TODO if (ConstraintBDD.is_invalid()) {
+                //TODOstd::cerr << "Warning: Failed to process constraint. Skipping.\n";
+                //TODOreturn false;
+            //TODO}
+            //TODOBdd = Bdd & ConstraintBDD; // Add constraint to main BDD
+            //TODOif(Cnt > 725) {
+                //TODOstd::string_view DiagramNameMid = "VisitorMid"; 
+                //TODOstd::vector<oxidd::bdd_function> FuncMid = {Bdd};
+                //TODOauto ResultMid = Manager.visualize(DiagramNameMid, FuncMid);
+            //TODO}
+           //TODO return true;
+        //TODO};
 
-        std::string_view DiagramName = "HIPPACC"; 
-        std::vector<oxidd::bdd_function> Func = {Bdd};
-        int Cnt = 0;
+        //TODOstd::string_view DiagramName = "HIPPACC"; 
+        //TODOstd::vector<oxidd::bdd_function> Func = {Bdd};
         // Process only Boolean constraints (others are not supported)
-        for (const auto& C : Model.booleanConstraints()) {
-            std::cout << "Processing Boolean Constraint " << ++Cnt << '\n';
-            if(Cnt > 735) {
-                auto Result = Manager.visualize(DiagramName, Func);
-            }
+        //TODOfor (const auto& C : Model.booleanConstraints()) {
+            //TODOCnt++;
+            //TODOif(Cnt > 735) {
+                //TODOauto Result = Manager.visualize(DiagramName, Func);
+            //TODO}
             // auto Result = Manager.visualize(DiagramName, Func);
-            if (!Process(C)) { break; }
-        }
-    }
+            //TODOif (!Process(C)) { break; }
+        //TODO}
+    //TODO}
+
+    // template bool bdd::sample::processConstraints<vara::feature::FeatureModel::BooleanConstraint*>(
+    // bdd::sample::BDDConstraintVisitor&,
+    // vara::feature::FeatureModel::BooleanConstraint* const&,
+    // oxidd::bdd_function&);
 
 } // namespace bdd::sample

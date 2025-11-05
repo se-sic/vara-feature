@@ -25,6 +25,7 @@ namespace bdd::sample {
         CurrentBDD(&FinalBDD),
         IsMixedConstraint(IsMixedConstraint),
         RequireAll(RequireAll),
+        ExprBDD(Manager.t()),
         VariableConstraint(Manager.f()) {}
 
     // Build a BDD for a constraint. If negate==true, we negate the resulting BDD.
@@ -35,6 +36,7 @@ namespace bdd::sample {
     bool visit(vara::feature::BinaryConstraint* C) override;
     bool visit(vara::feature::UnaryConstraint* C) override;
     bool visit(vara::feature::PrimaryFeatureConstraint* C) override;
+    [[nodiscard]] oxidd::bdd_function getExpr() const { return ExprBDD; }
 
   private:
     // bool isNumericComparison(vara::feature::BinaryConstraint* C);
@@ -51,14 +53,29 @@ namespace bdd::sample {
     int         TempCounter = 0;
     bool        IsMixedConstraint = false;
     bool        RequireAll        = true;
+    oxidd::bdd_function ExprBDD;
     oxidd::bdd_function VariableConstraint;
  }; 
 
   // One-pass application of all constraints in the model
-  void processConstraints(oxidd::bdd_manager &Manager,
-                          oxidd::bdd_function &Bdd,
-                          GlobalVarMap &VarMap,
-                          const vara::feature::FeatureModel &Model);
+  template <typename T>
+  bool processConstraints(//TODOoxidd::bdd_manager &Manager,
+                          //TODOoxidd::bdd_function &Bdd,
+                          //TODOGlobalVarMap &VarMap,
+                          //TODOconst vara::feature::FeatureModel &Model,
+                          //TODOBDDFactory &Factory
+                          BDDConstraintVisitor &Visitor,
+                          const T &Constraint,
+                          oxidd::bdd_function &Bdd
+                          ){
+    oxidd::bdd_function ConstraintBDD = Visitor.addConstraint(Constraint->constraint());
+    if (ConstraintBDD.is_invalid()) {
+          std::cerr << "Warning: Failed to process constraint. Skipping.\n";
+          return false;
+        }
+          Bdd = Bdd & ConstraintBDD;
+          return true;
+    };    
   
 } // namespace bdd::sample
 

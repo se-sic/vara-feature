@@ -21,8 +21,15 @@ namespace bdd::sample
                 std::optional<double> Probability;             // Probability of the node
             };
 
+            enum BranchType : std::uint8_t { // Changed to use std::uint8_t as the base type
+                TRUE,
+                FALSE,
+                NONE
+            };
+
             BDDFeat* findFeatureinBDD(
-                oxidd::bdd_function* Node
+                oxidd::bdd_function* Node,
+                BranchType &BranchType
             );
 
             oxidd::bdd_function modelToBdd(const vara::feature::FeatureModel &Model);

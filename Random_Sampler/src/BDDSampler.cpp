@@ -1,4 +1,5 @@
 #include "BDDSampler.h"
+#include "BDDFactory.h"
 #include "oxidd/util.hpp"
 namespace bdd::sample {
 
@@ -10,6 +11,7 @@ namespace bdd::sample {
   // Generate a random configuration by traversing the BDD
   std::unordered_map<oxidd::level_no_t, bool> generateConfiguration(const oxidd::bdd_manager &Manager, const oxidd::bdd_function& Root, BDDFactory &Factory) { //NOLINT
       oxidd::bdd_function Trav = Root;
+      BDDFactory::BranchType NT = BDDFactory::BranchType::NONE;
 
       // Get the LEVEL of the root node, not the variable number
       auto RootOpt = Root.node_level();
@@ -49,7 +51,7 @@ namespace bdd::sample {
         }
 
         // Make probabilistic decision based on precomputed probability
-        auto *TravFeat = Factory.findFeatureinBDD(&Trav);
+        auto *TravFeat = Factory.findFeatureinBDD(&Trav, NT);
         if (!TravFeat->Probability.has_value()) {
             throw std::logic_error("Missing probability for feature: " + TravFeat->Name);
         }
