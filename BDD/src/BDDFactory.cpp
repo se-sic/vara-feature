@@ -78,12 +78,12 @@ namespace bdd::sample
         BDDFeat* Root = findFeatureinBDD(&FinalBdd, BT);
         std::optional<oxidd::var_no_t> OptId = Manager.name_to_var(Root->Name);
         oxidd::var_no_t RootId = OptId.value_or(-1);
-        size_t NodeCount = Manager.num_inner_nodes();
-        std::cout << "Total number of inner nodes in BDD: " << NodeCount << '\n';
-        oxidd::bdd_function Test = FinalBdd;
 
-
-
+        BDDFeat FMax = VarMap[VarMap.size()-1];
+        auto MaxLevelOpt = Manager.name_to_var(FMax.Name);
+        if(MaxLevelOpt.has_value()) {
+            setMaxLevel(MaxLevelOpt.value() + 2);
+        }
 
         // Calculate probabilities for all features
         auto R = getPr(
@@ -154,21 +154,24 @@ namespace bdd::sample
 
         oxidd::bdd_manager Manager = this->Manager;
         auto Level = Node->node_level();
-        if(Level.has_value()){
-            auto Lev = Level.value();
-
-            for(auto& [id, f]: this->VarMap) {
+        for(auto& [id, f]: this->VarMap) {
+            if(Level.has_value()){
+                auto Lev = Level.value();
                 if(id == Lev) {
                     return &f;
                 }
+            } else if ((f.Name == "TRUE_TERMINAL" && BranchType == BranchType::TRUE) ||
+                       (f.Name == "FALSE_TERMINAL" && BranchType == BranchType::FALSE)) {
+                return &f;
             }
-        }
+        } 
+
 
 
         if(BranchType == BranchType::TRUE) {
 
-            if( VarMap[VarMap.size() + 1].Name == "TRUE_TERMINAL") {
-                return &VarMap[VarMap.size() + 1];
+            if( VarMap[VarMap.size()-1].Name == "TRUE_TERMINAL") {
+                return &VarMap[VarMap.size()-1];
             }
 
             auto *Terminal = new BDDFactory::BDDFeat{
@@ -176,20 +179,18 @@ namespace bdd::sample
                 .IsRoot = false,
                 .Name = "TRUE_TERMINAL",
                 .Marked = false,
-                .SatCount = 0,
+                .SatCount = 1,
                 .Probability = {},
             };
 
-            VarMap[VarMap.size() + 1] = *Terminal;
+            VarMap[VarMap.size()] = *Terminal;
 
             return Terminal;
-           
-            
         } 
         
         if (BranchType == BranchType::FALSE) {
-            if( VarMap[VarMap.size() + 2].Name == "FALSE_TERMINAL") {
-                return &VarMap[VarMap.size() + 2];
+            if( VarMap[VarMap.size()-1].Name == "FALSE_TERMINAL") {
+                return &VarMap[VarMap.size()-1];
             }
 
             auto *Terminal = new BDDFactory::BDDFeat{
@@ -197,11 +198,11 @@ namespace bdd::sample
                 .IsRoot = false,
                 .Name = "FALSE_TERMINAL",
                 .Marked = false,
-                .SatCount = static_cast<size_t>(std::pow(2, Manager.num_vars())),
+                .SatCount = 0,
                 .Probability = {},
             };
 
-            VarMap[VarMap.size() + 2] = *Terminal;
+            VarMap[VarMap.size()] = *Terminal;
 
             return Terminal;
         }
