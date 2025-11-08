@@ -29,64 +29,61 @@ namespace bdd::sample {
         // Using Bryant's algorithm to calculate the probabilities
         Feat.Marked = true;
         // Base cases: Terminals
-        if(SatCount == 0) {
-            Feat.SatCount = 0;
+        if(SatCount == 0 || SatCount == TotalCount) {
             return vara::Ok<void>();
-        } if(SatCount == TotalCount) {
-            Feat.SatCount = 1;
-            return vara::Ok<void>();
-        }   // Recursive case until base case reached
-            auto Opt = Manager.name_to_var(Feat.Name);
-            if(!Opt.has_value()) {
+        }
+        // Recursive case until base case reached
+        auto Opt = Manager.name_to_var(Feat.Name);
+        if(!Opt.has_value()) {
+            return SolverErrorCode::ILLEGAL_STATE;
+        }
+        oxidd::level_no_t IndexNode = Opt.value();
+        BDDFactory::BDDFeat* TrueFeat = Factory.findFeatureinBDD(&CofactorTrue, TB);
+        BDDFactory::BDDFeat* FalseFeat = Factory.findFeatureinBDD(&CofactorFalse, FB);
+        oxidd::var_no_t IndexHigh;
+        auto OptHigh = Manager.name_to_var(TrueFeat->Name);
+        if(!OptHigh.has_value()) {
+            if(TrueFeat->Name != "TRUE_TERMINAL") {
                 return SolverErrorCode::ILLEGAL_STATE;
             }
-            oxidd::level_no_t IndexNode = Opt.value();
-            BDDFactory::BDDFeat* TrueFeat = Factory.findFeatureinBDD(&CofactorTrue, TB);
-            BDDFactory::BDDFeat* FalseFeat = Factory.findFeatureinBDD(&CofactorFalse, FB);
-            oxidd::var_no_t IndexHigh;
-            auto OptHigh = Manager.name_to_var(TrueFeat->Name);
-            if(!OptHigh.has_value()) {
-                if(TrueFeat->Name != "TRUE_TERMINAL") {
-                    return SolverErrorCode::ILLEGAL_STATE;
-                }
-                IndexHigh = 0;
-            } else {
-                IndexHigh = OptHigh.value();
+            IndexHigh = Factory.getMaxLevel();
+        } else {
+            IndexHigh = OptHigh.value();
+        }
+        auto OptLow = Manager.name_to_var(FalseFeat->Name);
+        oxidd::var_no_t IndexLow;
+        if(!OptLow.has_value()) {
+            if(FalseFeat->Name != "FALSE_TERMINAL") {
+                return SolverErrorCode::ILLEGAL_STATE;
             }
-            auto OptLow = Manager.name_to_var(FalseFeat->Name);
-            oxidd::var_no_t IndexLow;
-            if(!OptLow.has_value()) {
-                if(FalseFeat->Name != "FALSE_TERMINAL") {
-                    return SolverErrorCode::ILLEGAL_STATE;
-                }
-                IndexLow = 0;
-            } else {
-                IndexLow = OptLow.value();
-            }
-            if(!TrueFeat->Marked) {
-                getPr(
-                    Manager,
-                    CofactorTrue,
-                    IndexHigh, 
-                    *TrueFeat, 
-                    Factory
-                );
-            } if(!FalseFeat->Marked) {
-                getPr(
-                    Manager, 
-                    CofactorFalse,
-                    IndexLow, 
-                    *FalseFeat, 
-                    Factory
-                );
-            }
+            IndexLow = Factory.getMaxLevel();
+        } else {
+            IndexLow = OptLow.value();
+        }
+        if(!TrueFeat->Marked) {
+            getPr(
+                Manager,
+                CofactorTrue,
+                IndexHigh, 
+                *TrueFeat, 
+                Factory
+            );
+        } if(!FalseFeat->Marked) {
+            getPr(
+                Manager, 
+                CofactorFalse,
+                IndexLow, 
+                *FalseFeat, 
+                Factory
+            );
+        }
 
-            double SolLow = static_cast<double>(FalseFeat->SatCount) * std::pow(2.0, static_cast<double>(IndexLow) - (static_cast<double>(IndexNode) - 1.0)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.second, oxidd_bdd_manager_num_vars(manager));
-            double SolHigh = static_cast<double>(TrueFeat->SatCount) * std::pow(2.0, static_cast<double>(IndexHigh) - (static_cast<double>(IndexNode) - 1.0)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.first, oxidd_bdd_manager_num_vars(manager));
-            Feat.SatCount = static_cast<size_t>(SolLow + SolHigh); //ALTERNATIVE: sat_count
-            Feat.Probability = SolHigh / static_cast<double>(Feat.SatCount);
-            return vara::Ok<void>();
-        
+        double SolLow = CofactorFalse.sat_count_double(Manager.num_vars());//static_cast<double>(FalseFeat->SatCount) * std::pow(2.0, static_cast<double>(IndexLow) - (static_cast<double>(IndexNode) - 1.0)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.second, oxidd_bdd_manager_num_vars(manager));
+        double SolHigh = CofactorTrue.sat_count_double(Manager.num_vars());//static_cast<double>(TrueFeat->SatCount) * std::pow(2.0, static_cast<double>(IndexHigh) - (static_cast<double>(IndexNode) - 1.0)); //ALTERNATIVE: oxidd_bdd_sat_count_double(cofactors.first, oxidd_bdd_manager_num_vars(manager));
+        Feat.SatCount = static_cast<size_t>(SolLow + SolHigh); //ALTERNATIVE: sat_count
+        Feat.Probability = SolHigh / static_cast<double>(Feat.SatCount);
+        return vara::Ok<void>();
+    
 
 
 //-------------------------------------------------------- OLD CODE --------------------------------------------------------

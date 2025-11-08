@@ -98,7 +98,8 @@ if(BUILD_TYPE MATCHES "^(DEBUG)")
   )
 endif()
 
-# Enable coverage tracking
+# Enable coverage tracking (fopr MAC: -O0 -g3)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} --coverage -Og")
 option(VARA_FEATURE_ENABLE_COVERAGE "Enable code coverage tracking" FALSE)
 if(VARA_FEATURE_ENABLE_COVERAGE)
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
