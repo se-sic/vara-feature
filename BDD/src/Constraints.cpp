@@ -1,9 +1,6 @@
 #include "Constraints.h"
-#include "BDDFactory.h"
 #include <oxidd/bdd.hpp>
 #include <oxidd/util.hpp>
-#include <vector>
-
 namespace bdd::sample {
 
     /**
@@ -11,7 +8,6 @@ namespace bdd::sample {
      */
     oxidd::bdd_function BDDConstraintVisitor::addConstraint(vara::feature::Constraint* C, bool Negate, bool RequireAll) {
         this->RequireAll = RequireAll;
-
         ExprBDD = Manager->t(); // Reset ExprBDD to true
         VariableConstraint = Manager->f(); // Reset VariableConstraint to false
 
@@ -37,8 +33,6 @@ namespace bdd::sample {
      */
     bool BDDConstraintVisitor::visit(vara::feature::BinaryConstraint* C) {
         using CK = vara::feature::Constraint::ConstraintKind;
-
-        //auto Temp = *CurrentBDD; // Save current BDD state
 
         // Process Left and Right operands
         C->getLeftOperand()->accept(*this);
@@ -158,92 +152,16 @@ namespace bdd::sample {
     }
 
     /**
-     * Verarbeitet Integer-Constraints (werden nicht unterstützt).
-     */
-    // bool BDDConstraintVisitor::visit(vara::feature::PrimaryIntegerConstraint* C) {
-    //     std::cerr << "Error: Integer constraints are not supported. Value '" << C->getValue() 
-    //             << "' encountered. Only binary constraints are supported.\n";
-    //     CurrentBDD = oxidd_bdd_false(Manager);
-    //     return false;
-    // }
-
-    /**
      * Handle a feature constraint by looking up its BDD variable
      */
-    bool BDDConstraintVisitor::handleFeatureConstraint(const oxidd::capi::oxidd_var_no_t Id) {
-        auto It = VarMap->find(Id);
-        if (It != VarMap->end()) {
-            auto Feat = It->second;
-            auto Res = Manager->var(Id);
-            (*CurrentBDD) = Manager->var(Id) & (*CurrentBDD);
-            // std::string_view DiagramNameEnd = "HandleBDD"; 
-            // std::vector<oxidd::bdd_function> FuncEnd = {*CurrentBDD};
-            // auto ResultEnd = Manager->visualize(DiagramNameEnd, FuncEnd);
-        }    
-        // Falls das Feature nicht gefunden wurde, wird eine temporäre Variable erstellt
-        // static oxidd_var_no_t tempVarCounter = 10000;
-        // oxidd_bdd_t var = oxidd_bdd_var(Manager, tempVarCounter++);
-        // CurrentBDD = var;
-        return true;
-    }
-
-    /**
-     * Process all constraints of a feature model and add them to the BDD
-     */
-    //  bool processConstraints(  //NOLINT
-    //     // TODO oxidd::bdd_manager &Manager,
-    //     // TODO oxidd::bdd_function &Bdd,
-    //     // TODO GlobalVarMap &VarMap,
-    //     // TODO const vara::feature::FeatureModel &Model,
-    //     // TODO BDDFactory &Factory
-    //     BDDConstraintVisitor &Visitor,
-    //     const auto &Constraint,
-    //     oxidd::bdd_function &Bdd
-    //     ) {
-    //         oxidd::bdd_function ConstraintBDD = Visitor.addConstraint(Constraint->constraint());
-    //          if (ConstraintBDD.is_invalid()) {
-    //             std::cerr << "Warning: Failed to process constraint. Skipping.\n";
-    //             return false;
-    //             }
-    //          Bdd = Bdd & ConstraintBDD;
-    //          return true;
-    //     }
-
-        // Initialize constraint visitor with all required parameters
-        // TODO BDDConstraintVisitor Visitor(Manager, VarMap, Bdd, false, false);
-        // TODO int Cnt = 0;
-       // Lambda function to process a single constraint
-        //TODO const auto Process = [&](const auto& Constraint) {
-            //TODO oxidd::bdd_function ConstraintBDD = Visitor.addConstraint(Constraint->constraint());
-            //TODO if (ConstraintBDD.is_invalid()) {
-                //TODOstd::cerr << "Warning: Failed to process constraint. Skipping.\n";
-                //TODOreturn false;
-            //TODO}
-            //TODOBdd = Bdd & ConstraintBDD; // Add constraint to main BDD
-            //TODOif(Cnt > 725) {
-                //TODOstd::string_view DiagramNameMid = "VisitorMid"; 
-                //TODOstd::vector<oxidd::bdd_function> FuncMid = {Bdd};
-                //TODOauto ResultMid = Manager.visualize(DiagramNameMid, FuncMid);
-            //TODO}
-           //TODO return true;
-        //TODO};
-
-        //TODOstd::string_view DiagramName = "HIPPACC"; 
-        //TODOstd::vector<oxidd::bdd_function> Func = {Bdd};
-        // Process only Boolean constraints (others are not supported)
-        //TODOfor (const auto& C : Model.booleanConstraints()) {
-            //TODOCnt++;
-            //TODOif(Cnt > 735) {
-                //TODOauto Result = Manager.visualize(DiagramName, Func);
-            //TODO}
-            // auto Result = Manager.visualize(DiagramName, Func);
-            //TODOif (!Process(C)) { break; }
-        //TODO}
-    //TODO}
-
-    // template bool bdd::sample::processConstraints<vara::feature::FeatureModel::BooleanConstraint*>(
-    // bdd::sample::BDDConstraintVisitor&,
-    // vara::feature::FeatureModel::BooleanConstraint* const&,
-    // oxidd::bdd_function&);
+    // bool BDDConstraintVisitor::handleFeatureConstraint(const oxidd::capi::oxidd_var_no_t Id) {
+    //     auto It = VarMap->find(Id);
+    //     if (It != VarMap->end()) {
+    //         auto Feat = It->second;
+    //         auto Res = Manager->var(Id);
+    //         (*CurrentBDD) = Manager->var(Id) & (*CurrentBDD);
+    //     }    
+    //     return true;
+    // }
 
 } // namespace bdd::sample
