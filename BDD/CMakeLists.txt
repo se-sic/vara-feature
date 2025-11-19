@@ -1,7 +1,6 @@
 add_library(bdd STATIC
   src/BDDFactory.cpp
   src/Constraints.cpp       # add this if it implements your visitor/helpers
-  src/Relationships.cpp     # add if it exists
   src/BDDFeats.cpp          # add if it exists
   src/Probabilities.cpp     # add if it exists
 )

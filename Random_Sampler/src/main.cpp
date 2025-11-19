@@ -74,7 +74,10 @@ int main(int argc, char* argv[]) noexcept(false){
 
     // Initialize frequency counts for features
     std::unordered_map<oxidd::capi::oxidd_var_no_t, bdd::sample::Freq> Counts;
-    size_t N = 10; // Number of samples to generate
+    size_t N = 10000; // Number of samples to generate
+
+    std::vector<size_t> BellCounts;
+    BellCounts.reserve(N);
 
     // Generate multiple samples and update frequency counts
     for(size_t I=0; I<N; ++I) {
@@ -83,6 +86,11 @@ int main(int argc, char* argv[]) noexcept(false){
             FinalBDD, 
             Factory
         );
+        size_t Count = 0;
+        for(auto &[v, val] : S) {
+            if(val) { ++Count; }
+        }
+        BellCounts.push_back(Count);
         bdd::sample::updateCounts(S, Counts);
     }
 
@@ -90,12 +98,39 @@ int main(int argc, char* argv[]) noexcept(false){
     auto Rows = bdd::sample::toRows(Counts, &Factory.VarMap);
     
     for(const auto& R : Rows) {
-        std::cout << R.Label << " (id=" << R.V << "): "
-                  << R.P << "  [" << R.T << "/" << R.N << "]\n";
+        std::cout << R.Label << " (id=" << R.Level << "): "
+                  << "samples=" << R.Prob 
+                  << ", theory=" << R.TheoreticalProb
+                  << ", error=" << R.Error
+                  << "  [" << R.Count << "/" << R.N << "]\n";
     }
 
     // Write the frequency data to CSV file
-    bdd::sample::writeCsv(Rows, "freq.csv");
+    bdd::sample::writeCsv(Rows, "Random_Sampler/scripts/freq.csv");
+
+    {
+        std::ofstream Out("Random_Sampler/scripts/bell.csv");
+        Out << "ActiveFeatures\n";
+        for(size_t C : BellCounts) {
+            Out << C << '\n';
+        }
+    }
+
+    std::cout << "Frequency data written to freq.csv and generating Histogram" << '\n';
+    std::string Csv = "Random_Sampler/scripts/freq.csv";
+    std::string BellCSV = "Random_Sampler/scripts/bell.csv";
+    std::string Cmd = "/Users/oracionoftime/.pyenv/versions/vara-feature-env/bin/python3 Random_Sampler/scripts/plot_freq.py " + Csv;
+    std::string BellCmd = "/Users/oracionoftime/.pyenv/versions/vara-feature-env/bin/python3 Random_Sampler/scripts/plot_dist.py " + BellCSV;
+
+    int Bell = std::system(BellCmd.c_str());
+    int Res = std::system(Cmd.c_str());
+
+    if(Res != 0 || Bell != 0) {
+        std::cerr << "Error executing command: " << Cmd << '\n';
+    } else {
+        std::cout << "Histogram generated successfully." << '\n';
+    }
+
 
     return 0;
  }

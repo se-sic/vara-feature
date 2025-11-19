@@ -6,28 +6,26 @@
 #include "oxidd/util.hpp"
 #include <algorithm>
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <vector>
 
 namespace bdd::sample    
 { 
-    // Convert a feature model to a BDD representation
+    // Conversion of the given feature model to a BDD representation
     oxidd::bdd_function BDDFactory::modelToBdd(
         const vara::feature::FeatureModel &Model
     ) {
-        // Check if model is empty
        if(Model.size()== 0) {
-        std::cerr << "Feature model is empty." << '\n';
+        std::cerr << "Feature model is empty\n";
        }
 
-       // Vector to store names of features in XOR relationships
+       // Store names of features in XOR relationships (Z3)
        std::vector<std::string> V; 
 
-       // Add all features to manager including their names
        fillManager(Model);
 
-       // If relationshios of FM are filles, add them to the XOR vetcor V for the function "FeatureToBdd"
-       // Process XOR relationships from the feature model
+       // Process XOR relationships from the feature model (Z3)
        if(!Model.relationships().empty()) {
         for(const auto &S: Model.relationships()){
             for(const auto &Child: S->children()) {
@@ -36,56 +34,46 @@ namespace bdd::sample
             }
         }
        } else {
-        std::cerr << "Feature model has no XOR relationships." << '\n';
+        std::cerr << "Feature model has no XOR relationships\n";
        }
 
-       std::cout << "passed relationships\n";
+       std::cout << "Passed relationship processing\n";
 
-       // Process each feature: add to varMap and add constraints to finalBdd
+       // Process each feature: add to VarMap and add children-parent relationships to FinalBdd (Z3)
        for(auto *F: Model.features()) { 
         auto R = featureToBdd(Manager,std::ranges::find(V, F->getName().str()) != V.end(),*F,VarMap,FinalBdd);
         if(!R) {
-            continue; // Skip to the next feature if there is an error
+            continue;
         }
        }
 
-       std::cout << "passed features" << '\n';
+       std::cout << "Passed feature processing\n";
 
-       BDDConstraintVisitor Visitor(Manager, VarMap, FinalBdd, false, false);
-
-       
+       // Process boolean constraints from the feature model (Z3)
+       BDDConstraintVisitor Visitor(Manager, VarMap, FinalBdd, false, false);    
        for (const auto &C : Model.booleanConstraints()) {
-            // auto Result = Manager.visualize(DiagramName, Func);
             if (!processConstraints(Visitor, C, FinalBdd)) { break; }
         }
 
-    //TODO    processConstraints(
-    //     Manager,
-    //     FinalBdd,
-    //     VarMap,
-    //     Model,
-    //     *this
-    //    );
+       std::cout << "passed processing constraints" << '\n';
 
-        std::cout << "passed processing constraints" << '\n';
-
-       std::string_view DaigramName = "HIPPACC";
+       /*For Testing*/
+       std::string_view DiagramName = "HIPPACC";
        std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
-       auto Result = Manager.visualize(DaigramName, Funcs);
+       auto Result = Manager.visualize(DiagramName, Funcs);
 
-        // Find the root feature to start probability calculation
-        BranchType BT = BranchType::NONE;
-        BDDFeat* Root = findFeatureinBDD(&FinalBdd, BT);
-        std::optional<oxidd::var_no_t> OptId = Manager.name_to_var(Root->Name);
-        oxidd::var_no_t RootId = OptId.value_or(-1);
+       // Find the root feature to start probability calculation
+       BDDFeat* Root = findFeatureinBDD(&FinalBdd);
+       std::optional<oxidd::var_no_t> OptId = Manager.name_to_var(Root->Name);
+       oxidd::var_no_t RootId = OptId.value_or(-1);
 
-        BDDFeat FMax = VarMap[VarMap.size()-1];
-        auto MaxLevelOpt = Manager.name_to_var(FMax.Name);
-        if(MaxLevelOpt.has_value()) {
-            setMaxLevel(MaxLevelOpt.value() + 2);
+       // Calculate max level including terminal level
+       BDDFeat FMax = VarMap[VarMap.size()-1];
+       auto MaxLevelOpt = Manager.name_to_var(FMax.Name);
+       if(MaxLevelOpt.has_value()) {
+           setMaxLevel(MaxLevelOpt.value() + 2);
         }
 
-        // Calculate probabilities for all features
         auto R = getPr(
             Manager,
             FinalBdd,
@@ -94,14 +82,14 @@ namespace bdd::sample
             *this
         );
 
-        if(!R){
+       if(!R){
             std::cerr << "Error calculating probabilities." << '\n';
         }
 
-        return FinalBdd;
+       return FinalBdd;
     }
 
-    // Add all features from the model to the BDD manager
+    // Add all features to manager including their names
     void BDDFactory::fillManager(
         const vara::feature::FeatureModel &Model
     ) { 
@@ -132,6 +120,7 @@ namespace bdd::sample
         // Add all named variables to the BDD manager
         auto  Res = Manager.add_named_vars(NamesCstrSpan);
         
+        /* For Testing */
         if(Res.has_value()) {
             for(auto & Name: Names) {
                 auto Id = Manager.name_to_var(Name);
@@ -148,8 +137,7 @@ namespace bdd::sample
 
     // Given a BDD node, find the corresponding BDDFeat in the varMap
     BDDFactory::BDDFeat*  BDDFactory::findFeatureinBDD(
-        oxidd::bdd_function *Node,
-        BranchType &BranchType
+        oxidd::bdd_function *Node
     ) {
 
         oxidd::bdd_manager Manager = this->Manager;
@@ -158,18 +146,19 @@ namespace bdd::sample
             if(Level.has_value()){
                 auto Lev = Level.value();
                 if(id == Lev) {
+                    f.BddNode = *Node;
                     return &f;
                 }
-            } else if ((f.Name == "TRUE_TERMINAL" && BranchType == BranchType::TRUE) ||
-                       (f.Name == "FALSE_TERMINAL" && BranchType == BranchType::FALSE)) {
+            } if ((f.Name == "TRUE_TERMINAL" && Node->satisfiable())) {
+                return &f;
+            } if ((f.Name == "FALSE_TERMINAL" && !Node->satisfiable())) {
                 return &f;
             }
         } 
 
 
 
-        if(BranchType == BranchType::TRUE) {
-
+        if(Node->satisfiable()) {
             if( VarMap[VarMap.size()-1].Name == "TRUE_TERMINAL") {
                 return &VarMap[VarMap.size()-1];
             }
@@ -179,8 +168,9 @@ namespace bdd::sample
                 .IsRoot = false,
                 .Name = "TRUE_TERMINAL",
                 .Marked = false,
-                .SatCount = 1,
-                .Probability = {},
+                .SatCount = static_cast<size_t>(Node->sat_count_double(0)),
+                .Probability = 0.0,
+                .CC = Node->sat_count_double(0),
             };
 
             VarMap[VarMap.size()] = *Terminal;
@@ -188,7 +178,7 @@ namespace bdd::sample
             return Terminal;
         } 
         
-        if (BranchType == BranchType::FALSE) {
+        if (!Node->satisfiable()) {
             if( VarMap[VarMap.size()-1].Name == "FALSE_TERMINAL") {
                 return &VarMap[VarMap.size()-1];
             }
@@ -199,7 +189,8 @@ namespace bdd::sample
                 .Name = "FALSE_TERMINAL",
                 .Marked = false,
                 .SatCount = 0,
-                .Probability = {},
+                .Probability = 0.0,
+                .CC = Node->sat_count_double(0),
             };
 
             VarMap[VarMap.size()] = *Terminal;
@@ -210,134 +201,3 @@ namespace bdd::sample
         return nullptr;
     }
 } // namespace bdd::sample
-
-
-//-------------------------------------------------------- OLD CODE --------------------------------------------------------
-
-//     oxidd::bdd_function BDDFactory::modelToBdd( 
-//         const vara::feature::FeatureModel &model) 
-//     {
-//         oxidd::bdd_function finalBDD = oxidd::bdd_functionrue(manager);
-//         std::unordered_map<std::string, oxidd::bdd_function> binaryVarMap;
-//         std::unordered_map<string, std::vector<std::pair<string, oxidd::bdd_function>>> numericVarMap;
-//         std::vector<string> V;
-//         BDDConstraintVisitor visitor = 
-//             BDDConstraintVisitor(manager, &varMap, &binaryVarMap, &numericVarMap);
-
-//         // for (const auto &rltsps : model.relationships()) {
-//         //     for (const auto &Child : rltsps->children()) {
-//         //         const auto *ChildFeature = (const vara::feature::Feature *)Child;
-//         //         V.insert(V.begin(), ChildFeature->getName().str());
-//         //     }
-//         // } //prinzipiell richtig aber besser mit features()
-
-//         for(auto* feats: model.features()) {
-//             V.insert(V.begin(), feats->getName().str());
-//         }
-
-//         for (auto* F : model.features()) {
-//             if (auto R = FeatureToBdd(
-//                 manager, 
-//                 std::find(V.begin(), V.end(), F->getName().str()) != V.end(),
-//                 *F, 
-//                 &varMap, 
-//                 &binaryVarMap, 
-//                 &numericVarMap, 
-//                 &finalBDD
-//             ); !R) {
-//                 continue; // Skip to the next feature if there is an error
-//             }
-//         }
-
-
-
-//         for (auto *C : model.booleanConstraints()) {
-//             oxidd::bdd_function constraintBDD = visitor.addConstraint(C->constraint());
-//             finalBDD = oxidd_bdd_and(finalBDD, constraintBDD);
-//         }
-
-//         for (auto *C : model.nonBooleanConstraints()) {
-//             oxidd::bdd_function constraintBDD = visitor.addConstraint(C->constraint());
-//             finalBDD = oxidd_bdd_and(finalBDD, constraintBDD);
-//         }
-
-//         for (auto *C : model.mixedConstraints()) {
-//             BDDConstraintVisitor mixedVisitor = 
-//                 BDDConstraintVisitor(manager, &varMap, &binaryVarMap, &numericVarMap, true, true);
-//             oxidd::bdd_function constraintBDD = mixedVisitor.addConstraint(C->constraint());
-//             finalBDD = oxidd_bdd_and(finalBDD, constraintBDD);
-//         }
-
-//         // for (const auto &R : model.relationships()) {
-//         //     if (auto Error = RelationshipToBdd(manager, R.get(), &varMap, &finalBDD); !Error) {
-//         //         return oxidd::bdd_function{nullptr,0};
-//         //     }
-//         // }
-
-//         auto fb = oxidd_bdd_false(manager);
-//         if (fb._i == finalBDD._i) {
-//             oxidd_bdd_unref(finalBDD);
-//             return oxidd::bdd_function{nullptr,0}; // Return an invalid BDD if the final BDD is false
-//         }
-
-//         // Count SAT solutions
-//         oxidd::bdd_function oneTerminal = oxidd::bdd_functionrue(manager);
-//         oxidd::bdd_function zeroTerminal = oxidd_bdd_false(manager);
-//         size_t nodeCount = oxidd_bdd_node_count(finalBDD);
-//         BDDFeat* root = findFeatureinBDD(&finalBDD);
-
-//         auto R = getPr(
-//             &manager,
-//             &finalBDD,
-//             root,
-//             nodeCount,
-//             &oneTerminal,
-//             &zeroTerminal,
-//             *this);
-
-//         if (!R) { 
-//             oxidd_bdd_unref(finalBDD);
-//             return oxidd::bdd_function{nullptr,0}; // Return an invalid BDD if getPr fails
-//         };
-
-        
-//         return finalBDD;
-//     }
-
-//     BDDFactory::BDDFeat*
-//     BDDFactory::findFeatureinBDD(
-//          oxidd::bdd_function* node
-//     )  {
-//         for (auto& [name, f] : this->varMap) {
-//             if(f.type == featType::BINARY) {
-//                 oxidd::bdd_function* node_ptr = std::get<oxidd::bdd_function*>(f.data);
-//                 if(node_ptr && node_ptr->_p == node->_p && node_ptr->_i == node->_i) {
-//                     return &f;
-//                 }
-//             } else if (f.type == featType::NUMERIC) {
-//                 auto numericFeats = std::get<std::vector<std::pair<string, oxidd::bdd_function>>*>(f.data);
-//                 if(numericFeats && !numericFeats->empty()) {
-//                     auto& [name, feat] = (*numericFeats)[0];
-//                     if(feat._p == node->_p && feat._i == node->_i) {
-//                         for(auto& [name2, feat2]: this->varMap){
-//                             if(name == name2){
-//                                 return &feat2;
-//                             }
-//                         }
-//                     } else {
-//                         for (auto& [name3, feat3] : *numericFeats) {
-//                             if (feat3._p == node->_p && feat3._i == node->_i) {
-//                                 for(auto& [name4, feat4]: this->varMap){
-//                                     if(name3 == name4){
-//                                         return &feat4;
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//         return nullptr;
-//     }
-// }

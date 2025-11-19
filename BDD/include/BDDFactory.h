@@ -23,17 +23,11 @@ namespace bdd::sample
                 bool Marked = false;                           // Marking for probability calculation
                 size_t SatCount = 0;                           // Number of satisfying assignments
                 std::optional<double> Probability;             // Probability of the node
-            };
-
-            enum BranchType : std::uint8_t { // Changed to use std::uint8_t as the base type
-                TRUE,
-                FALSE,
-                NONE
+                std::optional<double> CC;
             };
 
             BDDFeat* findFeatureinBDD(
-                oxidd::bdd_function* Node,
-                BranchType &BranchType
+                oxidd::bdd_function* Node
             );
 
             oxidd::bdd_function modelToBdd(const vara::feature::FeatureModel &Model);

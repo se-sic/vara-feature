@@ -1,17 +1,21 @@
 #include "BDDSampler.h"
 #include "BDDFactory.h"
 #include "oxidd/util.hpp"
+#include <random>
 namespace bdd::sample {
 
   std::unordered_map<oxidd::level_no_t, bool> Sample; // NOLINT
 
   // Helper function: Generates a random number ∈ [0,1)
-  double random() { return static_cast<double>(std::rand()) / RAND_MAX; }
+  double random() {  
+    static std::mt19937 Rng(std::random_device{}());
+    std::uniform_int_distribution<int> Dist(1, 10); 
+    return Dist(Rng) * 0.1; 
+  }
 
   // Generate a random configuration by traversing the BDD
   std::unordered_map<oxidd::level_no_t, bool> generateConfiguration(const oxidd::bdd_manager &Manager, const oxidd::bdd_function& Root, BDDFactory &Factory) { //NOLINT
       oxidd::bdd_function Trav = Root;
-      BDDFactory::BranchType NT = BDDFactory::BranchType::NONE;
 
       // Get the LEVEL of the root node, not the variable number
       auto RootOpt = Root.node_level();
@@ -30,11 +34,15 @@ namespace bdd::sample {
       }
 
       // Main BDD traversal
-      oxidd::level_no_t PrevLevel = RootLevel - 1;
+      oxidd::level_no_t PrevLevel = (RootLevel > 0) ? (RootLevel - 1) : 0;
+      auto *Node = Factory.findFeatureinBDD(&Trav);
 
-      while (!Trav.valid()) {
+      while (Node->Name != "TRUE_TERMINAL") {
         auto LevelOpt = Trav.node_level();
         if (!LevelOpt.has_value()) {
+          if(Node->Name == "FALSE_TERMINAL") {
+            continue; // Reached terminal node
+          }
           throw std::logic_error("BDD node does not have a valid level.");
         }
         oxidd::level_no_t CurrentLevel = *LevelOpt;
@@ -51,7 +59,7 @@ namespace bdd::sample {
         }
 
         // Make probabilistic decision based on precomputed probability
-        auto *TravFeat = Factory.findFeatureinBDD(&Trav, NT);
+        auto *TravFeat = Factory.findFeatureinBDD(&Trav);
         if (!TravFeat->Probability.has_value()) {
             throw std::logic_error("Missing probability for feature: " + TravFeat->Name);
         }
@@ -59,11 +67,18 @@ namespace bdd::sample {
         double Probability = std::clamp(*TravFeat->Probability, 0.0, 1.0);
 
         // Choose branch based on probability
-        if (random() < Probability) {
+        auto CheckRan = random();
+        if (CheckRan < Probability) {
           Trav = Trav.cofactor_true(); // Take true branch
+          Node = Factory.findFeatureinBDD(&Trav);
           Sample[CurrentVar] = true; // Include feature
         } else {
-          Trav = Trav.cofactor_false(); // Take false branch
+          auto Temp = Trav.cofactor_false(); // Take false branch
+          Node = Factory.findFeatureinBDD(&Temp);
+          if(Node->Name == "FALSE_TERMINAL") {
+            continue;
+          }
+          Trav = Temp;
           Sample[CurrentVar] = false; // Exclude feature
         }
 
