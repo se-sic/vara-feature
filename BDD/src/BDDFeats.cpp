@@ -8,26 +8,6 @@ namespace bdd::sample {
 
         // Add binary feature to the varMap
     namespace {
-        Result<SolverErrorCode> addFeatureToMap(
-            const string &FeatureName,
-            std::unordered_map<oxidd::var_no_t, BDDFactory::BDDFeat> &VarMap,
-            oxidd::var_no_t Id,
-            const oxidd::bdd_manager &Manager
-        ){
-            // Create BDDFeat entry for this feature
-            (VarMap)[Id] = BDDFactory::BDDFeat{
-                .BddNode = Manager.var(Id),
-                .IsRoot = false,
-                .Name = FeatureName,
-                .Marked = false,
-                .SatCount = 0,
-                .Probability = {},
-                .CC = {},
-            };
-
-            return vara::Ok<void>();
-        }
-
         // Add Binary constraint acccording to Z3 rules: 
         // Add child -> parent
         // If not in XOR and not optional, add parent -> child as well
@@ -36,7 +16,7 @@ namespace bdd::sample {
             oxidd::var_no_t Id,
             const bool IsInXOR,
             const bool IsOpt,
-            std::unordered_map<oxidd::var_no_t, BDDFactory::BDDFeat> &VarMap,
+            //std::map<oxidd::var_no_t, BDDFactory::BDDFeat> &VarMap,
             oxidd::bdd_function &FinalBdd,
             const oxidd::bdd_manager &Manager
         ){
@@ -63,13 +43,12 @@ namespace bdd::sample {
             return vara::Ok<void>();
         }
     } // namespace
-    
+
     // Convert a feature to BDD representation and add child-parent relationships
     Result<SolverErrorCode>featureToBdd(
         oxidd::bdd_manager &Mgr,
         const bool IsInXOR,
         const Feature &Feature,
-        std::unordered_map<oxidd::var_no_t, BDDFactory::BDDFeat> &VarMap,
         oxidd::bdd_function &FinalBdd
     ){
         // Extract feature properties
@@ -77,12 +56,14 @@ namespace bdd::sample {
         const class Feature *Parent = Feature.getParentFeature();
         const std::string FeatureName = Feature.getName().str();
         const std::string ParentName = Parent ? Parent->getName().str() : "";
+
         auto IdCheck = Mgr.name_to_var(FeatureName);
         if(!IdCheck.has_value()) {
             std::cerr << "Error: Could not find variable ID for feature '" << FeatureName << "'.\n";
             return SolverErrorCode::ILLEGAL_STATE;
         }
         oxidd::capi::oxidd_var_no_t Id = IdCheck.value();
+
         auto ParentIdCheck = Parent ? Mgr.name_to_var(ParentName) : -1;
         if(Parent && !ParentIdCheck.has_value()) {
             std::cerr << "Error: Could not find variable ID for parent feature '" << ParentName << "'.\n";
@@ -90,11 +71,7 @@ namespace bdd::sample {
         }
         oxidd::capi::oxidd_var_no_t ParentId = Parent ? ParentIdCheck.value() : -1;
 
-        // If ID is already in the varMap, return back to the next feature
-        if(VarMap.contains(Id)) {
-            return SolverErrorCode::ALREADY_PRESENT;
-        }
-        // Handle different feature types: Only consider Binary and root features, else return NOT_SUPPORTED
+        // Handle different feature types: Only consider Binary and Root features, else return NOT_SUPPORTED
         switch(Feature.getKind()) {
             case Feature::FeatureKind::FK_NUMERIC: {
                 std::cerr << "Numeric features are not supported. Please choose a different feature diagram." << '\n';
@@ -106,20 +83,13 @@ namespace bdd::sample {
                     std::cerr << "Feature is not a binary feature." << '\n';
                     return SolverErrorCode::NOT_SUPPORTED;
                 }
-                // Add binary feature to the VarMap
-                addFeatureToMap(
-                    FeatureName,
-                    VarMap,
-                    Id,
-                    Mgr
-                );
+
                 // Add binary  constraints according to Z3 ruless
                 auto R = addBinaryConstraints(
                     ParentId,
                     Id,
                     IsInXOR,
                     IsOpt,
-                    VarMap,
                     FinalBdd,
                     Mgr);
                 if(!R) {
@@ -129,20 +99,11 @@ namespace bdd::sample {
             }
             // If root feature, add it to varMap and then add it as AND to the finalBdd
             case Feature::FeatureKind::FK_ROOT: {
-                (VarMap)[Id] = BDDFactory::BDDFeat{
-                    .BddNode = Mgr.f(),
-                    .IsRoot = true,
-                    .Name = FeatureName,
-                    .Marked = false,
-                    .SatCount = 0,
-                    .Probability = {},
-                    .CC = {},
-                };
-
                 FinalBdd = (FinalBdd) & Mgr.var(Id);
                 
                 return vara::Ok<void>();
             }
+
             default: {
                 std::cerr << "Unknown feature kind encountered." << '\n';
                 return SolverErrorCode::NOT_SUPPORTED;

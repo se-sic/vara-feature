@@ -6,6 +6,7 @@
 #include "oxidd/util.hpp"
 #include "vara/Solver/Error.h"
 #include "vara/Utils/Result.h"
+#include <utility>
 
 using vara::Result;
 using vara::solver::SolverErrorCode;
@@ -15,8 +16,7 @@ namespace bdd::sample {
     Result<vara::solver::SolverErrorCode>getPr(
         const oxidd::bdd_manager &Manager,
         oxidd::bdd_function &Node,
-        oxidd::var_no_t Id,
-        BDDFactory::BDDFeat &Feat,
+        std::map<oxidd::bdd_function, std::pair<double, double>> *SatMap,
         BDDFactory &Factory
     );
     
