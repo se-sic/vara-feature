@@ -247,6 +247,12 @@ if(${VARA_FEATURE_USE_Z3_SOLVER})
   include_directories(${Z3_INCLUDE_DIR})
 endif()
 
+option(VARA_BUILD_UVL_PARSER "Build UVL Parser" ON)
+if(VARA_BUILD_UVL_PARSER)
+  set(BUILD_UVL 1)
+  add_compile_definitions(BUILD_UVL_PARSER)
+endif()
+
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)

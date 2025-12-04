@@ -133,7 +133,12 @@ std::unique_ptr<FeatureModel> loadFeatureModel(llvm::StringRef Path) {
     llvm::errs() << EC.message() << '\n';
     return {};
   }
-
+#ifdef BUILD_UVL_PARSER
+  if (Path.endswith(".uvl")) {
+    return FeatureModelUvlParser(FStream.get()->getBuffer().str())
+        .buildFeatureModel();
+  }
+#endif // BUILD_UVL_PARSER
   return loadFeatureModelFromBuffer(FStream.get()->getBuffer().str());
 }
 

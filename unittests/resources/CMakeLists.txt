@@ -43,6 +43,7 @@ set(FEATURE_LIB_TEST_FILES
     xml/test_three_optional_features.xml
     xml/test_with_whitespaces.xml
     yml/dune_configs.yml
+    uvl/test_constraints.uvl
 )
 
 foreach(file_name ${FEATURE_LIB_TEST_FILES})

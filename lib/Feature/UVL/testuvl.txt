@@ -1,0 +1,13 @@
+features
+    root
+        optional
+            FeatureA
+            FeatureD
+                optional
+                    FeatureC
+        mandatory
+            FeatureB
+constraints
+    FeatureC => !FeatureB
+    FeatureA & FeatureC
+    (FeatureA & FeatureB) => (FeatureC | FeatureD)
