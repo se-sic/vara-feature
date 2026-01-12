@@ -8,14 +8,14 @@ namespace bdd::sample {
      */
     oxidd::bdd_function BDDConstraintVisitor::addConstraint(vara::feature::Constraint* C, bool Negate, bool RequireAll) {
         this->RequireAll = RequireAll;
-        ExprBDD = Manager->t(); // Reset ExprBDD to true
-        VariableConstraint = Manager->f(); // Reset VariableConstraint to false
+        ExprBDD = Manager->t();             // Reset ExprBDD to true
+        VariableConstraint = Manager->f();  // Reset VariableConstraint to false
 
-        if (C->accept(*this)) { // Visit the constraint
+        if (C->accept(*this)) {         // Visit the constraint
             oxidd::bdd_function FinalExpr = ExprBDD;
 
             if (Negate) {
-                FinalExpr= ~FinalExpr; // Negate if requested
+                FinalExpr= ~FinalExpr;      // Negate if requested
             }
             if (IsMixedConstraint && RequireAll) {
                 FinalExpr = VariableConstraint | FinalExpr;
@@ -25,7 +25,7 @@ namespace bdd::sample {
             return FinalExpr;
         }
 
-        return Manager->f(); // Return false BDD on failure
+        return Manager->f();                // Return false BDD on failure
     }
 
     /**
@@ -68,8 +68,8 @@ namespace bdd::sample {
             case CK::CK_GREATER:
             case CK::CK_LESS_EQUAL:
             case CK::CK_GREATER_EQUAL:
-            case CK::CK_EQUAL: // Boolean equality handled below
-            case CK::CK_NOT_EQUAL: // Boolean inequality handled below
+            case CK::CK_EQUAL:                  // Boolean equality handled below
+            case CK::CK_NOT_EQUAL:              // Boolean inequality handled below
                 // For boolean comparisons, use equivalence/not equivalence
                 if (C->getKind() == CK::CK_EQUAL) {
                     ExprBDD = Left.equiv(Right);
@@ -131,7 +131,7 @@ namespace bdd::sample {
             std::cerr << "Error: Could not find variable ID for feature '" << FeatureName << "'.\n";
             return false;
         }
-        oxidd::var_no_t Id = IdCheck.value(); //NOLINT
+        oxidd::var_no_t Id = IdCheck.value();
 
         // Check for unsupported numeric features
         if (C->getFeature()->getKind() == vara::feature::Feature::FeatureKind::FK_NUMERIC) {
@@ -150,18 +150,5 @@ namespace bdd::sample {
 
         return true;
     }
-
-    /**
-     * Handle a feature constraint by looking up its BDD variable
-     */
-    // bool BDDConstraintVisitor::handleFeatureConstraint(const oxidd::capi::oxidd_var_no_t Id) {
-    //     auto It = VarMap->find(Id);
-    //     if (It != VarMap->end()) {
-    //         auto Feat = It->second;
-    //         auto Res = Manager->var(Id);
-    //         (*CurrentBDD) = Manager->var(Id) & (*CurrentBDD);
-    //     }    
-    //     return true;
-    // }
 
 } // namespace bdd::sample

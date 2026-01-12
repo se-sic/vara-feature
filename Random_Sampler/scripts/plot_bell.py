@@ -2,6 +2,7 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 def plot_bell(csv_path):
     df = pd.read_csv(csv_path)

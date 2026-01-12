@@ -4,16 +4,17 @@
 #include "../../BDD/include/BDDFactory.h"
 #include "oxidd/bdd.hpp"
 #include <cstdlib> //for RAND_MAX
-#include <unordered_map>
+#include <utility>
 
 namespace bdd::sample {
   
   double random();
 
-  std::unordered_map<oxidd::var_no_t, bool>
+  std::vector<bool>
   generateConfiguration(const oxidd::bdd_manager &Manager, 
               const oxidd::bdd_function &Root, 
-              BDDFactory &Factory);
+              BDDFactory &Factory,
+              std::map<oxidd::bdd_function, std::pair<double, double>> *SatMap);
 } // namespace bdd::sample
 
 #endif //BDD_SAMPLER_H
