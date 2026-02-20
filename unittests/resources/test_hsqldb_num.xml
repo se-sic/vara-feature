@@ -1,0 +1,287 @@
+<vm name="hsqldb-evo">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>encryption</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>aes</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>encryption</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>blowfish</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>blowfish</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>encryption</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>aes</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>transactionControl</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>mvlocks</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>transactionControl</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>locks</options>
+        <options>mvcc</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>mvcc</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>transactionControl</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>locks</options>
+        <options>mvlocks</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>locks</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>transactionControl</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>mvcc</options>
+        <options>mvlocks</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>tableType</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>memoryTables</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>tableType</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>cachedTables</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>cachedTables</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>tableType</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>memoryTables</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>log</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>noLog</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>incrementalBackup</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>defrag</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>noDefrag</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions>
+    <configurationOption>
+      <name>cacheSize</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>cachedTables</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <minValue>625</minValue>
+      <maxValue>10000</maxValue>
+      <stepFunction>cacheSize * 4</stepFunction>
+    </configurationOption>
+    <configurationOption>
+      <name>defragLimit</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <values>10;50;100</values>
+    </configurationOption>
+    <configurationOption>
+      <name>logSize</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <values>0;5;50;100</values>
+    </configurationOption>
+  </numericOptions>
+  <booleanConstraints>
+    <constraint>log | noLog</constraint>
+    <constraint>!log | !noLog</constraint>
+    <constraint>defrag | noDefrag</constraint>
+    <constraint>!defrag | !noDefrag</constraint>
+  </booleanConstraints>
+  <nonBooleanConstraints />
+  <mixedConstraints>
+    <constraint req="all" exprKind="pos">memoryTables * cacheSize = 10000</constraint>
+    <constraint req="all" exprKind="pos">noLog * logSize = 0</constraint>
+    <constraint req="all" exprKind="pos">log * logSize != 0</constraint>
+    <constraint req="all" exprKind="pos">noDefrag * defragLimit = 100</constraint>
+    <constraint req="all" exprKind="pos">defrag * defragLimit != 100</constraint>
+  </mixedConstraints>
+</vm>

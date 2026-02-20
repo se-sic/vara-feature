@@ -1,0 +1,45 @@
+<vm name="TestModel">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <outputString>root</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent></parent>
+      <children>
+        <options>A</options>
+        <options>B</options>
+      </children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+
+    <configurationOption>
+      <name>A</name>
+      <outputString>A</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>root</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>   
+    </configurationOption>
+
+    <configurationOption>
+      <name>B</name>
+      <outputString>B</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>root</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>     
+    </configurationOption>
+  </binaryOptions>
+</vm>

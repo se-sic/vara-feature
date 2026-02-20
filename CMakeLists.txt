@@ -268,10 +268,13 @@ if(${VARA_FEATURE_USE_Z3_SOLVER})
     add_subdirectory(external/z3)
 
     # Set Z3 vars similar to find package
+    # First compute the concatenated path
+    string(CONCAT Z3_CONCAT_PATH 
+           "${PROJECT_BINARY_DIR}/${VARA_FEATURE_IN_TREE_PREFIX}"
+           "external/z3/src/api")
+    # Then set the variable
     set(Z3_INCLUDE_DIR
-        string
-        (CONCAT "${PROJECT_BINARY_DIR}/${VARA_FEATURE_IN_TREE_PREFIX}"
-         "external/z3/src/api")
+        ${Z3_CONCAT_PATH}
         "${CMAKE_CURRENT_SOURCE_DIR}/external/z3/src/api"
         "${CMAKE_CURRENT_SOURCE_DIR}/external/z3/src/api/c++"
     )

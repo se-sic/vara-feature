@@ -1,8 +1,6 @@
-#include "BDDSampler.h"
 #include "BDDFactory.h"
 #include "oxidd/bdd.hpp"
 #include "oxidd/util.hpp"
-#include <cstddef>
 #include <random>
 #include <utility>
 namespace bdd::sample {

@@ -1,0 +1,9 @@
+CompileFlags:
+  Add:
+    - "-I/home/michael/Documents/vara-feature/build/external/oxidd/include"
+    - "-I/home/michael/Documents/vara-feature/external/oxidd/bindings/cpp/include"
+    - "-I/home/michael/Documents/vara-feature/build"
+    - "-I/home/michael/Documents/vara-feature/include"
+    - "-I/home/michael/Documents/vara-feature/BDD/include"
+    - "-I/home/michael/Documents/vara-feature/Random_Sampler/include"
+  CompilationDatabase: build

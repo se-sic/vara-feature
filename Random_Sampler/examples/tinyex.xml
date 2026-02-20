@@ -1,0 +1,74 @@
+<vm name="ABC">
+
+  <binaryOptions>
+
+    <!-- root feature -->
+    <configurationOption>
+      <name>root</name>
+      <outputString>root</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent></parent>
+      <children>
+        <options>A</options>
+        <options>B</options>
+        <options>C</options>
+      </children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+
+    <!-- A (optional) -->
+    <configurationOption>
+      <name>A</name>
+      <outputString>A</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>root</parent>
+      <children></children>
+      <impliedOptions>
+        <options>B</options>
+      </impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+
+    <!-- B (optional) -->
+    <configurationOption>
+      <name>B</name>
+      <outputString>B</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>root</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+
+    <!-- C (optional) -->
+    <configurationOption>
+      <name>C</name>
+      <outputString>C</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>root</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+
+  </binaryOptions>
+
+  <booleanConstraints>
+    <!-- A requires B -->
+    <constraint>!A | B</constraint>
+  </booleanConstraints>
+
+</vm>

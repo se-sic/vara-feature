@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="SingleLocalSingle" root="root">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <parent></parent>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>A</name>
+      <outputString>A</outputString>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>B</name>
+      <outputString>B</outputString>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>C</name>
+      <outputString>C</outputString>
+      <parent>root</parent>
+      <optional>True</optional>
+    </configurationOption>
+  </binaryOptions>
+</vm>

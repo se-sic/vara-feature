@@ -1,0 +1,13 @@
+<feature_model name="wrong indentation test">
+<feature_tree indentation_string="  ">
+:r root(root)
+	:g [1,1] threadCount(threadCount)
+		: threadCount_256(threadCount_256)
+		: threadCount_128(threadCount_128)
+		: threadCount_64(threadCount_64)
+		: threadCount_32(threadCount_32)
+		: threadCount_16(threadCount_16)
+</feature_tree>
+<constraints>
+</constraints>
+</feature_model>

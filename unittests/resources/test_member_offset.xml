@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="Children" root="test">
+  <binaryOptions>
+    <configurationOption>
+      <name>A</name>
+      <parent>root</parent>
+      <optional>True</optional>
+      <locations>
+        <sourceRange category="necessary">
+          <path>main.c</path>
+          <start>
+            <line>6</line>
+            <column>3</column>
+          </start>
+          <end>
+            <line>6</line>
+            <column>26</column>
+          </end>
+          <memberOffset>
+            className::methodName
+          </memberOffset>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions/>
+  <booleanConstraints/>
+</vm>

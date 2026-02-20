@@ -1,0 +1,198 @@
+<vm name="GraphProductLine">
+  <binaryOptions>
+    <!-- Root feature -->
+    <configurationOption>
+      <name>WebApplication</name>
+      <outputString>Web Application</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent></parent>
+      <children>
+        <options>Encryption</options>
+        <options>Standalone</options>
+        <options>RestAPI</options>
+        <options>Deployment</options>
+        <options>UserAccount</options>
+        <options>ExecutivePlatform</options>
+      </children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions>
+        <options>Standalone</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    
+    <!-- Encryption (optional) -->
+    <configurationOption>
+      <name>Encryption</name>
+      <outputString>Encryption</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>WebApplication</parent>
+      <children>
+        <options>TLS</options>
+        <options>E2E</options>
+      </children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    
+    <!-- TLS (alternative group) -->
+    <configurationOption>
+      <name>TLS</name>
+      <outputString>TLS</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>Encryption</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions>
+        <options>E2E</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    
+    <!-- E2E (alternative group) -->
+    <configurationOption>
+      <name>E2E</name>
+      <outputString>E2E</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>Encryption</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions>
+        <options>TLS</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    
+    <!-- Standalone (optional, excludes WebApplication) -->
+    <configurationOption>
+      <name>Standalone</name>
+      <outputString>Standalone</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>WebApplication</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions>
+        <options>WebApplication</options>
+      </excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    
+    <!-- Rest API (optional) -->
+    <configurationOption>
+      <name>RestAPI</name>
+      <outputString>Rest API</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>WebApplication</parent>
+      <children>
+        <options>Authentication</options>
+      </children>
+      <impliedOptions>
+        <options>UserAccount</options>
+      </impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    
+    <!-- Authentication (optional) -->
+    <configurationOption>
+      <name>Authentication</name>
+      <outputString>Authentication</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>RestAPI</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    
+    <!-- Deployment (abstract, optional) -->
+    <configurationOption>
+      <name>Deployment</name>
+      <outputString>Deployment</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>WebApplication</parent>
+      <children>
+        <options>OnPremise</options>
+        <options>Cloud</options>
+      </children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    
+    <!-- On-Premise (or group) -->
+    <configurationOption>
+      <name>OnPremise</name>
+      <outputString>On-Premise</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>Deployment</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    
+    <!-- Cloud (or group) -->
+    <configurationOption>
+      <name>Cloud</name>
+      <outputString>Cloud</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>Deployment</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+    
+    <!-- User Account (optional) -->
+    <configurationOption>
+      <name>UserAccount</name>
+      <outputString>User Account</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>WebApplication</parent>
+      <children></children>
+      <impliedOptions>
+        <options>RestAPI</options>
+      </impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>True</optional>
+    </configurationOption>
+    
+    <!-- Executive Platform (mandatory) -->
+    <configurationOption>
+      <name>ExecutivePlatform</name>
+      <outputString>Executive Platform</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>WebApplication</parent>
+      <children></children>
+      <impliedOptions></impliedOptions>
+      <excludedOptions></excludedOptions>
+      <defaultValue>Selected</defaultValue>
+      <optional>False</optional>
+    </configurationOption>
+  </binaryOptions>
+</vm>

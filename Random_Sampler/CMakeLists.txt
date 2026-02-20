@@ -38,26 +38,48 @@ endif()
 #  endif()
 #endforeach()
 
+add_library(coverage_lib
+  src/CoverageIntegration.cpp
+  src/CoverageMetrics.cpp
+  src/BDDSampler.cpp
+)
+
 add_executable(random_sampler
   src/main.cpp
   src/BDDSampler.cpp
   src/Plotter.cpp
+  src/CoverageIntegration.cpp
+  src/CoverageMetrics.cpp
   #../BDD/src/BDDFactory.cpp
 )
 
 # Includes
-target_include_directories(random_sampler PRIVATE 
+target_include_directories(coverage_lib PUBLIC
   ${CMAKE_SOURCE_DIR}/Random_Sampler/include
   ${CMAKE_SOURCE_DIR}/include/vara/Solver
+  ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/../BDD/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
+  ${CMAKE_BINARY_DIR}/external/oxidd/include
+  ${CMAKE_BINARY_DIR}/_deps/tl-expected-src/include
   /opt/homebrew/Cellar/tinyxml2/11.0.0/include
+)
+
+# 2. Configuration for the executable
+target_include_directories(random_sampler PRIVATE 
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/include/vara/Solver
+  ${CMAKE_CURRENT_SOURCE_DIR}/../BDD/include
+  ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
+  ${CMAKE_BINARY_DIR}/_deps/tl-expected-src/include
 )
 
 # Libraries
 find_package(tinyxml2 REQUIRED)
 
 target_link_libraries(random_sampler PRIVATE
+  coverage_lib PRIVATE
   bdd
   VaRAFeature
   VaRASampling
@@ -82,3 +104,11 @@ set_target_properties(random_sampler PROPERTIES
   BUILD_RPATH "${CMAKE_BINARY_DIR}/external/oxidd"
   INSTALL_RPATH_USE_LINK_PATH TRUE
 )
+
+option(BUILD_TESTS "Build test suite" OFF)
+
+if(BUILD_TESTS)
+    message(STATUS "Building tests...")
+    enable_testing()
+    add_subdirectory(tests)
+endif()

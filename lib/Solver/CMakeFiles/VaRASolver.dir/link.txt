@@ -1,0 +1,2 @@
+/usr/bin/ar qc libVaRASolver.a CMakeFiles/VaRASolver.dir/Z3Solver.cpp.o CMakeFiles/VaRASolver.dir/SolverFactory.cpp.o
+/usr/bin/ranlib libVaRASolver.a

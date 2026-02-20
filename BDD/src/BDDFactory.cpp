@@ -73,7 +73,10 @@ namespace bdd::sample
        std::string_view DiagramName = "7z";
        std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
        auto Result = Manager.visualize(DiagramName, Funcs);
-       Manager.export_dddmp("hippacc.dddmp", Funcs).value();
+       auto Export = Manager.export_dddmp("hippacc.dddmp", Funcs);
+        if (!Export) {    
+            std::cerr << "DDDMP export failed with error" << '\n';
+        }
 
        return FinalBdd;
     }
@@ -107,5 +110,11 @@ namespace bdd::sample
 
         // Add all named variables to the BDD manager
         auto  Res = Manager.add_named_vars(NamesCstrSpan);
+        if (Res) {
+        auto VarRange = Res.value();
+        for (auto VarNo : VarRange) {
+            Vars.push_back(Manager.var(VarNo));  // Store the variables
+        }
+}
     }
 } // namespace bdd::sample

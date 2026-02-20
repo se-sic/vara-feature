@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcoverage_lib.a CMakeFiles/coverage_lib.dir/src/CoverageIntegration.cpp.o CMakeFiles/coverage_lib.dir/src/CoverageMetrics.cpp.o
+/usr/bin/ranlib libcoverage_lib.a
