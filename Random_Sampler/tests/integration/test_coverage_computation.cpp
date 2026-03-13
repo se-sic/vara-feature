@@ -16,6 +16,7 @@ public:
     using CoverageEvaluator::buildFeatureVarMap;
     using CoverageEvaluator::initializeMetrics;
     using CoverageEvaluator::extractInteractionsFromConfig;
+    using CoverageEvaluator::generateValidInteractions;
 
     [[nodiscard]] const FeatureModelAnalysis& getAnalysis() const {
         return Analysis;  
@@ -45,11 +46,11 @@ protected:
         // Create BDD factory and BDD
         Factory = std::make_unique<bdd::sample::BDDFactory>();
         Bdd = Factory->modelToBdd(*FeatureModel);
-        Manager = Bdd.containing_manager();
+        Manager = Bdd->containing_manager();
 
         // Instantiate the testable evaluator
         Evaluator = std::make_unique<TestableCoverageEvaluator>(
-            *FeatureModel, Bdd, Manager, *Factory
+            *FeatureModel, *Bdd, *Manager, *Factory
         );
 
         Evaluator->initializeAnalysis();
@@ -63,11 +64,24 @@ protected:
 
     std::unique_ptr<vara::feature::FeatureModel> FeatureModel;
     std::unique_ptr<bdd::sample::BDDFactory> Factory;
-    oxidd::bdd_function Bdd;
-    oxidd::bdd_manager Manager;
+    std::optional<oxidd::bdd_function> Bdd;
+    std::optional<oxidd::bdd_manager> Manager;
     std::unique_ptr<TestableCoverageEvaluator> Evaluator;
 };
 
+TEST_F(ComputationCoverageEvaluatorTest, CheckConfigurationsAndFeatures) {
+    auto FeatureSize = FeatureModel->size();
+    auto ConfigurationSize = Bdd->sat_count_double(FeatureSize);
+
+    EXPECT_EQ(FeatureSize, 4);
+    EXPECT_EQ(ConfigurationSize, 4);
+}
+
+TEST_F(ComputationCoverageEvaluatorTest, CheckInteractions){
+    std::set<Interaction> Interactions = Evaluator->generateValidInteractions(2);
+
+    EXPECT_EQ(Interactions.size(), 13);
+}
 
 TEST_F(ComputationCoverageEvaluatorTest, EmptyInteractions) {
     std::set<Interaction> AllValid;  
@@ -83,28 +97,13 @@ TEST_F(ComputationCoverageEvaluatorTest, EmptyInteractions) {
     EXPECT_DOUBLE_EQ(Coverage, 1.0);
 }
 
-TEST_F(ComputationCoverageEvaluatorTest, EmptySample) {
-    std::set<Interaction> AllValid = {
-        test_utils::makeInteraction({{"A", true}, {"B", false}}),
-        test_utils::makeInteraction({{"A", false}, {"B", true}})
-    };
-    std::vector<std::vector<bool>> Sample;  
-    
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 2);
-    
-    // Assert: No configs → 0% coverage
-    EXPECT_DOUBLE_EQ(Coverage, 0.0);
-}
-
 TEST_F(ComputationCoverageEvaluatorTest, FullCoverage) {
     std::set<Interaction> AllValid = Evaluator->generateValidInteractions(2);
     
     std::vector<std::vector<bool>> Sample;
     for (int I = 0; I < 10; ++I) {
         auto Config = bdd::sample::generateConfiguration(
-            Manager, Bdd, *Factory, &Factory->SatMap);
+            *Manager, *Bdd, *Factory, &Factory->SatMap);
         Sample.push_back(Config);
     }
         

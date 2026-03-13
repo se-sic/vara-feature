@@ -1,0 +1,1932 @@
+<vm name="Tri_Feature_Model_bin">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>
+      </parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>cycle</name>
+      <outputString>cycle</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children>
+        <option>V</option>
+        <option>F</option>
+      </children>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>V</name>
+      <outputString>V</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>cycle</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>F</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>F</name>
+      <outputString>F</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>cycle</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>V</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>relaxParameter</name>
+      <outputString>relaxParameter</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>smoother</name>
+      <outputString>smoother</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children>
+        <option>Jacobi</option>
+        <option>colorGS</option>
+        <option>line</option>
+        <option>zebraLine</option>
+      </children>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>Jacobi</name>
+      <outputString>Jacobi</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>smoother</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>colorGS</options>
+        <options>line</options>
+        <options>zebraLine</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>colorGS</name>
+      <outputString>colorGS</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>smoother</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>Jacobi</options>
+        <options>line</options>
+        <options>zebraLine</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>line</name>
+      <outputString>line</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>smoother</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>Jacobi</options>
+        <options>colorGS</options>
+        <options>zebraLine</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>zebraLine</name>
+      <outputString>zebraLine</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>smoother</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>Jacobi</options>
+        <options>colorGS</options>
+        <options>line</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children>
+        <option>preSmoothing_0</option>
+        <option>preSmoothing_1</option>
+        <option>preSmoothing_2</option>
+        <option>preSmoothing_3</option>
+        <option>preSmoothing_4</option>
+        <option>preSmoothing_5</option>
+        <option>preSmoothing_6</option>
+        <option>preSmoothing_7</option>
+        <option>preSmoothing_8</option>
+      </children>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing_0</name>
+      <outputString>0</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>preSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>preSmoothing_1</options>
+        <options>preSmoothing_2</options>
+        <options>preSmoothing_3</options>
+        <options>preSmoothing_4</options>
+        <options>preSmoothing_5</options>
+        <options>preSmoothing_6</options>
+        <options>preSmoothing_7</options>
+        <options>preSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing_1</name>
+      <outputString>1</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>preSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>preSmoothing_0</options>
+        <options>preSmoothing_2</options>
+        <options>preSmoothing_3</options>
+        <options>preSmoothing_4</options>
+        <options>preSmoothing_5</options>
+        <options>preSmoothing_6</options>
+        <options>preSmoothing_7</options>
+        <options>preSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing_2</name>
+      <outputString>2</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>preSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>preSmoothing_0</options>
+        <options>preSmoothing_1</options>
+        <options>preSmoothing_3</options>
+        <options>preSmoothing_4</options>
+        <options>preSmoothing_5</options>
+        <options>preSmoothing_6</options>
+        <options>preSmoothing_7</options>
+        <options>preSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing_3</name>
+      <outputString>3</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>preSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>preSmoothing_0</options>
+        <options>preSmoothing_1</options>
+        <options>preSmoothing_2</options>
+        <options>preSmoothing_4</options>
+        <options>preSmoothing_5</options>
+        <options>preSmoothing_6</options>
+        <options>preSmoothing_7</options>
+        <options>preSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing_4</name>
+      <outputString>4</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>preSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>preSmoothing_0</options>
+        <options>preSmoothing_1</options>
+        <options>preSmoothing_2</options>
+        <options>preSmoothing_3</options>
+        <options>preSmoothing_5</options>
+        <options>preSmoothing_6</options>
+        <options>preSmoothing_7</options>
+        <options>preSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing_5</name>
+      <outputString>5</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>preSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>preSmoothing_0</options>
+        <options>preSmoothing_1</options>
+        <options>preSmoothing_2</options>
+        <options>preSmoothing_3</options>
+        <options>preSmoothing_4</options>
+        <options>preSmoothing_6</options>
+        <options>preSmoothing_7</options>
+        <options>preSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing_6</name>
+      <outputString>6</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>preSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>preSmoothing_0</options>
+        <options>preSmoothing_1</options>
+        <options>preSmoothing_2</options>
+        <options>preSmoothing_3</options>
+        <options>preSmoothing_4</options>
+        <options>preSmoothing_5</options>
+        <options>preSmoothing_7</options>
+        <options>preSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing_7</name>
+      <outputString>7</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>preSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>preSmoothing_0</options>
+        <options>preSmoothing_1</options>
+        <options>preSmoothing_2</options>
+        <options>preSmoothing_3</options>
+        <options>preSmoothing_4</options>
+        <options>preSmoothing_5</options>
+        <options>preSmoothing_6</options>
+        <options>preSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>preSmoothing_8</name>
+      <outputString>8</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>preSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>preSmoothing_0</options>
+        <options>preSmoothing_1</options>
+        <options>preSmoothing_2</options>
+        <options>preSmoothing_3</options>
+        <options>preSmoothing_4</options>
+        <options>preSmoothing_5</options>
+        <options>preSmoothing_6</options>
+        <options>preSmoothing_7</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children>
+        <option>postSmoothing_0</option>
+        <option>postSmoothing_1</option>
+        <option>postSmoothing_2</option>
+        <option>postSmoothing_3</option>
+        <option>postSmoothing_4</option>
+        <option>postSmoothing_5</option>
+        <option>postSmoothing_6</option>
+        <option>postSmoothing_7</option>
+        <option>postSmoothing_8</option>
+      </children>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing_0</name>
+      <outputString>0</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>postSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>postSmoothing_1</options>
+        <options>postSmoothing_2</options>
+        <options>postSmoothing_3</options>
+        <options>postSmoothing_4</options>
+        <options>postSmoothing_5</options>
+        <options>postSmoothing_6</options>
+        <options>postSmoothing_7</options>
+        <options>postSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing_1</name>
+      <outputString>1</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>postSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>postSmoothing_0</options>
+        <options>postSmoothing_2</options>
+        <options>postSmoothing_3</options>
+        <options>postSmoothing_4</options>
+        <options>postSmoothing_5</options>
+        <options>postSmoothing_6</options>
+        <options>postSmoothing_7</options>
+        <options>postSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing_2</name>
+      <outputString>2</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>postSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>postSmoothing_0</options>
+        <options>postSmoothing_1</options>
+        <options>postSmoothing_3</options>
+        <options>postSmoothing_4</options>
+        <options>postSmoothing_5</options>
+        <options>postSmoothing_6</options>
+        <options>postSmoothing_7</options>
+        <options>postSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing_3</name>
+      <outputString>3</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>postSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>postSmoothing_0</options>
+        <options>postSmoothing_1</options>
+        <options>postSmoothing_2</options>
+        <options>postSmoothing_4</options>
+        <options>postSmoothing_5</options>
+        <options>postSmoothing_6</options>
+        <options>postSmoothing_7</options>
+        <options>postSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing_4</name>
+      <outputString>4</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>postSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>postSmoothing_0</options>
+        <options>postSmoothing_1</options>
+        <options>postSmoothing_2</options>
+        <options>postSmoothing_3</options>
+        <options>postSmoothing_5</options>
+        <options>postSmoothing_6</options>
+        <options>postSmoothing_7</options>
+        <options>postSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing_5</name>
+      <outputString>5</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>postSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>postSmoothing_0</options>
+        <options>postSmoothing_1</options>
+        <options>postSmoothing_2</options>
+        <options>postSmoothing_3</options>
+        <options>postSmoothing_4</options>
+        <options>postSmoothing_6</options>
+        <options>postSmoothing_7</options>
+        <options>postSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing_6</name>
+      <outputString>6</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>postSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>postSmoothing_0</options>
+        <options>postSmoothing_1</options>
+        <options>postSmoothing_2</options>
+        <options>postSmoothing_3</options>
+        <options>postSmoothing_4</options>
+        <options>postSmoothing_5</options>
+        <options>postSmoothing_7</options>
+        <options>postSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing_7</name>
+      <outputString>7</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>postSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>postSmoothing_0</options>
+        <options>postSmoothing_1</options>
+        <options>postSmoothing_2</options>
+        <options>postSmoothing_3</options>
+        <options>postSmoothing_4</options>
+        <options>postSmoothing_5</options>
+        <options>postSmoothing_6</options>
+        <options>postSmoothing_8</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>postSmoothing_8</name>
+      <outputString>8</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>postSmoothing</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>postSmoothing_0</options>
+        <options>postSmoothing_1</options>
+        <options>postSmoothing_2</options>
+        <options>postSmoothing_3</options>
+        <options>postSmoothing_4</options>
+        <options>postSmoothing_5</options>
+        <options>postSmoothing_6</options>
+        <options>postSmoothing_7</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children>
+        <option>alpha_5</option>
+        <option>alpha_10</option>
+        <option>alpha_15</option>
+        <option>alpha_20</option>
+        <option>alpha_25</option>
+        <option>alpha_30</option>
+        <option>alpha_35</option>
+        <option>alpha_40</option>
+        <option>alpha_45</option>
+        <option>alpha_50</option>
+        <option>alpha_55</option>
+        <option>alpha_60</option>
+        <option>alpha_65</option>
+        <option>alpha_70</option>
+        <option>alpha_75</option>
+        <option>alpha_80</option>
+        <option>alpha_85</option>
+        <option>alpha_90</option>
+      </children>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_5</name>
+      <outputString>5</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_10</name>
+      <outputString>10</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_15</name>
+      <outputString>15</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_20</name>
+      <outputString>20</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_25</name>
+      <outputString>25</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_30</name>
+      <outputString>30</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_35</name>
+      <outputString>35</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_40</name>
+      <outputString>40</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_45</name>
+      <outputString>45</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_50</name>
+      <outputString>50</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_55</name>
+      <outputString>55</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_60</name>
+      <outputString>60</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_65</name>
+      <outputString>65</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_70</name>
+      <outputString>70</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_75</name>
+      <outputString>75</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_80</name>
+      <outputString>80</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_85</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_85</name>
+      <outputString>85</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>alpha_90</name>
+      <outputString>90</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>alpha</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>alpha_5</options>
+        <options>alpha_10</options>
+        <options>alpha_15</options>
+        <options>alpha_20</options>
+        <options>alpha_25</options>
+        <options>alpha_30</options>
+        <options>alpha_35</options>
+        <options>alpha_40</options>
+        <options>alpha_45</options>
+        <options>alpha_50</options>
+        <options>alpha_55</options>
+        <options>alpha_60</options>
+        <options>alpha_65</options>
+        <options>alpha_70</options>
+        <options>alpha_75</options>
+        <options>alpha_80</options>
+        <options>alpha_85</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta</name>
+      <outputString>
+      </outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <children>
+        <option>beta_5</option>
+        <option>beta_10</option>
+        <option>beta_15</option>
+        <option>beta_20</option>
+        <option>beta_25</option>
+        <option>beta_30</option>
+        <option>beta_35</option>
+        <option>beta_40</option>
+        <option>beta_45</option>
+        <option>beta_50</option>
+        <option>beta_55</option>
+        <option>beta_60</option>
+        <option>beta_65</option>
+        <option>beta_70</option>
+        <option>beta_75</option>
+        <option>beta_80</option>
+        <option>beta_85</option>
+        <option>beta_90</option>
+      </children>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_5</name>
+      <outputString>5</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_10</name>
+      <outputString>10</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_15</name>
+      <outputString>15</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_20</name>
+      <outputString>20</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_25</name>
+      <outputString>25</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_30</name>
+      <outputString>30</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_35</name>
+      <outputString>35</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_40</name>
+      <outputString>40</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_45</name>
+      <outputString>45</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_50</name>
+      <outputString>50</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_55</name>
+      <outputString>55</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_60</name>
+      <outputString>60</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_65</name>
+      <outputString>65</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_70</name>
+      <outputString>70</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_75</name>
+      <outputString>75</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_80</name>
+      <outputString>80</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_85</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_85</name>
+      <outputString>85</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_90</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>beta_90</name>
+      <outputString>90</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>beta</parent>
+      <children />
+      <impliedOptions />
+      <excludedOptions>
+        <options>beta_5</options>
+        <options>beta_10</options>
+        <options>beta_15</options>
+        <options>beta_20</options>
+        <options>beta_25</options>
+        <options>beta_30</options>
+        <options>beta_35</options>
+        <options>beta_40</options>
+        <options>beta_45</options>
+        <options>beta_50</options>
+        <options>beta_55</options>
+        <options>beta_60</options>
+        <options>beta_65</options>
+        <options>beta_70</options>
+        <options>beta_75</options>
+        <options>beta_80</options>
+        <options>beta_85</options>
+      </excludedOptions>
+      <optional>False</optional>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions />
+  <booleanConstraints>
+    <constraint>!preSmoothing_0 | !postSmoothing_0</constraint>
+    <constraint>!alpha_5 | !beta_5</constraint>
+    <constraint>!alpha_5 | !beta_10</constraint>
+    <constraint>!alpha_5 | !beta_15</constraint>
+    <constraint>!alpha_5 | !beta_20</constraint>
+    <constraint>!alpha_5 | !beta_25</constraint>
+    <constraint>!alpha_5 | !beta_30</constraint>
+    <constraint>!alpha_5 | !beta_35</constraint>
+    <constraint>!alpha_5 | !beta_40</constraint>
+    <constraint>!alpha_5 | !beta_45</constraint>
+    <constraint>!alpha_5 | !beta_50</constraint>
+    <constraint>!alpha_5 | !beta_55</constraint>
+    <constraint>!alpha_5 | !beta_60</constraint>
+    <constraint>!alpha_5 | !beta_65</constraint>
+    <constraint>!alpha_5 | !beta_70</constraint>
+    <constraint>!alpha_5 | !beta_75</constraint>
+    <constraint>!alpha_5 | !beta_80</constraint>
+    <constraint>!alpha_10 | !beta_5</constraint>
+    <constraint>!alpha_10 | !beta_10</constraint>
+    <constraint>!alpha_10 | !beta_15</constraint>
+    <constraint>!alpha_10 | !beta_20</constraint>
+    <constraint>!alpha_10 | !beta_25</constraint>
+    <constraint>!alpha_10 | !beta_30</constraint>
+    <constraint>!alpha_10 | !beta_35</constraint>
+    <constraint>!alpha_10 | !beta_40</constraint>
+    <constraint>!alpha_10 | !beta_45</constraint>
+    <constraint>!alpha_10 | !beta_50</constraint>
+    <constraint>!alpha_10 | !beta_55</constraint>
+    <constraint>!alpha_10 | !beta_60</constraint>
+    <constraint>!alpha_10 | !beta_65</constraint>
+    <constraint>!alpha_10 | !beta_70</constraint>
+    <constraint>!alpha_10 | !beta_75</constraint>
+    <constraint>!alpha_15 | !beta_5</constraint>
+    <constraint>!alpha_15 | !beta_10</constraint>
+    <constraint>!alpha_15 | !beta_15</constraint>
+    <constraint>!alpha_15 | !beta_20</constraint>
+    <constraint>!alpha_15 | !beta_25</constraint>
+    <constraint>!alpha_15 | !beta_30</constraint>
+    <constraint>!alpha_15 | !beta_35</constraint>
+    <constraint>!alpha_15 | !beta_40</constraint>
+    <constraint>!alpha_15 | !beta_45</constraint>
+    <constraint>!alpha_15 | !beta_50</constraint>
+    <constraint>!alpha_15 | !beta_55</constraint>
+    <constraint>!alpha_15 | !beta_60</constraint>
+    <constraint>!alpha_15 | !beta_65</constraint>
+    <constraint>!alpha_15 | !beta_70</constraint>
+    <constraint>!alpha_20 | !beta_5</constraint>
+    <constraint>!alpha_20 | !beta_10</constraint>
+    <constraint>!alpha_20 | !beta_15</constraint>
+    <constraint>!alpha_20 | !beta_20</constraint>
+    <constraint>!alpha_20 | !beta_25</constraint>
+    <constraint>!alpha_20 | !beta_30</constraint>
+    <constraint>!alpha_20 | !beta_35</constraint>
+    <constraint>!alpha_20 | !beta_40</constraint>
+    <constraint>!alpha_20 | !beta_45</constraint>
+    <constraint>!alpha_20 | !beta_50</constraint>
+    <constraint>!alpha_20 | !beta_55</constraint>
+    <constraint>!alpha_20 | !beta_60</constraint>
+    <constraint>!alpha_20 | !beta_65</constraint>
+    <constraint>!alpha_25 | !beta_5</constraint>
+    <constraint>!alpha_25 | !beta_10</constraint>
+    <constraint>!alpha_25 | !beta_15</constraint>
+    <constraint>!alpha_25 | !beta_20</constraint>
+    <constraint>!alpha_25 | !beta_25</constraint>
+    <constraint>!alpha_25 | !beta_30</constraint>
+    <constraint>!alpha_25 | !beta_35</constraint>
+    <constraint>!alpha_25 | !beta_40</constraint>
+    <constraint>!alpha_25 | !beta_45</constraint>
+    <constraint>!alpha_25 | !beta_50</constraint>
+    <constraint>!alpha_25 | !beta_55</constraint>
+    <constraint>!alpha_25 | !beta_60</constraint>
+    <constraint>!alpha_30 | !beta_5</constraint>
+    <constraint>!alpha_30 | !beta_10</constraint>
+    <constraint>!alpha_30 | !beta_15</constraint>
+    <constraint>!alpha_30 | !beta_20</constraint>
+    <constraint>!alpha_30 | !beta_25</constraint>
+    <constraint>!alpha_30 | !beta_30</constraint>
+    <constraint>!alpha_30 | !beta_35</constraint>
+    <constraint>!alpha_30 | !beta_40</constraint>
+    <constraint>!alpha_30 | !beta_45</constraint>
+    <constraint>!alpha_30 | !beta_50</constraint>
+    <constraint>!alpha_30 | !beta_55</constraint>
+    <constraint>!alpha_35 | !beta_5</constraint>
+    <constraint>!alpha_35 | !beta_10</constraint>
+    <constraint>!alpha_35 | !beta_15</constraint>
+    <constraint>!alpha_35 | !beta_20</constraint>
+    <constraint>!alpha_35 | !beta_25</constraint>
+    <constraint>!alpha_35 | !beta_30</constraint>
+    <constraint>!alpha_35 | !beta_35</constraint>
+    <constraint>!alpha_35 | !beta_40</constraint>
+    <constraint>!alpha_35 | !beta_45</constraint>
+    <constraint>!alpha_35 | !beta_50</constraint>
+    <constraint>!alpha_40 | !beta_5</constraint>
+    <constraint>!alpha_40 | !beta_10</constraint>
+    <constraint>!alpha_40 | !beta_15</constraint>
+    <constraint>!alpha_40 | !beta_20</constraint>
+    <constraint>!alpha_40 | !beta_25</constraint>
+    <constraint>!alpha_40 | !beta_30</constraint>
+    <constraint>!alpha_40 | !beta_35</constraint>
+    <constraint>!alpha_40 | !beta_40</constraint>
+    <constraint>!alpha_40 | !beta_45</constraint>
+    <constraint>!alpha_45 | !beta_5</constraint>
+    <constraint>!alpha_45 | !beta_10</constraint>
+    <constraint>!alpha_45 | !beta_15</constraint>
+    <constraint>!alpha_45 | !beta_20</constraint>
+    <constraint>!alpha_45 | !beta_25</constraint>
+    <constraint>!alpha_45 | !beta_30</constraint>
+    <constraint>!alpha_45 | !beta_35</constraint>
+    <constraint>!alpha_45 | !beta_40</constraint>
+    <constraint>!alpha_50 | !beta_5</constraint>
+    <constraint>!alpha_50 | !beta_10</constraint>
+    <constraint>!alpha_50 | !beta_15</constraint>
+    <constraint>!alpha_50 | !beta_20</constraint>
+    <constraint>!alpha_50 | !beta_25</constraint>
+    <constraint>!alpha_50 | !beta_30</constraint>
+    <constraint>!alpha_50 | !beta_35</constraint>
+    <constraint>!alpha_55 | !beta_5</constraint>
+    <constraint>!alpha_55 | !beta_10</constraint>
+    <constraint>!alpha_55 | !beta_15</constraint>
+    <constraint>!alpha_55 | !beta_20</constraint>
+    <constraint>!alpha_55 | !beta_25</constraint>
+    <constraint>!alpha_55 | !beta_30</constraint>
+    <constraint>!alpha_60 | !beta_5</constraint>
+    <constraint>!alpha_60 | !beta_10</constraint>
+    <constraint>!alpha_60 | !beta_15</constraint>
+    <constraint>!alpha_60 | !beta_20</constraint>
+    <constraint>!alpha_60 | !beta_25</constraint>
+    <constraint>!alpha_65 | !beta_5</constraint>
+    <constraint>!alpha_65 | !beta_10</constraint>
+    <constraint>!alpha_65 | !beta_15</constraint>
+    <constraint>!alpha_65 | !beta_20</constraint>
+    <constraint>!alpha_70 | !beta_5</constraint>
+    <constraint>!alpha_70 | !beta_10</constraint>
+    <constraint>!alpha_70 | !beta_15</constraint>
+    <constraint>!alpha_75 | !beta_5</constraint>
+    <constraint>!alpha_75 | !beta_10</constraint>
+    <constraint>!alpha_80 | !beta_5</constraint>
+    <constraint>!alpha_90 | !beta_90</constraint>
+  </booleanConstraints>
+  <nonBooleanConstraints />
+</vm>

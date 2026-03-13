@@ -20,22 +20,25 @@ namespace bdd::sample {
             oxidd::bdd_function &FinalBdd,
             const oxidd::bdd_manager &Manager
         ){
-            // Check if parent exists
+            oxidd::bdd_function Child = Manager.var(Id);
+            
+            // If no parent (top-level feature)
             if(ParentId < 0) {
-                return SolverErrorCode::PARENT_NOT_PRESENT;
+                if (!IsOpt) {
+                    std::cout << "  Forcing mandatory top-level feature: " << Manager.var_name(Id) << "\n";
+                    FinalBdd &= Child;  
+                }
+                return vara::Ok<void>();
             }
 
-            // Get BDD nodes for child and parent
-            oxidd::bdd_function Child = Manager.var(Id);
+            // Get BDD nodes for parent
             oxidd::bdd_function Parent = Manager.var(ParentId);
 
             // Add constraint: child → parent
             oxidd::bdd_function ChildToParent = Child.imp(Parent);
-
             FinalBdd &= ChildToParent;
 
-            // If mandatory (not optional and not in XOR), add parent → child
-            if(!IsInXOR && !IsOpt) {
+            if (!IsInXOR && !IsOpt) {
                 oxidd::bdd_function ParentToChild = Parent.imp(Child);
                 FinalBdd &= ParentToChild;
             }
@@ -64,23 +67,26 @@ namespace bdd::sample {
         }
         oxidd::capi::oxidd_var_no_t Id = IdCheck.value();
 
-        auto ParentIdCheck = Parent ? Mgr.name_to_var(ParentName) : -1;
-        if(Parent && !ParentIdCheck.has_value()) {
-            std::cerr << "Error: Could not find variable ID for parent feature '" << ParentName << "'.\n";
-            return SolverErrorCode::PARENT_NOT_PRESENT;
+        oxidd::capi::oxidd_var_no_t ParentId = -1;
+        if (Parent) {
+            auto ParentIdCheck = Mgr.name_to_var(ParentName);
+            if(!ParentIdCheck.has_value()) {
+                std::cerr << "Error: Could not find variable ID for parent feature '" << ParentName << "'.\n";
+                return SolverErrorCode::PARENT_NOT_PRESENT;
+            }
+            ParentId = ParentIdCheck.value();
         }
-        oxidd::capi::oxidd_var_no_t ParentId = Parent ? ParentIdCheck.value() : -1;
 
         // Handle different feature types: Only consider Binary and Root features, else return NOT_SUPPORTED
         switch(Feature.getKind()) {
             case Feature::FeatureKind::FK_NUMERIC: {
-                std::cerr << "Numeric features are not supported. Please choose a different feature diagram." << '\n';
+                std::cerr << "\033[31m Numeric features are not supported. Please choose a different feature diagram." << "\033[0m\n";
                 return SolverErrorCode::NOT_SUPPORTED;
             }
             case Feature::FeatureKind::FK_BINARY: {
                 // Verify it's a binary feature
                 if(!llvm::isa<vara::feature::BinaryFeature>(&Feature)) {
-                    std::cerr << "Feature is not a binary feature." << '\n';
+                    std::cerr << "\033[31m Feature is not a binary feature." << "\033[0m\n";
                     return SolverErrorCode::NOT_SUPPORTED;
                 }
 
@@ -105,7 +111,7 @@ namespace bdd::sample {
             }
 
             default: {
-                std::cerr << "Unknown feature kind encountered." << '\n';
+                std::cerr << "\033[31m Unknown feature kind encountered." << "\033[0m\n";
                 return SolverErrorCode::NOT_SUPPORTED;
             }
         }

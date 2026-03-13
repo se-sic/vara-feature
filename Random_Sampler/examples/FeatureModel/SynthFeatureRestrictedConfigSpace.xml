@@ -1,0 +1,258 @@
+<vm name="SynthFeatureRestrictedConfigSpace">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <outputString></outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent></parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_1</name>
+      <outputString>--f1</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>20</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>20</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_2</name>
+      <outputString>--f2</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>feature_1</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>21</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>21</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_3</name>
+      <outputString>--f3</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>feature_2</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>22</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>22</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_4</name>
+      <outputString>--f4</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>feature_1</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>23</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>23</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_5</name>
+      <outputString>--f5</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>False</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>24</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>24</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_6</name>
+      <outputString>--f6</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>feature_5</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>25</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>25</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_7</name>
+      <outputString>--f7</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>feature_6</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>26</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>26</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_8</name>
+      <outputString>--f8</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>feature_5</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <optional>True</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>27</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>27</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_9</name>
+      <outputString>--f9</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>feature_8</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>feature_10</options>
+      </excludedOptions>
+      <optional>True</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>28</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>28</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>feature_10</name>
+      <outputString>--f10</outputString>
+      <prefix></prefix>
+      <postfix></postfix>
+      <parent>feature_8</parent>
+      <impliedOptions />
+      <excludedOptions>
+        <options>feature_9</options>
+      </excludedOptions>
+      <optional>True</optional>
+      <locations>
+        <sourceRange>
+	  <path>projects/SynthFeatureRestrictedConfigSpace/main.cpp</path>
+          <start>
+            <line>29</line>
+            <column>8</column>
+          </start>
+          <end>
+            <line>29</line>
+            <column>10</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions>
+  </numericOptions>
+  <booleanConstraints>
+    <constraint>feature_2 | feature_4</constraint>
+    <constraint>feature_6 | feature_7</constraint>
+    <constraint>!feature_9 | !feature_6</constraint>
+    <constraint>!feature_7 | !feature_1</constraint>
+  </booleanConstraints>
+  <nonBooleanConstraints/>
+  <mixedConstraints/>
+</vm>

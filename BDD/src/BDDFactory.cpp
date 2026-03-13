@@ -41,14 +41,16 @@ namespace bdd::sample
             std::ranges::find(V, F->getName().str()) != V.end(),
             *F,
             //VarMap,
-            FinalBdd
-            );
+            FinalBdd);
         if(!R) {
             continue;
         }
        }
 
        std::cout << "Passed feature processing\n";
+
+       addAlternativeGroupConstraints(Model, FinalBdd);
+       std::cout << "Passed alternative group processing\n";
 
        // Process boolean constraints from the feature model (Z3)
        BDDConstraintVisitor Visitor(Manager, /*VarMap*/ FinalBdd, false, false);    
@@ -70,15 +72,120 @@ namespace bdd::sample
         }
 
        /*For Testing*/
-       std::string_view DiagramName = "7z";
-       std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
-       auto Result = Manager.visualize(DiagramName, Funcs);
-       auto Export = Manager.export_dddmp("hippacc.dddmp", Funcs);
-        if (!Export) {    
-            std::cerr << "DDDMP export failed with error" << '\n';
-        }
+    //    std::string_view DiagramName = "7z";
+    //    std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
+    //    auto Result = Manager.visualize(DiagramName, Funcs);
+    //    auto Export = Manager.export_dddmp("hippacc.dddmp", Funcs);
+    //     if (!Export) {    
+    //         std::cerr << "DDDMP export failed with error" << '\n';
+    //     }
 
        return FinalBdd;
+    }
+
+    void BDDFactory::addAlternativeGroupConstraints(
+    const vara::feature::FeatureModel &Model,
+    oxidd::bdd_function &FinalBdd
+    ) {
+        // Track which parents we've already processed
+        std::set<std::string> ProcessedParents;
+        
+        for(auto *F: Model.features()) {
+            const class vara::feature::Feature *Parent = F->getParentFeature();
+            if (!Parent) { 
+                continue;
+            }
+            
+            std::string ParentName = Parent->getName().str();
+            
+            // Skip if already processed this parent
+            if (ProcessedParents.contains(ParentName)) { 
+                continue;
+            }
+            
+            // Get all children of this parent
+            std::vector<const vara::feature::Feature*> Children;
+            for (auto* Sibling : Model.features()) {
+                if (Sibling->getParentFeature() == Parent) {
+                    Children.push_back(Sibling);
+                }
+            }
+            
+            // Check if this is a mandatory alternative group
+            if (Children.size() < 2) { 
+                continue;
+            }
+            
+            bool AllMandatory = true;
+            
+            for (const auto* Child : Children) {
+                if (Child->isOptional()) {
+                    AllMandatory = false;
+                    break;
+                }
+            }
+            
+            if (!AllMandatory) { 
+                continue;
+            }
+            
+            // Check if children mutually exclude each other by checking their excludes constraints
+            bool HaveMutualExclusion = false;
+            for (const auto* Child : Children) {
+                for (auto* ExcludeConstraint : Child->excludes()) {
+                    // Check if this child excludes other siblings
+                    for (const auto* OtherChild : Children) {
+                        if (Child == OtherChild) { 
+                            continue;
+                        }
+                        
+                        // Check if the excluded feature is the other child
+                        auto* RightOperand = ExcludeConstraint->getRightOperand();
+                        if (auto* Pfc = llvm::dyn_cast<vara::feature::PrimaryFeatureConstraint>(RightOperand)) {
+                            if (Pfc->getFeature() == OtherChild) {
+                                HaveMutualExclusion = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (HaveMutualExclusion) { 
+                        break;
+                    }
+                }
+                if (HaveMutualExclusion) { 
+                    break;
+                }
+            }
+            
+            if (!HaveMutualExclusion) { 
+                continue;
+            }
+            
+            // This is a mandatory alternative group!
+            // Add constraint: Parent → (child1 | child2 | ... | childN)
+            
+            auto ParentIdOpt = Manager.name_to_var(ParentName);
+            if (!ParentIdOpt.has_value()) { 
+                continue;
+            }
+            
+            oxidd::bdd_function ParentVar = Manager.var(ParentIdOpt.value());
+            oxidd::bdd_function ChildrenOr = Manager.f();  // Start with false
+            
+            for (const auto* Child : Children) {
+                auto ChildIdOpt = Manager.name_to_var(Child->getName().str());
+                if (ChildIdOpt.has_value()) {
+                    oxidd::bdd_function ChildVar = Manager.var(ChildIdOpt.value());
+                    ChildrenOr = ChildrenOr | ChildVar;
+                }
+            }
+            
+            // Add: parent → (child1 | child2 | ...)
+            FinalBdd &= ParentVar.imp(ChildrenOr);
+            
+            ProcessedParents.insert(ParentName);
+            
+        }
     }
 
     // Add all features to manager including their names

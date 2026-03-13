@@ -95,9 +95,50 @@ target_link_libraries(random_sampler PRIVATE
 #  ${CMAKE_SOURCE_DIR}/build/external/oxidd
 #)
 
+add_executable(compute_constraint_ratio
+    src/compute_constraint_ratio.cpp
+)
+
+target_link_libraries(compute_constraint_ratio
+    PRIVATE
+    VaRAFeature                         
+    oxidd                                
+    ${CMAKE_BINARY_DIR}/external/oxidd/liboxidd_ffi_c.a   
+    ${CMAKE_BINARY_DIR}/BDD/libbdd.a                      
+    coverage_lib
+    ${LLVM_LIBRARIES} 
+)
+
 target_sources(random_sampler PRIVATE
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/BDDSampler.cpp
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/Plotter.cpp
+)
+
+target_sources(compute_constraint_ratio PRIVATE
+    ${CMAKE_SOURCE_DIR}/Random_Sampler/tests/utilities/test_helpers.cpp
+)
+
+target_include_directories(compute_constraint_ratio PRIVATE
+    ${CMAKE_SOURCE_DIR}/BDD/include
+    # If the oxidd alias doesn't provide headers, add:
+    # ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
+)
+
+add_executable(compare_configs
+    src/compare_configs.cpp
+)
+
+target_link_libraries(compare_configs
+    PRIVATE
+    VaRAFeature
+    oxidd_ffi_c
+    bdd
+    coverage_lib
+)
+
+target_include_directories(compare_configs PRIVATE
+    ${CMAKE_SOURCE_DIR}/BDD/include                 
+    ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include  
 )
 
 set_target_properties(random_sampler PROPERTIES
@@ -106,6 +147,10 @@ set_target_properties(random_sampler PROPERTIES
 )
 
 option(BUILD_TESTS "Build test suite" OFF)
+
+install(TARGETS compute_constraint_ratio
+    RUNTIME DESTINATION bin
+)
 
 if(BUILD_TESTS)
     message(STATUS "Building tests...")

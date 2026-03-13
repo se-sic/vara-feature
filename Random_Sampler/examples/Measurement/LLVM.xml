@@ -1,0 +1,4332 @@
+<results decimalDelimiter="." separator="@">
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,iv_users,</data>
+    <data columname="MainMemory">353200@23216@371536</data>
+  <data columname="Performance">210.34</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,iv_users,</data>
+    <data columname="MainMemory">23216@342240</data>
+  <data columname="Performance">219.153333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,iv_users,</data>
+    <data columname="MainMemory">342789,333333333@337952</data>
+  <data columname="Performance">216.403333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,inline,iv_users,</data>
+    <data columname="MainMemory">341808@680613.333333333</data>
+  <data columname="Performance">207.746666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,jump_threading,iv_users,</data>
+    <data columname="MainMemory">651477,333333333@339306.666666667</data>
+  <data columname="Performance">199.683333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,simplifycfg,iv_users,</data>
+    <data columname="MainMemory">341162,666666667@345621.333333333</data>
+  <data columname="Performance">200.38</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,sccp,iv_users,</data>
+    <data columname="MainMemory">341290,666666667@371552</data>
+  <data columname="Performance">200.66</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,print_used_types,iv_users,</data>
+    <data columname="MainMemory">372256@372442.666666667</data>
+  <data columname="Performance">203.18</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,ipsccp,iv_users,</data>
+    <data columname="MainMemory">372570,666666667@378645.333333333</data>
+  <data columname="Performance">202.233333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,iv_users,licm,</data>
+    <data columname="MainMemory">374426,666666667@378698.666666667@379285.333333333</data>
+  <data columname="Performance">212.446666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,iv_users,licm,</data>
+    <data columname="MainMemory">378704</data>
+  <data columname="Performance">228.3</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,iv_users,licm,</data>
+    <data columname="MainMemory">346544</data>
+  <data columname="Performance">230.74</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,iv_users,licm,</data>
+    <data columname="MainMemory">343493,333333333</data>
+  <data columname="Performance">241.776666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,iv_users,licm,</data>
+    <data columname="MainMemory">705216</data>
+  <data columname="Performance">212.92</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">352997,333333333</data>
+  <data columname="Performance">213.48</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">344160</data>
+  <data columname="Performance">214.37</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,print_used_types,iv_users,licm,</data>
+    <data columname="MainMemory">367365,333333333</data>
+  <data columname="Performance">216.586666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">380069,333333333</data>
+  <data columname="Performance">215.606666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,jump_threading,</data>
+    <data columname="MainMemory">380581,333333333@604037.333333333</data>
+  <data columname="Performance">232.2</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,licm,</data>
+    <data columname="MainMemory">345946,666666667@342597.333333333</data>
+  <data columname="Performance">267.426666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,jump_threading,licm,</data>
+    <data columname="MainMemory">344032@341242.666666667</data>
+  <data columname="Performance">220.08</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,licm,</data>
+    <data columname="MainMemory">343050,666666667</data>
+  <data columname="Performance">256.223333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,iv_users,</data>
+    <data columname="MainMemory">349008</data>
+  <data columname="Performance">221.606666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,iv_users,licm,</data>
+    <data columname="MainMemory">344261,333333333</data>
+  <data columname="Performance">230.79</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,</data>
+    <data columname="MainMemory">345578,666666667@702821.333333333</data>
+  <data columname="Performance">205.946666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,simplifycfg,</data>
+    <data columname="MainMemory">338821,333333333@341360</data>
+  <data columname="Performance">230.74</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,</data>
+    <data columname="MainMemory">341322,666666667</data>
+  <data columname="Performance">229.856666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,iv_users,</data>
+    <data columname="MainMemory">341493,333333333</data>
+  <data columname="Performance">222.236666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,iv_users,</data>
+    <data columname="MainMemory">343077,333333333</data>
+  <data columname="Performance">200.923333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,iv_users,</data>
+    <data columname="MainMemory">341856@348416</data>
+  <data columname="Performance">223.013333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,simplifycfg,licm,</data>
+    <data columname="MainMemory">344170,666666667@341290.666666667</data>
+  <data columname="Performance">219.496666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,licm,</data>
+    <data columname="MainMemory">346357,333333333</data>
+  <data columname="Performance">218.073333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">343488</data>
+  <data columname="Performance">214.243333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,licm,</data>
+    <data columname="MainMemory">349157,333333333</data>
+  <data columname="Performance">238.753333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">344741,333333333</data>
+  <data columname="Performance">231.216666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,licm,</data>
+    <data columname="MainMemory">346378,666666667</data>
+  <data columname="Performance">255.643333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">343701,333333333</data>
+  <data columname="Performance">232.216666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,</data>
+    <data columname="MainMemory">346592@337530.666666667</data>
+  <data columname="Performance">224.073333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,jump_threading,</data>
+    <data columname="MainMemory">337685,333333333@541306.666666667</data>
+  <data columname="Performance">234.08</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,</data>
+    <data columname="MainMemory">337541,333333333</data>
+  <data columname="Performance">233.276666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,instcombine,</data>
+    <data columname="MainMemory">337834,666666667@377205.333333333</data>
+  <data columname="Performance">232.7</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,</data>
+    <data columname="MainMemory">340954,666666667</data>
+  <data columname="Performance">245.936666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,</data>
+    <data columname="MainMemory">346869,333333333</data>
+  <data columname="Performance">246.756666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,</data>
+    <data columname="MainMemory">347440</data>
+  <data columname="Performance">245.756666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,licm,</data>
+    <data columname="MainMemory">347200@341690.666666667</data>
+  <data columname="Performance">257.333333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,licm,</data>
+    <data columname="MainMemory">343813,333333333</data>
+  <data columname="Performance">237.103333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,licm,</data>
+    <data columname="MainMemory">348272</data>
+  <data columname="Performance">238.23</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,licm,</data>
+    <data columname="MainMemory">350384</data>
+  <data columname="Performance">255.213333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,jump_threading,licm,</data>
+    <data columname="MainMemory">349472@339173.333333333</data>
+  <data columname="Performance">237.696666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,licm,</data>
+    <data columname="MainMemory">343802,666666667</data>
+  <data columname="Performance">254.34</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,licm,</data>
+    <data columname="MainMemory">348368</data>
+  <data columname="Performance">235.91</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,licm,</data>
+    <data columname="MainMemory">353104@351744</data>
+  <data columname="Performance">254.073333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,iv_users,</data>
+    <data columname="MainMemory">350640</data>
+  <data columname="Performance">217.696666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,iv_users,</data>
+    <data columname="MainMemory">342736</data>
+  <data columname="Performance">217.093333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,iv_users,</data>
+    <data columname="MainMemory">342053,333333333</data>
+  <data columname="Performance">218.123333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,iv_users,licm,</data>
+    <data columname="MainMemory">342629,333333333</data>
+  <data columname="Performance">231.323333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">345082,666666667</data>
+  <data columname="Performance">231.62</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">343680@542293.333333333</data>
+  <data columname="Performance">233.003333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,instcombine,iv_users,</data>
+    <data columname="MainMemory">345562,666666667@649296</data>
+  <data columname="Performance">234.87</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,iv_users,</data>
+    <data columname="MainMemory">343728</data>
+  <data columname="Performance">238.733333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,iv_users,licm,</data>
+    <data columname="MainMemory">349408</data>
+  <data columname="Performance">246.003333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">351728</data>
+  <data columname="Performance">247.993333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,iv_users,</data>
+    <data columname="MainMemory">352826,666666667</data>
+  <data columname="Performance">238.096666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,iv_users,licm,</data>
+    <data columname="MainMemory">349264</data>
+  <data columname="Performance">247.803333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,iv_users,</data>
+    <data columname="MainMemory">352090,666666667</data>
+  <data columname="Performance">239.556666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">349978,666666667</data>
+  <data columname="Performance">249.036666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,sccp,</data>
+    <data columname="MainMemory">353098,666666667@337685.333333333</data>
+  <data columname="Performance">222.433333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,simplifycfg,sccp,</data>
+    <data columname="MainMemory">339850,666666667@347253.333333333</data>
+  <data columname="Performance">205.206666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,</data>
+    <data columname="MainMemory">338880</data>
+  <data columname="Performance">222.52</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,jump_threading,sccp,</data>
+    <data columname="MainMemory">337829,333333333@658229.333333333</data>
+  <data columname="Performance">207.233333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,</data>
+    <data columname="MainMemory">338805,333333333@378869.333333333</data>
+  <data columname="Performance">206.616666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,</data>
+    <data columname="MainMemory">339173,333333333</data>
+  <data columname="Performance">222.823333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,</data>
+    <data columname="MainMemory">337728</data>
+  <data columname="Performance">232.66</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,sccp,</data>
+    <data columname="MainMemory">338000@340917.333333333</data>
+  <data columname="Performance">229.166666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,</data>
+    <data columname="MainMemory">341328</data>
+  <data columname="Performance">244.5</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,</data>
+    <data columname="MainMemory">339674,666666667</data>
+  <data columname="Performance">231.19</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,</data>
+    <data columname="MainMemory">344000@375386.666666667</data>
+  <data columname="Performance">244.49</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,</data>
+    <data columname="MainMemory">347802,666666667</data>
+  <data columname="Performance">229.676666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,</data>
+    <data columname="MainMemory">343765,333333333</data>
+  <data columname="Performance">230.59</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,</data>
+    <data columname="MainMemory">343269,333333333</data>
+  <data columname="Performance">246.48</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,</data>
+    <data columname="MainMemory">347664</data>
+  <data columname="Performance">246.496666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,iv_users,</data>
+    <data columname="MainMemory">348325,333333333</data>
+  <data columname="Performance">218.096666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,iv_users,</data>
+    <data columname="MainMemory">340853,333333333</data>
+  <data columname="Performance">205.363333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,iv_users,</data>
+    <data columname="MainMemory">341189,333333333</data>
+  <data columname="Performance">222.186666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,iv_users,</data>
+    <data columname="MainMemory">342272</data>
+  <data columname="Performance">221.25</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,iv_users,</data>
+    <data columname="MainMemory">343498,666666667</data>
+  <data columname="Performance">227.183333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,iv_users,</data>
+    <data columname="MainMemory">345002,666666667</data>
+  <data columname="Performance">237.75</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,iv_users,</data>
+    <data columname="MainMemory">342880</data>
+  <data columname="Performance">240.34</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,iv_users,</data>
+    <data columname="MainMemory">348997,333333333</data>
+  <data columname="Performance">201.703333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,iv_users,</data>
+    <data columname="MainMemory">341354,666666667</data>
+  <data columname="Performance">218.726666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,iv_users,</data>
+    <data columname="MainMemory">342058,666666667</data>
+  <data columname="Performance">223.336666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,iv_users,</data>
+    <data columname="MainMemory">350282,666666667</data>
+  <data columname="Performance">242.086666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,iv_users,</data>
+    <data columname="MainMemory">349253,333333333@820912</data>
+  <data columname="Performance">206.116666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,iv_users,</data>
+    <data columname="MainMemory">341968</data>
+  <data columname="Performance">227.64</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,iv_users,</data>
+    <data columname="MainMemory">345658,666666667</data>
+  <data columname="Performance">219.87</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,iv_users,</data>
+    <data columname="MainMemory">342864</data>
+  <data columname="Performance">243.26</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,sccp,licm,</data>
+    <data columname="MainMemory">348586,666666667@372261.333333333</data>
+  <data columname="Performance">217.396666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,sccp,licm,</data>
+    <data columname="MainMemory">377280@345456</data>
+  <data columname="Performance">234.866666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,licm,</data>
+    <data columname="MainMemory">348378,666666667</data>
+  <data columname="Performance">217.68</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,licm,</data>
+    <data columname="MainMemory">347696@624981.333333333</data>
+  <data columname="Performance">234.42</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,jump_threading,sccp,licm,</data>
+    <data columname="MainMemory">353034,666666667@511381.333333333</data>
+  <data columname="Performance">219.313333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,licm,</data>
+    <data columname="MainMemory">343349,333333333</data>
+  <data columname="Performance">218.96</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,licm,</data>
+    <data columname="MainMemory">343776@536666.666666667</data>
+  <data columname="Performance">236.736666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,licm,</data>
+    <data columname="MainMemory">343786,666666667</data>
+  <data columname="Performance">236.433333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">353210,666666667</data>
+  <data columname="Performance">232.22</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">345200</data>
+  <data columname="Performance">214.886666666667</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">345194,666666667@382026.666666667</data>
+  <data columname="Performance">233.416666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">345584</data>
+  <data columname="Performance">218.296666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">344378,666666667</data>
+  <data columname="Performance">219.076666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">349354,666666667</data>
+  <data columname="Performance">234.873333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">354442,666666667</data>
+  <data columname="Performance">236.346666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,licm,</data>
+    <data columname="MainMemory">345600</data>
+  <data columname="Performance">237.133333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,licm,</data>
+    <data columname="MainMemory">344330,666666667</data>
+  <data columname="Performance">252.836666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,licm,</data>
+    <data columname="MainMemory">350896</data>
+  <data columname="Performance">237.89</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,licm,</data>
+    <data columname="MainMemory">23216</data>
+  <data columname="Performance">255.013333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">351280</data>
+  <data columname="Performance">230.466666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">350816</data>
+  <data columname="Performance">235.7</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">346848</data>
+  <data columname="Performance">247.686666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">352704</data>
+  <data columname="Performance">250.066666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,licm,</data>
+    <data columname="MainMemory">351125,333333333</data>
+  <data columname="Performance">238.203333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,licm,</data>
+    <data columname="MainMemory">345797,333333333@607397.333333333</data>
+  <data columname="Performance">252.986666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">350688</data>
+  <data columname="Performance">232.493333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">347621,333333333</data>
+  <data columname="Performance">251.01</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,licm,</data>
+    <data columname="MainMemory">350357,333333333</data>
+  <data columname="Performance">255.12</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">345456</data>
+  <data columname="Performance">234.053333333333</data>
+  </row>
+  <row multipleMeasurements="true">
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,licm,</data>
+    <data columname="MainMemory">345626,666666667@647658.666666667</data>
+  <data columname="Performance">254.496666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="MainMemory">351120</data>
+  <data columname="Performance">251.983333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,</data>
+    <data columname="MainMemory">369621,333333333</data>
+  <data columname="Performance">210.44</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,</data>
+    <data columname="MainMemory">369621,333333333</data>
+  <data columname="Performance">234.68</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,</data>
+    <data columname="MainMemory">341738,666666667</data>
+  <data columname="Performance">219.636666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,</data>
+    <data columname="MainMemory">339648</data>
+  <data columname="Performance">208.92</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,</data>
+    <data columname="MainMemory">649226,666666667</data>
+  <data columname="Performance">208.046666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,</data>
+    <data columname="MainMemory">338437,333333333</data>
+  <data columname="Performance">206.9</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,</data>
+    <data columname="MainMemory">338528</data>
+  <data columname="Performance">204.986666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,print_used_types,</data>
+    <data columname="MainMemory">370202,666666667</data>
+  <data columname="Performance">204.053333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,ipsccp,</data>
+    <data columname="MainMemory">359610,666666667</data>
+  <data columname="Performance">201.153333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,licm,</data>
+    <data columname="MainMemory">371914,666666667</data>
+  <data columname="Performance">258.826666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,ipsccp,</data>
+    <data columname="MainMemory">496053,333333333</data>
+  <data columname="Performance">249.116666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="MainMemory">495557,333333333</data>
+  <data columname="Performance">248.063333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,</data>
+    <data columname="MainMemory">639557,333333333</data>
+  <data columname="Performance">224.506666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,print_used_types,ipsccp,</data>
+    <data columname="MainMemory">534773,333333333</data>
+  <data columname="Performance">241.016666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,print_used_types,ipsccp,</data>
+    <data columname="MainMemory">346592</data>
+  <data columname="Performance">221.333333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="MainMemory">341872</data>
+  <data columname="Performance">262.94</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="MainMemory">506490,666666667</data>
+  <data columname="Performance">250.276666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="MainMemory">348069,333333333</data>
+  <data columname="Performance">231.63</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,ipsccp,</data>
+    <data columname="MainMemory">345173,333333333</data>
+  <data columname="Performance">243.963333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,ipsccp,iv_users,</data>
+    <data columname="MainMemory">348714,666666667</data>
+  <data columname="Performance">255.39</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,print_used_types,iv_users,</data>
+    <data columname="MainMemory">498618,666666667</data>
+  <data columname="Performance">227.19</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="MainMemory">521690,666666667</data>
+  <data columname="Performance">238.556666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="MainMemory">351434,666666667</data>
+  <data columname="Performance">201.973333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,print_used_types,iv_users,licm,</data>
+    <data columname="MainMemory">341856</data>
+  <data columname="Performance">259.26</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="MainMemory">498448</data>
+  <data columname="Performance">251.786666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,</data>
+    <data columname="MainMemory">540458,666666667</data>
+  <data columname="Performance">243.783333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,ipsccp,licm,</data>
+    <data columname="MainMemory">497712</data>
+  <data columname="Performance">216.223333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="MainMemory">368277,333333333</data>
+  <data columname="Performance">250.566666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="MainMemory">638144</data>
+  <data columname="Performance">228.716666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">348394,666666667</data>
+  <data columname="Performance">262.736666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,licm,</data>
+    <data columname="MainMemory">343450,666666667</data>
+  <data columname="Performance">252.266666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="MainMemory">553216</data>
+  <data columname="Performance">255.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">498320</data>
+  <data columname="Performance">253.74</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">653749,333333333</data>
+  <data columname="Performance">251.913333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,ipsccp,</data>
+    <data columname="MainMemory">542528</data>
+  <data columname="Performance">229.186666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,licm,</data>
+    <data columname="MainMemory">525722,666666667</data>
+  <data columname="Performance">239.496666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="MainMemory">351541,333333333</data>
+  <data columname="Performance">205.99</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,ipsccp,licm,</data>
+    <data columname="MainMemory">347749,333333333</data>
+  <data columname="Performance">264.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">511573,333333333</data>
+  <data columname="Performance">248.69</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="MainMemory">353365,333333333</data>
+  <data columname="Performance">244.233333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">350485,333333333</data>
+  <data columname="Performance">257.043333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,print_used_types,</data>
+    <data columname="MainMemory">821338,666666667</data>
+  <data columname="Performance">203.19</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">338896</data>
+  <data columname="Performance">256.06</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,ipsccp,iv_users,</data>
+    <data columname="MainMemory">820906,666666667</data>
+  <data columname="Performance">226.133333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,print_used_types,iv_users,</data>
+    <data columname="MainMemory">639360</data>
+  <data columname="Performance">220.863333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="MainMemory">342208</data>
+  <data columname="Performance">240.986666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,print_used_types,licm,</data>
+    <data columname="MainMemory">651466,666666667</data>
+  <data columname="Performance">254.466666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">348272</data>
+  <data columname="Performance">248.403333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="MainMemory">349637,333333333</data>
+  <data columname="Performance">229.68</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">534890,666666667</data>
+  <data columname="Performance">237.36</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="MainMemory">346816</data>
+  <data columname="Performance">264.926666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,print_used_types,licm,</data>
+    <data columname="MainMemory">502133,333333333</data>
+  <data columname="Performance">264.736666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,licm,</data>
+    <data columname="MainMemory">784330,666666667</data>
+  <data columname="Performance">240.346666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">345216</data>
+  <data columname="Performance">214.326666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,ipsccp,</data>
+    <data columname="MainMemory">341296</data>
+  <data columname="Performance">238.246666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="MainMemory">655610,666666667</data>
+  <data columname="Performance">219.076666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="MainMemory">340320</data>
+  <data columname="Performance">249.826666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">540672</data>
+  <data columname="Performance">253.82</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,print_used_types,licm,</data>
+    <data columname="MainMemory">660837,333333333</data>
+  <data columname="Performance">251.906666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,print_used_types,</data>
+    <data columname="MainMemory">377520</data>
+  <data columname="Performance">242.916666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,ipsccp,</data>
+    <data columname="MainMemory">341024</data>
+  <data columname="Performance">213.096666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="MainMemory">675242,666666667</data>
+  <data columname="Performance">207.646666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">342576</data>
+  <data columname="Performance">266.516666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">502944</data>
+  <data columname="Performance">237.506666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,ipsccp,iv_users,</data>
+    <data columname="MainMemory">352864</data>
+  <data columname="Performance">234.55</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,ipsccp,iv_users,</data>
+    <data columname="MainMemory">645568</data>
+  <data columname="Performance">223.683333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,print_used_types,licm,</data>
+    <data columname="MainMemory">343301,333333333</data>
+  <data columname="Performance">216.636666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,print_used_types,licm,</data>
+    <data columname="MainMemory">378858,666666667</data>
+  <data columname="Performance">233.543333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,iv_users,</data>
+    <data columname="MainMemory">357312</data>
+  <data columname="Performance">232.86</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="MainMemory">608032</data>
+  <data columname="Performance">240.993333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,ipsccp,iv_users,</data>
+    <data columname="MainMemory">338800</data>
+  <data columname="Performance">239.06</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="MainMemory">658853,333333333</data>
+  <data columname="Performance">259.693333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,ipsccp,</data>
+    <data columname="MainMemory">796138,666666667</data>
+  <data columname="Performance">240.073333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="MainMemory">343648</data>
+  <data columname="Performance">235.573333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">354512</data>
+  <data columname="Performance">248.02</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,licm,</data>
+    <data columname="MainMemory">352816</data>
+  <data columname="Performance">263.31</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,iv_users,</data>
+    <data columname="MainMemory">823328</data>
+  <data columname="Performance">233.743333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="MainMemory">618522,666666667</data>
+  <data columname="Performance">231.886666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,print_used_types,licm,</data>
+    <data columname="MainMemory">371557,333333333</data>
+  <data columname="Performance">250.613333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,ipsccp,</data>
+    <data columname="MainMemory">371546,666666667</data>
+  <data columname="Performance">211.743333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="MainMemory">341973,333333333</data>
+  <data columname="Performance">250.04</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,print_used_types,licm,</data>
+    <data columname="MainMemory">645264</data>
+  <data columname="Performance">246.956666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,iv_users,licm,</data>
+    <data columname="MainMemory">660581,333333333</data>
+  <data columname="Performance">246.943333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,iv_users,</data>
+    <data columname="MainMemory">621536</data>
+  <data columname="Performance">231.77</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="MainMemory">342725,333333333</data>
+  <data columname="Performance">235.78</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,print_used_types,</data>
+    <data columname="MainMemory">346725,333333333</data>
+  <data columname="Performance">241.896666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,print_used_types,iv_users,</data>
+    <data columname="MainMemory">348570,666666667</data>
+  <data columname="Performance">224.296666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,</data>
+    <data columname="MainMemory">340789,333333333</data>
+  <data columname="Performance">248.016666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,print_used_types,</data>
+    <data columname="MainMemory">341178,666666667</data>
+  <data columname="Performance">227.853333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,ipsccp,</data>
+    <data columname="MainMemory">340677,333333333</data>
+  <data columname="Performance">224.43</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,</data>
+    <data columname="MainMemory">348634,666666667</data>
+  <data columname="Performance">224.95</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,print_used_types,</data>
+    <data columname="MainMemory">339840</data>
+  <data columname="Performance">221.376666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,ipsccp,</data>
+    <data columname="MainMemory">339434,666666667</data>
+  <data columname="Performance">218.816666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,</data>
+    <data columname="MainMemory">343888</data>
+  <data columname="Performance">217.29</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,</data>
+    <data columname="MainMemory">643941,333333333</data>
+  <data columname="Performance">218.153333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,</data>
+    <data columname="MainMemory">643722,666666667</data>
+  <data columname="Performance">214.72</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,print_used_types,</data>
+    <data columname="MainMemory">648741,333333333</data>
+  <data columname="Performance">213.183333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,ipsccp,</data>
+    <data columname="MainMemory">648928</data>
+  <data columname="Performance">209.703333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,licm,</data>
+    <data columname="MainMemory">651141,333333333</data>
+  <data columname="Performance">220.866666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,print_used_types,</data>
+    <data columname="MainMemory">338800</data>
+  <data columname="Performance">204.686666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,ipsccp,</data>
+    <data columname="MainMemory">338432</data>
+  <data columname="Performance">201.546666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,print_used_types,</data>
+    <data columname="MainMemory">338874,666666667</data>
+  <data columname="Performance">207.12</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,ipsccp,</data>
+    <data columname="MainMemory">338528</data>
+  <data columname="Performance">201.833333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,print_used_types,</data>
+    <data columname="MainMemory">342954,666666667</data>
+  <data columname="Performance">202.386666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,ipsccp,</data>
+    <data columname="MainMemory">359680</data>
+  <data columname="Performance">203.636666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,print_used_types,ipsccp,</data>
+    <data columname="MainMemory">377269,333333333</data>
+  <data columname="Performance">199.953333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,ipsccp,licm,</data>
+    <data columname="MainMemory">374421,333333333</data>
+  <data columname="Performance">213.266666666667</data>
+  </row>
+<row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">213.603333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">248.583333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,licm,</data>
+    <data columname="Performance">251.803333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,iv_users,licm,</data>
+    <data columname="Performance">261.573333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">267.593333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">260.693333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">265.423333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">263.82</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">267.51</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,licm,</data>
+    <data columname="Performance">268.55</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,print_used_types,</data>
+    <data columname="Performance">214.886666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="Performance">249.343333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.523333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,licm,</data>
+    <data columname="Performance">252.683333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">263.586666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="Performance">264.743333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">269.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">269.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">249.36</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">250.43</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">210.996666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">262.113333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">267.173333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">252.446666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">265.816666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">253.673333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">215.01</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">212.053333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,</data>
+    <data columname="Performance">216.373333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,iv_users,</data>
+    <data columname="Performance">210.506666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,print_used_types,</data>
+    <data columname="Performance">212.713333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">211.48</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">214.406666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">215.733333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">215.946666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,</data>
+    <data columname="Performance">217.236666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,iv_users,</data>
+    <data columname="Performance">212.443333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">214.38</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">215.943333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,</data>
+    <data columname="Performance">217.466666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">213.406666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,iv_users,</data>
+    <data columname="Performance">216.923333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">201.896666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">215.366666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">218.233333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">213</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">214.48</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">214.05</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">215.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">217.293333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">218.323333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">218.623333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,ipsccp,iv_users,</data>
+    <data columname="Performance">219.283333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,print_used_types,ipsccp,</data>
+    <data columname="Performance">217.286666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,print_used_types,iv_users,</data>
+    <data columname="Performance">220.396666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">219.386666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,print_used_types,</data>
+    <data columname="Performance">220.423333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">204.176666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">218.89</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,ipsccp,</data>
+    <data columname="Performance">221.166666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">221.01</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">222.086666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">223.296666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,ipsccp,</data>
+    <data columname="Performance">219.966666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">220.386666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">205.13</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">219.333333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">221.726666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,print_used_types,</data>
+    <data columname="Performance">224.176666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">218.563333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">220.573333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">220.21</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">222.266666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">221.26</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">223.07</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">223.286666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,iv_users,</data>
+    <data columname="Performance">224.49</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,ipsccp,</data>
+    <data columname="Performance">227.013333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,ipsccp,iv_users,</data>
+    <data columname="Performance">227.4</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,print_used_types,</data>
+    <data columname="Performance">229.276666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,print_used_types,ipsccp,</data>
+    <data columname="Performance">224.99</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,print_used_types,iv_users,</data>
+    <data columname="Performance">228.646666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">227.153333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,</data>
+    <data columname="Performance">230.536666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,iv_users,</data>
+    <data columname="Performance">226.13</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,print_used_types,</data>
+    <data columname="Performance">228.653333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">226.57</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,ipsccp,</data>
+    <data columname="Performance">228.466666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">229.07</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">230.466666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">230.793333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,</data>
+    <data columname="Performance">232.116666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,iv_users,</data>
+    <data columname="Performance">226.883333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">229.643333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,</data>
+    <data columname="Performance">231.39</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">228.266666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,iv_users,</data>
+    <data columname="Performance">231.253333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">230.773333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,print_used_types,</data>
+    <data columname="Performance">232.76</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">229.123333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">228.856666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">230.686666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">230.943333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">232.29</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">232.523333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,ipsccp,</data>
+    <data columname="Performance">219.396666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,ipsccp,iv_users,</data>
+    <data columname="Performance">219.746666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,print_used_types,</data>
+    <data columname="Performance">221.783333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,print_used_types,ipsccp,</data>
+    <data columname="Performance">217.9</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">203.53</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">219.913333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,print_used_types,</data>
+    <data columname="Performance">221.056666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">219.626666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,ipsccp,</data>
+    <data columname="Performance">221.623333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">221.443333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">222.366666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">223.42</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,</data>
+    <data columname="Performance">224.326666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,iv_users,</data>
+    <data columname="Performance">225.34</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,ipsccp,</data>
+    <data columname="Performance">227.75</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,ipsccp,iv_users,</data>
+    <data columname="Performance">228.256666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,</data>
+    <data columname="Performance">230.08</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,ipsccp,</data>
+    <data columname="Performance">227.733333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,iv_users,</data>
+    <data columname="Performance">230.573333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">230.14</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,print_used_types,</data>
+    <data columname="Performance">232.143333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,print_used_types,iv_users,</data>
+    <data columname="Performance">225.796666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,print_used_types,</data>
+    <data columname="Performance">227.53</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">202.063333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">227.99</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,print_used_types,ipsccp,</data>
+    <data columname="Performance">229.946666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">229.56</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">231.686666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">231.206666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,ipsccp,</data>
+    <data columname="Performance">220.37</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">220.803333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,print_used_types,</data>
+    <data columname="Performance">222.896666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">221.86</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">220.976666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,</data>
+    <data columname="Performance">223.773333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,iv_users,</data>
+    <data columname="Performance">226.746666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,print_used_types,</data>
+    <data columname="Performance">229.296666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">227.286666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,ipsccp,</data>
+    <data columname="Performance">228.973333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">230.823333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">203.976666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">231.196666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">222.163333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">222.556666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">229.206666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">231.326666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">233.276666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">220.82</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">222.626666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">229.553333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">231.16</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">223.52</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">232.96</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">225.156666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">201.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,print_used_types,iv_users,</data>
+    <data columname="Performance">224.733333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">225.62</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,print_used_types,</data>
+    <data columname="Performance">226.503333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">223.493333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,ipsccp,</data>
+    <data columname="Performance">227.78</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">225.503333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">226.566666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">229.79</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,ipsccp,</data>
+    <data columname="Performance">227.393333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">225.413333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">224.336666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">203.19</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">229.243333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,print_used_types,</data>
+    <data columname="Performance">231.336666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">223.213333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">227.443333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">225.26</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">229.313333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">226.58</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">228.336666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">230.653333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">204.963333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,ipsccp,</data>
+    <data columname="Performance">226.7</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,ipsccp,iv_users,</data>
+    <data columname="Performance">224.526666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,print_used_types,</data>
+    <data columname="Performance">228.936666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,print_used_types,ipsccp,</data>
+    <data columname="Performance">222.556666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,print_used_types,iv_users,</data>
+    <data columname="Performance">225.686666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">226.65</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,print_used_types,</data>
+    <data columname="Performance">227.94</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">204.73</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">223.976666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,ipsccp,</data>
+    <data columname="Performance">227.906666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">226.086666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">227.026666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">230.313333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,ipsccp,</data>
+    <data columname="Performance">228.283333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">206.426666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">224.876666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">229.816666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,print_used_types,</data>
+    <data columname="Performance">231.796666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">228.563333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">225.773333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">230.133333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">227.12</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">206.35</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">231.313333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,ipsccp,</data>
+    <data columname="Performance">240.163333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,ipsccp,iv_users,</data>
+    <data columname="Performance">238.783333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,print_used_types,ipsccp,</data>
+    <data columname="Performance">236.886666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,print_used_types,iv_users,</data>
+    <data columname="Performance">239.656666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">241.7</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,print_used_types,</data>
+    <data columname="Performance">242.786666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">239.273333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,ipsccp,</data>
+    <data columname="Performance">243.366666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">241.97</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">245.156666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,ipsccp,</data>
+    <data columname="Performance">242.806666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,ipsccp,iv_users,</data>
+    <data columname="Performance">240.22</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,ipsccp,</data>
+    <data columname="Performance">239.926666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">244.593333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,print_used_types,</data>
+    <data columname="Performance">246.026666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,print_used_types,iv_users,</data>
+    <data columname="Performance">238.703333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,print_used_types,</data>
+    <data columname="Performance">242.56</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">240.406666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,print_used_types,ipsccp,</data>
+    <data columname="Performance">244.26</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">241.326666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">242.856666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">245.22</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,ipsccp,</data>
+    <data columname="Performance">243.523333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">240.983333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,print_used_types,</data>
+    <data columname="Performance">244.73</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">239.366666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">241.703333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,ipsccp,iv_users,</data>
+    <data columname="Performance">202.933333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">243.123333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,print_used_types,</data>
+    <data columname="Performance">244.283333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">240.21</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">241.826666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">242.736666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">245.7</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">245.196666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">242.426666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">241.233333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">246.16</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">247.276666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">240.983333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">244.606666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,print_used_types,ipsccp,</data>
+    <data columname="Performance">200.82</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">241.78</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">245.596666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">243.443333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">247.166666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,iv_users,</data>
+    <data columname="Performance">230.166666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,ipsccp,</data>
+    <data columname="Performance">236.243333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,ipsccp,iv_users,</data>
+    <data columname="Performance">233.666666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,print_used_types,</data>
+    <data columname="Performance">238.62</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,print_used_types,iv_users,</data>
+    <data columname="Performance">204.05</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,print_used_types,ipsccp,</data>
+    <data columname="Performance">231.036666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,print_used_types,iv_users,</data>
+    <data columname="Performance">235.173333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">235.92</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,</data>
+    <data columname="Performance">239.976666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,print_used_types,</data>
+    <data columname="Performance">238.78</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">233.433333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,ipsccp,</data>
+    <data columname="Performance">238.253333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">235.97</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">237.443333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">202.69</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,</data>
+    <data columname="Performance">242.156666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,iv_users,</data>
+    <data columname="Performance">232.33</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">235.346666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,</data>
+    <data columname="Performance">240.233333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">234.653333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,iv_users,</data>
+    <data columname="Performance">237.866666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,print_used_types,</data>
+    <data columname="Performance">242.546666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">232.956666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">237.69</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">235.533333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">240.05</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">237.036666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">239.32</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">241.57</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,</data>
+    <data columname="Performance">244.03</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,iv_users,</data>
+    <data columname="Performance">244.91</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,ipsccp,</data>
+    <data columname="Performance">251.58</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,ipsccp,iv_users,</data>
+    <data columname="Performance">247.503333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,print_used_types,</data>
+    <data columname="Performance">253.053333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,print_used_types,ipsccp,</data>
+    <data columname="Performance">245.316666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,print_used_types,iv_users,</data>
+    <data columname="Performance">248.97</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">250.62</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,</data>
+    <data columname="Performance">253.963333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,iv_users,</data>
+    <data columname="Performance">246.94</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,print_used_types,</data>
+    <data columname="Performance">253.256666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">247.266666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,ipsccp,</data>
+    <data columname="Performance">252.14</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,print_used_types,</data>
+    <data columname="Performance">202.936666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">249.566666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">250.68</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">254.256666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,</data>
+    <data columname="Performance">255.473333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,iv_users,</data>
+    <data columname="Performance">247.076666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,ipsccp,</data>
+    <data columname="Performance">253.636666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">249.81</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,</data>
+    <data columname="Performance">255.023333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,iv_users,</data>
+    <data columname="Performance">251.516666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,print_used_types,</data>
+    <data columname="Performance">256.453333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">247.716666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">252.683333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">249.343333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">254.143333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">251</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">252.58</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">256.183333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,</data>
+    <data columname="Performance">257.513333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,ipsccp,</data>
+    <data columname="Performance">203.933333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,iv_users,</data>
+    <data columname="Performance">231.33</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,ipsccp,</data>
+    <data columname="Performance">237.496666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,print_used_types,</data>
+    <data columname="Performance">239.563333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,print_used_types,ipsccp,</data>
+    <data columname="Performance">231.913333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,print_used_types,iv_users,</data>
+    <data columname="Performance">235.973333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">236.84</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,</data>
+    <data columname="Performance">240.826666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,iv_users,</data>
+    <data columname="Performance">234.25</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,print_used_types,</data>
+    <data columname="Performance">240.623333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">204.293333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">235.03</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,ipsccp,</data>
+    <data columname="Performance">239.79</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">237.523333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">242.5</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,iv_users,</data>
+    <data columname="Performance">246.733333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,ipsccp,</data>
+    <data columname="Performance">253.153333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,ipsccp,iv_users,</data>
+    <data columname="Performance">249.386666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,</data>
+    <data columname="Performance">254.336666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">205.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,ipsccp,</data>
+    <data columname="Performance">248.893333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,iv_users,</data>
+    <data columname="Performance">251.41</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,print_used_types,</data>
+    <data columname="Performance">256.473333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,print_used_types,iv_users,</data>
+    <data columname="Performance">247.08</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,print_used_types,</data>
+    <data columname="Performance">252.06</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">249.28</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,print_used_types,ipsccp,</data>
+    <data columname="Performance">254.13</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">250.493333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">252.513333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">206.226666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">255.363333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,</data>
+    <data columname="Performance">257.54</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">236.95</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">234.336666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">238.46</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">239.243333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,</data>
+    <data columname="Performance">243.283333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,iv_users,</data>
+    <data columname="Performance">248.536666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,print_used_types,</data>
+    <data columname="Performance">254.89</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,print_used_types,iv_users,</data>
+    <data columname="Performance">248.81</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,ipsccp,</data>
+    <data columname="Performance">253.653333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,print_used_types,ipsccp,</data>
+    <data columname="Performance">251.013333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,ipsccp,iv_users,</data>
+    <data columname="Performance">252.14</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">255.873333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,</data>
+    <data columname="Performance">256.97</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,iv_users,</data>
+    <data columname="Performance">236.226666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">242.456666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">239.51</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,</data>
+    <data columname="Performance">244.253333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">250.726666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,iv_users,</data>
+    <data columname="Performance">253.1</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">257.17</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">258.05</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">236.893333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">241.693333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">250.863333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">255.623333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,ipsccp,</data>
+    <data columname="Performance">203.56</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">240.543333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">254.243333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">245.343333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">213.533333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">205.086666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,print_used_types,licm,</data>
+    <data columname="Performance">215.13</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">215.293333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">217.55</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">218.433333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">218.403333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">214.283333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">216.716666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">215.19</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">216.23</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">219.306666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">214.653333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">215.483333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,ipsccp,</data>
+    <data columname="Performance">202.81</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">216.27</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">217.073333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">217.653333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">219.37</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">218.586666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,ipsccp,licm,</data>
+    <data columname="Performance">213.86</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">215.993333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,print_used_types,licm,</data>
+    <data columname="Performance">217.063333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">213.996666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">217.186666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">215.026666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">215.02</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">215.183333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">216.296666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">217.403333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">218.4</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">204.96</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">218.503333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,ipsccp,licm,</data>
+    <data columname="Performance">215.853333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">218.02</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">216.063333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">216.873333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,print_used_types,licm,</data>
+    <data columname="Performance">219.826666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,print_used_types,</data>
+    <data columname="Performance">207.89</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">215.956666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">216.913333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">216.906666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">218.036666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">219.05</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">219.873333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">219.946666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,ipsccp,licm,</data>
+    <data columname="Performance">243.793333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">202.68</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">246.126666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">243.083333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">247.37</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">244.12</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,licm,</data>
+    <data columname="Performance">248.196666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,iv_users,licm,</data>
+    <data columname="Performance">256.94</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,print_used_types,licm,</data>
+    <data columname="Performance">259.393333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">261.013333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,ipsccp,licm,</data>
+    <data columname="Performance">260.88</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,print_used_types,</data>
+    <data columname="Performance">204.513333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">264.18</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">265.38</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">264.64</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,licm,</data>
+    <data columname="Performance">266.323333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,iv_users,licm,</data>
+    <data columname="Performance">255.436666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,ipsccp,licm,</data>
+    <data columname="Performance">257.17</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">261.836666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,ipsccp,licm,</data>
+    <data columname="Performance">257.713333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,iv_users,licm,</data>
+    <data columname="Performance">264.18</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">203.856666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">259.5</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">257.676666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,print_used_types,licm,</data>
+    <data columname="Performance">259.366666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">260.823333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">261.533333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">262.483333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">265.65</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">264.29</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,licm,</data>
+    <data columname="Performance">266.19</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">205.74</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">258.16</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">263.13</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">263.58</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">259.383333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">263.746666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">260.413333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,licm,</data>
+    <data columname="Performance">264.51</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">259.38</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">205.706666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">260.77</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">261.43</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">263.583333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">263.776666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">264.04</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,licm,</data>
+    <data columname="Performance">265.69</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="Performance">258.9</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">261.076666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">265.4</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,licm,</data>
+    <data columname="Performance">266.026666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,jump_threading,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">207.1</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="Performance">266.12</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">262.006666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">267.17</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">261.896666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">263.043333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">263.186666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">263.57</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">266.386666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">267.07</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">266.54</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,ipsccp,licm,</data>
+    <data columname="Performance">232.616666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">232.18</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,print_used_types,licm,</data>
+    <data columname="Performance">236.21</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">230.236666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">233.326666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">234.1</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,print_used_types,licm,</data>
+    <data columname="Performance">234.696666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">232.026666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,ipsccp,licm,</data>
+    <data columname="Performance">235.733333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">234.053333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">235.12</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">237.896666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">235.513333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">234.006666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">233.116666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">239.593333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">235.85</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">233.793333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">237.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">234.95</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">236.586666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">238.823333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,iv_users,licm,</data>
+    <data columname="Performance">243.933333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,ipsccp,licm,</data>
+    <data columname="Performance">249.663333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">246.39</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,print_used_types,licm,</data>
+    <data columname="Performance">250.876666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">243.806666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">247.626666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,ipsccp,iv_users,</data>
+    <data columname="Performance">211.39</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,licm,</data>
+    <data columname="Performance">252.21</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,iv_users,licm,</data>
+    <data columname="Performance">245.79</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">245.563333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">250.26</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">248.07</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">249.3</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">252.746666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,licm,</data>
+    <data columname="Performance">253.983333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,iv_users,licm,</data>
+    <data columname="Performance">246.376666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,ipsccp,licm,</data>
+    <data columname="Performance">252.126666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">248.783333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,licm,</data>
+    <data columname="Performance">253.393333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">248.603333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="Performance">250.443333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">254.266666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,print_used_types,licm,</data>
+    <data columname="Performance">255.173333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">246.086666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,print_used_types,ipsccp,</data>
+    <data columname="Performance">208.37</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">252.52</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.566666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">254.59</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,ipsccp,licm,</data>
+    <data columname="Performance">235.21</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">233.55</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,print_used_types,licm,</data>
+    <data columname="Performance">237.333333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,print_used_types,iv_users,</data>
+    <data columname="Performance">212.936666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">231.443333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">234.24</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">235.313333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,print_used_types,licm,</data>
+    <data columname="Performance">237.063333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">233.12</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,ipsccp,licm,</data>
+    <data columname="Performance">236.976666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">235.233333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">235.946666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">210.236666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">239.036666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,licm,</data>
+    <data columname="Performance">239.963333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,iv_users,licm,</data>
+    <data columname="Performance">245.21</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,ipsccp,licm,</data>
+    <data columname="Performance">251.09</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">247.373333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,licm,</data>
+    <data columname="Performance">252.043333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,ipsccp,licm,</data>
+    <data columname="Performance">247.79</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,iv_users,licm,</data>
+    <data columname="Performance">249.68</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,print_used_types,licm,</data>
+    <data columname="Performance">254.393333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">244.846666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,print_used_types,licm,</data>
+    <data columname="Performance">249.563333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">247.013333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">252.036666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">249.086666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.25</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">253.54</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">236.64</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,iv_users,</data>
+    <data columname="Performance">210.706666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">234.773333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">238.736666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">232.636666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">236.58</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">252.893333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">246.503333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">251.033333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,print_used_types,</data>
+    <data columname="Performance">212.516666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">249.046666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">250.23</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">236.38</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,licm,</data>
+    <data columname="Performance">240.43</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">249.616666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="Performance">251.31</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">211.186666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">255.423333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">256.226666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">234.45</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">238.273333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">248.74</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">253.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">237.346666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">252.623333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,inline,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">241.226666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,ipsccp,</data>
+    <data columname="Performance">212.94</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,ipsccp,licm,</data>
+    <data columname="Performance">231.996666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">233.446666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,print_used_types,licm,</data>
+    <data columname="Performance">234.266666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">231</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">233.66</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">232.046666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">214.25</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">232.65</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,ipsccp,licm,</data>
+    <data columname="Performance">233.85</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">235.163333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">236.06</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">236.36</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">232.636666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">233.43</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">215.853333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">233</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">234.223333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">235.853333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">232.59</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">232.99</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">234.25</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">235.073333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">236.53</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">201.52</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">215.883333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">236.17</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,ipsccp,licm,</data>
+    <data columname="Performance">232.47</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">233.23</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,print_used_types,licm,</data>
+    <data columname="Performance">234.383333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">231.756666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">234.613333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">232.983333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">234.063333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">233.146666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">234.133333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">234.92</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">235.793333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">235.96</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,ipsccp,licm,</data>
+    <data columname="Performance">234.466666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,iv_users,</data>
+    <data columname="Performance">208.986666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">235.373333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">234.56</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,print_used_types,licm,</data>
+    <data columname="Performance">237.41</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">233.426666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">234.746666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">234.65</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">235.79</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,ipsccp,</data>
+    <data columname="Performance">211.273333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">236.306666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,jump_threading,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">237.226666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,ipsccp,licm,</data>
+    <data columname="Performance">249.99</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,print_used_types,licm,</data>
+    <data columname="Performance">252.18</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">246.806666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">249.496666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,ipsccp,iv_users,</data>
+    <data columname="Performance">212.926666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">250.24</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,print_used_types,licm,</data>
+    <data columname="Performance">251.74</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">248.34</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,ipsccp,licm,</data>
+    <data columname="Performance">251.706666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">250.05</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">250.866666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">253.506666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,</data>
+    <data columname="Performance">214.343333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,ipsccp,licm,</data>
+    <data columname="Performance">251.846666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">249.576666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,ipsccp,licm,</data>
+    <data columname="Performance">249.436666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">253.49</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">247.613333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,print_used_types,licm,</data>
+    <data columname="Performance">251.323333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,ipsccp,</data>
+    <data columname="Performance">211.586666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">249.41</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">252.806666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.793333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">254.423333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">251.933333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">249.716666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">253.116666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,iv_users,</data>
+    <data columname="Performance">215.313333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">248.063333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">250.336666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.433333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">252.82</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">248.903333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">252.276666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">250.533333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.363333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,ipsccp,iv_users,</data>
+    <data columname="Performance">213.846666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">254.123333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">253.743333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.163333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">250.596666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">254.42</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">255.323333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,print_used_types,</data>
+    <data columname="Performance">216.836666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">249.46</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">252.873333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">250.48</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">253.57</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">251.813333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">252.77</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,jump_threading,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">255.43</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,licm,</data>
+    <data columname="Performance">256.246666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,iv_users,licm,</data>
+    <data columname="Performance">244.916666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,ipsccp,licm,</data>
+    <data columname="Performance">247.466666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,print_used_types,iv_users,</data>
+    <data columname="Performance">209.84</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,print_used_types,licm,</data>
+    <data columname="Performance">248.896666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">245.496666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">249.053333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">246.32</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,licm,</data>
+    <data columname="Performance">250.163333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,iv_users,licm,</data>
+    <data columname="Performance">247.253333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,print_used_types,licm,</data>
+    <data columname="Performance">249.786666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">247.426666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,ipsccp,licm,</data>
+    <data columname="Performance">248.43</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,print_used_types,</data>
+    <data columname="Performance">211.59</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">250.12</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.236666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.236666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,iv_users,licm,</data>
+    <data columname="Performance">246.61</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">249.253333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">249.013333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,licm,</data>
+    <data columname="Performance">250.243333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">248.71</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="Performance">251.02</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,print_used_types,iv_users,</data>
+    <data columname="Performance">212.45</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.296666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">252.093333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">246.653333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,print_used_types,licm,</data>
+    <data columname="Performance">247.873333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">248.65</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">249.833333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.15</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,licm,</data>
+    <data columname="Performance">253.15</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,print_used_types,ipsccp,</data>
+    <data columname="Performance">214.153333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,iv_users,licm,</data>
+    <data columname="Performance">258.556666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,ipsccp,licm,</data>
+    <data columname="Performance">264.6</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">260.326666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,print_used_types,licm,</data>
+    <data columname="Performance">264.993333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">258.023333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">261.436666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,licm,</data>
+    <data columname="Performance">266.096666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,iv_users,licm,</data>
+    <data columname="Performance">260.496666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,print_used_types,licm,</data>
+    <data columname="Performance">266.45</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,print_used_types,ipsccp,</data>
+    <data columname="Performance">214.313333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">259.76</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">261.846666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">262.95</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,licm,</data>
+    <data columname="Performance">267.846666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,iv_users,licm,</data>
+    <data columname="Performance">261.09</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,ipsccp,licm,</data>
+    <data columname="Performance">267.043333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">262.663333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,licm,</data>
+    <data columname="Performance">267.28</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">216.913333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,ipsccp,licm,</data>
+    <data columname="Performance">262.68</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,iv_users,licm,</data>
+    <data columname="Performance">264.163333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">268.796666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,print_used_types,licm,</data>
+    <data columname="Performance">268.583333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">260.173333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">261.676666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">266.213333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">263.716666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">264.933333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,jump_threading,sccp,print_used_types,ipsccp,iv_users,</data>
+    <data columname="Performance">215.74</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,simplifycfg,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">268.416666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,licm,</data>
+    <data columname="Performance">269.516666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,iv_users,licm,</data>
+    <data columname="Performance">245.793333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,ipsccp,licm,</data>
+    <data columname="Performance">248.186666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">248.416666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,print_used_types,licm,</data>
+    <data columname="Performance">249.493333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">246.006666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">249.533333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">247.26</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,licm,</data>
+    <data columname="Performance">250.596666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,iv_users,licm,</data>
+    <data columname="Performance">247.673333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,print_used_types,licm,</data>
+    <data columname="Performance">250.366666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">248.03</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,ipsccp,licm,</data>
+    <data columname="Performance">249.3</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">250.45</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.516666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">251.246666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,licm,</data>
+    <data columname="Performance">252.5</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,iv_users,licm,</data>
+    <data columname="Performance">260.166666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,ipsccp,licm,</data>
+    <data columname="Performance">266.11</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,inline,simplifycfg,iv_users,</data>
+    <data columname="Performance">209.583333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">261.686666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,licm,</data>
+    <data columname="Performance">266.476666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,ipsccp,licm,</data>
+    <data columname="Performance">262.22</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,iv_users,licm,</data>
+    <data columname="Performance">263.786666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">268.41</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,print_used_types,licm,</data>
+    <data columname="Performance">268.38</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,print_used_types,licm,</data>
+    <data columname="Performance">264.166666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">261.363333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">266.093333333333</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">262.596666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">264.6</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,gvn,instcombine,inline,jump_threading,sccp,print_used_types,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">267.316666666667</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,licm,</data>
+    <data columname="Performance">269.38</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,iv_users,licm,</data>
+    <data columname="Performance">247.13</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,ipsccp,licm,</data>
+    <data columname="Performance">249.74</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,ipsccp,iv_users,licm,</data>
+    <data columname="Performance">249.6</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,print_used_types,ipsccp,licm,</data>
+    <data columname="Performance">247.31</data>
+  </row>
+  <row>
+    <data columname="Configuration">time_passes,instcombine,inline,jump_threading,simplifycfg,print_used_types,iv_users,licm,</data>
+    <data columname="Performance">250.753333333333</data>
+  </row>
+</results>

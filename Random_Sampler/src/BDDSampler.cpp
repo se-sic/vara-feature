@@ -15,47 +15,49 @@ namespace bdd::sample {
   }
 
   // Generate a random configuration by traversing the BDD
-  std::vector<bool> generateConfiguration(const oxidd::bdd_manager &Manager, 
+  std::vector<bool> generateConfiguration(
+    const oxidd::bdd_manager &Manager, 
     const oxidd::bdd_function& Root, 
     BDDFactory &Factory, 
-    std::map<oxidd::bdd_function, 
-    std::pair<double, double>> *SatMap) {
-
-      oxidd::bdd_function Trav = Root;
-
-      // Get the LEVEL of the root node, not the variable number
-      auto RootOpt = Root.node_level();
-      if (!RootOpt.has_value()) {
-        throw std::logic_error("Root node does not have a valid level.");
-      }
-
-      oxidd::level_no_t TotalLevels = Manager.num_vars();
-
-      Sample.clear();
-      Sample.reserve(TotalLevels);
-
-      // Initialize sample with random values for all variables
-      for (oxidd::var_no_t I = 0; I < TotalLevels; ++I) {
+    std::map<oxidd::bdd_function, std::pair<double, double>> *SatMap) {
+    
+    oxidd::bdd_function Trav = Root;
+    oxidd::level_no_t TotalLevels = Manager.num_vars();
+    
+    Sample.clear();
+    Sample.reserve(TotalLevels);
+    
+    // Initialize with random
+    for (oxidd::var_no_t I = 0; I < TotalLevels; ++I) {
         Sample.push_back(random() < 0.5);
-      }
-
-      // Main BDD traversal
-      while (!Trav.valid()) {
+    }
+        
+    // ORIGINAL condition
+    while (!Trav.valid()) {
+        
         auto VarIdOpt = Trav.node_var();
-        oxidd::var_no_t CurrentVar = VarIdOpt.value();
-
-        double Probability = SatMap->at(Trav).second;
-
-        // Choose branch based on probability
-        auto CheckRan = random();
-        if (CheckRan < Probability) {
-          Trav = Trav.cofactor_true(); // Take true branch
-          Sample[CurrentVar] = true;   // Include feature
-        } else {
-          Trav = Trav.cofactor_false(); // Take false branch
-          Sample[CurrentVar] = false;   // Include feature
+        if (!VarIdOpt.has_value()) {
+            std::cout << "No variable - breaking\n";
+            break;
         }
-      }
+        
+        oxidd::var_no_t CurrentVar = VarIdOpt.value();
+        
+        double Probability = SatMap->at(Trav).second;
+        double CheckRan = random();
+        
+        if (CheckRan < Probability) {
+            Trav = Trav.cofactor_true();
+            Sample[CurrentVar] = true;
+        } else {
+            Trav = Trav.cofactor_false();
+            Sample[CurrentVar] = false;
+        }
+
+        
+    }
+    
+    
     return Sample;
-  };
+}
 } // namespace bdd::sample

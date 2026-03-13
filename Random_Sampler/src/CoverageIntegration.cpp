@@ -39,6 +39,7 @@ void CoverageEvaluator::initializeAnalysis() {
     }
 
     std::cout << "  Found " << Analysis.Features.size() << " features\n";
+    std::cout << "  Idx " << Idx << " features\n";
     
     // Compute mandatory and dead features
     std::cout << "  Computing mandatory features...\n";

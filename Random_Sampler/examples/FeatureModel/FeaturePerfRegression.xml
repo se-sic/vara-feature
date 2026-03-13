@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vm SYSTEM "vm.dtd">
+<vm name="FeaturePerfRegression" root="root">
+  <binaryOptions>
+    <configurationOption>
+      <name>root</name>
+      <parent></parent>
+      <optional>False</optional>
+    </configurationOption>
+    <configurationOption>
+      <name>Encryption</name>
+      <outputString>--enc</outputString>
+      <parent>root</parent>
+      <optional>True</optional>
+      <locations>
+        <sourceRange category="necessary">
+          <path>src/CompressionTool/main.cpp</path>
+          <start>
+            <line>20</line>
+            <column>13</column>
+          </start>
+          <end>
+            <line>20</line>
+            <column>25</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+    <configurationOption>
+      <name>Compression</name>
+      <outputString>--compress</outputString>
+      <parent>root</parent>
+      <optional>True</optional>
+      <locations>
+        <sourceRange category="necessary">
+          <path>src/CompressionTool/main.cpp</path>
+          <start>
+            <line>21</line>
+            <column>13</column>
+          </start>
+          <end>
+            <line>21</line>
+            <column>26</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+  </binaryOptions>
+  <numericOptions>
+    <configurationOption>
+      <name>Iterations_val</name>
+      <outputString>--iterations</outputString>
+      <prefix>
+      </prefix>
+      <postfix>
+      </postfix>
+      <parent>root</parent>
+      <impliedOptions />
+      <excludedOptions />
+      <minValue>1</minValue>
+      <maxValue>3</maxValue>
+      <stepFunction>Iterations_val + 1</stepFunction>
+      <locations>
+        <sourceRange>
+          <path>src/CompressionTool/main.cpp</path>
+          <start>
+            <line>22</line>
+            <column>13</column>
+          </start>
+          <end>
+            <line>22</line>
+            <column>22</column>
+          </end>
+        </sourceRange>
+      </locations>
+    </configurationOption>
+  </numericOptions>
+</vm>
