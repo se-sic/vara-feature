@@ -1,5 +1,5 @@
 #include "vara/Feature/FeatureModel.h"
-
+#include <llvm/Config/llvm-config.h>
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Errc.h"
 #include "llvm/Support/InitLLVM.h"
@@ -83,7 +83,15 @@ int main(int Argc, char **Argv) {
                            : llvm::sys::findProgramByName(Viewer)) {
       llvm::errs() << "Trying '" << *P << "' program... \n";
       // Use std::nullopt for modern LLVM versions
-      llvm::sys::ExecuteNoWait(*P, {*P, Filename}, std::nullopt);
+      if (P) {
+        #if LLVM_VERSION_MAJOR >= 16
+              llvm::sys::ExecuteNoWait(*P, {*P, Filename}, std::nullopt);
+        #else
+              llvm::sys::ExecuteNoWait(
+                  *P, {*P, Filename},
+                  llvm::Optional<llvm::ArrayRef<llvm::StringRef>>());
+        #endif
+        }
     } else {
       llvm::DisplayGraph(Filename);
     }

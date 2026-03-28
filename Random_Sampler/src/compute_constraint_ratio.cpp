@@ -110,7 +110,7 @@ public:
     // Count mandatory vs optional
     size_t MandatoryCount = computeMandatoryFeatures(*FeatureModel, Manager, Bdd).size();
 
-    if (std::ranges::contains(FakeRoot, ModelName)) {
+    if (std::find(FakeRoot.begin(), FakeRoot.end(), ModelName) != FakeRoot.end()) {
         TotalFeatures--;
         MandatoryCount--;
     }

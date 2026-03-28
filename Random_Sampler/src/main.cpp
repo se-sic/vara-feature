@@ -140,7 +140,9 @@ int main(int argc, char* argv[]) noexcept(false){
         AllSamples.push_back(S); 
 
         size_t Count = 0;
-        for(const auto& [v, val] : llvm::enumerate(S)) {
+        for (auto it : llvm::enumerate(S)) {
+            auto v = it.index();
+            const auto &val = it.value();
             if(val) { ++Count; };
         }
 
