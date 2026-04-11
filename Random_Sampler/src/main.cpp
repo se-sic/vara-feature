@@ -50,7 +50,7 @@ void analyseFeatures(const oxidd::bdd_function &BDD, oxidd::bdd_manager &Manager
 
 int main(int argc, char* argv[]) noexcept(false){ 
 
-    if (argc < 2) {
+    if (argc < 3) {
         std::cerr << "\033[31m" << "Usage: ./my_program <feature_model.xml>\033[0m\n";
         return 1;
     }
@@ -184,7 +184,7 @@ int main(int argc, char* argv[]) noexcept(false){
     N       // 2000
     };
 
-    for (size_t T : {1, 2}) { 
+    for (size_t T : {1, 2, 3}) { 
         std::cout << "\033[35m" << "\nEvaluating " << T << "-wise coverage...\033[0m";
         
         // Incremental evaluation

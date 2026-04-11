@@ -13,6 +13,8 @@ public:
     using CoverageEvaluator::getParentChildInteraction;
     using CoverageEvaluator::buildFeatureVarMap;
     using CoverageEvaluator::initializeMetrics;
+    using CoverageEvaluator::getAtomicLiteralSets;
+    using CoverageEvaluator::implies;
 };
 
 class CoverageEvaluatorTest : public ::testing::Test {
@@ -120,4 +122,96 @@ TEST_F(CoverageEvaluatorTest, GetParentChildInteraction) {
 
     EXPECT_EQ(ParentChildInteractions.size(), 3);
     EXPECT_EQ(ExpectedFeatures, ReceivedFeatures);
+}
+
+class AtomicLiteralSetDetectionTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        const char* AlsModelXml = R"(
+        <vm name="ALSModel">
+            <binaryOptions>
+                <configurationOption>
+                    <name>root</name>
+                    <optional>False</optional>
+                    <children>
+                        <options>A</options>
+                        <options>B</options>
+                        <options>C</options>
+                    </children>
+                </configurationOption>
+                <configurationOption><name>A</name><parent>root</parent><optional>True</optional></configurationOption>
+                <configurationOption><name>B</name><parent>root</parent><optional>True</optional></configurationOption>
+                <configurationOption><name>C</name><parent>root</parent><optional>True</optional></configurationOption>
+            </binaryOptions>
+            <booleanConstraints>
+                <constraint>!A | B</constraint>
+                <constraint>!B | A</constraint>
+            </booleanConstraints>
+        </vm>
+        )";
+
+        FeatureModel = test_utils::createModelFromString(AlsModelXml);
+        Factory = std::make_unique<bdd::sample::BDDFactory>();
+        Bdd = Factory->modelToBdd(*FeatureModel);
+        Manager = Bdd.containing_manager();
+
+        Evaluator = std::make_unique<TestableCoverageEvaluator>(
+            *FeatureModel, Bdd, Manager, *Factory
+        );
+    }
+
+    [[nodiscard]] const FeatureModelAnalysis& getAnalysis() const {
+        return Evaluator->getAnalysis();
+    }
+
+    std::unique_ptr<vara::feature::FeatureModel> FeatureModel;
+    std::unique_ptr<bdd::sample::BDDFactory> Factory;
+    oxidd::bdd_function Bdd;
+    oxidd::bdd_manager Manager;
+    std::unique_ptr<TestableCoverageEvaluator> Evaluator;
+};
+
+TEST_F(AtomicLiteralSetDetectionTest, DetectsMutualImplicationForEquivalentPositiveLiterals) {
+    const auto& Analysis = getAnalysis();
+    size_t IndexA = Analysis.NameToIndex.at("A");
+    size_t IndexB = Analysis.NameToIndex.at("B");
+
+    EXPECT_TRUE(Evaluator->implies({IndexA, true}, {IndexB, true}));
+    EXPECT_TRUE(Evaluator->implies({IndexB, true}, {IndexA, true}));
+}
+
+TEST_F(AtomicLiteralSetDetectionTest, BuildsAtomicLiteralSetForEquivalentPositiveLiterals) {
+    const auto& Analysis = getAnalysis();
+    size_t IndexA = Analysis.NameToIndex.at("A");
+    size_t IndexB = Analysis.NameToIndex.at("B");
+
+    auto ALS = Evaluator->getAtomicLiteralSets();
+
+    bool FoundClass = false;
+    for (const auto& [Rep, Class] : ALS) {
+        if (Class.contains({IndexA, true}) && Class.contains({IndexB, true})) {
+            FoundClass = true;
+            EXPECT_EQ(Class.size(), 2U);
+        }
+    }
+
+    EXPECT_TRUE(FoundClass);
+}
+
+TEST_F(AtomicLiteralSetDetectionTest, BuildsAtomicLiteralSetForEquivalentNegativeLiterals) {
+    const auto& Analysis = getAnalysis();
+    size_t IndexA = Analysis.NameToIndex.at("A");
+    size_t IndexB = Analysis.NameToIndex.at("B");
+
+    auto ALS = Evaluator->getAtomicLiteralSets();
+
+    bool FoundClass = false;
+    for (const auto& [Rep, Class] : ALS) {
+        if (Class.contains({IndexA, false}) && Class.contains({IndexB, false})) {
+            FoundClass = true;
+            EXPECT_EQ(Class.size(), 2U);
+        }
+    }
+
+    EXPECT_TRUE(FoundClass);
 }

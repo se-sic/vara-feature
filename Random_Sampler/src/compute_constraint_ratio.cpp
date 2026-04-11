@@ -34,6 +34,31 @@ struct ModelStats {
     }
 };
 
+std::unique_ptr<vara::feature::FeatureModel> loadFeatureModel(const std::string& FilePath) {
+    std::ifstream FileIn(FilePath);
+    if (!FileIn) {
+        throw std::runtime_error("Could not open file: " + FilePath);
+    }
+
+    std::ostringstream Oss;
+    Oss << FileIn.rdbuf();
+    std::string XMLContent = Oss.str();
+
+    vara::feature::FeatureModelXmlParser Parser(XMLContent);
+
+    auto Verify = Parser.verifyFeatureModel();
+    if (!Verify) {
+        throw std::runtime_error("Error parsing XML: verification failed");
+    }
+
+    auto Fm = Parser.buildFeatureModel();
+    if (!Fm) {
+        throw std::runtime_error("Error building feature model");
+    }
+
+    return Fm;
+}
+
 size_t countFeaturesInXML(const std::string& XmlPath) {
     std::ifstream File(XmlPath);
     if (!File.is_open()) {
@@ -87,93 +112,7 @@ public:
         return Stats;
     }
 
-    static ModelStats debuganalyzeModel(const std::string& ModelPath, const std::string& ModelName) {
-    ModelStats Stats;
-    Stats.Name = ModelName;
-    
-    auto FeatureModel = test_utils::loadFeatureModel(ModelPath);
-    
-    // Get total features
-    size_t TotalFeatures = FeatureModel->size();
-    std::cout << "\n=== " << ModelName << " ===\n";
-    std::cout << "Total features: " << TotalFeatures << "\n";
 
-    const std::vector<std::string> FakeRoot = {
-                "BerkeleyDBC", "Hipacc", "LLVM", "lrzip", "x264"
-            };
-    
-    // Build BDD
-    bdd::sample::BDDFactory Factory;
-    auto Bdd = Factory.modelToBdd(*FeatureModel);
-    oxidd::bdd_manager Manager = Bdd.containing_manager();
-
-    // Count mandatory vs optional
-    size_t MandatoryCount = computeMandatoryFeatures(*FeatureModel, Manager, Bdd).size();
-
-    if (std::find(FakeRoot.begin(), FakeRoot.end(), ModelName) != FakeRoot.end()) {
-        TotalFeatures--;
-        MandatoryCount--;
-    }
-
-    size_t OptionalCount = TotalFeatures - MandatoryCount;
-    
-    std::cout << "Mandatory: " << MandatoryCount << "\n";
-    std::cout << "Optional: " << OptionalCount << "\n";
-    
-    // Try different counting methods
-    double Count1 = Bdd.sat_count_double(TotalFeatures);
-    double Count2 = Bdd.sat_count_double(OptionalCount);
-    double Count3 = Bdd.sat_count_double(TotalFeatures - 1);
-    
-    std::cout << "Count with all features (" << TotalFeatures << "): " << Count1 << "\n";
-    std::cout << "Count with optional (" << OptionalCount << "): " << Count2 << "\n";
-    std::cout << "Count with (total-1) (" << (TotalFeatures-1) << "): " << Count3 << "\n";
-    
-    Stats.NumFeatures = TotalFeatures;
-    Stats.NumValidConfigs = Count1;
-    
-    return Stats;
-}
-
-static std::set<size_t> computeMandatoryFeatures(vara::feature::FeatureModel& FeatureModel, oxidd::bdd_manager& Manager, oxidd::bdd_function& BDD) {
-    std::set<size_t> MandatoryFeatures;
-    
-    std::cout << "Detecting core features (exact)...\n";
-    
-    // For each feature, check if it's always selected
-    // A feature is core if (BDD & NOT feature) is unsatisfiable
-    for (size_t I = 0; I < FeatureModel.size(); ++I) {
-        try {
-            // Get NOT feature_i (negated variable)
-            auto NotVarI = Manager.not_var(static_cast<oxidd::var_no_t>(I));
-            
-            // Compute: BDD & NOT feature_i
-            auto Constrained = BDD & NotVarI;
-            
-            // If unsatisfiable, feature must always be true (core)
-            if (!Constrained.satisfiable()) {
-                MandatoryFeatures.insert(I);
-            }
-            
-        } catch (const std::exception& E) {
-            std::cerr << "\033[31m" <<"Warning: Error checking feature " << I 
-                      << " for core: " << E.what() << "\033[0m\n\n";
-            continue;
-        }
-    }
-
-    std::cout << "Mandatory features: ";
-    for (size_t Index : MandatoryFeatures) {
-        std::cout << Manager.var_name(Index) << " ";
-    }
-    std::cout << '\n';
-
-    
-    
-    std::cout << "Found " << MandatoryFeatures.size() << " core features\n";
-    return MandatoryFeatures;
-}
-    
     static void printStats(const std::vector<ModelStats>& AllStats) {        
         std::cout << std::left 
           << std::setw(20) << "System"
@@ -248,66 +187,59 @@ static std::set<size_t> computeMandatoryFeatures(vara::feature::FeatureModel& Fe
                   << (Max / Min) << "x difference between most and least constrained\n\n";
     }
     
-    static void exportCSV(const std::vector<ModelStats>& AllStats, const std::string& Filename) {
-        std::ofstream Out(Filename);
-        
-        Out << "System,Features,ValidConfigs,UnconstrainedSpace,Ratio,ConstraintLevel\n";
-        
-        for (const auto& Stats : AllStats) {
-            Out << Stats.Name << ","
-                << Stats.NumFeatures << ","
-                << std::scientific << std::setprecision(10) << Stats.NumValidConfigs << ","
-                << std::scientific << std::setprecision(10) << Stats.UnconstrainedSpace << ","
-                << std::fixed << std::setprecision(10) << Stats.Ratio << ","
-                << Stats.constraintLevel() << "\n";
+    static void appendResultsToCsv(const ModelStats& Stats, const std::string& OutputCsv) {
+        bool WriteHeader = false;
+        {
+            std::ifstream In(OutputCsv);
+            WriteHeader = !In.good() || In.peek() == std::ifstream::traits_type::eof();
         }
-        
-        std::cout << "Results exported to: " << Filename << "\n";
+
+        std::ofstream Out(OutputCsv, std::ios::app);
+
+        if (!Out) {
+            throw std::runtime_error("Could not open output CSV: " + OutputCsv);
+        }
+
+        if (WriteHeader) {
+            Out << "system,ratio,constraint_level\n";
+        }
+            
+        Out << Stats.Name << ","
+            << std::fixed << std::setprecision(10) << Stats.Ratio << ","
+            << Stats.constraintLevel() << "\n";
     }
 };
+
 int main(int argc, char** argv) {
-    // Define your models
+    try {
+            if (argc < 4) {
+                std::cerr << "Usage: ./experiment_runner <feature_model.xml> <name> "
+                            "<output.csv>\n";
+                return 1;
+            }
 
-    std::vector<std::pair<std::string, std::string>> Models = {
-        // {"Random_Sampler/examples/FeatureModel/7z.xml", "7z"},
-        // {"Random_Sampler/examples/FeatureModel/BerkeleyDBC.xml", "BerkeleyDBC"},
-        // {"Random_Sampler/examples/FeatureModel/Dune.xml", "Dune"},
-        // {"Random_Sampler/examples/FeatureModel/Hipacc.xml", "Hipacc"},
-        // {"Random_Sampler/examples/FeatureModel/JavaGC.xml", "JavaGC"},
-        // {"Random_Sampler/examples/FeatureModel/LLVM.xml", "LLVM"},
-        // {"Random_Sampler/examples/FeatureModel/lrzip.xml", "lrzip"},
-        // {"Random_Sampler/examples/FeatureModel/Polly.xml", "Polly"},
-        // {"Random_Sampler/examples/FeatureModel/VP9.xml", "VP9"},
-        // {"Random_Sampler/examples/FeatureModel/x264.xml", "x264"},
+            std::string FilePath = argv[1];
+            std::string System = argv[2];
+            std::string OutputCsv = argv[3];
 
+            auto FeatureModel = loadFeatureModel(FilePath);
 
-        {"Random_Sampler/examples/FeatureModel/AJStats.xml", "AJStats"},
-        {"Random_Sampler/examples/FeatureModel/Curl.xml", "Curl"},
-        {"Random_Sampler/examples/FeatureModel/HSMGP.xml", "HSMGP"},
-        {"Random_Sampler/examples/FeatureModel/HSQLDB.xml", "HSQLDB"},
-        {"Random_Sampler/examples/FeatureModel/HyTeG.xml", "HyTeG"},
-        {"Random_Sampler/examples/FeatureModel/PKJab.xml", "PKJab"},
-        {"Random_Sampler/examples/FeatureModel/SQLite.xml", "SQLite"},
-        {"Random_Sampler/examples/FeatureModel/TriMesh.xml", "TriMesh"},
-        {"Random_Sampler/examples/FeatureModel/WGet.xml", "WGet"},
-        {"Random_Sampler/examples/FeatureModel/clasp.xml", "clasp"},
-        {"Random_Sampler/examples/FeatureModel/z3.xml", "z3"},
-    };
-    
-    std::vector<ModelStats> AllStats;
-    
-    std::cout << "Analyzing " << Models.size() << " feature models...\n\n";
-    
-    for (const auto& [path, name] : Models) {
-        auto Stats = ConstraintAnalyzer::analyzeModel(path, name);
-        AllStats.push_back(Stats);
-    }
-    
-    // Print results
-    ConstraintAnalyzer::printStats(AllStats);
-    
-    // Export to CSV
-    ConstraintAnalyzer::exportCSV(AllStats, "constraint_ratios.csv");
-    
-    return 0;
+            bdd::sample::BDDFactory Factory;
+            oxidd::bdd_function FinalBDD = Factory.modelToBdd(*FeatureModel);
+            oxidd::bdd_manager Manager = FinalBDD.containing_manager();
+        
+            
+            // Print results
+            //ConstraintAnalyzer::printStats(AllStats);
+
+            ModelStats Stats = ConstraintAnalyzer::analyzeModel(FilePath, System);
+            
+            // Export to CSV
+            ConstraintAnalyzer::appendResultsToCsv(Stats, OutputCsv);
+            
+            return 0;
+        } catch (const std::exception& E) {
+            std::cerr << "ERROR: " << E.what() << "\n";
+            return 1;
+        }
 }

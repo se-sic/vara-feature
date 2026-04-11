@@ -95,6 +95,43 @@ target_link_libraries(random_sampler PRIVATE
 #  ${CMAKE_SOURCE_DIR}/build/external/oxidd
 #)
 
+add_executable(experiment_preparation
+  src/ExperimentPreparation.cpp
+)
+
+target_include_directories(experiment_preparation PRIVATE 
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/include/vara/Solver
+  ${CMAKE_CURRENT_SOURCE_DIR}/../BDD/include
+  ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
+  ${CMAKE_BINARY_DIR}/_deps/tl-expected-src/include
+)
+
+target_link_libraries(experiment_preparation PRIVATE
+  coverage_lib
+  bdd
+  VaRAFeature
+  VaRASampling
+  VaRAConfiguration
+  tinyxml2::tinyxml2
+  ${LLVM_LIBS}
+)
+
+add_executable(evaluate_sample_from_csv
+    src/evaluate_sample_from_csv.cpp
+)
+
+target_link_libraries(evaluate_sample_from_csv
+    PRIVATE
+    coverage_lib
+    bdd
+    VaRAFeature
+    VaRASampling
+    VaRAConfiguration
+    tinyxml2::tinyxml2
+    ${LLVM_LIBS}
+)
+
 add_executable(compute_constraint_ratio
     src/compute_constraint_ratio.cpp
 )

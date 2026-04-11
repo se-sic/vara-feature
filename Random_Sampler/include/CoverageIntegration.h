@@ -127,7 +127,7 @@ protected:
 
     /**
     * Instantiates the list of coverage metrics to be evaluated. By default, it adds 
-    * M4, M5, and M7 (see MetricFactory). Can be extended to include other metrics.
+    * metrics. Can be extended to include other metrics.
     */
     void initializeMetrics();
 
@@ -149,6 +149,12 @@ protected:
     * Used later by the PCI filter.
     */
     std::set<FeaturePair> getParentChildInteraction();    
+
+    oxidd::bdd_function makeLiteral(size_t Idx, bool Value);
+
+    bool implies(const LiteralKey& A, const LiteralKey& B);
+
+    std::map<LiteralKey, std::set<LiteralKey>> getAtomicLiteralSets();
 };
 
 } // namespace coverage

@@ -1,0 +1,11 @@
+polly_delinearize,polly_dependences_analysis_type,memory_based,value_based,polly_no_tiling,polly_opt_fusion,max,min,polly_opt_simplify_deps,polly_parallel,parallel,parallel_force,polly_vectorizer,none,polly,pollydefaulttilesize,pollydefaulttilesize_1024,pollydefaulttilesize_16,pollydefaulttilesize_256,pollydefaulttilesize_4,pollydefaulttilesize_64,pollyoptmaxcoefficient,pollyoptmaxcoefficient_1,pollyoptmaxcoefficient_10,pollyoptmaxcoefficient_100,pollyoptmaxcoefficient_1000,pollyoptmaxcoefficient_10000,pollyoptmaxconstantterm,pollyoptmaxconstantterm_1,pollyoptmaxconstantterm_10,pollyoptmaxconstantterm_100,pollyoptmaxconstantterm_1000,pollyoptmaxconstantterm_10000,pollyrtcmaxparameters,pollyrtcmaxparameters_1,pollyrtcmaxparameters_16,pollyrtcmaxparameters_2,pollyrtcmaxparameters_4,pollyrtcmaxparameters_8
+1,1,1,0,0,1,1,0,1,1,1,0,1,0,1,1,0,0,1,0,0,1,0,0,0,1,0,1,0,1,0,0,0,1,1,0,0,0,0
+1,1,0,1,1,1,0,1,1,1,1,0,1,0,1,1,0,0,1,0,0,1,1,0,0,0,0,1,0,1,0,0,0,1,1,0,0,0,0
+1,1,1,0,0,1,1,0,1,1,1,0,1,0,1,1,0,0,1,0,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0,0,1
+1,1,1,0,0,1,0,1,0,0,0,0,1,0,1,1,0,0,1,0,0,1,0,0,0,0,1,1,0,0,0,1,0,1,1,0,0,0,0
+1,1,0,1,1,1,0,1,1,1,0,1,1,0,1,1,0,0,1,0,0,1,1,0,0,0,0,1,0,1,0,0,0,1,1,0,0,0,0
+1,1,1,0,0,1,0,1,0,0,0,0,1,0,1,1,0,0,1,0,0,1,0,0,0,0,1,1,0,0,0,0,1,1,1,0,0,0,0
+1,1,0,1,1,1,0,1,1,0,0,0,1,0,1,1,0,0,1,0,0,1,0,1,0,0,0,1,0,0,0,1,0,1,1,0,0,0,0
+1,1,1,0,0,1,1,0,1,1,1,0,1,0,1,1,0,0,1,0,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0,0,1,0,0
+1,1,1,0,0,1,0,1,0,0,0,0,1,0,1,1,0,0,1,0,0,1,0,0,0,0,1,1,1,0,0,0,0,1,1,0,0,0,0
+1,1,1,0,0,1,0,1,0,0,0,0,1,0,1,1,0,0,1,0,0,1,0,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,0

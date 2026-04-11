@@ -1,0 +1,11 @@
+convert_links,no_clobber,no_cookies,no_directories,no_dns_cache,no_host_directories,no_http_keep_alive,output_file,save_headers,server_response,strict_comments,verbosity,no_verbose,quiet,verbose
+0,1,0,0,0,0,0,0,0,0,0,1,0,1,0
+0,0,0,0,0,1,0,0,0,0,0,1,0,1,0
+1,0,1,0,0,0,0,0,1,1,1,1,1,0,0
+1,0,1,0,0,0,0,0,0,0,0,1,1,0,0
+1,1,1,1,1,1,1,1,1,1,1,1,0,0,1
+1,1,1,1,1,1,1,0,1,1,1,1,0,1,0
+1,0,1,0,0,0,0,0,0,1,1,1,1,0,0
+1,0,1,0,0,1,0,0,0,0,1,1,1,0,0
+1,1,0,1,1,1,1,0,1,1,1,1,0,1,0
+1,0,1,0,0,0,0,0,0,0,1,1,1,0,0

@@ -93,5 +93,8 @@
         "cinttypes": "cpp"
     },
     "C_Cpp.default.compilerPath": "/opt/homebrew/opt/llvm/bin/clang++",
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "python.analysis.extraPaths": [
+        "./bindings/python"
+    ]
 }

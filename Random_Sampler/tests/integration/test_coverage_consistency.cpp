@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
         
         std::ifstream TestFile(UnconstrainedXmlFile);
         if (!TestFile) {
-            std::cout << "\033[31m" << "Unconstrained file not found!\033[0m\\n";
+            std::cout << "\033[31m" << "Unconstrained file not found!\033[0m\n";
             return 1;
         }
         TestFile.close();

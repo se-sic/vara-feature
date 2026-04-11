@@ -89,44 +89,43 @@ std::set<Interaction> filterDeadFeatures(const std::set<Interaction>& Interactio
     return Filtered;
 }
 
-std::set<Interaction> filterAtomicLiteralSets(const std::set<Interaction>& Interactions,
-                                             const FeatureModelAnalysis& Analysis) {
+std::set<Interaction> filterAtomicLiteralSets(
+    const std::set<Interaction>& Interactions,
+    const FeatureModelAnalysis& Analysis) {
+
     std::set<Interaction> Filtered;
-    
-    // Build a map of literal (feature,value) -> representative literal
-    std::map<std::pair<size_t, bool>, std::pair<size_t, bool>> LiteralToRepresentative;
-    for (const auto& [representative, atomicSet] : Analysis.AtomicLiteralSets) {
-        if (atomicSet.size() > 1) {
-            // Choose first literal as representative
-            auto RepIt = atomicSet.begin();
-            for (size_t Literal : atomicSet) {
-                LiteralToRepresentative[{Literal, true}] = {*RepIt, true};
-                LiteralToRepresentative[{Literal, false}] = {*RepIt, false};
-            }
+
+    std::map<LiteralKey, LiteralKey> LiteralToRepresentative;
+
+    for (const auto& [Representative, AtomicSet] : Analysis.AtomicLiteralSets) {
+        if (AtomicSet.size() <= 1) {
+            continue;
+        }
+
+        for (const auto& Lit : AtomicSet) {
+            LiteralToRepresentative[Lit] = Representative;
         }
     }
-    
+
     for (const auto& Interaction : Interactions) {
         bool ContainsNonRepresentative = false;
-        
-        for (const auto& [featureName, selected] : Interaction.Literals) {
-            size_t FeatureIdx = Analysis.NameToIndex.at(featureName);
-            auto LiteralKey = std::make_pair(FeatureIdx, selected);
-            
-            if (LiteralToRepresentative.contains(LiteralKey)) {
-                auto Representative = LiteralToRepresentative[LiteralKey];
-                if (LiteralKey != Representative) {
-                    ContainsNonRepresentative = true;
-                    break;
-                }
+
+        for (const auto& [FeatureName, Selected] : Interaction.Literals) {
+            size_t FeatureIdx = Analysis.NameToIndex.at(FeatureName);
+            LiteralKey Current{.FeatureIdx=FeatureIdx, .Value=Selected};
+
+            auto It = LiteralToRepresentative.find(Current);
+            if (It != LiteralToRepresentative.end() && It->second != Current) {
+                ContainsNonRepresentative = true;
+                break;
             }
         }
-        
+
         if (!ContainsNonRepresentative) {
             Filtered.insert(Interaction);
         }
     }
-    
+
     return Filtered;
 }
 
@@ -187,6 +186,12 @@ std::set<Interaction> filterMF_DF(const std::set<Interaction>& Interactions,
     return filterDeadFeatures(Temp, Analysis);
 }
 
+std::set<Interaction> filterALS_PCI(const std::set<Interaction>& Interactions,
+                                            const FeatureModelAnalysis& Analysis) {
+    auto Temp = filterAtomicLiteralSets(Interactions, Analysis);
+    return filterParentChildInteractions(Temp, Analysis);
+}
+
 std::set<Interaction> filterMF_DF_ALS(const std::set<Interaction>& Interactions,
                                      const FeatureModelAnalysis& Analysis) {
     auto Temp = filterMF_DF(Interactions, Analysis);
@@ -208,47 +213,44 @@ std::set<Interaction> filterMF_DF_ALS_PCI(const std::set<Interaction>& Interacti
 
 // Metric factory
 
-CoverageMetric MetricFactory::createM1() {
-    // M1: MF + DF + ALS + PCI
-    return {"M1_MF-DF-ALS-PCI", filterMF_DF_ALS_PCI};
+CoverageMetric MetricFactory::createMDAP() {
+    // MDAP: MF + DF + ALS + PCI
+    return {"MDAP_MF-DF-ALS-PCI", filterMF_DF_ALS_PCI};
 }
 
-CoverageMetric MetricFactory::createM2() {
-    // M2: MF + DF + ALS
-    return {"M2_MF-DF-ALS", filterMF_DF_ALS};
+CoverageMetric MetricFactory::createMDA() {
+    // MDA: MF + DF + ALS
+    return {"MDA_MF-DF-ALS", filterMF_DF_ALS};
 }
 
-CoverageMetric MetricFactory::createM3() {
-    // M3: MF + DF + PCI
-    return {"M3_MF-DF-PCI", filterMF_DF_PCI};
+CoverageMetric MetricFactory::createMDP() {
+    // MDP: MF + DF + PCI
+    return {"MDP_MF-DF-PCI", filterMF_DF_PCI};
 }
 
-CoverageMetric MetricFactory::createM4() {
-    // M4: MF + DF
-    return {"M4_MF-DF", filterMF_DF};
+CoverageMetric MetricFactory::createMD() {
+    // MD: MF + DF
+    return {"MD_MF-DF", filterMF_DF};
 }
 
-CoverageMetric MetricFactory::createM5() {
-    // M5: PCI
-    return {"M5_PCI", filterParentChildInteractions};
+CoverageMetric MetricFactory::createAP() {
+    // AP: ALS + PCI
+    return {"AP_ALS-PCI", filterALS_PCI};
 }
 
-CoverageMetric MetricFactory::createM6() {
-    // m6: ALS
-    return {"M&_ALS", filterAtomicLiteralSets};
+CoverageMetric MetricFactory::createPCI() {
+    // PCI
+    return {"PCI", filterParentChildInteractions};
 }
 
-CoverageMetric MetricFactory::createM7() {
-    // M7: Default (no filters)
-    return {"M7_Default", filterDefault};
+CoverageMetric MetricFactory::createALS() {
+    // ALS
+    return {"ALS", filterAtomicLiteralSets};
 }
 
-CoverageMetric MetricFactory::createCustom(const std::string& Name,
-                                          const std::vector<FilterFunction>& Filters) {
-    return {Name,
-        [Filters](const std::set<Interaction>& Interactions, const FeatureModelAnalysis& Analysis) {
-            return composeFilters(Interactions, Analysis, Filters);
-        }};
+CoverageMetric MetricFactory::createDefault() {
+    // Default (no filters)
+    return {"Default", filterDefault};
 }
 
 

@@ -11,6 +11,13 @@
 
 namespace coverage {
 
+struct LiteralKey {
+    size_t FeatureIdx;
+    bool Value;
+
+    auto operator<=>(const LiteralKey&) const = default;
+};
+
 // Interaction represents a t-wise feature interaction
 struct Interaction {
     // Maps feature name to its state: true (selected), false (deselected)
@@ -59,7 +66,7 @@ struct FeatureModelAnalysis {
 
     // Map from a representative literal (feature index, value) 
     // to the set of all literals that are equivalent under the feature model constraints.
-    std::map<size_t, std::set<size_t>> AtomicLiteralSets;
+    std::map<LiteralKey, std::set<LiteralKey>> AtomicLiteralSets;
 
     // Set of (parent, child) feature pairs extracted from the hierarchy.
     std::set<FeaturePair> ParentChildPairs;
@@ -129,6 +136,10 @@ std::set<Interaction> composeFilters(const std::set<Interaction>& Interactions,
 std::set<Interaction> filterMF_DF(const std::set<Interaction>& Interactions,
                                  const FeatureModelAnalysis& Analysis);
 
+// Applies ALS and PCI filters.
+std::set<Interaction> filterALS_PCI(const std::set<Interaction>& Interactions,
+                                 const FeatureModelAnalysis& Analysis);                                 
+
 // Applies MF, DF, and ALS filters.
 std::set<Interaction> filterMF_DF_ALS(const std::set<Interaction>& Interactions,
                                      const FeatureModelAnalysis& Analysis);
@@ -146,30 +157,29 @@ std::set<Interaction> filterMF_DF_ALS_PCI(const std::set<Interaction>& Interacti
 
 class MetricFactory {
 public:
-    // Creates metric M1 (MF+DF+ALS+PCI).
-    static CoverageMetric createM1();
+    // Creates metric MDAP (MF+DF+ALS+PCI).
+    static CoverageMetric createMDAP();
     
-    // Creates metric M2 (MF+DF+ALS).
-    static CoverageMetric createM2();
+    // Creates metric MDA (MF+DF+ALS).
+    static CoverageMetric createMDA();
     
-    // Creates metric M3 (MF+DF+PCI).
-    static CoverageMetric createM3();
+    // Creates metric MDP (MF+DF+PCI).
+    static CoverageMetric createMDP();
     
-    // Creates metric M4 (MF+DF).
-    static CoverageMetric createM4();
-    
-    // Creates metric M5 (PCI).
-    static CoverageMetric createM5();
-    
-    // Creates metric M6 (ALS).
-    static CoverageMetric createM6();
+    // Creates metric MD (MF+DF).
+    static CoverageMetric createMD();
 
-    // Creates metric M7 (default, no filters).
-    static CoverageMetric createM7();
+    // Creates metric AP (ALS+PCI).
+    static CoverageMetric createAP();
     
-    // Create custom metric from filters
-    static CoverageMetric createCustom(const std::string& Name,
-                                      const std::vector<FilterFunction>& Filters);
+    // Creates metric PCI.
+    static CoverageMetric createPCI();
+    
+    // Creates metric ALS.
+    static CoverageMetric createALS();
+
+    // Creates metric Default (no filters).
+    static CoverageMetric createDefault();
 };
 
 

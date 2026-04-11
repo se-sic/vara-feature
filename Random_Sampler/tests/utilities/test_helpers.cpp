@@ -68,7 +68,7 @@ void saveConfigsToCSV(
     for (auto* Feature : Fm.features()) {
         Out << "," << Feature->getName().str();
     }
-    Out << "\\n";
+    Out << "\n";
     
     // Data
     for (size_t I = 0; I < Configs.size(); ++I) {
@@ -76,7 +76,7 @@ void saveConfigsToCSV(
         for (bool Val : Configs[I]) {
             Out << "," << (Val ? "1" : "0");
         }
-        Out << "\\n";
+        Out << "\n";
     }
     
     Out.close();
@@ -116,10 +116,10 @@ void saveExpectedCoverage(
     
     std::ofstream Out(Filename);
     
-    Out << "Metric,Coverage\\n";
+    Out << "Metric,Coverage\n";
     for (const auto& [metric, coverage] : Results) {
         Out << metric << "," << std::fixed << std::setprecision(6) 
-            << coverage << "\\n";
+            << coverage << "\n";
     }
     
     Out.close();
@@ -145,7 +145,7 @@ void printConfiguration(
                   << "=" << (Config[Idx] ? "✓" : "✗") << " ";
         ++Idx;
     }
-    std::cout << "\\n";
+    std::cout << "\n";
 }
 
 bool compareCoverageResults(

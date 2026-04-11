@@ -212,9 +212,7 @@ public:
     void compare(const std::set<Config>& PaperConfigs, 
                  const std::set<Config>& BddConfigs) {
         
-        std::cout << "\n╔══════════════════════════════════════════════════════════╗\n";
-        std::cout << "║              CONFIGURATION COMPARISON                    ║\n";
-        std::cout << "╚══════════════════════════════════════════════════════════╝\n\n";
+        std::cout << "             CONFIGURATION COMPARISON                    \n";
         
         std::cout << "Paper configs: " << PaperConfigs.size() << "\n";
         std::cout << "BDD configs:   " << BddConfigs.size() << "\n";
@@ -244,9 +242,7 @@ public:
             std::inserter(InBoth, InBoth.begin())
         );
         
-        std::cout << "═══════════════════════════════════════════════════════════\n";
         std::cout << "SUMMARY\n";
-        std::cout << "═══════════════════════════════════════════════════════════\n\n";
         
         std::cout << "Configs in both:           " << InBoth.size() << "\n";
         std::cout << "Only in paper:             " << OnlyInPaper.size() << "\n";
@@ -259,9 +255,7 @@ public:
         
         // Print differences
         if (!OnlyInPaper.empty()) {
-            std::cout << "═══════════════════════════════════════════════════════════\n";
             std::cout << "CONFIGS IN PAPER BUT NOT IN YOUR BDD (" << OnlyInPaper.size() << ")\n";
-            std::cout << "═══════════════════════════════════════════════════════════\n\n";
             
             int Count = 0;
             for (const auto& Config : OnlyInPaper) {
@@ -275,9 +269,7 @@ public:
         }
         
         if (!OnlyInBDD.empty()) {
-            std::cout << "═══════════════════════════════════════════════════════════\n";
             std::cout << "CONFIGS IN YOUR BDD BUT NOT IN PAPER (" << OnlyInBDD.size() << ")\n";
-            std::cout << "═══════════════════════════════════════════════════════════\n\n";
             
             int Count = 0;
             for (const auto& Config : OnlyInBDD) {
@@ -305,9 +297,7 @@ public:
             return;
         }
         
-        std::cout << "═══════════════════════════════════════════════════════════\n";
         std::cout << "PATTERN ANALYSIS\n";
-        std::cout << "═══════════════════════════════════════════════════════════\n\n";
         
         // Find features that differ
         std::map<std::string, int> PaperHasTrue;

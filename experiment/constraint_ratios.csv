@@ -1,0 +1,22 @@
+system,ratio,constraint_level
+7z,0.0000000078,Very Strong
+BerkeleyDBC,0.0195312500,Strong
+Dune,0.0000010729,Very Strong
+Hipacc,0.0000000000,Very Strong
+JavaGC,0.0000007041,Very Strong
+LLVM,1.0000000000,Weak
+lrzip,0.0016479492,Very Strong
+Polly,0.0000001091,Very Strong
+VP9,0.0000000982,Very Strong
+x264,0.0351562500,Strong
+AJStats,0.1250000000,Moderate
+Curl,0.1875000000,Moderate
+HSMGP,0.0000008047,Very Strong
+HSQLDB,0.0065917969,Very Strong
+HyTeG,0.2500000000,Moderate
+PKJab,0.0703125000,Strong
+SQLite,0.0000143051,Very Strong
+TriMesh,0.0000000000,Very Strong
+WGet,0.1562500000,Moderate
+clasp,0.0000002026,Very Strong
+z3,0.1250000000,Moderate

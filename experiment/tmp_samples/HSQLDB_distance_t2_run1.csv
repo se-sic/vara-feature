@@ -1,0 +1,11 @@
+compressed_script,encryption,crypt_aes,crypt_blowfish,logging,detailed_logging,no_write_delay,small_log,table_type,cached_tables,large_cache,small_cache,memory_tables,transaction_control,txc_locks,txc_mvcc,txc_mvlocks
+1,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0,1
+1,1,0,1,1,0,0,1,1,1,0,1,0,1,0,1,0
+0,0,0,0,1,0,0,0,1,1,0,0,0,1,0,0,1
+1,0,0,0,1,0,1,1,1,1,0,1,0,1,0,1,0
+1,1,0,1,1,0,0,0,1,1,0,1,0,1,0,1,0
+1,1,1,0,1,1,1,1,1,1,1,0,0,1,0,0,1
+1,1,1,0,1,0,0,0,1,0,0,0,1,1,1,0,0
+0,0,0,0,0,0,1,0,1,1,0,0,0,1,0,0,1
+1,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,0
+0,1,0,1,1,0,1,1,1,1,0,1,0,1,0,1,0

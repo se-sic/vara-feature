@@ -17,6 +17,8 @@ public:
     using CoverageEvaluator::initializeMetrics;
     using CoverageEvaluator::extractInteractionsFromConfig;
     using CoverageEvaluator::generateValidInteractions;
+    using CoverageEvaluator::getAtomicLiteralSets;
+    using CoverageEvaluator::implies;
 
     [[nodiscard]] const FeatureModelAnalysis& getAnalysis() const {
         return Analysis;  
@@ -52,14 +54,21 @@ protected:
         Evaluator = std::make_unique<TestableCoverageEvaluator>(
             *FeatureModel, *Bdd, *Manager, *Factory
         );
-
-        Evaluator->initializeAnalysis();
-        Evaluator->buildFeatureVarMap();
-        Evaluator->initializeMetrics();
     }
 
     [[nodiscard]] const FeatureModelAnalysis& getAnalysis() const {
         return Evaluator->getAnalysis();
+    }
+
+    // Valid configurations for this model:
+    // root is always true, A is mandatory, B/C optional.
+    static std::vector<std::vector<bool>> allValidConfigs() {
+        return {
+            {true, true, false, false},
+            {true, true, true,  false},
+            {true, true, false, true },
+            {true, true, true,  true }
+        };
     }
 
     std::unique_ptr<vara::feature::FeatureModel> FeatureModel;
@@ -69,266 +78,348 @@ protected:
     std::unique_ptr<TestableCoverageEvaluator> Evaluator;
 };
 
-TEST_F(ComputationCoverageEvaluatorTest, CheckConfigurationsAndFeatures) {
-    auto FeatureSize = FeatureModel->size();
-    auto ConfigurationSize = Bdd->sat_count_double(FeatureSize);
+class DeadFeatureCoverageEvaluatorTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        const char* DeadModelXml = R"(
+        <vm name="DeadModel">
+            <binaryOptions>
+                <configurationOption>
+                    <name>root</name>
+                    <optional>False</optional>
+                    <children><options>A</options><options>B</options><options>C</options></children>
+                </configurationOption>
+                <configurationOption><name>A</name><parent>root</parent><optional>False</optional></configurationOption>
+                <configurationOption><name>B</name><parent>root</parent><optional>True</optional></configurationOption>
+                <configurationOption><name>C</name><parent>root</parent><optional>True</optional></configurationOption>
+            </binaryOptions>
+            <booleanConstraints>
+                <constraint>!A | !C</constraint>
+            </booleanConstraints>
+        </vm>
+        )";
 
-    EXPECT_EQ(FeatureSize, 4);
-    EXPECT_EQ(ConfigurationSize, 4);
-}
+        FeatureModel = test_utils::createModelFromString(DeadModelXml);
+        Factory = std::make_unique<bdd::sample::BDDFactory>();
+        Bdd = Factory->modelToBdd(*FeatureModel);
+        Manager = Bdd.containing_manager();
 
-TEST_F(ComputationCoverageEvaluatorTest, CheckInteractions){
-    std::set<Interaction> Interactions = Evaluator->generateValidInteractions(2);
-
-    EXPECT_EQ(Interactions.size(), 13);
-}
-
-TEST_F(ComputationCoverageEvaluatorTest, EmptyInteractions) {
-    std::set<Interaction> AllValid;  
-    std::vector<std::vector<bool>> Sample = {
-        {true, false, true, false}
-    };
-    
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 2);
-    
-    // Assert: Empty valid interactions → 100% coverage (edge case handling)
-    EXPECT_DOUBLE_EQ(Coverage, 1.0);
-}
-
-TEST_F(ComputationCoverageEvaluatorTest, FullCoverage) {
-    std::set<Interaction> AllValid = Evaluator->generateValidInteractions(2);
-    
-    std::vector<std::vector<bool>> Sample;
-    for (int I = 0; I < 10; ++I) {
-        auto Config = bdd::sample::generateConfiguration(
-            *Manager, *Bdd, *Factory, &Factory->SatMap);
-        Sample.push_back(Config);
+        Evaluator = std::make_unique<TestableCoverageEvaluator>(
+            *FeatureModel, Bdd, Manager, *Factory
+        );
     }
-        
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 2);
 
-    
-    EXPECT_GT(Coverage, 0.8);
+    [[nodiscard]] const FeatureModelAnalysis& getAnalysis() const {
+        return Evaluator->getAnalysis();
+    }
+
+    std::unique_ptr<vara::feature::FeatureModel> FeatureModel;
+    std::unique_ptr<bdd::sample::BDDFactory> Factory;
+    oxidd::bdd_function Bdd;
+    oxidd::bdd_manager Manager;
+    std::unique_ptr<TestableCoverageEvaluator> Evaluator;
+};
+
+TEST_F(ComputationCoverageEvaluatorTest, ModelHasExpectedNumberOfFeaturesAndConfigurations) {
+    EXPECT_EQ(FeatureModel->size(), 4U);
+    EXPECT_DOUBLE_EQ(Bdd->sat_count_double(FeatureModel->size()), 4.0);
 }
 
-TEST_F(ComputationCoverageEvaluatorTest, PartialCoverage) {
-    std::set<Interaction> AllValid = Evaluator->generateValidInteractions(2);
-    
-    // Sample that covers only 2 interactions
+TEST_F(ComputationCoverageEvaluatorTest, GenerateValidTwoWiseInteractionsReturnsExpectedCount) {
+    auto Interactions = Evaluator->generateValidInteractions(2);
+    EXPECT_EQ(Interactions.size(), 13U);
+}
+
+TEST_F(ComputationCoverageEvaluatorTest, EmptyFilteredInteractionSetReturnsOne) {
+    std::set<Interaction> AllValid;
     std::vector<std::vector<bool>> Sample = {
-        {true, true, true, false},   // Covers {A=T, B=T}
-        {true, false, false, false}  // Covers {A=F, B=F}
+        {true, true, false, false}
     };
-    
-    
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 2);
-    
-    EXPECT_GT(Coverage, 0.4);  // At least 40%
-    EXPECT_LT(Coverage, 0.8);  // But less than 80%
+
+    CoverageMetric Metric("Default", filterDefault);
+    EXPECT_DOUBLE_EQ(Metric.compute(AllValid, Sample, getAnalysis(), 2), 1.0);
 }
 
-TEST_F(ComputationCoverageEvaluatorTest, SingleInteractionCovered) {
+TEST_F(ComputationCoverageEvaluatorTest, DefaultMetricHasFullCoverageWhenAllValidConfigurationsAreUsed) {
+    auto AllValid = Evaluator->generateValidInteractions(2);
+    auto Sample = allValidConfigs();
+
+    CoverageMetric Metric("Default", filterDefault);
+    EXPECT_DOUBLE_EQ(Metric.compute(AllValid, Sample, getAnalysis(), 2), 1.0);
+}
+
+TEST_F(ComputationCoverageEvaluatorTest, SingleInteractionCoveredGivesQuarterCoverage) {
     std::set<Interaction> AllValid = {
-        test_utils::makeInteraction({{"A", true}, {"B", true}}),
-        test_utils::makeInteraction({{"A", true}, {"B", false}}),
-        test_utils::makeInteraction({{"A", false}, {"B", true}}),
+        test_utils::makeInteraction({{"A", true},  {"B", true }}),
+        test_utils::makeInteraction({{"A", true},  {"B", false}}),
+        test_utils::makeInteraction({{"A", false}, {"B", true }}),
         test_utils::makeInteraction({{"A", false}, {"B", false}})
     };
-    
-    // Sample covers only 1 interaction
+
     std::vector<std::vector<bool>> Sample = {
-        {true, true, true, false}  // Only covers {A=T, B=T}
+        {true, true, true, false}  // Covers only {A=true, B=true}
     };
-    
-    
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 2);
-    
-    // Assert: 1 out of 4 covered → 25%
-    EXPECT_DOUBLE_EQ(Coverage, 0.25);
+
+    CoverageMetric Metric("Default", filterDefault);
+    EXPECT_DOUBLE_EQ(Metric.compute(AllValid, Sample, getAnalysis(), 2), 0.25);
 }
 
-TEST_F(ComputationCoverageEvaluatorTest, FilterExcludesInteractions) {
-    std::set<Interaction> AllValid = Evaluator->generateValidInteractions(2);
-    
-    // Sample covers 4 interactions (not the parent-child ones)
-    std::vector<std::vector<bool>> Sample = {
-        {true, true, true, false},   // {A=T, B=T}
-        {true, true, false, false},  // {A=T, B=F}
-        {true, false, true, false},  // {A=F, B=T}
-        {true, false, false, false}  // {A=F, B=F}
-    };
-    
-    
-    CoverageMetric DefaultMetric("M7_Default", filterDefault);
-    
-    CoverageMetric PCIMetric("M5_PCI", filterParentChildInteractions);
-    
-    double CoverageDefault = DefaultMetric.compute(AllValid, Sample, getAnalysis(), 2);
-    double CoveragePCI = PCIMetric.compute(AllValid, Sample, getAnalysis(), 2);
-    
-    EXPECT_GE(CoveragePCI, CoverageDefault * 0.95);  // Allow small rounding
-    
-    // Both should be reasonable
-    EXPECT_GT(CoverageDefault, 0.5);
-    EXPECT_GT(CoveragePCI, 0.5);
-}
-
-TEST_F(ComputationCoverageEvaluatorTest, MandatoryDeadFilter) {
-    std::set<Interaction> AllValid = {
-        test_utils::makeInteraction({{"root", true}, {"A", true}}),   // Contains mandatory root
-        test_utils::makeInteraction({{"root", true}, {"A", false}}),  // Contains mandatory root
-        test_utils::makeInteraction({{"A", true}, {"B", true}}),      // No mandatory/dead
-        test_utils::makeInteraction({{"A", false}, {"B", false}})     // No mandatory/dead
-    };
-    
-    // Sample that covers all 4 interactions
-    std::vector<std::vector<bool>> Sample = {
-        {true, true, true, false},   
-        {true, false, false, false}
-    };
-        
-    CoverageMetric DefaultMetric("M7_Default", filterDefault);
-    
-    CoverageMetric MFDFMetric("M4_MF-DF", filterMandatoryFeatures);
-    
-    double CoverageDefault = DefaultMetric.compute(AllValid, Sample, getAnalysis(), 2);
-    double CoverageMFDF = MFDFMetric.compute(AllValid, Sample, getAnalysis(), 2);
-    
-    EXPECT_DOUBLE_EQ(CoverageDefault, 4.0 / 4.0);  // 100% - all covered
-    EXPECT_DOUBLE_EQ(CoverageMFDF, 2.0 / 2.0);     // 100% - but only 2 after filter
-}
-
-TEST_F(ComputationCoverageEvaluatorTest, SingleInteractionInSet) {
+TEST_F(ComputationCoverageEvaluatorTest, DuplicateConfigurationsDoNotIncreaseCoverage) {
     std::set<Interaction> AllValid = {
         test_utils::makeInteraction({{"A", true}, {"B", true}})
     };
-    
-    std::vector<std::vector<bool>> Sample = {
-        {true, true, true, false} 
-    };
-        
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 2);
-    
-    EXPECT_DOUBLE_EQ(Coverage, 1.0);
-}
 
-TEST_F(ComputationCoverageEvaluatorTest, SingleInteractionNotCovered) {
-    std::set<Interaction> AllValid = {
-        test_utils::makeInteraction({{"A", true}, {"B", true}})
-    };
-    
-    std::vector<std::vector<bool>> Sample = {
-        {true, false, false, false}  // A=F, B=F - doesn't cover it
-    };
-        
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 2);
-    
-    EXPECT_DOUBLE_EQ(Coverage, 0.0);
-}
-
-TEST_F(ComputationCoverageEvaluatorTest, DuplicateConfigsInSample) {
-    std::set<Interaction> AllValid = {
-        test_utils::makeInteraction({{"A", true}, {"B", true}})
-    };
-    
-    // Same config repeated 3 times
     std::vector<std::vector<bool>> Sample = {
         {true, true, true, false},
         {true, true, true, false},
         {true, true, true, false}
     };
-        
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 2);
-    
-    // Should still be 100% 
-    EXPECT_DOUBLE_EQ(Coverage, 1.0);
+
+    CoverageMetric Metric("Default", filterDefault);
+    EXPECT_DOUBLE_EQ(Metric.compute(AllValid, Sample, getAnalysis(), 2), 1.0);
 }
 
-
-TEST_F(ComputationCoverageEvaluatorTest, OnewiseCoverage) {
+TEST_F(ComputationCoverageEvaluatorTest, OneWiseCoverageCanReachFullCoverageWithTwoValidConfigurations) {
     std::set<Interaction> AllValid = {
-        test_utils::makeInteraction({{"A", true}}),
-        test_utils::makeInteraction({{"A", false}}),
         test_utils::makeInteraction({{"B", true}}),
-        test_utils::makeInteraction({{"B", false}})
+        test_utils::makeInteraction({{"B", false}}),
+        test_utils::makeInteraction({{"C", true}}),
+        test_utils::makeInteraction({{"C", false}})
     };
-    
-    // Sample covers 3 out of 4
+
     std::vector<std::vector<bool>> Sample = {
-        {true, true, false, false},   // A=T, B=F
-        {true, false, true, false}    // A=F, B=T
-        // Missing: {A=T, B=T} and {A=F, B=F}
+        {true, true, false, false},
+        {true, true, true,  true }
     };
-        
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 1);
-    
-    // Covers: A=T, A=F, B=T, B=F → all 4
-    EXPECT_DOUBLE_EQ(Coverage, 1.0);
+
+    CoverageMetric Metric("Default", filterDefault);
+    EXPECT_DOUBLE_EQ(Metric.compute(AllValid, Sample, getAnalysis(), 1), 1.0);
 }
 
-TEST_F(ComputationCoverageEvaluatorTest, ThreewiseCoverage) {
+TEST_F(ComputationCoverageEvaluatorTest, ThreeWiseCoverageWorksForSingleInteraction) {
     std::set<Interaction> AllValid = {
         test_utils::makeInteraction({{"A", true}, {"B", true}, {"C", true}})
     };
-    
+
     std::vector<std::vector<bool>> Sample = {
-        {true, true, true, true}  // Covers A=T, B=T, C=T
+        {true, true, true, true}
     };
-        
-    CoverageMetric Metric("M7_Default", filterDefault);
-    
-    double Coverage = Metric.compute(AllValid, Sample, getAnalysis(), 3);
-    
-    EXPECT_DOUBLE_EQ(Coverage, 1.0);
+
+    CoverageMetric Metric("Default", filterDefault);
+    EXPECT_DOUBLE_EQ(Metric.compute(AllValid, Sample, getAnalysis(), 3), 1.0);
 }
 
-TEST_F(ComputationCoverageEvaluatorTest, DEBUG_ExtractCovered) {
+TEST_F(ComputationCoverageEvaluatorTest, MandatoryFilterRemovesInteractionsContainingSelectedMandatoryFeatures) {
+    std::set<Interaction> AllValid = {
+        test_utils::makeInteraction({{"root", true}, {"A", true }}),
+        test_utils::makeInteraction({{"root", true}, {"B", true }}),
+        test_utils::makeInteraction({{"A", true},    {"B", true }}),
+        test_utils::makeInteraction({{"B", true},    {"C", false}})
+    };
+
+    auto Filtered = filterMandatoryFeatures(AllValid, getAnalysis());
+
+    std::set<Interaction> Expected = {
+        test_utils::makeInteraction({{"B", true}, {"C", false}})
+    };
+
+    EXPECT_EQ(Filtered, Expected);
+}
+
+TEST_F(ComputationCoverageEvaluatorTest, ParentChildFilterRemovesSelectedParentChildPairs) {
+    std::set<Interaction> AllValid = {
+        test_utils::makeInteraction({{"root", true}, {"A", true }}),
+        test_utils::makeInteraction({{"root", true}, {"B", true }}),
+        test_utils::makeInteraction({{"A", true},    {"B", true }}),
+        test_utils::makeInteraction({{"B", true},    {"C", false}})
+    };
+
+    auto Filtered = filterParentChildInteractions(AllValid, getAnalysis());
+
+    std::set<Interaction> Expected = {
+        test_utils::makeInteraction({{"A", true}, {"B", true}}),
+        test_utils::makeInteraction({{"B", true}, {"C", false}})
+    };
+
+    EXPECT_EQ(Filtered, Expected);
+}
+
+TEST_F(ComputationCoverageEvaluatorTest, CombinedMandatoryDeadFilterMatchesExpectedCoverage) {
+    std::set<Interaction> AllValid = {
+        test_utils::makeInteraction({{"root", true}, {"A", true }}),
+        test_utils::makeInteraction({{"root", true}, {"B", true }}),
+        test_utils::makeInteraction({{"A", true},    {"B", true }}),
+        test_utils::makeInteraction({{"B", true},    {"C", false}})
+    };
+
+    std::vector<std::vector<bool>> Sample = {
+        {true, true, true,  false},
+        {true, true, false, false}
+    };
+
+    CoverageMetric DefaultMetric("Default", filterDefault);
+    CoverageMetric MFDFMetric("MF_MF-DF", filterMF_DF);
+
+    EXPECT_DOUBLE_EQ(DefaultMetric.compute(AllValid, Sample, getAnalysis(), 2), 1.0);
+    EXPECT_DOUBLE_EQ(MFDFMetric.compute(AllValid, Sample, getAnalysis(), 2), 1.0);
+}
+
+TEST_F(ComputationCoverageEvaluatorTest, ExtractInteractionsFromConfigurationReturnsExpectedTwoWiseSet) {
+    std::vector<bool> Config = {true, true, true, false};
+
+    auto Interactions = Evaluator->extractInteractionsFromConfig(Config, 2);
+
+    std::set<Interaction> Expected = {
+        test_utils::makeInteraction({{"root", true}, {"A", true }}),
+        test_utils::makeInteraction({{"root", true}, {"B", true }}),
+        test_utils::makeInteraction({{"root", true}, {"C", false}}),
+        test_utils::makeInteraction({{"A", true},    {"B", true }}),
+        test_utils::makeInteraction({{"A", true},    {"C", false}}),
+        test_utils::makeInteraction({{"B", true},    {"C", false}})
+    };
+
+    EXPECT_EQ(Interactions, Expected);
+}
+
+TEST_F(ComputationCoverageEvaluatorTest, CoverageIsMonotonicWhenSampleGrows) {
+    auto AllValid = Evaluator->generateValidInteractions(2);
+
+    std::vector<std::vector<bool>> Sample1 = {
+        {true, true, false, false}
+    };
+
+    std::vector<std::vector<bool>> Sample2 = {
+        {true, true, false, false},
+        {true, true, true,  true}
+    };
+
+    CoverageMetric Metric("Default", filterDefault);
+
+    double Coverage1 = Metric.compute(AllValid, Sample1, getAnalysis(), 2);
+    double Coverage2 = Metric.compute(AllValid, Sample2, getAnalysis(), 2);
+
+    EXPECT_LE(Coverage1, Coverage2);
+}
+
+TEST_F(ComputationCoverageEvaluatorTest, PCIComputationChangesCoverageAsExpected) {
+    std::set<Interaction> AllValid = {
+        test_utils::makeInteraction({{"root", true}, {"A", true }}),   // parent-child
+        test_utils::makeInteraction({{"root", true}, {"B", true }}),   // parent-child
+        test_utils::makeInteraction({{"A", true},    {"B", true }}),   // not parent-child
+        test_utils::makeInteraction({{"B", true},    {"C", false}})    // not parent-child
+    };
+
     std::vector<std::vector<bool>> Sample = {
         {true, true, true, false}
     };
-    
-    // Manually extract
-    std::set<Interaction> Covered;
-    for (const auto& Config : Sample) {
-        auto Extracted = Evaluator->extractInteractionsFromConfig(Config, 2);
-        Covered.insert(Extracted.begin(), Extracted.end());
-    }
-    
-    std::cout << "\\n=== Covered Set Size: " << Covered.size() << " ===\\n";
-    for (const auto& Interaction : Covered) {
-        std::cout << "  {";
-        for (const auto& [feature, value] : Interaction.Literals) {
-            std::cout << feature << "=" << (value ? "T" : "F") << " ";
-        }
-        std::cout << "}\\n";
-    }
-    
-    // Now test if we can find them in allValid
-    auto AllValid = Evaluator->generateValidInteractions(2);
-    
-    std::cout << "\\n=== Checking Matches ===\\n";
-    for (const auto& CoveredInt : Covered) {
-        bool Found = AllValid.contains(CoveredInt);
-        std::cout << "  ";
-        for (const auto& [feature, value] : CoveredInt.Literals) {
-            std::cout << feature << "=" << (value ? "T" : "F") << " ";
-        }
-        std::cout << " → " << (Found ? "FOUND ✓" : "NOT FOUND ✗") << "\\n";
-    }
+
+    CoverageMetric DefaultMetric("Default", filterDefault);
+    CoverageMetric PCIMetric("PCI", filterParentChildInteractions);
+
+    double DefaultCoverage = DefaultMetric.compute(AllValid, Sample, getAnalysis(), 2);
+    double PCICoverage = PCIMetric.compute(AllValid, Sample, getAnalysis(), 2);
+
+    EXPECT_DOUBLE_EQ(DefaultCoverage, 1.0);
+    EXPECT_DOUBLE_EQ(PCICoverage, 1.0);
 }
+
+TEST_F(DeadFeatureCoverageEvaluatorTest, DeadFeatureFilterCanIncreaseCoverageRatio) {
+    std::set<Interaction> AllValid = {
+        test_utils::makeInteraction({{"B", true},  {"C", false}}), // filtered by DF
+        test_utils::makeInteraction({{"B", false}, {"C", false}}), // filtered by DF
+        test_utils::makeInteraction({{"A", true},  {"B", true}}),  // survives DF
+        test_utils::makeInteraction({{"A", true},  {"B", false}})  // survives DF
+    };
+
+    std::vector<std::vector<bool>> Sample = {
+        {true, true, true, false},
+        {true, true, false, false}
+    };
+
+    CoverageMetric DefaultMetric("Default", filterDefault);
+    CoverageMetric DFMetric("DF", filterDeadFeatures);
+
+    double DefaultCoverage = DefaultMetric.compute(AllValid, Sample, getAnalysis(), 2);
+    double DFCoverage = DFMetric.compute(AllValid, Sample, getAnalysis(), 2);
+
+    EXPECT_DOUBLE_EQ(DefaultCoverage, 1.0);
+    EXPECT_DOUBLE_EQ(DFCoverage, 1.0);
+}
+
+class AtomicLiteralSetFilterTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        const char* AlsModelXml = R"(
+        <vm name="ALSModel">
+            <binaryOptions>
+                <configurationOption>
+                    <name>root</name>
+                    <optional>False</optional>
+                    <children>
+                        <options>A</options>
+                        <options>B</options>
+                        <options>C</options>
+                    </children>
+                </configurationOption>
+                <configurationOption><name>A</name><parent>root</parent><optional>True</optional></configurationOption>
+                <configurationOption><name>B</name><parent>root</parent><optional>True</optional></configurationOption>
+                <configurationOption><name>C</name><parent>root</parent><optional>True</optional></configurationOption>
+            </binaryOptions>
+            <booleanConstraints>
+                <constraint>!A | B</constraint>
+                <constraint>!B | A</constraint>
+            </booleanConstraints>
+        </vm>
+        )";
+
+        FeatureModel = test_utils::createModelFromString(AlsModelXml);
+        Factory = std::make_unique<bdd::sample::BDDFactory>();
+        Bdd = Factory->modelToBdd(*FeatureModel);
+        Manager = Bdd.containing_manager();
+
+        Evaluator = std::make_unique<TestableCoverageEvaluator>(
+            *FeatureModel, Bdd, Manager, *Factory
+        );
+    }
+
+    [[nodiscard]] const FeatureModelAnalysis& getAnalysis() const {
+        return Evaluator->getAnalysis();
+    }
+
+    std::unique_ptr<vara::feature::FeatureModel> FeatureModel;
+    std::unique_ptr<bdd::sample::BDDFactory> Factory;
+    oxidd::bdd_function Bdd;
+    oxidd::bdd_manager Manager;
+    std::unique_ptr<TestableCoverageEvaluator> Evaluator;
+};
+
+TEST_F(AtomicLiteralSetFilterTest, ALSFilterRemovesEquivalentNonRepresentativeLiteralInteractions) {
+    std::set<Interaction> AllValid = {
+        test_utils::makeInteraction({{"A", true}, {"C", true}}),
+        test_utils::makeInteraction({{"B", true}, {"C", true}})
+    };
+
+    auto Filtered = filterAtomicLiteralSets(AllValid, getAnalysis());
+
+    EXPECT_EQ(Filtered.size(), 1U);
+}
+
+TEST_F(AtomicLiteralSetFilterTest, ALSFilterCanIncreaseCoverageByMergingEquivalentInteractions) {
+    std::set<Interaction> AllValid = {
+        test_utils::makeInteraction({{"A", true}, {"C", true}}),
+        test_utils::makeInteraction({{"B", true}, {"C", true}})
+    };
+
+    std::vector<std::vector<bool>> Sample = {
+        {true, true, true, true} // root, A, B, C
+    };
+
+    CoverageMetric DefaultMetric("Default", filterDefault);
+    CoverageMetric ALSMetric("ALS", filterAtomicLiteralSets);
+
+    double DefaultCoverage = DefaultMetric.compute(AllValid, Sample, getAnalysis(), 2);
+    double ALSCoverage = ALSMetric.compute(AllValid, Sample, getAnalysis(), 2);
+
+    EXPECT_LE(DefaultCoverage, ALSCoverage);
+}
+
