@@ -131,6 +131,21 @@ def generate_variants(feature_model: vf.feature_model.FeatureModel, features_to_
 
     constraint_system = ConstraintSystem()
     solver, feature_to_var, var_to_feature = constraint_system.build_base_solver(feature_model)
+
+    if strategy == "solver":
+        rng = random.Random(seed)
+
+        solver.configure({
+            'rnd-seed': seed,
+            'rnd-freq': 0.01,
+            'rnd-init-act': True,
+            'rnd-pol': True,
+            'rnd-first-descent': True,
+        })
+
+        vars_ = list(feature_to_var.values())
+        rng.shuffle(vars_)
+        solver.set_phases([v if rng.random() < 0.5 else -v for v in vars_])
     configurations = []
 
     if strategy in ['distance', 'diversified-distance']:

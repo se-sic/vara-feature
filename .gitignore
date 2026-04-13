@@ -27,3 +27,24 @@ CMakeCache.txt
 .vscode/launch.json
 
 .vscode/launch.json
+
+# Python env
+.venv/
+
+# Experiment outputs
+experiment/results.csv
+experiment/evaluation3_result.csv
+experiment/rq1_spearman_results.csv
+experiment/rq2_kruskal_dunn_results.csv
+experiment/rq3_kruskal_dunn_results.csv
+experiment/constraint_ratios.csv
+experiment/experiment_preparation.log
+experiment/experiment_params.txt
+
+# Generated temp data
+experiment/tmp_samples/
+experiment_runs/
+
+# Slurm / logs
+*.out
+*.log
