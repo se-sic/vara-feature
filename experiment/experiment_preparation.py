@@ -11,8 +11,26 @@ from sample_wrapper import generate_and_evaluate_sample
 
 
 def get_sample_size_from_twise(system_path: Path, source_t: int):
-    return 10
-    # placeholder for later
+    t_wise_sampling_csv = Path("t_wise_sampling.csv").resolve()
+
+    strategy_path = Path("../build/bin/greedy_twise_sampling").resolve()
+
+    if t_wise_sampling_csv.exists():
+        t_wise_sampling_csv.unlink()
+
+    subprocess.run(
+        [
+            str(strategy_path),
+            str(system_path),
+            str(source_t),
+            str(t_wise_sampling_csv),
+        ],
+        check=True,
+    )
+
+    df = pd.read_csv(t_wise_sampling_csv)
+    
+    return df["sample_size"].iloc[0]
 
 
 def generate_random_sample_with_cpp(
@@ -72,6 +90,11 @@ for system_path, system_name in systems:
 
 df = pd.read_csv(output_csv)
 print(df.head())
+
+# Vielleicht samples zwischenspeichern 
+# Greedy ziehen aus xml. Lass BDD eine Liste von allen Configurations generieren lassen.
+# Liste an Kandiaten t-wise interactionen. schaue wie viele interactions eine Configuration covered. Nimm die configuration, die die meisten interactions covered. Pass auf Reihenfolge der interactions auf
+# Nimm die Interactions aus der Kandidaten liste raus, wiederhole solange bis entweder kandidaten list leer ist, oder configurations keine kandidaten covern
 
 experiment_evaluation1.main(output_csv)
 experiment_evaluation2.main(output_csv)

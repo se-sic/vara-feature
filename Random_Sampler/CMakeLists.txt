@@ -9,7 +9,7 @@ if(NOT TinyXML2_FOUND)
   find_path(TINYXML2_INCLUDE_DIR NAMES tinyxml2.h
     PATHS /usr/include
     NO_DEFAULT_PATH)
-  
+
   if(TINYXML2_LIB AND TINYXML2_INCLUDE_DIR)
     add_library(TinyXML2::TinyXML2 UNKNOWN IMPORTED)
     set_target_properties(TinyXML2::TinyXML2 PROPERTIES
@@ -20,40 +20,17 @@ if(NOT TinyXML2_FOUND)
   endif()
 endif()
 
-#if(APPLE)
-#  set(OXIDD_LIB_EXT "dylib")
-#else()
-#  set(OXIDD_LIB_EXT "so")
-#endif()
-#set(OXIDD_LIB_NAME "liboxidd_ffi_c.${OXIDD_LIB_EXT}")
+find_package(tinyxml2 REQUIRED)
 
-#foreach(OXIDD_SEARCH_PATH 
-#  "${CMAKE_SOURCE_DIR}/build/external/oxidd"
-#  "${CMAKE_SOURCE_DIR}/external/oxidd/lib"
-#  "/usr/local/lib"
-#)
-#  if(EXISTS "${OXIDD_SEARCH_PATH}/${OXIDD_LIB_NAME}")
-#    set(OXIDD_LIB_PATH "${OXIDD_SEARCH_PATH}/${OXIDD_LIB_NAME}")
-#    break()
-#  endif()
-#endforeach()
-
+# -------------------------
+# Shared coverage library
+# -------------------------
 add_library(coverage_lib
   src/CoverageIntegration.cpp
   src/CoverageMetrics.cpp
   src/BDDSampler.cpp
 )
 
-add_executable(random_sampler
-  src/main.cpp
-  src/BDDSampler.cpp
-  src/Plotter.cpp
-  src/CoverageIntegration.cpp
-  src/CoverageMetrics.cpp
-  #../BDD/src/BDDFactory.cpp
-)
-
-# Includes
 target_include_directories(coverage_lib PUBLIC
   ${CMAKE_SOURCE_DIR}/Random_Sampler/include
   ${CMAKE_SOURCE_DIR}/include/vara/Solver
@@ -66,8 +43,43 @@ target_include_directories(coverage_lib PUBLIC
   /opt/homebrew/Cellar/tinyxml2/11.0.0/include
 )
 
-# 2. Configuration for the executable
-target_include_directories(random_sampler PRIVATE 
+# -------------------------
+# New library for t-wise sampling logic
+# -------------------------
+add_library(twise_sampling_lib
+  src/TWiseSampling.cpp
+)
+
+target_include_directories(twise_sampling_lib PUBLIC
+  ${CMAKE_SOURCE_DIR}/Random_Sampler/include
+  ${CMAKE_SOURCE_DIR}/include/vara/Solver
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/../BDD/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
+  ${CMAKE_BINARY_DIR}/external/oxidd/include
+  ${CMAKE_BINARY_DIR}/_deps/tl-expected-src/include
+)
+
+target_link_libraries(twise_sampling_lib PUBLIC
+  coverage_lib
+  bdd
+  VaRAFeature
+  VaRASampling
+  VaRAConfiguration
+  tinyxml2::tinyxml2
+  ${LLVM_LIBS}
+)
+
+# -------------------------
+# random_sampler executable
+# -------------------------
+add_executable(random_sampler
+  src/main.cpp
+  src/Plotter.cpp
+)
+
+target_include_directories(random_sampler PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/include/vara/Solver
   ${CMAKE_CURRENT_SOURCE_DIR}/../BDD/include
@@ -75,31 +87,24 @@ target_include_directories(random_sampler PRIVATE
   ${CMAKE_BINARY_DIR}/_deps/tl-expected-src/include
 )
 
-# Libraries
-find_package(tinyxml2 REQUIRED)
-
 target_link_libraries(random_sampler PRIVATE
-  coverage_lib PRIVATE
+  coverage_lib
   bdd
   VaRAFeature
   VaRASampling
   VaRAConfiguration
   tinyxml2::tinyxml2
   ${LLVM_LIBS}
-  #VaRAFeature
-  #/opt/homebrew/Cellar/tinyxml2/11.0.0/lib/libtinyxml2.dylib
-  #${CMAKE_SOURCE_DIR}/build/external/oxidd/liboxidd_ffi_c.dylib
 )
 
-#target_link_directories(random_sampler PRIVATE
-#  ${CMAKE_SOURCE_DIR}/build/external/oxidd
-#)
-
+# -------------------------
+# experiment_preparation executable
+# -------------------------
 add_executable(experiment_preparation
   src/ExperimentPreparation.cpp
 )
 
-target_include_directories(experiment_preparation PRIVATE 
+target_include_directories(experiment_preparation PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/include/vara/Solver
   ${CMAKE_CURRENT_SOURCE_DIR}/../BDD/include
@@ -117,80 +122,105 @@ target_link_libraries(experiment_preparation PRIVATE
   ${LLVM_LIBS}
 )
 
+# -------------------------
+# greedy_twise_sampling CLI executable
+# main() must be in greedy_twise_main.cpp, not in TWiseSampling.cpp
+# -------------------------
+add_executable(greedy_twise_sampling
+  src/greedy_twise_main.cpp
+)
+
+target_include_directories(greedy_twise_sampling PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/include/vara/Solver
+  ${CMAKE_CURRENT_SOURCE_DIR}/../BDD/include
+  ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
+  ${CMAKE_BINARY_DIR}/_deps/tl-expected-src/include
+)
+
+target_link_libraries(greedy_twise_sampling PRIVATE
+  twise_sampling_lib
+)
+
+# -------------------------
+# evaluate_sample_from_csv executable
+# -------------------------
 add_executable(evaluate_sample_from_csv
-    src/evaluate_sample_from_csv.cpp
+  src/evaluate_sample_from_csv.cpp
 )
 
-target_link_libraries(evaluate_sample_from_csv
-    PRIVATE
-    coverage_lib
-    bdd
-    VaRAFeature
-    VaRASampling
-    VaRAConfiguration
-    tinyxml2::tinyxml2
-    ${LLVM_LIBS}
+target_link_libraries(evaluate_sample_from_csv PRIVATE
+  coverage_lib
+  bdd
+  VaRAFeature
+  VaRASampling
+  VaRAConfiguration
+  tinyxml2::tinyxml2
+  ${LLVM_LIBS}
 )
 
+# -------------------------
+# compute_constraint_ratio executable
+# -------------------------
 add_executable(compute_constraint_ratio
-    src/compute_constraint_ratio.cpp
+  src/compute_constraint_ratio.cpp
 )
 
-target_link_libraries(compute_constraint_ratio
-    PRIVATE
-    VaRAFeature                         
-    oxidd                                
-    ${CMAKE_BINARY_DIR}/external/oxidd/liboxidd_ffi_c.a   
-    ${CMAKE_BINARY_DIR}/BDD/libbdd.a                      
-    coverage_lib
-    ${LLVM_LIBRARIES} 
-)
-
-target_sources(random_sampler PRIVATE
-  ${CMAKE_SOURCE_DIR}/Random_Sampler/src/BDDSampler.cpp
-  ${CMAKE_SOURCE_DIR}/Random_Sampler/src/Plotter.cpp
+target_link_libraries(compute_constraint_ratio PRIVATE
+  VaRAFeature
+  oxidd
+  ${CMAKE_BINARY_DIR}/external/oxidd/liboxidd_ffi_c.a
+  ${CMAKE_BINARY_DIR}/BDD/libbdd.a
+  coverage_lib
+  ${LLVM_LIBRARIES}
 )
 
 target_sources(compute_constraint_ratio PRIVATE
-    ${CMAKE_SOURCE_DIR}/Random_Sampler/tests/utilities/test_helpers.cpp
+  ${CMAKE_SOURCE_DIR}/Random_Sampler/tests/utilities/test_helpers.cpp
 )
 
 target_include_directories(compute_constraint_ratio PRIVATE
-    ${CMAKE_SOURCE_DIR}/BDD/include
-    # If the oxidd alias doesn't provide headers, add:
-    # ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
+  ${CMAKE_SOURCE_DIR}/BDD/include
 )
 
+# -------------------------
+# compare_configs executable
+# -------------------------
 add_executable(compare_configs
-    src/compare_configs.cpp
+  src/compare_configs.cpp
 )
 
-target_link_libraries(compare_configs
-    PRIVATE
-    VaRAFeature
-    oxidd_ffi_c
-    bdd
-    coverage_lib
+target_link_libraries(compare_configs PRIVATE
+  VaRAFeature
+  oxidd_ffi_c
+  bdd
+  coverage_lib
 )
 
 target_include_directories(compare_configs PRIVATE
-    ${CMAKE_SOURCE_DIR}/BDD/include                 
-    ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include  
+  ${CMAKE_SOURCE_DIR}/BDD/include
+  ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
 )
 
+# -------------------------
+# RPATH
+# -------------------------
 set_target_properties(random_sampler PROPERTIES
   BUILD_RPATH "${CMAKE_BINARY_DIR}/external/oxidd"
   INSTALL_RPATH_USE_LINK_PATH TRUE
 )
 
+# -------------------------
+# Tests
+# -------------------------
 option(BUILD_TESTS "Build test suite" OFF)
 
 install(TARGETS compute_constraint_ratio
-    RUNTIME DESTINATION bin
+  RUNTIME DESTINATION bin
 )
 
 if(BUILD_TESTS)
-    message(STATUS "Building tests...")
-    enable_testing()
-    add_subdirectory(tests)
+  message(STATUS "Building tests...")
+  enable_testing()
+  add_subdirectory(tests)
 endif()

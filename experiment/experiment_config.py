@@ -41,14 +41,50 @@ class Metrics(Enum):
     ALS = "ALS"
     DEFAULT = "Default"
 
-class ConstraintLevel(Enum):
+class Strength(Enum):
+    VERYWEAK = " Very Weak"
     WEAK = "Weak"
     MODERATE = "Moderate"
     STRONG = "Strong"
     VERYSTRONG = "Very Strong"
+
+class EffectStrength(Enum):
+    NEGLIGIBLE = "Negligible"
+    SMALL = "Small"
+    MEDIUM = "Medium"
+    LARGER = "Large"
+
+class Relations(Enum):
+   DECREASING = "decreasing_with_constraint"
+   INCREASING = "increasing_with_constraint"
+   NONMONOTONIC = "non_monotonic"
 
 SamplingStrategies = [
     SamplingStrategy.RANDOM,
     SamplingStrategy.DISTANCE,
     SamplingStrategy.SOLVER,
 ]
+
+def effect_strength(eps_sq: float) -> EffectStrength:
+    if (eps_sq >= 0.14):
+        return EffectStrength.LARGER
+    if (eps_sq >= 0.06):
+        return EffectStrength.MEDIUM
+    if (eps_sq >= 0.01):
+        return EffectStrength.SMALL
+    return EffectStrength.NEGLIGIBLE
+
+def kruskal_epsilon_squared(h_stat: float, n: int, k: int) -> float:
+    if (n <= k):
+        return 0.0
+    return max(0.0, (h_stat - k + 1) / (n - k))
+
+
+def relation_label(p: float | None, left_name: str, left_med: float, right_name: str, right_med: float) -> str:
+    if p is None or p >= 0.05:
+        return f"{left_name} ~ {right_name}"
+    if left_med > right_med:
+        return f"{left_name} > {right_name}"
+    if right_med > left_med:
+        return f"{right_name} > {left_name}"
+    return f"{left_name} ~ {right_name}"
