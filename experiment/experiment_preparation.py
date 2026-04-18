@@ -11,22 +11,7 @@ from sample_wrapper import generate_and_evaluate_sample
 
 
 def get_sample_size_from_twise(system_path: Path, source_t: int):
-    sample_sizes = {
-        "7z": [39, 600, 4091],
-        "BerkeleyDBC": [15, 97, 343],
-        "Dune": [25, 265, 1071],
-        "Hipacc": [50, 843, 4601],
-        "JavaGC": [32, 468, 3504],
-        "LLVM": [11, 55, 165],
-        "Polly": [28, 345, 2172],
-        "VP9": [31, 483, 3893],
-        "lrzip": [18, 90, 178],
-        "x264": [12, 65, 212],
-    }
-
-    system_name = system_path.stem
-    return sample_sizes[system_name][source_t - 1]
-    #return 10
+    return 10
     # placeholder for later
 
 
@@ -64,7 +49,7 @@ for system_path, system_name in systems:
         sample_size = get_sample_size_from_twise(system_path, t_wise_sampling)
 
         for strategy in SamplingStrategies:
-            for iteration in range(1, 101):
+            for iteration in range(1, 2):
                 if strategy == SamplingStrategy.RANDOM:
                     generate_random_sample_with_cpp(
                         system_path,

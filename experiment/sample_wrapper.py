@@ -1,9 +1,12 @@
 from pathlib import Path
 import subprocess
 import sys
+import os
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(
+    os.environ.get("VARA_FEATURE_ROOT", Path(__file__).resolve().parents[1])
+).resolve()
 
 PYTHON_BINDINGS = PROJECT_ROOT / "bindings" / "python"
 BUILD_BINDINGS = PROJECT_ROOT / "build" / "bindings" / "python" / "vara-feature"
@@ -35,8 +38,8 @@ def generate_and_evaluate_sample(
         distances=None,
     )
 
-    tmp_dir = (PROJECT_ROOT / "experiment" / "tmp_samples")
-    tmp_dir.mkdir(exist_ok=True)
+    tmp_dir = Path.cwd() / "tmp_samples"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
 
     sample_csv = tmp_dir / f"{system_name}_{strategy}_t{source_t}_run{run}.csv"
 
@@ -46,7 +49,7 @@ def generate_and_evaluate_sample(
         file_path=str(sample_csv),
     )
 
-    evaluator_path = (PROJECT_ROOT / "build" / "bin" / "evaluate_sample_from_csv").resolve()
+    evaluator_path = Path("/scratch/miec00001/Thesis/vara-feature/build/bin/evaluate_sample_from_csv").resolve()
 
     subprocess.run(
         [
