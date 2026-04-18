@@ -235,7 +235,7 @@ std::map<LiteralKey, std::set<LiteralKey>> CoverageEvaluator::getAtomicLiteralSe
 }
 
 std::set<Interaction> CoverageEvaluator::generateValidInteractions(size_t T) {
-    // Check cache
+    // Was it already computed and cached?
     if (ValidInteractionsCache.contains(T)) {
         return ValidInteractionsCache[T];
     }
@@ -244,14 +244,14 @@ std::set<Interaction> CoverageEvaluator::generateValidInteractions(size_t T) {
     
     std::set<Interaction> ValidInteractions;
     
-    // Get feature names
+    // Collects all feature names
     std::vector<std::string> FeatureNames;
     for (auto* Feature : FeatureModel.features()) {
         FeatureNames.push_back(Feature->getName().str());
     }
     size_t NumberOfFeatures = FeatureNames.size();
     
-    // Calculate total combinations
+    // Calculate how many feature interactions exist
     size_t TotalCombination = binomialCoefficient(NumberOfFeatures, T);
     size_t Processed = 0;
     
@@ -272,6 +272,7 @@ std::set<Interaction> CoverageEvaluator::generateValidInteractions(size_t T) {
             return;
         }
         
+        // [0,1] [0,2] [0,3] [1,2] [1,3] [2,3]
         for (size_t I = Start; I < NumberOfFeatures; ++I) {
             Current.push_back(I);
             GenerateCombos(I + 1, Current);
@@ -298,13 +299,14 @@ void CoverageEvaluator::checkAllValueAssignments(
 
     size_t T = FeatureIndices.size();
 
+    // 1<<T = 2^n 0 = 000 all false  1 = 001 third feature true..
     for (size_t Mask = 0; Mask < (1<<T); ++Mask) {
         Interaction Interaction;
 
         for (size_t I = 0; I < T; ++I) {
-            size_t FeatureIndex = FeatureIndices[I];
-            bool Value = (Mask >> I) & 1;
-            Interaction.Literals[FeatureNames[FeatureIndex]] = Value;
+            size_t FeatureIndex = FeatureIndices[I]; // FeatureIndex = 5
+            bool Value = (Mask >> I) & 1; // (Mask >> 1) & 1 = 10 & 1 = 0 
+            Interaction.Literals[FeatureNames[FeatureIndex]] = Value; // B false
         }
 
         if (isInteractionSatisfiable(Interaction)) {
@@ -319,9 +321,11 @@ void CoverageEvaluator::buildFeatureVarMap() {
 
     FeatureToBddVar.clear();
 
+    // For each feature
     for (auto* Feature : FeatureModel.features()) {
         const std::string Name = Feature->getName().str();
 
+        // Give me the corresponding variable
         auto MaybeVar = Manager.name_to_var(Feature->getName());
         if (!MaybeVar) {
             std::cerr << "\033[33m"
@@ -372,6 +376,7 @@ bool CoverageEvaluator::isInteractionSatisfiable(const Interaction& Interaction)
             return false;
         }
 
+        // Turns it into positive or negative literal
         oxidd::bdd_function Literal = value ? Var : ~Var;
         if (Literal.is_invalid()) {
             std::cerr << "\033[31m"
@@ -460,7 +465,7 @@ std::map<std::string, double> CoverageEvaluator::evaluateSample(
 ) {
     std::map<std::string, double> Results;
     
-    // Get or generate valid interactions
+    // Get or generate all t-wise valid interactions
     auto ValidInteractions = generateValidInteractions(T);
     
     std::cout << "\nEvaluating sample with " << Sample.size() 
