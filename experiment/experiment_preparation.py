@@ -67,7 +67,7 @@ for system_path, system_name in systems:
         sample_size = get_sample_size_from_twise(system_path, t_wise_sampling)
 
         for strategy in SamplingStrategies:
-            for iteration in range(1, 2):
+            for iteration in range(1, 101):
                 if strategy == SamplingStrategy.RANDOM:
                     generate_random_sample_with_cpp(
                         system_path,

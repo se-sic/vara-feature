@@ -7,58 +7,63 @@ import re
 ROOT = Path("/scratch/miec00001/Thesis/vara-feature/experiment")
 PARAMS = ROOT / "experiment_params.txt"
 
-def get_sample_size_from_twise(system_path: Path, source_t: int):
-    sample_sizes = {
-        "7z": [39, 600, 4091],
-        "BerkeleyDBC": [15, 97, 343],
-        "Dune": [25, 265, 1071],
-        "Hipacc": [50, 843, 4601],
-        "JavaGC": [32, 468, 3504],
-        "LLVM": [11, 55, 165],
-        "Polly": [28, 345, 2172],
-        "VP9": [31, 483, 3893],
-        "lrzip": [18, 90, 178],
-        "x264": [12, 65, 212],
-    }
-
-    system_name = system_path.stem
-    return sample_sizes[system_name][source_t - 1]
-
 systems = [
     ("Random_Sampler/examples/FeatureModel/7z.xml", "7z"),
+    ("Random_Sampler/examples/FeatureModel/BerkeleyDBC.xml", "BerkeleyDBC"),
+    ("Random_Sampler/examples/FeatureModel/Dune.xml", "Dune"),
+    ("Random_Sampler/examples/FeatureModel/Hipacc.xml", "Hipacc"),
+    ("Random_Sampler/examples/FeatureModel/JavaGC.xml", "JavaGC"),
+    ("Random_Sampler/examples/FeatureModel/LLVM.xml", "LLVM"),
+    ("Random_Sampler/examples/FeatureModel/lrzip.xml", "lrzip"),
+    ("Random_Sampler/examples/FeatureModel/Polly.xml", "Polly"),
+    ("Random_Sampler/examples/FeatureModel/VP9.xml", "VP9"),
+    ("Random_Sampler/examples/FeatureModel/x264.xml", "x264"),
+    ("Random_Sampler/examples/FeatureModel/AJStats.xml", "AJStats"),
+    ("Random_Sampler/examples/FeatureModel/Curl.xml", "Curl"),
+    ("Random_Sampler/examples/FeatureModel/HSMGP.xml", "HSMGP"),
+    ("Random_Sampler/examples/FeatureModel/HSQLDB.xml", "HSQLDB"),
+    ("Random_Sampler/examples/FeatureModel/HyTeG.xml", "HyTeG"),
+    ("Random_Sampler/examples/FeatureModel/PKJab.xml", "PKJab"),
+    ("Random_Sampler/examples/FeatureModel/SQLite.xml", "SQLite"),
+    ("Random_Sampler/examples/FeatureModel/TriMesh.xml", "TriMesh"),
+    ("Random_Sampler/examples/FeatureModel/WGet.xml", "WGet"),
+    ("Random_Sampler/examples/FeatureModel/clasp.xml", "clasp"),
+    ("Random_Sampler/examples/FeatureModel/z3.xml", "z3"),
 ]
 
 strategies = ["random", "solver", "distance"]
 source_ts = [1, 2, 3]
-iterations = range(1, 2)
+iterations = range(1, 101)
 
-lines = []
+def main() -> None:
+    lines = []
 
-for system_path_str, system_name in systems:
-    system_path = Path(system_path_str)
-
-    for strategy, source_t, iteration in product(strategies, source_ts, iterations):
-        sample_size = 10
+    for (system_path_str, system_name), strategy, source_t, iteration in product(
+        systems, strategies, source_ts, iterations
+    ):
         lines.append(
-            f"{system_path_str} {system_name} {strategy} {source_t} {sample_size} {iteration}"
+            f"{system_path_str} {system_name} {strategy} {source_t} {iteration}"
         )
 
-PARAMS.write_text("\n".join(lines) + "\n", encoding="utf-8")
-print(f"Wrote {len(lines)} tasks to {PARAMS}")
+    PARAMS.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"Wrote {len(lines)} tasks to {PARAMS}")
 
-result = subprocess.run(
-    ["sbatch", f"--array=1-{len(lines)}", "run_experiment_array.sh"],
-    cwd=ROOT,
-    text=True,
-    capture_output=True,
-    check=True,
-)
+    result = subprocess.run(
+        ["sbatch", f"--array=1-{len(lines)}", "run_experiment_array.sh"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
 
-print(result.stdout.strip())
+    print(result.stdout.strip())
 
-match = re.search(r"Submitted batch job (\d+)", result.stdout)
-if match:
-    job_id = match.group(1)
-    print(f"Job array ID: {job_id}")
-    print(f"Check with: squeue | grep {job_id}")
-    print(f"Logs: ls /scratch/miec00001/slurm_logs/exp_{job_id}_*.out")
+    match = re.search(r"Submitted batch job (\d+)", result.stdout)
+    if match:
+        job_id = match.group(1)
+        print(f"Job array ID: {job_id}")
+        print(f"Check with: squeue -u $USER | grep {job_id}")
+        print(f"Logs: ls /scratch/miec00001/slurm_logs/exp_{job_id}_*.out")
+
+if __name__ == "__main__":
+    main()
