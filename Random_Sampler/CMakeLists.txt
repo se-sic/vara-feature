@@ -22,9 +22,6 @@ endif()
 
 find_package(tinyxml2 REQUIRED)
 
-# -------------------------
-# Shared coverage library
-# -------------------------
 add_library(coverage_lib
   src/CoverageIntegration.cpp
   src/CoverageMetrics.cpp
@@ -43,11 +40,8 @@ target_include_directories(coverage_lib PUBLIC
   /opt/homebrew/Cellar/tinyxml2/11.0.0/include
 )
 
-# -------------------------
-# New library for t-wise sampling logic
-# -------------------------
 add_library(twise_sampling_lib
-  src/TWiseSampling.cpp
+  src/TWiseSamplingLib.cpp
 )
 
 target_include_directories(twise_sampling_lib PUBLIC
@@ -71,9 +65,6 @@ target_link_libraries(twise_sampling_lib PUBLIC
   ${LLVM_LIBS}
 )
 
-# -------------------------
-# random_sampler executable
-# -------------------------
 add_executable(random_sampler
   src/main.cpp
   src/Plotter.cpp
@@ -97,9 +88,6 @@ target_link_libraries(random_sampler PRIVATE
   ${LLVM_LIBS}
 )
 
-# -------------------------
-# experiment_preparation executable
-# -------------------------
 add_executable(experiment_preparation
   src/ExperimentPreparation.cpp
 )
@@ -122,12 +110,8 @@ target_link_libraries(experiment_preparation PRIVATE
   ${LLVM_LIBS}
 )
 
-# -------------------------
-# greedy_twise_sampling CLI executable
-# main() must be in greedy_twise_main.cpp, not in TWiseSampling.cpp
-# -------------------------
 add_executable(greedy_twise_sampling
-  src/greedy_twise_main.cpp
+  src/TWiseSampling.cpp
 )
 
 target_include_directories(greedy_twise_sampling PRIVATE
@@ -142,9 +126,6 @@ target_link_libraries(greedy_twise_sampling PRIVATE
   twise_sampling_lib
 )
 
-# -------------------------
-# evaluate_sample_from_csv executable
-# -------------------------
 add_executable(evaluate_sample_from_csv
   src/evaluate_sample_from_csv.cpp
 )
@@ -159,9 +140,6 @@ target_link_libraries(evaluate_sample_from_csv PRIVATE
   ${LLVM_LIBS}
 )
 
-# -------------------------
-# compute_constraint_ratio executable
-# -------------------------
 add_executable(compute_constraint_ratio
   src/compute_constraint_ratio.cpp
 )
@@ -183,9 +161,6 @@ target_include_directories(compute_constraint_ratio PRIVATE
   ${CMAKE_SOURCE_DIR}/BDD/include
 )
 
-# -------------------------
-# compare_configs executable
-# -------------------------
 add_executable(compare_configs
   src/compare_configs.cpp
 )
@@ -202,20 +177,16 @@ target_include_directories(compare_configs PRIVATE
   ${CMAKE_SOURCE_DIR}/external/oxidd/bindings/cpp/include
 )
 
-# -------------------------
-# RPATH
-# -------------------------
 set_target_properties(random_sampler PROPERTIES
   BUILD_RPATH "${CMAKE_BINARY_DIR}/external/oxidd"
   INSTALL_RPATH_USE_LINK_PATH TRUE
 )
 
-# -------------------------
-# Tests
-# -------------------------
 option(BUILD_TESTS "Build test suite" OFF)
 
-install(TARGETS compute_constraint_ratio
+install(TARGETS
+  compute_constraint_ratio
+  greedy_twise_sampling
   RUNTIME DESTINATION bin
 )
 
