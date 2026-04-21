@@ -5,7 +5,7 @@ import subprocess
 import re
 
 ROOT = Path("/scratch/miec00001/Thesis/vara-feature/experiment")
-PARAMS = ROOT / "experiment_params.txt"
+PARAMS = ROOT / "twise_params.txt"
 
 systems = [
     ("Random_Sampler/examples/FeatureModel/7z.xml", "7z"),
@@ -31,26 +31,20 @@ systems = [
     ("Random_Sampler/examples/FeatureModel/z3.xml", "z3"),
 ]
 
-strategies = ["random", "solver", "distance"]
 source_ts = [1, 2, 3]
-iterations = range(1, 101)
 
 
 def main() -> None:
     lines = []
 
-    for (system_path_str, system_name), strategy, source_t, iteration in product(
-        systems, strategies, source_ts, iterations
-    ):
-        lines.append(
-            f"{system_path_str} {system_name} {strategy} {source_t} {iteration}"
-        )
+    for (system_path_str, system_name), source_t in product(systems, source_ts):
+        lines.append(f"{system_path_str} {system_name} {source_t}")
 
     PARAMS.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote {len(lines)} tasks to {PARAMS}")
 
     result = subprocess.run(
-        ["sbatch", f"--array=1-{len(lines)}", "run_experiment_array.sh"],
+        ["sbatch", f"--array=1-{len(lines)}", "run_twise_precompute_array.sh"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -64,7 +58,7 @@ def main() -> None:
         job_id = match.group(1)
         print(f"Job array ID: {job_id}")
         print(f"Check with: squeue -u $USER | grep {job_id}")
-        print(f"Logs: ls /scratch/miec00001/slurm_logs/exp_{job_id}_*.out")
+        print(f"Logs: ls /scratch/miec00001/slurm_logs/twise_{job_id}_*.out")
 
 
 if __name__ == "__main__":

@@ -32,6 +32,7 @@ def get_sample_size_from_twise(system_path: Path, source_t: int):
     
     return df["sample_size"].iloc[0]
 
+# Lieber auf Kine statt Eku
 
 def generate_random_sample_with_cpp(
     system_path: Path,

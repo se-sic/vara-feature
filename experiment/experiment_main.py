@@ -1,25 +1,24 @@
 from pathlib import Path
-import subprocess
-import pandas as pd
+import csv
+
+ROOT = Path("/scratch/miec00001/Thesis/vara-feature")
+TWISE_SAMPLE_SIZES_CSV = ROOT / "experiment" / "twise_sample_sizes.csv"
 
 
 def get_sample_size_from_twise(system_path: Path, source_t: int) -> int:
-    t_wise_sampling_csv = Path("t_wise_sampling.csv").resolve()
+    system_name = system_path.stem
 
-    strategy_path = Path("/scratch/miec00001/Thesis/vara-feature/build/bin/greedy_twise_sampling").resolve()
+    if not TWISE_SAMPLE_SIZES_CSV.exists():
+        raise FileNotFoundError(
+            f"Missing sample-size table: {TWISE_SAMPLE_SIZES_CSV}"
+        )
 
-    if t_wise_sampling_csv.exists():
-        t_wise_sampling_csv.unlink()
+    with TWISE_SAMPLE_SIZES_CSV.open("r", encoding="utf-8", newline="") as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            if row["system_name"] == system_name and int(row["source_t"]) == source_t:
+                return int(row["sample_size"])
 
-    subprocess.run(
-        [
-            str(strategy_path),
-            str(system_path),
-            str(source_t),
-            str(t_wise_sampling_csv),
-        ],
-        check=True,
+    raise ValueError(
+        f"No sample size found for system={system_name}, source_t={source_t}"
     )
-
-    df = pd.read_csv(t_wise_sampling_csv)
-    return int(df["sample_size"].iloc[0])
