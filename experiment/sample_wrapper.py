@@ -3,7 +3,6 @@ import subprocess
 import sys
 import os
 
-
 PROJECT_ROOT = Path(
     os.environ.get("VARA_FEATURE_ROOT", Path(__file__).resolve().parents[1])
 ).resolve()
@@ -17,15 +16,39 @@ sys.path.insert(0, str(BUILD_BINDINGS))
 from ml.sampling.variant_generator import generate_variants, export_configurations_to_csv
 from ml.script.data_helper import load_feature_model_and_extract_names
 
-def generate_and_evaluate_sample(
+
+def get_cached_sample_path(
+    system_name: str,
+    strategy: str,
+    source_t: int,
+    run: int,
+) -> Path:
+    sample_dir = (
+        PROJECT_ROOT
+        / "experiment_samples"
+        / system_name
+        / strategy
+        / f"t{source_t}"
+    )
+    sample_dir.mkdir(parents=True, exist_ok=True)
+    return sample_dir / f"run{run}.csv"
+
+
+def ensure_sample_exists(
     system_path: Path,
     system_name: str,
     strategy: str,
     source_t: int,
     sample_size: int,
     run: int,
-    output_csv: Path,
-) -> None:
+) -> Path:
+    sample_csv = get_cached_sample_path(system_name, strategy, source_t, run)
+
+    if sample_csv.exists():
+        print(f"Reusing cached sample: {sample_csv}")
+        return sample_csv
+
+    print(f"Generating new sample: {sample_csv}")
 
     feature_model, features, _ = load_feature_model_and_extract_names(str(system_path))
 
@@ -38,29 +61,67 @@ def generate_and_evaluate_sample(
         distances=None,
     )
 
-    tmp_dir = Path.cwd() / "tmp_samples"
-    tmp_dir.mkdir(parents=True, exist_ok=True)
-
-    sample_csv = tmp_dir / f"{system_name}_{strategy}_t{source_t}_run{run}.csv"
-
     export_configurations_to_csv(
         configurations=sampled_configurations,
         features=features,
         file_path=str(sample_csv),
     )
 
-    evaluator_path = Path("/scratch/miec00001/Thesis/vara-feature/build/bin/evaluate_sample_from_csv").resolve()
+    return sample_csv
+
+
+def evaluate_sample_file(
+    system_path: Path,
+    strategy: str,
+    source_t: int,
+    sample_size: int,
+    run: int,
+    sample_csv: Path,
+    output_csv: Path,
+) -> None:
+    evaluator_path = (
+        PROJECT_ROOT / "build" / "bin" / "evaluate_sample_from_csv"
+    ).resolve()
 
     subprocess.run(
         [
             str(evaluator_path),
-            str(system_path),   # feature model xml
-            str(sample_csv),    # sampled configurations csv
-            str(strategy),      # random / solver / distance
-            str(source_t),      # sample_size_source_t
-            str(sample_size),   # sample_size
-            str(run),           # repetition number
-            str(output_csv),    # shared results.csv
+            str(system_path),
+            str(sample_csv),
+            str(strategy),
+            str(source_t),
+            str(sample_size),
+            str(run),
+            str(output_csv),
         ],
         check=True,
+    )
+
+
+def generate_and_evaluate_sample(
+    system_path: Path,
+    system_name: str,
+    strategy: str,
+    source_t: int,
+    sample_size: int,
+    run: int,
+    output_csv: Path,
+) -> None:
+    sample_csv = ensure_sample_exists(
+        system_path=system_path,
+        system_name=system_name,
+        strategy=strategy,
+        source_t=source_t,
+        sample_size=sample_size,
+        run=run,
+    )
+
+    evaluate_sample_file(
+        system_path=system_path,
+        strategy=strategy,
+        source_t=source_t,
+        sample_size=sample_size,
+        run=run,
+        sample_csv=sample_csv,
+        output_csv=output_csv,
     )

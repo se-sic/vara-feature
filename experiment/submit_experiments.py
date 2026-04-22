@@ -35,6 +35,11 @@ strategies = ["random", "solver", "distance"]
 source_ts = [1, 2, 3]
 iterations = range(1, 101)
 
+MISSING_TWISE_SAMPLE_SIZES = {
+    ("TriMesh", 3),
+    ("SQLite", 3),
+}
+
 
 def main() -> None:
     lines = []
@@ -42,6 +47,9 @@ def main() -> None:
     for (system_path_str, system_name), strategy, source_t, iteration in product(
         systems, strategies, source_ts, iterations
     ):
+        if (system_name, source_t) in MISSING_TWISE_SAMPLE_SIZES:
+            continue
+
         lines.append(
             f"{system_path_str} {system_name} {strategy} {source_t} {iteration}"
         )

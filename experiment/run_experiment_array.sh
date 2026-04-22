@@ -1,8 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=exp_array
 #SBATCH --output=/scratch/miec00001/slurm_logs/exp_%A_%a.out
-#SBATCH --time=08:00:00
-#SBATCH --constraint=eku
+#SBATCH --time=24:00:00
+#SBATCH --constraint=kine
+#SBATCH --mem=8G
 #SBATCH --partition=anywhere
 #SBATCH --mail-user=miec00001@stud.uni-saarland.de
 #SBATCH --mail-type=END,FAIL
@@ -44,9 +45,7 @@ VARA_FEATURE_ROOT="$ROOT" \
 PYTHONPATH="$ROOT/build/bindings/python/vara-feature:$ROOT/bindings/python:$EXP_DIR:$RUN_DIR" \
 "$ROOT/.venv/bin/python" - <<PY
 from pathlib import Path
-import subprocess
 
-from experiment_config import SamplingStrategy
 from experiment_main import get_sample_size_from_twise
 from sample_wrapper import generate_and_evaluate_sample
 
@@ -68,30 +67,15 @@ print(f"sample_size={sample_size}")
 print(f"system_path={system_path}")
 print(f"output_csv={output_csv}")
 
-if strategy == SamplingStrategy.RANDOM.value:
-    strategy_path = (root / "build/bin/experiment_preparation").resolve()
-    subprocess.run(
-        [
-            str(strategy_path),
-            str(system_path),
-            strategy,
-            str(source_t),
-            str(sample_size),
-            str(iteration),
-            str(output_csv),
-        ],
-        check=True,
-    )
-else:
-    generate_and_evaluate_sample(
-        system_path=system_path,
-        system_name=system_name,
-        strategy=strategy,
-        source_t=source_t,
-        sample_size=sample_size,
-        run=iteration,
-        output_csv=output_csv,
-    )
+generate_and_evaluate_sample(
+    system_path=system_path,
+    system_name=system_name,
+    strategy=strategy,
+    source_t=source_t,
+    sample_size=sample_size,
+    run=iteration,
+    output_csv=output_csv,
+)
 
 print("done")
 PY
