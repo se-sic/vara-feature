@@ -40,6 +40,11 @@ experiment/rq3_kruskal_dunn_results.csv
 experiment/constraint_ratios.csv
 experiment/experiment_preparation.log
 experiment/experiment_params.txt
+experiment/cached_configs/
+experiment/cached_covered_ids/
+experiment/twise_precompute_results/
+experiment_samples/
+.vscode-server/
 
 # Generated temp data
 experiment/tmp_samples/

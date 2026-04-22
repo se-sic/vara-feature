@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=twise_pre
 #SBATCH --output=/scratch/miec00001/slurm_logs/twise_%A_%a.out
-#SBATCH --time=24:00:00
-#SBATCH --mem=64G
+#SBATCH --time=1-02:59:59
+#SBATCH --mem=256G
 #SBATCH --constraint=kine
 #SBATCH --partition=anywhere
 #SBATCH --mail-user=miec00001@stud.uni-saarland.de
