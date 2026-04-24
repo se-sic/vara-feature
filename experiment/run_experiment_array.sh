@@ -34,17 +34,15 @@ mkdir -p "$RUN_DIR"
 
 cp experiment_config.py "$RUN_DIR/"
 cp sample_wrapper.py "$RUN_DIR/"
-cp experiment_evaluation1.py "$RUN_DIR/"
-cp experiment_evaluation2.py "$RUN_DIR/"
-cp experiment_evaluation3.py "$RUN_DIR/"
 cp experiment_main.py "$RUN_DIR/"
 
 cd "$RUN_DIR"
 
 VARA_FEATURE_ROOT="$ROOT" \
 PYTHONPATH="$ROOT/build/bindings/python/vara-feature:$ROOT/bindings/python:$EXP_DIR:$RUN_DIR" \
-"$ROOT/.venv/bin/python" - <<PY
+PYTHONUNBUFFERED=1 "$ROOT/.venv/bin/python" -u - <<PY
 from pathlib import Path
+import subprocess
 
 from experiment_main import get_sample_size_from_twise
 from sample_wrapper import generate_and_evaluate_sample
@@ -59,23 +57,41 @@ output_csv = Path("results.csv").resolve()
 
 sample_size = get_sample_size_from_twise(system_path, source_t)
 
-print(f"system_name={system_name}")
-print(f"strategy={strategy}")
-print(f"source_t={source_t}")
-print(f"iteration={iteration}")
-print(f"sample_size={sample_size}")
-print(f"system_path={system_path}")
-print(f"output_csv={output_csv}")
+print(f"system_name={system_name}", flush=True)
+print(f"strategy={strategy}", flush=True)
+print(f"source_t={source_t}", flush=True)
+print(f"iteration={iteration}", flush=True)
+print(f"sample_size={sample_size}", flush=True)
+print(f"system_path={system_path}", flush=True)
+print(f"output_csv={output_csv}", flush=True)
 
-generate_and_evaluate_sample(
-    system_path=system_path,
-    system_name=system_name,
-    strategy=strategy,
-    source_t=source_t,
-    sample_size=sample_size,
-    run=iteration,
-    output_csv=output_csv,
-)
+if strategy == "random":
+    print("using C++ random path", flush=True)
+    strategy_path = (root / "build" / "bin" / "experiment_preparation").resolve()
 
-print("done")
+    subprocess.run(
+        [
+            str(strategy_path),
+            str(system_path),
+            str(strategy),
+            str(source_t),
+            str(sample_size),
+            str(iteration),
+            str(output_csv),
+        ],
+        check=True,
+    )
+else:
+    print("using Python cached-sample path", flush=True)
+    generate_and_evaluate_sample(
+        system_path=system_path,
+        system_name=system_name,
+        strategy=strategy,
+        source_t=source_t,
+        sample_size=sample_size,
+        run=iteration,
+        output_csv=output_csv,
+    )
+
+print("done", flush=True)
 PY
