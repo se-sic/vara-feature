@@ -49,13 +49,13 @@ def main(output_csv):
                 n_total = len(random) + len(solver) + len(distance)
                 eps_sq = kruskal_epsilon_squared(kw.statistic, n_total, 3)
 
-                med_random = float(random.median)
-                med_solver = float(solver.median)
-                med_distance = float(distance.median)
+                med_random = float(random.median())
+                med_solver = float(solver.median())
+                med_distance = float(distance.median())
 
-                mean_random = float(random.mean)
-                mean_solver = float(solver.mean)
-                mean_distance = float(distance.mean)
+                mean_random = float(random.mean())
+                mean_solver = float(solver.mean())
+                mean_distance = float(distance.mean())
 
                 strategy_medians = {
                     SamplingStrategy.RANDOM.value: med_random,
@@ -65,7 +65,7 @@ def main(output_csv):
 
                 best_strategy = max(strategy_medians, key=strategy_medians.get)
                 worst_strategy = min(strategy_medians, key=strategy_medians.get)
-                median_gap_best_vs_worst = strategy_medians[best_strategy] -strategy_medians[worst_stratgy]
+                median_gap_best_vs_worst = strategy_medians[best_strategy] -strategy_medians[worst_strategy]
 
                 dunn_random_solver = None
                 dunn_random_distance = None

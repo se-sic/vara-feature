@@ -91,7 +91,7 @@ def main(output_csv):
     summary = (
         results_df.groupby(["metric_1", "metric_2"], as_index=False).agg(
             mean_rho=("rho", "mean"),
-            min_rho=("rho_min"),
+            min_rho=("rho","min"),
             max_rho=("rho", "max"),
             mean_abs_rho=("rho_abs", "mean"),
             n_settings=("rho", "size"),
