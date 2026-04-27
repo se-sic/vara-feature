@@ -13,6 +13,9 @@ def trend_direction(mw, mm, ms, mv) -> Relations:
         return Relations.INCREASING.value
     return Relations.NONMONOTONIC.value
 
+def add_setting_label(coverage_t: int, sample_size_source_t: int) -> str:
+    return f"({coverage_t},{sample_size_source_t})"
+
 def main(output_csv):
     df1 = pd.read_csv(output_csv)
     
@@ -38,6 +41,16 @@ def main(output_csv):
     df2 = pd.read_csv(constraint_ratio_csv)
 
     df = df1.merge(df2, on="system", how="left")
+
+    raw_df = df.copy()
+    raw_df["setting"] = raw_df.apply(
+        lambda row: add_setting_label(
+            int(row["coverage_t"]),
+            int(row["sample_size_source_t"]),
+        ),
+        axis=1,
+    )
+    raw_df.to_csv("rq3_raw_values.csv", index=False)
 
     results = []
 
