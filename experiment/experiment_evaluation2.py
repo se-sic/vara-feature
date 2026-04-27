@@ -121,8 +121,11 @@ def main(output_csv):
                     "pairwise_summary": pairwise_summary,
                 })
 
+    RESULTS_DIR = Path("results")
+    RESULTS_DIR.mkdir(exist_ok=True)
+
     results_df = pd.DataFrame(results)
-    results_df.to_csv("rq2_kruskal_dunn_results.csv", index=False)
+    results_df.to_csv(RESULTS_DIR / "rq2_kruskal_dunn_results.csv", index=False)
 
     summary = (results_df.groupby("metric", as_index=False)
                .agg(n_settings=("metric", "size"),
@@ -135,4 +138,10 @@ def main(output_csv):
                     )
               )
     summary["overall_best_strategy"] = summary.apply(overall_winner, axis=1)
-    summary.to_csv("rq2_summary.csv", index=False)
+    summary_df.to_csv(RESULTS_DIR / "rq2_summary.csv", index=False)
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        raise SystemExit(f"Usage: python {__file__} <results.csv>")
+    main(sys.argv[1])

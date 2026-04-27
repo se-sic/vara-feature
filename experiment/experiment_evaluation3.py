@@ -163,8 +163,12 @@ def main(output_csv):
                     "dunn_strong_verystrong": dunn_strong_verystrong,
                     "pairwise_summary": pairwise_summary,
                 })
+
+    RESULTS_DIR = Path("results")
+    RESULTS_DIR.mkdir(exist_ok=True)
+
     results_df = pd.DataFrame(results)
-    results_df.to_csv("rq3_kruskal_dunn_results.csv", index=False)
+    results_df.to_csv(RESULTS_DIR / "rq3_kruskal_dunn_results.csv", index=False)
 
     summary = (
         results_df.groupby("metric", as_index=False)
@@ -178,4 +182,10 @@ def main(output_csv):
             n_increasing=("trend_direction", lambda s: int((s == Relations.INCREASING.value).sum())),
         )
     )
-    summary.to_csv("rq3_summary.csv", index=False)
+    summary_df.to_csv(RESULTS_DIR / "rq3_summary.csv", index=False)
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        raise SystemExit(f"Usage: python {__file__} <results.csv>")
+    main(sys.argv[1])
