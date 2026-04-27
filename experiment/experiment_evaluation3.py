@@ -195,7 +195,7 @@ def main(output_csv):
             n_increasing=("trend_direction", lambda s: int((s == Relations.INCREASING.value).sum())),
         )
     )
-    summary_df.to_csv(RESULTS_DIR / "rq3_summary.csv", index=False)
+    summary.to_csv(RESULTS_DIR / "rq3_summary.csv", index=False)
 
 if __name__ == "__main__":
     import sys
