@@ -184,7 +184,7 @@ def plot_rq1_setting_heatmaps_by_strategy(rq1: pd.DataFrame) -> None:
     strategy_col = "strategy"
 
     if strategy_col not in rq1.columns:
-        print("Skipping RQ1-by-strategy heatmaps: no 'sampling_strategy' column found.")
+        print("Skipping RQ1-by-strategy heatmaps: no 'strategy' column found.")
         return
 
     all_strategies = sorted(rq1[strategy_col].dropna().unique())
@@ -250,17 +250,16 @@ def plot_rq1_setting_heatmaps_by_strategy(rq1: pd.DataFrame) -> None:
             ax.set_xticklabels(all_metrics, rotation=90, fontsize=7)
             ax.set_yticklabels(all_metrics, fontsize=7)
 
-        if image is not None:
-            fig.colorbar(image, ax=axes.tolist(), shrink=0.8, label="rho")
-
-        fig.suptitle(
-            f"RQ1: Metric agreement by setting ({strategy})",
-            fontsize=16
-        )
-
         fig.subplots_adjust(top=0.92, right=0.88, wspace=0.35, hspace=0.50)
 
-        safe_strategy = str(strategy).replace(" ", "").replace("/", "").lower()
+        if image is not None:
+            cbar_ax = fig.add_axes([0.90, 0.20, 0.02, 0.60])
+            cbar = fig.colorbar(image, cax=cbar_ax)
+            cbar.set_label("rho")
+
+        fig.suptitle(f"RQ1: Metric agreement by setting ({strategy})", fontsize=16)
+
+        safe_strategy = str(strategy).replace(" ", "_").replace("/", "_").lower()
         fig.savefig(
             OUT_DIR / f"rq1_setting_heatmaps_{safe_strategy}.png",
             dpi=300,
