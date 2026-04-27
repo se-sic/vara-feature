@@ -146,7 +146,7 @@ def main(output_csv):
                     )
               )
     summary["overall_best_strategy"] = summary.apply(overall_winner, axis=1)
-    summary_df.to_csv(RESULTS_DIR / "rq2_summary.csv", index=False)
+    summary.to_csv(RESULTS_DIR / "rq2_summary.csv", index=False)
 
 if __name__ == "__main__":
     import sys
