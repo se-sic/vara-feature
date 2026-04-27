@@ -15,6 +15,13 @@ def overall_winner(row):
 def main(output_csv):
     df = pd.read_csv(output_csv)
 
+    raw_df = df.copy()
+    raw_df["setting"] = raw_df.apply(
+        lambda row: f"({int(row['coverage_t'])},{int(row['sample_size_source_t'])})",
+        axis=1,
+    )
+    raw_df.to_csv("rq2_raw_values.csv", index=False)
+
     results = []
 
     for metric_name in df["metric"].unique():

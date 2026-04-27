@@ -4,6 +4,7 @@ from pathlib import Path
 from experiment_config import Strength, SamplingStrategy
 from typing import cast
 from matplotlib.axes import Axes
+from matplotlib.patches import Rectangle
 
 import numpy as np
 import pandas as pd
@@ -19,8 +20,11 @@ RQ1_RESULTS = DATA_DIR / "rq1_spearman_results.csv"
 RQ1_SUMMARY = DATA_DIR / "rq1_summary.csv"
 RQ2_RESULTS = DATA_DIR / "rq2_kruskal_dunn_results.csv"
 RQ2_SUMMARY = DATA_DIR / "rq2_summary.csv"
+RQ2_RAW = DATA_DIR / "rq2_raw_values.csv"
 RQ3_RESULTS = DATA_DIR / "rq3_kruskal_dunn_results.csv"
 RQ3_SUMMARY = DATA_DIR / "rq3_summary.csv"
+RQ3_RAW = DATA_DIR / "rq3_raw_values.csv"
+
 
 SETTING_ORDER = [
     (1, 1), (1, 2), (1, 3),
@@ -176,6 +180,89 @@ def plot_rq1_setting_heatmaps(rq1: pd.DataFrame) -> None:
     fig.savefig(OUT_DIR / "rq1_setting_heatmaps.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
+def plot_rq1_setting_heatmaps_by_strategy(rq1: pd.DataFrame) -> None:
+    strategy_col = "sampling_strategy"   
+    all_strategies = sorted(rq1[strategy_col].dropna().unique())
+
+    for strategy in all_strategies:
+        rq1_strategy = rq1[rq1[strategy_col] == strategy]
+
+        settings = [
+            s for s in SETTING_ORDER
+            if add_setting_label(*s) in set(rq1_strategy["setting"])
+        ]
+
+        fig, axes_grid = plt.subplots(3, 3, figsize=(18, 16))
+        axes = np.asarray(axes_grid).ravel()
+        image = None
+
+        for ax_idx, raw_ax in enumerate(axes):
+            ax = cast(Axes, raw_ax)
+
+            if ax_idx >= len(settings):
+                ax.axis("off")
+                continue
+
+            cov_t, sample_t = settings[ax_idx]
+            subset = rq1_strategy[
+                (rq1_strategy["coverage_t"] == cov_t) &
+                (rq1_strategy["sample_size_source_t"] == sample_t)
+            ]
+
+            all_metrics = sorted(
+                set(subset["metric_1"]).union(set(subset["metric_2"]))
+            )
+
+            mat = pd.DataFrame(
+                np.nan,
+                index=all_metrics,
+                columns=all_metrics,
+                dtype=float,
+            )
+
+            for row in subset.itertuples(index=False):
+                metric_1 = str(row.metric_1)
+                metric_2 = str(row.metric_2)
+                value = float(row.rho)
+
+                mat.loc[metric_1, metric_2] = value
+                mat.loc[metric_2, metric_1] = value
+
+            for i in range(len(mat)):
+                mat.iat[i, i] = 1.0
+
+            image = ax.imshow(
+                mat.values,
+                aspect="auto",
+                vmin=0.0,
+                vmax=1.0,
+                cmap="YlGnBu",
+            )
+
+            ax.set_title(f"Setting {add_setting_label(cov_t, sample_t)}")
+            ax.set_xticks(range(len(all_metrics)))
+            ax.set_yticks(range(len(all_metrics)))
+            ax.set_xticklabels(all_metrics, rotation=90, fontsize=7)
+            ax.set_yticklabels(all_metrics, fontsize=7)
+
+        if image is not None:
+            fig.colorbar(image, ax=axes.tolist(), shrink=0.8, label="rho")
+
+        fig.suptitle(
+            f"RQ1: Metric agreement by setting ({strategy})",
+            fontsize=16
+        )
+
+        fig.subplots_adjust(top=0.92, right=0.88, wspace=0.35, hspace=0.50)
+
+        safe_strategy = str(strategy).replace(" ", "").replace("/", "").lower()
+        fig.savefig(
+            OUT_DIR / f"rq1_setting_heatmaps_{safe_strategy}.png",
+            dpi=300,
+            bbox_inches="tight",
+        )
+        plt.close(fig)
+
 def plot_rq1_mean_rho_bar(rq1_summary: pd.DataFrame)-> None:
     plot_df = rq1_summary.copy()
     plot_df["pair"] = plot_df["metric_1"] + " vs " + plot_df["metric_2"]
@@ -272,6 +359,84 @@ def plot_rq2_median_bars(rq2: pd.DataFrame) -> None:
         fig.savefig(OUT_DIR / f"rq2_medians_{metric}.png", dpi=300, bbox_inches="tight")
         plt.close(fig)
 
+def plot_rq2_boxplots(rq2_raw: pd.DataFrame) -> None:
+    all_metrics = sorted(rq2_raw["metric"].unique())
+    ordered_settings = [add_setting_label(c, s) for c, s in SETTING_ORDER]
+
+    strategy_order = [
+        SamplingStrategy.RANDOM.value,
+        SamplingStrategy.DISTANCE.value,
+        SamplingStrategy.SOLVER.value,
+    ]
+
+    offsets = {
+        SamplingStrategy.RANDOM.value: -0.25,
+        SamplingStrategy.DISTANCE.value: 0.0,
+        SamplingStrategy.SOLVER.value: 0.25,
+    }
+    width = 0.22
+
+    for metric in all_metrics:
+        subset = cast(pd.DataFrame, rq2_raw.loc[rq2_raw["metric"] == metric].copy())
+        subset["setting"] = pd.Categorical(
+            subset["setting"],
+            categories=ordered_settings,
+            ordered=True,
+        )
+        subset = subset.sort_values(["setting", "strategy"])
+
+        fig, ax = plt.subplots(figsize=(14, 6))
+        base_positions = np.arange(len(ordered_settings))
+
+        legend_handles: list[object] = []
+        legend_labels: list[str] = []
+
+        for strategy in strategy_order:
+            data: list[list[float]] = []
+            positions: list[float] = []
+
+            for setting_idx, setting in enumerate(ordered_settings):
+                values = subset.loc[
+                    (subset["setting"] == setting) &
+                    (subset["strategy"] == strategy),
+                    "coverage",
+                ].dropna().astype(float)
+
+                if values.empty:
+                    continue
+
+                data.append(values.tolist())
+                positions.append(float(base_positions[setting_idx]) + offsets[strategy])
+
+            if not data:
+                continue
+
+            box = ax.boxplot(
+                data,
+                positions=positions,
+                widths=width,
+                patch_artist=True,
+                manage_ticks=False,
+            )
+
+            for patch in box["boxes"]:
+                patch.set_alpha(0.6)
+
+            legend_handles.append(box["boxes"][0])
+            legend_labels.append(strategy)
+
+        ax.set_xticks(base_positions)
+        ax.set_xticklabels(ordered_settings, rotation=45, ha="right")
+        ax.set_ylabel("coverage value")
+        ax.set_title(f"RQ2: Coverage distribution for {metric} by setting and strategy")
+
+        if legend_handles:
+            ax.legend(legend_handles, legend_labels, title="strategy")
+
+        fig.tight_layout()
+        fig.savefig(OUT_DIR / f"rq2_boxplots_{metric}.png", dpi=300, bbox_inches="tight")
+        plt.close(fig)
+
 def plot_rq2_strategy_wins(rq2_summary: pd.DataFrame) -> None:
     plot_df = rq2_summary.sort_values("metric")
     x = np.arange(len(plot_df))
@@ -291,8 +456,109 @@ def plot_rq2_strategy_wins(rq2_summary: pd.DataFrame) -> None:
     fig.savefig(OUT_DIR / "rq2_strategy_wins.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
+def get_strategy_ranks(row: pd.Series) -> dict[str, int]:
+    scores = [
+        (SamplingStrategy.RANDOM.value, float(row["median_random"])),
+        (SamplingStrategy.DISTANCE.value, float(row["median_distance"])),
+        (SamplingStrategy.SOLVER.value, float(row["median_solver"])),
+    ]
 
+    scores.sort(key=lambda item: item[1], reverse=True)
 
+    ranks: dict[str, int] = {}
+    current_rank = 1
+    previous_score: float | None = None
+
+    for position, (strategy, score) in enumerate(scores, start=1):
+        if previous_score is not None and score < previous_score:
+            current_rank = position
+        ranks[strategy] = current_rank
+        previous_score = score
+
+    return ranks
+
+def plot_rq2_full_ranking_bars(rq2: pd.DataFrame) -> None:
+    all_metrics = sorted(rq2["metric"].unique())
+    ordered_settings = [add_setting_label(c, s) for c, s in SETTING_ORDER]
+
+    strategies = [
+        SamplingStrategy.RANDOM.value,
+        SamplingStrategy.DISTANCE.value,
+        SamplingStrategy.SOLVER.value,
+    ]
+
+    for metric in all_metrics:
+        subset = cast(pd.DataFrame, rq2.loc[rq2["metric"] == metric].copy())
+        subset["setting"] = pd.Categorical(
+            subset["setting"],
+            categories=ordered_settings,
+            ordered=True,
+        )
+        subset = subset.sort_values("setting")
+
+        rank_random: list[int] = []
+        rank_distance: list[int] = []
+        rank_solver: list[int] = []
+
+        for _, row in subset.iterrows():
+            ranks = get_strategy_ranks(row)
+            rank_random.append(ranks[SamplingStrategy.RANDOM.value])
+            rank_distance.append(ranks[SamplingStrategy.DISTANCE.value])
+            rank_solver.append(ranks[SamplingStrategy.SOLVER.value])
+
+        x = np.arange(len(subset))
+        width = 0.25
+
+        fig, ax = plt.subplots(figsize=(12, 5))
+
+        bars_random = ax.bar(
+            x - width,
+            rank_random,
+            width,
+            label=SamplingStrategy.RANDOM.value,
+        )
+        bars_distance = ax.bar(
+            x,
+            rank_distance,
+            width,
+            label=SamplingStrategy.DISTANCE.value,
+        )
+        bars_solver = ax.bar(
+            x + width,
+            rank_solver,
+            width,
+            label=SamplingStrategy.SOLVER.value,
+        )
+
+        ax.set_xticks(x)
+        ax.set_xticklabels(subset["setting"], rotation=45, ha="right")
+        ax.set_ylabel("rank (1 = best)")
+        ax.set_yticks([1, 2, 3])
+        ax.set_ylim(0, 3.3)
+        ax.invert_yaxis()
+        ax.set_title(f"RQ2: Full strategy ranking for {metric}")
+        ax.legend(title="strategy")
+
+        for bars in [bars_random, bars_distance, bars_solver]:
+            for raw_bar in bars:
+                bar = cast(Rectangle, raw_bar)
+                rank = int(bar.get_height())
+                ax.text(
+                    bar.get_x() + bar.get_width() / 2,
+                    rank - 0.08,
+                    str(rank),
+                    ha="center",
+                    va="top",
+                    fontsize=8,
+                )
+
+        fig.tight_layout()
+        fig.savefig(
+            OUT_DIR / f"rq2_full_ranking_{metric}.png",
+            dpi=300,
+            bbox_inches="tight",
+        )
+        plt.close(fig)
 
 def plot_rq3_trend_lines(rq3: pd.DataFrame) -> None:
     all_metrics = sorted(rq3["metric"].unique())
@@ -378,15 +644,97 @@ def plot_rq3_trend_direction_summary(rq3_summary: pd.DataFrame) -> None:
     fig.savefig(OUT_DIR / "rq3_trend_direction_summary.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
+def plot_rq3_boxplots(rq3_raw: pd.DataFrame) -> None:
+    all_metrics = sorted(rq3_raw["metric"].unique())
+    ordered_settings = [add_setting_label(c, s) for c, s in SETTING_ORDER]
+
+    strength_order = [
+        Strength.WEAK.value,
+        Strength.MODERATE.value,
+        Strength.STRONG.value,
+        Strength.VERYSTRONG.value,
+    ]
+
+    offsets = {
+        Strength.WEAK.value: -0.30,
+        Strength.MODERATE.value: -0.10,
+        Strength.STRONG.value: 0.10,
+        Strength.VERYSTRONG.value: 0.30,
+    }
+    width = 0.16
+
+    for metric in all_metrics:
+        subset = cast(pd.DataFrame, rq3_raw.loc[rq3_raw["metric"] == metric].copy())
+        subset["setting"] = pd.Categorical(
+            subset["setting"],
+            categories=ordered_settings,
+            ordered=True,
+        )
+        subset = subset.sort_values(["setting", "constraint_level"])
+
+        fig, ax = plt.subplots(figsize=(14, 6))
+        base_positions = np.arange(len(ordered_settings))
+
+        legend_handles: list[object] = []
+        legend_labels: list[str] = []
+
+        for strength in strength_order:
+            data: list[list[float]] = []
+            positions: list[float] = []
+
+            for setting_idx, setting in enumerate(ordered_settings):
+                values = subset.loc[
+                    (subset["setting"] == setting) &
+                    (subset["constraint_level"] == strength),
+                    "coverage",
+                ].dropna().astype(float)
+
+                if values.empty:
+                    continue
+
+                data.append(values.tolist())
+                positions.append(float(base_positions[setting_idx]) + offsets[strength])
+
+            if not data:
+                continue
+
+            box = ax.boxplot(
+                data,
+                positions=positions,
+                widths=width,
+                patch_artist=True,
+                manage_ticks=False,
+            )
+
+            for patch in box["boxes"]:
+                patch.set_alpha(0.6)
+
+            legend_handles.append(box["boxes"][0])
+            legend_labels.append(strength)
+
+        ax.set_xticks(base_positions)
+        ax.set_xticklabels(ordered_settings, rotation=45, ha="right")
+        ax.set_ylabel("coverage value")
+        ax.set_title(f"RQ3: Coverage distribution for {metric} by setting and constraint strength")
+
+        if legend_handles:
+            ax.legend(legend_handles, legend_labels, title="constraint strength")
+
+        fig.tight_layout()
+        fig.savefig(OUT_DIR / f"rq3_boxplots_{metric}.png", dpi=300, bbox_inches="tight")
+        plt.close(fig)
+
 def get_data() -> dict[str, pd.DataFrame]:
     rq1_results = pd.read_csv(RQ1_RESULTS)
     rq1_summary = pd.read_csv(RQ1_SUMMARY)
 
     rq2_results = pd.read_csv(RQ2_RESULTS)
     rq2_summary = pd.read_csv(RQ2_SUMMARY)
+    rq2_raw = pd.read_csv(RQ2_RAW)
 
     rq3_results = pd.read_csv(RQ3_RESULTS)
     rq3_summary = pd.read_csv(RQ3_SUMMARY)
+    rq3_raw = pd.read_csv(RQ3_RAW)
 
     rq1_results = get_value_enum_column(rq1_results, "rho_strength")
     rq2_results = get_value_enum_column(rq2_results, "effect_strength")
@@ -401,8 +749,10 @@ def get_data() -> dict[str, pd.DataFrame]:
         "rq1_summary": rq1_summary,
         "rq2": rq2_results,
         "rq2_summary": rq2_summary,
+        "rq2_raw": rq2_raw,
         "rq3": rq3_results,
         "rq3_summary": rq3_summary,
+        "rq3_raw": rq3_raw,
     }
 
 def main() -> None:
@@ -411,14 +761,18 @@ def main() -> None:
     plot_rq1_mean_rho_heatmap(data["rq1_summary"])
     plot_rq1_setting_heatmaps(data["rq1"])
     plot_rq1_mean_rho_bar(data["rq1_summary"])
+    plot_rq1_setting_heatmaps_by_strategy(data["rq1"])
 
     plot_rq2_best_strategy_heatmap(data["rq2"])
+    plot_rq2_full_ranking_bars(data["rq2"])
     plot_rq2_median_bars(data["rq2"])
     plot_rq2_strategy_wins(data["rq2_summary"])
+    plot_rq2_boxplots(data["rq2_raw"])
 
     plot_rq3_trend_lines(data["rq3"])
     plot_rq3_weak_minus_verystrong_heatmap(data["rq3"])
     plot_rq3_trend_direction_summary(data["rq3_summary"])
+    plot_rq3_boxplots(data["rq3_raw"])
 
     print(f"Plots written to: {OUT_DIR.resolve()}")
 
