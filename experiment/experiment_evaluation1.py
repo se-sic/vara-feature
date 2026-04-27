@@ -85,8 +85,11 @@ def main(output_csv):
                             "n_systems": len(paired),
                         })
 
+    RESULTS_DIR = Path("results")
+    RESULTS_DIR.mkdir(exist_ok=True)
+
     results_df = pd.DataFrame(results)
-    results_df.to_csv("rq1_spearman_results.csv", index=False)
+    results_df.to_csv(RESULTS_DIR / "rq1_spearman_results.csv", index=False)
 
     summary = (
         results_df.groupby(["metric_1", "metric_2"], as_index=False).agg(
@@ -102,4 +105,10 @@ def main(output_csv):
 
     summary["interpretation"] = summary.apply(interpret_row, axis=1)
     summary = summary.sort_values(["mean_abs_rho", "mean_rho"], ascending=False)
-    summary.to_csv("rq1_summary.csv", index=False)
+    summary_df.to_csv(RESULTS_DIR / "rq1_summary.csv", index=False)
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        raise SystemExit(f"Usage: python {__file__} <results.csv>")
+    main(sys.argv[1])
