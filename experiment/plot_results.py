@@ -598,6 +598,58 @@ def plot_rq3_trend_direction_summary(rq3_summary: pd.DataFrame) -> None:
     fig.savefig(OUT_DIR / "rq3_trend_direction_summary.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
+def plot_rq3_system_counts_by_constraint_level(rq3_raw: pd.DataFrame) -> None:
+    ordered_settings = [add_setting_label(c, s) for c, s in SETTING_ORDER]
+    strength_order = [
+        Strength.WEAK.value,
+        Strength.MODERATE.value,
+        Strength.STRONG.value,
+        Strength.VERYSTRONG.value,
+    ]
+
+    counts = (
+        rq3_raw.groupby(["setting", "constraint_level"])["system"]
+        .nunique()
+        .reset_index(name="n_systems")
+    )
+
+    counts["setting"] = pd.Categorical(
+        counts["setting"],
+        categories=ordered_settings,
+        ordered=True,
+    )
+    counts = counts.sort_values(["setting", "constraint_level"])
+
+    x = np.arange(len(ordered_settings))
+    width = 0.2
+    offsets = [-0.3, -0.1, 0.1, 0.3]
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    for idx, strength in enumerate(strength_order):
+        subset = counts[counts["constraint_level"] == strength]
+        y = []
+
+        for setting in ordered_settings:
+            match = subset[subset["setting"] == setting]
+            if match.empty:
+                y.append(0)
+            else:
+                y.append(int(match["n_systems"].iloc[0]))
+
+        ax.bar(x + offsets[idx], y, width, label=strength)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(ordered_settings, rotation=45, ha="right")
+    ax.set_ylabel("number of systems")
+    ax.set_title("RQ3: Number of systems per constraint level and setting")
+    ax.legend(title="constraint level")
+
+    fig.tight_layout()
+    fig.savefig(OUT_DIR / "rq3_system_counts_by_constraint_level.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
 def plot_rq3_boxplots(rq3_raw: pd.DataFrame) -> None:
     all_metrics = sorted(rq3_raw["metric"].unique())
     ordered_settings = [add_setting_label(c, s) for c, s in SETTING_ORDER]
@@ -727,6 +779,7 @@ def main() -> None:
     plot_rq3_weak_minus_verystrong_heatmap(data["rq3"])
     plot_rq3_trend_direction_summary(data["rq3_summary"])
     plot_rq3_boxplots(data["rq3_raw"])
+    plot_rq3_system_counts_by_constraint_level(data["rq3_raw"])
 
     print(f"Plots written to: {OUT_DIR.resolve()}")
 
