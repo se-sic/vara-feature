@@ -481,87 +481,37 @@ def get_strategy_ranks(row: pd.Series) -> dict[str, int]:
 
     return ranks
 
-def plot_rq2_full_ranking_bars(rq2: pd.DataFrame) -> None:
+def plot_rq2_full_ordering_bars(rq2: pd.DataFrame) -> None:
     all_metrics = sorted(rq2["metric"].unique())
-    ordered_settings = [add_setting_label(c, s) for c, s in SETTING_ORDER]
-
-    strategies = [
-        SamplingStrategy.RANDOM.value,
-        SamplingStrategy.DISTANCE.value,
-        SamplingStrategy.SOLVER.value,
-    ]
 
     for metric in all_metrics:
-        subset = cast(pd.DataFrame, rq2.loc[rq2["metric"] == metric].copy())
-        subset["setting"] = pd.Categorical(
-            subset["setting"],
-            categories=ordered_settings,
-            ordered=True,
-        )
-        subset = subset.sort_values("setting")
+        subset = rq2[rq2["metric"] == metric].copy()
 
-        rank_random: list[int] = []
-        rank_distance: list[int] = []
-        rank_solver: list[int] = []
+        rows = []
+        for row in subset.itertuples(index=False):
+            rows.append({
+                "label": f"random {row.setting}",
+                "value": float(row.median_random),
+            })
+            rows.append({
+                "label": f"distance {row.setting}",
+                "value": float(row.median_distance),
+            })
+            rows.append({
+                "label": f"solver {row.setting}",
+                "value": float(row.median_solver),
+            })
 
-        for _, row in subset.iterrows():
-            ranks = get_strategy_ranks(row)
-            rank_random.append(ranks[SamplingStrategy.RANDOM.value])
-            rank_distance.append(ranks[SamplingStrategy.DISTANCE.value])
-            rank_solver.append(ranks[SamplingStrategy.SOLVER.value])
+        plot_df = pd.DataFrame(rows).sort_values("value", ascending=False)
 
-        x = np.arange(len(subset))
-        width = 0.25
-
-        fig, ax = plt.subplots(figsize=(12, 5))
-
-        bars_random = ax.bar(
-            x - width,
-            rank_random,
-            width,
-            label=SamplingStrategy.RANDOM.value,
-        )
-        bars_distance = ax.bar(
-            x,
-            rank_distance,
-            width,
-            label=SamplingStrategy.DISTANCE.value,
-        )
-        bars_solver = ax.bar(
-            x + width,
-            rank_solver,
-            width,
-            label=SamplingStrategy.SOLVER.value,
-        )
-
-        ax.set_xticks(x)
-        ax.set_xticklabels(subset["setting"], rotation=45, ha="right")
-        ax.set_ylabel("rank (1 = best)")
-        ax.set_yticks([1, 2, 3])
-        ax.set_ylim(0, 3.3)
+        fig, ax = plt.subplots(figsize=(12, 10))
+        ax.barh(plot_df["label"], plot_df["value"])
         ax.invert_yaxis()
-        ax.set_title(f"RQ2: Full strategy ranking for {metric}")
-        ax.legend(title="strategy")
-
-        for bars in [bars_random, bars_distance, bars_solver]:
-            for raw_bar in bars:
-                bar = cast(Rectangle, raw_bar)
-                rank = int(bar.get_height())
-                ax.text(
-                    bar.get_x() + bar.get_width() / 2,
-                    rank - 0.08,
-                    str(rank),
-                    ha="center",
-                    va="top",
-                    fontsize=8,
-                )
+        ax.set_xlabel("median metric value")
+        ax.set_title(f"RQ2: Full ordering for {metric}")
 
         fig.tight_layout()
-        fig.savefig(
-            OUT_DIR / f"rq2_full_ranking_{metric}.png",
-            dpi=300,
-            bbox_inches="tight",
-        )
+        fig.savefig(OUT_DIR / f"rq2_fullordering{metric}.png", dpi=300, bbox_inches="tight")
         plt.close(fig)
 
 def plot_rq3_trend_lines(rq3: pd.DataFrame) -> None:
@@ -768,7 +718,7 @@ def main() -> None:
     plot_rq1_setting_heatmaps_by_strategy(data["rq1"])
 
     plot_rq2_best_strategy_heatmap(data["rq2"])
-    plot_rq2_full_ranking_bars(data["rq2"])
+    plot_rq2_full_ordering_bars(data["rq2"])
     plot_rq2_median_bars(data["rq2"])
     plot_rq2_strategy_wins(data["rq2_summary"])
     plot_rq2_boxplots(data["rq2_raw"])
