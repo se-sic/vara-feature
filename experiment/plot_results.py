@@ -181,7 +181,12 @@ def plot_rq1_setting_heatmaps(rq1: pd.DataFrame) -> None:
     plt.close(fig)
 
 def plot_rq1_setting_heatmaps_by_strategy(rq1: pd.DataFrame) -> None:
-    strategy_col = "sampling_strategy"   
+    strategy_col = "sampling_strategy"
+
+    if strategy_col not in rq1.columns:
+        print("Skipping RQ1-by-strategy heatmaps: no 'sampling_strategy' column found.")
+        return
+
     all_strategies = sorted(rq1[strategy_col].dropna().unique())
 
     for strategy in all_strategies:
