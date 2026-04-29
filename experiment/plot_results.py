@@ -5,6 +5,7 @@ from experiment_config import Strength, SamplingStrategy
 from typing import cast
 from matplotlib.axes import Axes
 from matplotlib.patches import Rectangle
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
 import numpy as np
 import pandas as pd
@@ -33,6 +34,19 @@ SETTING_ORDER = [
 ]
 
 CONSTRAINT_ORDER = [Strength.WEAK.value, Strength.MODERATE.value, Strength.STRONG.value, Strength.VERYSTRONG.value]
+
+STRATEGY_COLORS = {
+    SamplingStrategy.RANDOM.value: "#004488",
+    SamplingStrategy.DISTANCE.value: "#DDAA33",
+    SamplingStrategy.SOLVER.value: "#BB5566",
+}
+
+CONSTRAINT_COLORS = {
+    Strength.WEAK.value: "#4477AA",
+    Strength.MODERATE.value: "#66CCEE",
+    Strength.STRONG.value: "#228833",
+    Strength.VERYSTRONG.value: "#AA3377",
+}
 
 def get_value_enum(value: object) -> str:
     text = str(value)
@@ -303,8 +317,20 @@ def plot_rq2_best_strategy_heatmap(rq2: pd.DataFrame) -> None:
     heat_num = heat_df.replace(strategy_to_enum)
     heat_num = heat_num.apply(pd.to_numeric, errors="coerce")
 
+    cmap = ListedColormap([
+        STRATEGY_COLORS[SamplingStrategy.RANDOM.value],
+        STRATEGY_COLORS[SamplingStrategy.DISTANCE.value],
+        STRATEGY_COLORS[SamplingStrategy.SOLVER.value],
+    ])
+    norm = BoundaryNorm([-0.5, 0.5, 1.5, 2.5], cmap.N)
+
     fig, ax = plt.subplots(figsize=(10, 6))
-    image = ax.imshow(heat_num.to_numpy(dtype=float), aspect="auto", vmin=0, vmax=2, cmap="viridis")
+    image = ax.imshow(
+        heat_num.to_numpy(dtype=float),
+        aspect="auto",
+        cmap=cmap,
+        norm=norm,
+    )
 
     ax.set_xticks(range(len(heat_df.columns)))
     ax.set_yticks(range(len(heat_df.index)))
@@ -324,8 +350,7 @@ def plot_rq2_best_strategy_heatmap(rq2: pd.DataFrame) -> None:
                 color="white",
             )
 
-    cbar = fig.colorbar(image, ax=ax)
-    cbar.set_ticks([0, 1, 2])
+    cbar = fig.colorbar(image, ax=ax, ticks=[0, 1, 2])
     cbar.set_ticklabels([
         SamplingStrategy.RANDOM.value,
         SamplingStrategy.DISTANCE.value,
@@ -348,10 +373,28 @@ def plot_rq2_median_bars(rq2: pd.DataFrame) -> None:
         x = np.arange(len(subset))
         width = 0.25
 
-        fig, ax = plt.subplots(figsize=(12,5))
-        ax.bar(x - width, subset["median_random"], width, label=SamplingStrategy.RANDOM.value)
-        ax.bar(x, subset["median_distance"], width, label=SamplingStrategy.DISTANCE.value)
-        ax.bar(x + width, subset["median_solver"], width, label=SamplingStrategy.SOLVER.value)
+        fig, ax = plt.subplots(figsize=(12, 5))
+        ax.bar(
+            x - width,
+            subset["median_random"],
+            width,
+            label=SamplingStrategy.RANDOM.value,
+            color=STRATEGY_COLORS[SamplingStrategy.RANDOM.value],
+        )
+        ax.bar(
+            x,
+            subset["median_distance"],
+            width,
+            label=SamplingStrategy.DISTANCE.value,
+            color=STRATEGY_COLORS[SamplingStrategy.DISTANCE.value],
+        )
+        ax.bar(
+            x + width,
+            subset["median_solver"],
+            width,
+            label=SamplingStrategy.SOLVER.value,
+            color=STRATEGY_COLORS[SamplingStrategy.SOLVER.value],
+        )
 
         ax.set_xticks(x)
         ax.set_xticklabels(subset["setting"], rotation=45, ha="right")
@@ -424,7 +467,8 @@ def plot_rq2_boxplots(rq2_raw: pd.DataFrame) -> None:
             )
 
             for patch in box["boxes"]:
-                patch.set_alpha(0.6)
+                patch.set_facecolor(STRATEGY_COLORS[strategy])
+                patch.set_alpha(0.7)
 
             legend_handles.append(box["boxes"][0])
             legend_labels.append(strategy)
@@ -446,9 +490,26 @@ def plot_rq2_strategy_wins(rq2_summary: pd.DataFrame) -> None:
     x = np.arange(len(plot_df))
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(x, plot_df["random_wins"], label=SamplingStrategy.RANDOM.value)
-    ax.bar(x, plot_df["distance_wins"], bottom=plot_df["random_wins"], label=SamplingStrategy.DISTANCE.value)
-    ax.bar(x, plot_df["solver_wins"], bottom=plot_df["random_wins"] + plot_df["distance_wins"], label=SamplingStrategy.SOLVER.value)
+    ax.bar(
+        x,
+        plot_df["random_wins"],
+        label=SamplingStrategy.RANDOM.value,
+        color=STRATEGY_COLORS[SamplingStrategy.RANDOM.value],
+    )
+    ax.bar(
+        x,
+        plot_df["distance_wins"],
+        bottom=plot_df["random_wins"],
+        label=SamplingStrategy.DISTANCE.value,
+        color=STRATEGY_COLORS[SamplingStrategy.DISTANCE.value],
+    )
+    ax.bar(
+        x,
+        plot_df["solver_wins"],
+        bottom=plot_df["random_wins"] + plot_df["distance_wins"],
+        label=SamplingStrategy.SOLVER.value,
+        color=STRATEGY_COLORS[SamplingStrategy.SOLVER.value],
+    )
 
     ax.set_xticks(x)
     ax.set_xticklabels(plot_df["metric"], rotation=45, ha="right")
@@ -492,20 +553,24 @@ def plot_rq2_full_ordering_bars(rq2: pd.DataFrame) -> None:
             rows.append({
                 "label": f"random {row.setting}",
                 "value": float(row.median_random),
+                "strategy": SamplingStrategy.RANDOM.value,
             })
             rows.append({
                 "label": f"distance {row.setting}",
                 "value": float(row.median_distance),
+                "strategy": SamplingStrategy.DISTANCE.value,
             })
             rows.append({
                 "label": f"solver {row.setting}",
                 "value": float(row.median_solver),
+                "strategy": SamplingStrategy.SOLVER.value,
             })
 
         plot_df = pd.DataFrame(rows).sort_values("value", ascending=False)
+        colors = [STRATEGY_COLORS[strategy] for strategy in plot_df["strategy"]]
 
         fig, ax = plt.subplots(figsize=(12, 10))
-        ax.barh(plot_df["label"], plot_df["value"])
+        ax.barh(plot_df["label"], plot_df["value"], color=colors)
         ax.invert_yaxis()
         ax.set_xlabel("median metric value")
         ax.set_title(f"RQ2: Full ordering for {metric}")
@@ -513,6 +578,7 @@ def plot_rq2_full_ordering_bars(rq2: pd.DataFrame) -> None:
         fig.tight_layout()
         fig.savefig(OUT_DIR / f"rq2_fullordering{metric}.png", dpi=300, bbox_inches="tight")
         plt.close(fig)
+
 
 def plot_rq3_trend_lines(rq3: pd.DataFrame) -> None:
     all_metrics = sorted(rq3["metric"].unique())
@@ -628,7 +694,7 @@ def plot_rq3_system_counts_by_constraint_level(rq3_raw: pd.DataFrame) -> None:
 
     for idx, strength in enumerate(strength_order):
         subset = counts[counts["constraint_level"] == strength]
-        y = []
+        y: list[int] = []
 
         for setting in ordered_settings:
             match = subset[subset["setting"] == setting]
@@ -637,7 +703,13 @@ def plot_rq3_system_counts_by_constraint_level(rq3_raw: pd.DataFrame) -> None:
             else:
                 y.append(int(match["n_systems"].iloc[0]))
 
-        ax.bar(x + offsets[idx], y, width, label=strength)
+        ax.bar(
+            x + offsets[idx],
+            y,
+            width,
+            label=strength,
+            color=CONSTRAINT_COLORS[strength],
+        )
 
     ax.set_xticks(x)
     ax.set_xticklabels(ordered_settings, rotation=45, ha="right")
@@ -713,7 +785,8 @@ def plot_rq3_boxplots(rq3_raw: pd.DataFrame) -> None:
             )
 
             for patch in box["boxes"]:
-                patch.set_alpha(0.6)
+                patch.set_facecolor(CONSTRAINT_COLORS[strength])
+                patch.set_alpha(0.7)
 
             legend_handles.append(box["boxes"][0])
             legend_labels.append(strength)
