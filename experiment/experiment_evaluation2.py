@@ -21,7 +21,10 @@ def main(output_csv):
         lambda row: f"({int(row['coverage_t'])},{int(row['sample_size_source_t'])})",
         axis=1,
     )
-    raw_df.to_csv("rq2_raw_values.csv", index=False)
+    RESULTS_DIR = Path("results")
+    RESULTS_DIR.mkdir(exist_ok=True)
+
+    raw_df.to_csv(RESULTS_DIR / "rq2_raw_values.csv", index=False)
 
     results = []
 

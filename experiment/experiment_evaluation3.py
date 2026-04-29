@@ -50,7 +50,11 @@ def main(output_csv):
         ),
         axis=1,
     )
-    raw_df.to_csv("rq3_raw_values.csv", index=False)
+    
+    RESULTS_DIR = Path("results")
+    RESULTS_DIR.mkdir(exist_ok=True)
+
+    raw_df.to_csv(RESULTS_DIR / "rq3_raw_values.csv", index=False)
 
     results = []
 
@@ -83,6 +87,13 @@ def main(output_csv):
                 ]["coverage"]
 
                 if len(weak) == 0 or len(moderate) == 0 or len(strong) == 0 or len(veryStrong) == 0:
+                    print(
+                        "Skipping setting:",
+                        metric_name,
+                        (coverage_t, source_t),
+                        "sizes:",
+                        len(weak), len(moderate), len(strong), len(veryStrong),
+                    )
                     continue
 
                 kw = stats.kruskal(weak, moderate, strong, veryStrong)

@@ -5,7 +5,7 @@ from experiment_config import Strength, SamplingStrategy
 from typing import cast
 from matplotlib.axes import Axes
 from matplotlib.patches import Rectangle
-from matplotlib.colors import ListedColormap, BoundaryNorm
+from matplotlib.colors import LinearSegmentedColormap, ListedColormap, BoundaryNorm, to_rgb
 
 import numpy as np
 import pandas as pd
@@ -36,9 +36,9 @@ SETTING_ORDER = [
 CONSTRAINT_ORDER = [Strength.WEAK.value, Strength.MODERATE.value, Strength.STRONG.value, Strength.VERYSTRONG.value]
 
 STRATEGY_COLORS = {
-    SamplingStrategy.RANDOM.value: "#004488",
-    SamplingStrategy.DISTANCE.value: "#DDAA33",
-    SamplingStrategy.SOLVER.value: "#BB5566",
+    SamplingStrategy.RANDOM.value: "#4477AA",   # blue
+    SamplingStrategy.DISTANCE.value: "#228833", # green
+    SamplingStrategy.SOLVER.value: "#AA3377",   # purple/magenta
 }
 
 CONSTRAINT_COLORS = {
@@ -75,6 +75,31 @@ def add_setting_column(df: pd.DataFrame) -> pd.DataFrame:
         axis=1,
     )
     return out
+
+def blend_with_white(color: str, amount: float) -> tuple[float, float, float]:
+    """
+    amount = 0.0 -> white
+    amount = 1.0 -> original color
+    """
+    r, g, b = to_rgb(color)
+    return (
+        1.0 - (1.0 - r) * amount,
+        1.0 - (1.0 - g) * amount,
+        1.0 - (1.0 - b) * amount,
+    )
+
+def make_strategy_cmap(strategy: str) -> LinearSegmentedColormap:
+    base = STRATEGY_COLORS.get(strategy, "#4477AA")
+
+    return LinearSegmentedColormap.from_list(
+        f"{strategy}_heatmap",
+        [
+            blend_with_white(base, 0.00),  # almost white
+            blend_with_white(base, 0.35),  # light
+            blend_with_white(base, 0.65),  # medium
+            blend_with_white(base, 1.00),  # full colour
+        ],
+    )
 
 def rq1_heatMap(mat: pd.DataFrame,
     title: str,
@@ -205,6 +230,7 @@ def plot_rq1_setting_heatmaps_by_strategy(rq1: pd.DataFrame) -> None:
 
     for strategy in all_strategies:
         rq1_strategy = rq1[rq1[strategy_col] == strategy]
+        cmap = make_strategy_cmap(str(strategy))
 
         settings = [
             s for s in SETTING_ORDER
@@ -255,7 +281,7 @@ def plot_rq1_setting_heatmaps_by_strategy(rq1: pd.DataFrame) -> None:
                 aspect="auto",
                 vmin=0.0,
                 vmax=1.0,
-                cmap="YlGnBu",
+                cmap=cmap,
             )
 
             ax.set_title(f"Setting {add_setting_label(cov_t, sample_t)}")
@@ -678,6 +704,9 @@ def plot_rq3_system_counts_by_constraint_level(rq3_raw: pd.DataFrame) -> None:
         .nunique()
         .reset_index(name="n_systems")
     )
+
+    print(sorted(rq3_raw["setting"].dropna().unique()))
+    print(rq3_raw.groupby("setting")["system"].nunique())
 
     counts["setting"] = pd.Categorical(
         counts["setting"],
