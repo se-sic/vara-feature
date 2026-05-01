@@ -19,6 +19,7 @@ OUT_DIR.mkdir(exist_ok=True)
 
 RQ1_RESULTS = DATA_DIR / "rq1_spearman_results.csv"
 RQ1_SUMMARY = DATA_DIR / "rq1_summary.csv"
+RQ1_RAW = DATA_DIR / "rq1_raw_values.csv"
 RQ2_RESULTS = DATA_DIR / "rq2_kruskal_dunn_results.csv"
 RQ2_SUMMARY = DATA_DIR / "rq2_summary.csv"
 RQ2_RAW = DATA_DIR / "rq2_raw_values.csv"
@@ -322,6 +323,116 @@ def plot_rq1_mean_rho_bar(rq1_summary: pd.DataFrame)-> None:
     fig.savefig(OUT_DIR / "rq1_mean_rho_bar.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
+def plot_rq1_default_difference_boxplots(rq1_raw: pd.DataFrame) -> None:
+    default_metric = "Default"
+    all_metrics = sorted(m for m in rq1_raw["metric"].unique() if m != default_metric)
+    ordered_settings = [add_setting_label(c, s) for c, s in SETTING_ORDER]
+
+    strategy_order = [
+        SamplingStrategy.RANDOM.value,
+        SamplingStrategy.DISTANCE.value,
+        SamplingStrategy.SOLVER.value,
+    ]
+
+    offsets = {
+        SamplingStrategy.RANDOM.value: -0.25,
+        SamplingStrategy.DISTANCE.value: 0.0,
+        SamplingStrategy.SOLVER.value: 0.25,
+    }
+    width = 0.22
+
+    for other_metric in all_metrics:
+        default_df = rq1_raw[rq1_raw["metric"] == default_metric].copy()
+        other_df = rq1_raw[rq1_raw["metric"] == other_metric].copy()
+
+        merge_cols = [
+            "system",
+            "strategy",
+            "coverage_t",
+            "sample_size_source_t",
+        ]
+
+        if "sample_size" in rq1_raw.columns:
+            merge_cols.append("sample_size")
+
+        paired = default_df.merge(
+            other_df,
+            on=merge_cols,
+            suffixes=("_default", "_other"),
+        )
+
+        paired["difference"] = (
+            paired["coverage_default"].astype(float)
+            - paired["coverage_other"].astype(float)
+        )
+
+        paired["setting"] = paired.apply(
+            lambda row: add_setting_label(
+                int(row["coverage_t"]),
+                int(row["sample_size_source_t"]),
+            ),
+            axis=1,
+        )
+
+        fig, ax = plt.subplots(figsize=(14, 6))
+        base_positions = np.arange(len(ordered_settings))
+
+        legend_handles: list[object] = []
+        legend_labels: list[str] = []
+
+        for strategy in strategy_order:
+            data: list[list[float]] = []
+            positions: list[float] = []
+
+            for setting_idx, setting in enumerate(ordered_settings):
+                values = paired.loc[
+                    (paired["setting"] == setting) &
+                    (paired["strategy"] == strategy),
+                    "difference",
+                ].dropna().astype(float)
+
+                if values.empty:
+                    continue
+
+                data.append(values.tolist())
+                positions.append(float(base_positions[setting_idx]) + offsets[strategy])
+
+            if not data:
+                continue
+
+            box = ax.boxplot(
+                data,
+                positions=positions,
+                widths=width,
+                patch_artist=True,
+                manage_ticks=False,
+            )
+
+            for patch in box["boxes"]:
+                patch.set_alpha(0.6)
+
+            legend_handles.append(box["boxes"][0])
+            legend_labels.append(strategy)
+
+        ax.axhline(0.0, linestyle="--", linewidth=1)
+
+        ax.set_xticks(base_positions)
+        ax.set_xticklabels(ordered_settings, rotation=45, ha="right")
+        ax.set_ylabel(f"coverage difference ({default_metric} - {other_metric})")
+        ax.set_title(f"RQ1: Distribution of {default_metric} - {other_metric}")
+
+        if legend_handles:
+            ax.legend(legend_handles, legend_labels, title="strategy")
+
+        fig.tight_layout()
+
+        safe_metric = str(other_metric).replace(" ", "_").replace("/", "_")
+        fig.savefig(
+            OUT_DIR / f"rq1_default_diff_boxplots_{safe_metric}.png",
+            dpi=300,
+            bbox_inches="tight",
+        )
+        plt.close(fig)
 
 
 
@@ -835,6 +946,7 @@ def plot_rq3_boxplots(rq3_raw: pd.DataFrame) -> None:
 def get_data() -> dict[str, pd.DataFrame]:
     rq1_results = pd.read_csv(RQ1_RESULTS)
     rq1_summary = pd.read_csv(RQ1_SUMMARY)
+    rq1_raw = pd.read_csv(RQ1_RAW)
 
     rq2_results = pd.read_csv(RQ2_RESULTS)
     rq2_summary = pd.read_csv(RQ2_SUMMARY)
@@ -855,6 +967,7 @@ def get_data() -> dict[str, pd.DataFrame]:
     return {
         "rq1": rq1_results,
         "rq1_summary": rq1_summary,
+        "rq1_raw": rq1_raw,
         "rq2": rq2_results,
         "rq2_summary": rq2_summary,
         "rq2_raw": rq2_raw,
@@ -870,6 +983,7 @@ def main() -> None:
     plot_rq1_setting_heatmaps(data["rq1"])
     plot_rq1_mean_rho_bar(data["rq1_summary"])
     plot_rq1_setting_heatmaps_by_strategy(data["rq1"])
+    plot_rq1_default_difference_boxplots(data["rq1_raw"])
 
     plot_rq2_best_strategy_heatmap(data["rq2"])
     plot_rq2_full_ordering_bars(data["rq2"])

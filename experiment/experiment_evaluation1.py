@@ -34,6 +34,11 @@ def main(output_csv):
 
     print(mean.head())
 
+    RESULTS_DIR = Path("results")
+    RESULTS_DIR.mkdir(exist_ok=True)
+
+    mean.to_csv(RESULTS_DIR / "rq1_raw_values.csv", index=False)
+
     results = []
 
     for strategy in SamplingStrategies:
