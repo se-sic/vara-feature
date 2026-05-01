@@ -111,7 +111,7 @@ def main(output_csv):
 
     summary["interpretation"] = summary.apply(interpret_row, axis=1)
     summary = summary.sort_values(["mean_abs_rho", "mean_rho"], ascending=False)
-    summary_df.to_csv(RESULTS_DIR / "rq1_summary.csv", index=False)
+    summary.to_csv(RESULTS_DIR / "rq1_summary.csv", index=False)
 
 if __name__ == "__main__":
     import sys

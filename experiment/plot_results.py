@@ -6,6 +6,7 @@ from typing import cast
 from matplotlib.axes import Axes
 from matplotlib.patches import Rectangle
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap, BoundaryNorm, to_rgb
+from matplotlib.patches import Patch
 
 import numpy as np
 import pandas as pd
@@ -37,16 +38,16 @@ SETTING_ORDER = [
 CONSTRAINT_ORDER = [Strength.WEAK.value, Strength.MODERATE.value, Strength.STRONG.value, Strength.VERYSTRONG.value]
 
 STRATEGY_COLORS = {
-    SamplingStrategy.RANDOM.value: "#4477AA",   # blue
-    SamplingStrategy.DISTANCE.value: "#228833", # green
-    SamplingStrategy.SOLVER.value: "#AA3377",   # purple/magenta
+    SamplingStrategy.RANDOM.value: "#4477AA",   
+    SamplingStrategy.DISTANCE.value: "#228833", 
+    SamplingStrategy.SOLVER.value: "#AA3377",   
 }
 
 CONSTRAINT_COLORS = {
-    Strength.WEAK.value: "#4477AA",
-    Strength.MODERATE.value: "#66CCEE",
-    Strength.STRONG.value: "#228833",
-    Strength.VERYSTRONG.value: "#AA3377",
+    Strength.WEAK.value: "#D1C1E1",
+    Strength.MODERATE.value: "#B58FC2",
+    Strength.STRONG.value: "#9B62A7",
+    Strength.VERYSTRONG.value: "#6F4C9B",
 }
 
 def get_value_enum(value: object) -> str:
@@ -409,6 +410,7 @@ def plot_rq1_default_difference_boxplots(rq1_raw: pd.DataFrame) -> None:
             )
 
             for patch in box["boxes"]:
+                patch.set_facecolor(STRATEGY_COLORS[strategy])
                 patch.set_alpha(0.6)
 
             legend_handles.append(box["boxes"][0])
@@ -943,6 +945,125 @@ def plot_rq3_boxplots(rq3_raw: pd.DataFrame) -> None:
         fig.savefig(OUT_DIR / f"rq3_boxplots_{metric}.png", dpi=300, bbox_inches="tight")
         plt.close(fig)
 
+def plot_rq3_boxplots_by_strength_and_source_t(rq3_raw: pd.DataFrame) -> None:
+    strength_order = [
+        Strength.WEAK.value,
+        Strength.MODERATE.value,
+        Strength.STRONG.value,
+        Strength.VERYSTRONG.value,
+    ]
+    source_t_order = [1, 2, 3]
+    coverage_t_order = [1, 2, 3]
+
+    metric_order = sorted(rq3_raw["metric"].dropna().unique())
+
+    metric_colors = {
+        metric: color
+        for metric, color in zip(
+            metric_order,
+            [
+                "#332288",
+                "#88CCEE",
+                "#44AA99",
+                "#117733",
+                "#999933",
+                "#DDCC77",
+                "#CC6677",
+                "#AA4499",
+            ],
+        )
+    }
+
+    for strength in strength_order:
+        for source_t in source_t_order:
+            subset = rq3_raw[
+                (rq3_raw["constraint_level"] == strength) &
+                (rq3_raw["sample_size_source_t"] == source_t)
+            ].copy()
+
+            if subset.empty:
+                continue
+
+            fig, ax = plt.subplots(figsize=(14, 6))
+
+            base_positions = np.arange(len(coverage_t_order), dtype=float)
+
+            n_metrics = len(metric_order)
+            total_width = 0.8
+            width = total_width / n_metrics
+            offsets = np.linspace(
+                -total_width / 2 + width / 2,
+                total_width / 2 - width / 2,
+                n_metrics,
+            )
+
+            legend_handles: list[Patch] = []
+
+            for metric_idx, metric in enumerate(metric_order):
+                data: list[list[float]] = []
+                positions: list[float] = []
+
+                for cov_idx, coverage_t in enumerate(coverage_t_order):
+                    values = subset.loc[
+                        (subset["metric"] == metric) &
+                        (subset["coverage_t"] == coverage_t),
+                        "coverage",
+                    ].dropna().astype(float)
+
+                    if values.empty:
+                        continue
+
+                    data.append(values.tolist())
+                    positions.append(float(base_positions[cov_idx]) + float(offsets[metric_idx]))
+
+                if not data:
+                    continue
+
+                box = ax.boxplot(
+                    data,
+                    positions=positions,
+                    widths=width * 0.9,
+                    patch_artist=True,
+                    manage_ticks=False,
+                )
+
+                for patch in box["boxes"]:
+                    patch.set_facecolor(metric_colors[metric])
+                    patch.set_alpha(0.7)
+
+                for median in box["medians"]:
+                    median.set_color("black")
+
+                legend_handles.append(
+                    Patch(facecolor=metric_colors[metric], edgecolor="black", label=str(metric))
+                )
+
+            ax.set_xticks(base_positions)
+            ax.set_xticklabels([str(t) for t in coverage_t_order])
+            ax.set_xlabel("coverage t")
+            ax.set_ylabel("coverage value")
+            ax.set_title(
+                f"RQ3: Coverage distribution by metric "
+                f"({strength}, sample size source t={source_t})"
+            )
+
+            if legend_handles:
+                ax.legend(
+                    handles=legend_handles,
+                    title="metric",
+                    bbox_to_anchor=(1.02, 1),
+                    loc="upper left",
+                )
+
+            fig.tight_layout()
+            safe_strength = str(strength).replace(" ", "_").lower()
+            fig.savefig(
+                OUT_DIR / f"rq3_boxplots_{safe_strength}_{source_t}.png",
+                dpi=300,
+                bbox_inches="tight",
+            )
+            plt.close(fig)
+
 def get_data() -> dict[str, pd.DataFrame]:
     rq1_results = pd.read_csv(RQ1_RESULTS)
     rq1_summary = pd.read_csv(RQ1_SUMMARY)
@@ -996,6 +1117,7 @@ def main() -> None:
     plot_rq3_trend_direction_summary(data["rq3_summary"])
     plot_rq3_boxplots(data["rq3_raw"])
     plot_rq3_system_counts_by_constraint_level(data["rq3_raw"])
+    plot_rq3_boxplots_by_strength_and_source_t(data["rq3_raw"])
 
     print(f"Plots written to: {OUT_DIR.resolve()}")
 
