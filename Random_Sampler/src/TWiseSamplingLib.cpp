@@ -8,6 +8,10 @@
 #include <sstream>
 #include <stdexcept>
 #include <utility>
+#include <algorithm>
+#include <cstdint>
+#include <numeric>
+#include <queue>
 
 namespace twise {
 
@@ -20,7 +24,7 @@ std::string getConfigCachePath(const std::string& SystemName) {
 
 std::string getCoveredIdsCachePath(const std::string& SystemName, size_t T) {
     std::filesystem::create_directories("cached_covered_ids");
-    return "cached_covered_ids/" + SystemName + "_t" + std::to_string(T) + "_covered_ids.csv";
+    return "cached_covered_ids/" + SystemName + "_t" + std::to_string(T) + "_covered_ids.bin";
 }
 
 void saveConfigurationsToCsv(
@@ -266,73 +270,55 @@ void checkAllValueAssignments(
     }
 }
 
-void saveCoveredIdsToCsv(
+void saveCoveredIdsToBinary(
     const std::string& Path,
     const CoveredIdsList& CoveredIdsPerConfig,
     size_t NumCandidates,
     size_t NumConfigs
 ) {
-    std::ofstream Out(Path);
+    std::ofstream Out(Path, std::ios::binary);
     if (!Out) {
         throw std::runtime_error("Could not open covered-ids cache for writing: " + Path);
     }
 
-    Out << "num_candidates," << NumCandidates << "\n";
-    Out << "num_configs," << NumConfigs << "\n";
+    Out.write(reinterpret_cast<const char*>(&NumCandidates), sizeof(NumCandidates));
+    Out.write(reinterpret_cast<const char*>(&NumConfigs), sizeof(NumConfigs));
 
     for (const auto& CoveredIds : CoveredIdsPerConfig) {
-        for (size_t I = 0; I < CoveredIds.size(); ++I) {
-            Out << CoveredIds[I];
-            if (I + 1 < CoveredIds.size()) {
-                Out << ",";
-            }
+        const size_t RowSize = CoveredIds.size();
+        Out.write(reinterpret_cast<const char*>(&RowSize), sizeof(RowSize));
+
+        if (RowSize > 0) {
+            Out.write(
+                reinterpret_cast<const char*>(CoveredIds.data()),
+                static_cast<std::streamsize>(RowSize * sizeof(CandidateId))
+            );
         }
-        Out << "\n";
+    }
+
+    if (!Out) {
+        throw std::runtime_error("Failed while writing covered-ids cache: " + Path);
     }
 }
 
-CoveredIdsList loadCoveredIdsFromCsv(
+CoveredIdsList loadCoveredIdsFromBinary(
     const std::string& Path,
     size_t ExpectedNumCandidates,
     size_t ExpectedNumConfigs
 ) {
-    std::ifstream In(Path);
+    std::ifstream In(Path, std::ios::binary);
     if (!In) {
         throw std::runtime_error("Could not open covered-ids cache for reading: " + Path);
     }
 
-    std::string Line;
     size_t NumCandidates = 0;
     size_t NumConfigs = 0;
 
-    if (!std::getline(In, Line)) {
-        throw std::runtime_error("Covered-ids cache is empty: " + Path);
-    }
-    {
-        std::stringstream SS(Line);
-        std::string Label;
-        std::string Value;
-        std::getline(SS, Label, ',');
-        std::getline(SS, Value, ',');
-        if (Label != "num_candidates") {
-            throw std::runtime_error("Invalid covered-ids cache header in: " + Path);
-        }
-        NumCandidates = std::stoull(Value);
-    }
+    In.read(reinterpret_cast<char*>(&NumCandidates), sizeof(NumCandidates));
+    In.read(reinterpret_cast<char*>(&NumConfigs), sizeof(NumConfigs));
 
-    if (!std::getline(In, Line)) {
-        throw std::runtime_error("Covered-ids cache missing config-count header: " + Path);
-    }
-    {
-        std::stringstream SS(Line);
-        std::string Label;
-        std::string Value;
-        std::getline(SS, Label, ',');
-        std::getline(SS, Value, ',');
-        if (Label != "num_configs") {
-            throw std::runtime_error("Invalid covered-ids cache second header in: " + Path);
-        }
-        NumConfigs = std::stoull(Value);
+    if (!In) {
+        throw std::runtime_error("Failed to read covered-ids cache header: " + Path);
     }
 
     if (NumCandidates != ExpectedNumCandidates) {
@@ -343,24 +329,25 @@ CoveredIdsList loadCoveredIdsFromCsv(
     }
 
     CoveredIdsList Result;
-    Result.reserve(NumConfigs);
+    Result.resize(NumConfigs);
 
-    while (std::getline(In, Line)) {
-        std::vector<CandidateId> CoveredIds;
-
-        if (!Line.empty()) {
-            std::stringstream SS(Line);
-            std::string Cell;
-            while (std::getline(SS, Cell, ',')) {
-                CoveredIds.push_back(std::stoull(Cell));
-            }
+    for (size_t I = 0; I < NumConfigs; ++I) {
+        size_t RowSize = 0;
+        In.read(reinterpret_cast<char*>(&RowSize), sizeof(RowSize));
+        if (!In) {
+            throw std::runtime_error("Failed to read covered-ids row size in: " + Path);
         }
 
-        Result.push_back(std::move(CoveredIds));
-    }
-
-    if (Result.size() != ExpectedNumConfigs) {
-        throw std::runtime_error("Covered-ids cache row count mismatch in: " + Path);
+        Result[I].resize(RowSize);
+        if (RowSize > 0) {
+            In.read(
+                reinterpret_cast<char*>(Result[I].data()),
+                static_cast<std::streamsize>(RowSize * sizeof(CandidateId))
+            );
+            if (!In) {
+                throw std::runtime_error("Failed to read covered-ids row data in: " + Path);
+            }
+        }
     }
 
     return Result;
@@ -530,8 +517,10 @@ CoveredIdsList precomputeCoveredIdsPerConfig(
     CoveredIdsList Result;
     Result.reserve(AllConfigs.size());
 
-    for (const Configuration& Config : AllConfigs) {
+    for (size_t ConfigIdx = 0; ConfigIdx < AllConfigs.size(); ++ConfigIdx) {
+        const Configuration& Config = AllConfigs[ConfigIdx];
         std::vector<CandidateId> CoveredIds;
+        CoveredIds.reserve(CandidateList.size() / 8);
 
         for (size_t Id = 0; Id < CandidateList.size(); ++Id) {
             const auto& Interaction = CandidateList[Id];
@@ -541,12 +530,18 @@ CoveredIdsList precomputeCoveredIdsPerConfig(
         }
 
         Result.push_back(std::move(CoveredIds));
+
+        if ((ConfigIdx + 1) % 1000 == 0 || ConfigIdx + 1 == AllConfigs.size()) {
+            std::cout << "  Covered-ids progress: " << (ConfigIdx + 1)
+                      << "/" << AllConfigs.size() << "\r" << std::flush;
+        }
     }
 
+    std::cout << "\n";
     return Result;
 }
 
-CoveredIdsList loadOrPrecomputeCoveredIdsPerConfig(
+overedIdsList loadOrPrecomputeCoveredIdsPerConfig(
     const std::string& SystemName,
     size_t T,
     const std::vector<Configuration>& AllConfigs,
@@ -557,7 +552,7 @@ CoveredIdsList loadOrPrecomputeCoveredIdsPerConfig(
 
     if (std::filesystem::exists(CachePath)) {
         std::cout << "Loading covered-ids cache from " << CachePath << "...\n";
-        auto CoveredIds = loadCoveredIdsFromCsv(
+        auto CoveredIds = loadCoveredIdsFromBinary(
             CachePath,
             CandidateList.size(),
             AllConfigs.size()
@@ -573,7 +568,7 @@ CoveredIdsList loadOrPrecomputeCoveredIdsPerConfig(
         FeatureMap
     );
 
-    saveCoveredIdsToCsv(
+    saveCoveredIdsToBinary(
         CachePath,
         CoveredIds,
         CandidateList.size(),
@@ -589,46 +584,69 @@ std::vector<size_t> greedyTWiseSamplingWithIds(
     const CoveredIdsList& CoveredIdsPerConfig,
     size_t NumCandidates
 ) {
-    std::vector<bool> Uncovered(NumCandidates, true);
-    std::vector<bool> AlreadyChosen(AllConfigs.size(), false);
+    struct HeapEntry {
+        size_t Score;
+        size_t ConfigIdx;
+
+        bool operator<(const HeapEntry& Other) const {
+            return Score < Other.Score;
+        }
+    };
+
+    auto recomputeScore = [&](size_t ConfigIdx, const std::vector<uint8_t>& Uncovered) -> size_t {
+        size_t Score = 0;
+        for (size_t Id : CoveredIdsPerConfig[ConfigIdx]) {
+            if (Uncovered[Id]) {
+                ++Score;
+            }
+        }
+        return Score;
+    };
+
+    std::vector<uint8_t> Uncovered(NumCandidates, 1);
+    std::vector<uint8_t> AlreadyChosen(AllConfigs.size(), 0);
     std::vector<size_t> SelectedIdxs;
+    SelectedIdxs.reserve(AllConfigs.size());
 
     size_t RemainingCount = NumCandidates;
 
-    while (RemainingCount > 0) {
-        auto BestIdx = static_cast<size_t>(-1);
-        size_t BestScore = 0;
+    std::priority_queue<HeapEntry> Heap;
+    for (size_t I = 0; I < AllConfigs.size(); ++I) {
+        Heap.push(HeapEntry{CoveredIdsPerConfig[I].size(), I});
+    }
 
-        for (size_t I = 0; I < AllConfigs.size(); ++I) {
-            if (AlreadyChosen[I]) {
-                continue;
-            }
+    while (RemainingCount > 0 && !Heap.empty()) {
+        HeapEntry Top = Heap.top();
+        Heap.pop();
 
-            size_t Score = 0;
-            for (size_t Id : CoveredIdsPerConfig[I]) {
-                if (Uncovered[Id]) {
-                    ++Score;
-                }
-            }
-
-            if (Score > BestScore) {
-                BestScore = Score;
-                BestIdx = I;
-            }
+        if (AlreadyChosen[Top.ConfigIdx]) {
+            continue;
         }
 
-        if (BestIdx == static_cast<size_t>(-1) || BestScore == 0) {
+        const size_t TrueScore = recomputeScore(Top.ConfigIdx, Uncovered);
+
+        if (TrueScore == 0) {
             break;
         }
 
-        AlreadyChosen[BestIdx] = true;
-        SelectedIdxs.push_back(BestIdx);
+        while (!Heap.empty() && AlreadyChosen[Heap.top().ConfigIdx]) {
+            Heap.pop();
+        }
 
-        for (size_t Id : CoveredIdsPerConfig[BestIdx]) {
-            if (Uncovered[Id]) {
-                Uncovered[Id] = false;
-                --RemainingCount;
+        const size_t NextBestUpperBound = Heap.empty() ? 0 : Heap.top().Score;
+
+        if (TrueScore >= NextBestUpperBound) {
+            AlreadyChosen[Top.ConfigIdx] = 1;
+            SelectedIdxs.push_back(Top.ConfigIdx);
+
+            for (size_t Id : CoveredIdsPerConfig[Top.ConfigIdx]) {
+                if (Uncovered[Id]) {
+                    Uncovered[Id] = 0;
+                    --RemainingCount;
+                }
             }
+        } else {
+            Heap.push(HeapEntry{TrueScore, Top.ConfigIdx});
         }
     }
 
