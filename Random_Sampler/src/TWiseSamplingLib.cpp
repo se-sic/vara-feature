@@ -1,17 +1,16 @@
-#include "TWiseSamplingLib.h"
 #include "BDDFactory.h"
+#include "TWiseSamplingLib.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <queue>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
-#include <algorithm>
-#include <cstdint>
-#include <numeric>
-#include <queue>
 
 namespace twise {
 
@@ -541,7 +540,7 @@ CoveredIdsList precomputeCoveredIdsPerConfig(
     return Result;
 }
 
-overedIdsList loadOrPrecomputeCoveredIdsPerConfig(
+CoveredIdsList loadOrPrecomputeCoveredIdsPerConfig(
     const std::string& SystemName,
     size_t T,
     const std::vector<Configuration>& AllConfigs,
@@ -612,7 +611,7 @@ std::vector<size_t> greedyTWiseSamplingWithIds(
 
     std::priority_queue<HeapEntry> Heap;
     for (size_t I = 0; I < AllConfigs.size(); ++I) {
-        Heap.push(HeapEntry{CoveredIdsPerConfig[I].size(), I});
+        Heap.push(HeapEntry{.Score=CoveredIdsPerConfig[I].size(), .ConfigIdx=I});
     }
 
     while (RemainingCount > 0 && !Heap.empty()) {
@@ -646,7 +645,7 @@ std::vector<size_t> greedyTWiseSamplingWithIds(
                 }
             }
         } else {
-            Heap.push(HeapEntry{TrueScore, Top.ConfigIdx});
+            Heap.push(HeapEntry{.Score=TrueScore, .ConfigIdx=Top.ConfigIdx});
         }
     }
 
