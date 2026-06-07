@@ -508,6 +508,58 @@ bool configurationCoversInteraction(
     return true;
 }
 
+std::vector<size_t> greedyTWiseSamplingWithIdsNaive(
+    const std::vector<Configuration>& AllConfigs,
+    const CoveredIdsList& CoveredIdsPerConfig,
+    size_t NumCandidates
+) {
+    std::vector<bool> Uncovered(NumCandidates, true);
+    std::vector<bool> AlreadyChosen(AllConfigs.size(), false);
+    std::vector<size_t> SelectedIdxs;
+
+    size_t RemainingCount = NumCandidates;
+
+    while (RemainingCount > 0) {
+        auto BestIdx = static_cast<size_t>(-1);
+        size_t BestScore = 0;
+
+        for (size_t I = 0; I < AllConfigs.size(); ++I) {
+            if (AlreadyChosen[I]) {
+                continue;
+            }
+
+            size_t Score = 0;
+            for (size_t Id : CoveredIdsPerConfig[I]) {
+                if (Uncovered[Id]) {
+                    ++Score;
+                }
+            }
+
+            if (Score > BestScore) {
+                BestScore = Score;
+                BestIdx = I;
+            }
+        }
+
+        if (BestIdx == static_cast<size_t>(-1) || BestScore == 0) {
+            break;
+        }
+
+        AlreadyChosen[BestIdx] = true;
+        SelectedIdxs.push_back(BestIdx);
+
+        for (size_t Id : CoveredIdsPerConfig[BestIdx]) {
+            if (Uncovered[Id]) {
+                Uncovered[Id] = false;
+                --RemainingCount;
+            }
+        }
+    }
+
+    return SelectedIdxs;
+}
+
+
 CoveredIdsList precomputeCoveredIdsPerConfig(
     const std::vector<Configuration>& AllConfigs,
     const std::vector<coverage::Interaction>& CandidateList,
@@ -693,13 +745,26 @@ size_t computeGreedySampleSize(
         FeatureMap
     );
 
-    std::vector<size_t> SelectedIdxs = greedyTWiseSamplingWithIds(
+    std::vector<size_t> SelectedIdxsNaive = greedyTWiseSamplingWithIdsNaive(
         AllConfigs,
         CoveredIdsPerConfig,
         CandidateList.size()
     );
 
-    return SelectedIdxs.size();
+    std::vector<size_t> SelectedIdxsLazy = greedyTWiseSamplingWithIds(
+        AllConfigs,
+        CoveredIdsPerConfig,
+        CandidateList.size()
+    );
+
+    std::cout << "Naive size: " << SelectedIdxsNaive.size() << "\n";
+    std::cout << "Lazy size: " << SelectedIdxsLazy.size() << "\n";
+
+    if (SelectedIdxsNaive.size() != SelectedIdxsLazy.size()) {
+        throw std::runtime_error("Lazy greedy result differs from naive greedy");
+    }
+
+    return SelectedIdxsLazy.size();
 }
 
 void appendResultsToCsv(
