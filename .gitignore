@@ -27,3 +27,9 @@ CMakeCache.txt
 .vscode/launch.json
 
 .vscode/launch.json
+
+# CMake build artifacts
+CMakeCache.txt
+CMakeFiles/
+build/
+build-debug/
