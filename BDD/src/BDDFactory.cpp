@@ -79,6 +79,16 @@ namespace bdd::sample
     //     if (!Export) {    
     //         std::cerr << "DDDMP export failed with error" << '\n';
     //     }
+       std::cout << "Final BDD has " << FinalBdd.node_count() << " nodes and "  << "\n";
+       std::string_view DiagramName = "Bibi";
+       std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
+       auto Result = Manager.visualize(DiagramName, Funcs, 4000);
+       if(!Result) {
+            std::cerr << "Error visualizing BDD: " << Result.error().message() << '\n';
+       } else {
+            std::cout << "BDD visualization successful.\n";
+       }
+       Manager.export_dddmp("hippacc.dddmp", Funcs).value();
 
        return FinalBdd;
     }

@@ -6,7 +6,7 @@
       "request": "launch",
       "name": "Debug random_sampler",
       "program": "${workspaceFolder}/build/bin/random_sampler",
-      "args": ["Random_Sampler/examples/Hippacc.xml"],
+      "args": ["Random_Sampler/examples/VP9.xml"],
       "cwd": "${workspaceFolder}",
       "terminal": "integrated",
       "env": {},
