@@ -6,12 +6,14 @@
       "request": "launch",
       "name": "Debug random_sampler",
       "program": "${workspaceFolder}/build/bin/random_sampler",
-      "args": ["Random_Sampler/examples/VP9.xml"],
+      "args": [
+        "${workspaceFolder}/Random_Sampler/examples/Irzip.xml"
+      ],
       "cwd": "${workspaceFolder}",
       "terminal": "integrated",
       "env": {},
       "sourceMap": {
-        ".": "${workspaceFolder}"
+        "/Users/oracionoftime/Documents/UdS/InterplayML_Sampling/vara-feature": "${workspaceFolder}"
       }
     }
   ]

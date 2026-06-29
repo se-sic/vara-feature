@@ -25,8 +25,8 @@ namespace bdd::sample {
             // If no parent (top-level feature)
             if(ParentId < 0) {
                 if (!IsOpt) {
-                    std::cout << "  Forcing mandatory top-level feature: " << Manager.var_name(Id) << "\n";
-                    FinalBdd &= Child;  
+                    std::cout << "Forcing mandatory top-level feature: " << Manager.var_name(Id) << "\n";
+                    FinalBdd &= Child;
                 }
                 return vara::Ok<void>();
             }

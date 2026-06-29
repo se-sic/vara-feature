@@ -42,6 +42,10 @@ add_executable(random_sampler
   src/main.cpp
   src/BDDSampler.cpp
   src/Plotter.cpp
+  src/EnumerateConfigs.cpp
+  src/EnumerateInteractions.cpp
+  src/InteractionCoverage.cpp
+  src/TWiseSampler.cpp
   #../BDD/src/BDDFactory.cpp
 )
 

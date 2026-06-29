@@ -42,7 +42,7 @@ namespace bdd::sample {
       }
 
       // Main BDD traversal
-      while (!Trav.valid()) {
+      while (Trav.node_var().has_value()) {
         auto VarIdOpt = Trav.node_var();
         oxidd::var_no_t CurrentVar = VarIdOpt.value();
 

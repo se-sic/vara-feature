@@ -1,12 +1,18 @@
 #include "BDDSampler.h"
 #include "../../BDD/include/BDDFactory.h"
+#include "EnumerateConfigs.h"
+#include "EnumerateInteractions.h"
+#include "InteractionCoverage.h"
 #include "Plotter.h"
+#include "TWiseSampler.h"
+#include "oxidd/util.hpp"
 #include "vara/Feature/FeatureModelParser.h"
 #include <cstddef>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 extern "C" {
 #include <oxidd/bdd.hpp>
@@ -40,7 +46,7 @@ int main(int argc, char* argv[]) noexcept(false){
         // Parse the content
         vara::feature::FeatureModelXmlParser Parser(XMLContent);
 
-        // Verify the feature model is valid
+        // Verify if the feature model is valid
         auto Verify = Parser.verifyFeatureModel();
         if(!Verify) {
             throw std::runtime_error("Error parsing XML: verification failed");
@@ -64,19 +70,27 @@ int main(int argc, char* argv[]) noexcept(false){
     
     std::cout << "BDD constructed successfully." << '\n';
 
-    // Generate a single sample configuration
-    std::vector<bool> Sample = generateConfiguration(
-        Manager, 
-        FinalBDD, 
-        Factory,
-        &Factory.SatMap
-    );
+    //Enumeration of all configurations
+    auto Pool = bdd::sample::EnumerateConfigs(Manager, FinalBDD);
+    double Expected = FinalBDD.sat_count_double(Manager.num_vars());
+    std::cout << "Valid Configs: " << Pool.size() << " (expected " << Expected << ")\n";
+    if (Pool.size() != static_cast<std::size_t>(Expected)) {
+        std::cerr << "Enumeration count mismatch\n";
+    }
 
+    //Enumeration of all interactions
+    auto Interactions = bdd::sample::EnumerateInteractions(Manager, FinalBDD, 2);
+    std::size_t Num = Manager.num_vars();
+    std::size_t UpperBound = (Num * (Num -1) / 2)* 4;
+    std::cout << "Feasibel 2-wise interaction " << Interactions.size() << " (upper bound " << UpperBound << ")\n";
+
+
+    // Uniform Random Sampling //
     std::vector<size_t> BellCounts;
     std::map<std::vector<bool>, int> CountConfig;
 
-    size_t N = 100000; // Number of samples to generate
-
+    size_t N = 100; // Number of samples to generate
+       
     BellCounts.reserve(N);
 
     // Generate multiple samples and update frequency counts
@@ -88,6 +102,17 @@ int main(int argc, char* argv[]) noexcept(false){
             &Factory.SatMap
         );
 
+        // Validate the generated configuration against the BDD
+        std::vector<std::pair<oxidd::var_no_t, bool>> ValidSamples; // NOLINT
+        ValidSamples.reserve(S.size());
+        for(oxidd::var_no_t V = 0; V < S.size(); ++V) {
+            ValidSamples.emplace_back(V, S[V]);
+        }
+        if(!FinalBDD.eval(ValidSamples)){
+            std::cerr << "Generated an invalid configuration at iteration " << I << "This should not happen.\n";
+            std::abort();
+        }
+
         size_t Count = 0;
         for(auto [v, val] : llvm::enumerate(S)) {
             if(val) { ++Count; };
@@ -98,6 +123,7 @@ int main(int argc, char* argv[]) noexcept(false){
         int &FeatureCount = CountConfig[std::move(S)];
         ++FeatureCount;
     }
+
 
     {
         std::ofstream Out("Random_Sampler/scripts/bell.csv");
@@ -117,10 +143,41 @@ int main(int argc, char* argv[]) noexcept(false){
     }
     Out.close();
 
+
+    // TWise Sampling //
+    for(size_t I=0; I<1; ++I) {
+        auto S = bdd::sample::TSample(Pool, Interactions);
+        // Validate the generated configurations against the BDD
+        for (const auto &Config : S) {
+            std::vector<std::pair<oxidd::var_no_t, bool>> ValidTSamples;
+            ValidTSamples.reserve(Config.size());
+            for(oxidd::var_no_t V = 0; V < Config.size(); ++V) {
+                ValidTSamples.emplace_back(V, Config[V]);
+            }
+            if(!FinalBDD.eval(ValidTSamples)){
+                std::cerr << "Generated an invalid configuration at iteration " << I << "This should not happen.\n";
+                std::abort();
+            }
+        }
+        // Validate the configurations against the coverage of each interaction 
+        for (const auto &I: Interactions) {
+            bool CoveredInts = false;
+            for (const auto &Config : S) {
+                if(bdd::sample::CoverageCheck(Config, I)) {
+                    CoveredInts = true; break;
+                }
+            }
+            if(!CoveredInts) {
+                std::cout << "Sample did not cover all interactions" << "\n";
+            }
+        }
+    }
+
+
     //std::string BellCSV = "Random_Sampler/scripts/bell.csv";
     std::string ConfigCSV = "Random_Sampler/scripts/Configs.csv";
     //std::string BellCmd = "/Users/oracionoftime/.pyenv/versions/vara-feature-env/bin/python3 Random_Sampler/scripts/plot_dist.py " + BellCSV;
-    std::string ConfigCmd = "/Users/oracionoftime/.pyenv/versions/vara-feature-env/bin/python3 Random_Sampler/scripts/plot_dist.py " + ConfigCSV;
+    std::string ConfigCmd = "python3 Random_Sampler/scripts/plot_dist.py " + ConfigCSV;
 
     //int Bell = std::system(BellCmd.c_str());
     int Configs = std::system(ConfigCmd.c_str());
