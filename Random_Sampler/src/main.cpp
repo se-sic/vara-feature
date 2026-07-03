@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) noexcept(false){
         ++FeatureCount;
 
         if ((I + 1) % 10000 == 0) {
-            std::cout << "  Generated " << (I + 1) << " samples...\r" << std::flush;
+            std::cout << "  Generated " << (I + 1) << " samples\r" << std::flush;
         }
     }
 
@@ -185,7 +185,7 @@ int main(int argc, char* argv[]) noexcept(false){
     };
 
     for (size_t T : {1, 2, 3}) { 
-        std::cout << "\033[35m" << "\nEvaluating " << T << "-wise coverage...\033[0m";
+        std::cout << "\033[35m" << "\nEvaluating " << T << "-wise coverage\033[0m";
         
         // Incremental evaluation
         auto Results = Evaluator.evaluateIncremental(AllSamples, T, Checkpoints);
@@ -228,7 +228,7 @@ int main(int argc, char* argv[]) noexcept(false){
     int CoveragePlot = std::system(CoveragePlotCmd.c_str());
     
     if (CoveragePlot != 0) {
-        std::cerr << "Note: Coverage plot script not found or failed. You can plot the CSVs manually.\n";
+        std::cerr << "Note: Coverage plot script not found or failed.\n";
     }
 
     std::cout << "Generated " << N << " random samples\n";

@@ -94,8 +94,9 @@ print(df.head())
 
 # Vielleicht samples zwischenspeichern 
 # Greedy ziehen aus xml. Lass BDD eine Liste von allen Configurations generieren lassen.
-# Liste an Kandiaten t-wise interactionen. schaue wie viele interactions eine Configuration covered. Nimm die configuration, die die meisten interactions covered. Pass auf Reihenfolge der interactions auf
-# Nimm die Interactions aus der Kandidaten liste raus, wiederhole solange bis entweder kandidaten list leer ist, oder configurations keine kandidaten covern
+# Generier eine Liste an Kandiaten t-wise interactionen. Schaue wie viele interactions jede Configuration covered. Nimm die configuration, die die meisten interactions covered. Pass auf Reihenfolge der interactions auf
+# Packe die Config mit den meistens interactions aus der alten Liste raus, und packe sie in deine Result Liste
+# Nimm die Interactions aus der Kandidaten liste raus. Wiederhole  dies solange bis entweder die Kandidaten list leer ist, oder configurations keine kandidaten covern
 
 experiment_evaluation1.main(output_csv)
 experiment_evaluation2.main(output_csv)

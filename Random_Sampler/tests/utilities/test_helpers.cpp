@@ -141,8 +141,6 @@ void printConfiguration(
             continue;
         }
         
-        std::cout << Feature->getName().str() 
-                  << "=" << (Config[Idx] ? "✓" : "✗") << " ";
         ++Idx;
     }
     std::cout << "\n";

@@ -4,6 +4,9 @@ from pathlib import Path
 from experiment_config import Strength, SamplingStrategy
 from typing import cast
 from matplotlib.axes import Axes
+_ORIGINAL_AXES_LEGEND = Axes.legend 
+from scipy import stats
+from adjustText import adjust_text
 from matplotlib.patches import Rectangle
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap, BoundaryNorm, to_rgb
 from matplotlib.patches import Patch
@@ -12,7 +15,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy.typing as npt
-
 
 
 plt.rcParams.update({
@@ -37,6 +39,16 @@ DATA_DIR = Path("results")
 OUT_DIR = Path("plots")
 OUT_DIR.mkdir(exist_ok=True)
 
+EXT = "pdf"
+
+FLIER_STYLE = dict(
+    marker="o",
+    markersize=3,
+    markerfacecolor="none",
+    markeredgewidth=0.6,
+    alpha=0.4,
+)
+
 RQ1_RESULTS = DATA_DIR / "rq1_spearman_results.csv"
 RQ1_SUMMARY = DATA_DIR / "rq1_summary.csv"
 RQ1_RAW = DATA_DIR / "rq1_raw_values.csv"
@@ -46,6 +58,11 @@ RQ2_RAW = DATA_DIR / "rq2_raw_values.csv"
 RQ3_RESULTS = DATA_DIR / "rq3_kruskal_dunn_results.csv"
 RQ3_SUMMARY = DATA_DIR / "rq3_summary.csv"
 RQ3_RAW = DATA_DIR / "rq3_raw_values.csv"
+
+RQ3_RESULTS_NEW = DATA_DIR / "rq3_spearman_results_new.csv"
+RQ3_SUMMARY_NEW = DATA_DIR / "rq3_summary_new.csv"
+RQ3_RAW_NEW = DATA_DIR / "rq3_raw_values_new.csv"
+
 
 
 SETTING_ORDER = [
@@ -69,6 +86,9 @@ CONSTRAINT_COLORS = {
     Strength.VERYSTRONG.value: "#6F4C9B",
 }
 
+RQ3_SCATTER_COLOR = "#6F4C9B"     
+RQ3_TREND_COLOR = "#C0392B"       
+
 
 def export_standalone_legend(
     labels: list[str],
@@ -79,12 +99,7 @@ def export_standalone_legend(
     fontsize: int = 20,
     title_fontsize: int = 22,
 ) -> None:
-    """Render a legend on its own and save it as a standalone PNG.
 
-    Used so the individual data figures can omit their legends (they are
-    repeated across many subfigures) and the legend can be placed once in
-    LaTeX instead.
-    """
     handles = [
         Patch(facecolor=color, edgecolor="black", alpha=0.7, label=label)
         for label, color in zip(labels, colors)
@@ -110,7 +125,6 @@ def export_standalone_legend(
 
 
 def export_all_legends(rq3_raw: pd.DataFrame | None = None) -> None:
-    """Write the three standalone legend PNGs used across the figures."""
     export_standalone_legend(
         labels=[
             SamplingStrategy.RANDOM.value,
@@ -122,14 +136,14 @@ def export_all_legends(rq3_raw: pd.DataFrame | None = None) -> None:
             STRATEGY_COLORS[SamplingStrategy.DISTANCE.value],
             STRATEGY_COLORS[SamplingStrategy.SOLVER.value],
         ],
-        output_file=OUT_DIR / "legend_strategy.png",
+        output_file=OUT_DIR / f"legend_strategy.{EXT}",
         title="strategy",
     )
 
     export_standalone_legend(
         labels=CONSTRAINT_ORDER,
         colors=[CONSTRAINT_COLORS[s] for s in CONSTRAINT_ORDER],
-        output_file=OUT_DIR / "legend_constraint.png",
+        output_file=OUT_DIR / f"legend_constraint.{EXT}",
         title="constraint strength",
     )
 
@@ -140,12 +154,19 @@ def export_all_legends(rq3_raw: pd.DataFrame | None = None) -> None:
             "#999933", "#DDCC77", "#CC6677", "#AA4499",
         ]
         export_standalone_legend(
-            labels=[str(m) for m in metric_order],
+            labels=[cut_off_metric_name(m) for m in metric_order],
             colors=palette[: len(metric_order)],
-            output_file=OUT_DIR / "legend_metric.png",
+            output_file=OUT_DIR / f"legend_metric.{EXT}",
             title="metric",
             ncol=min(4, len(metric_order)),
         )
+
+    export_standalone_legend(
+        labels=[r"$t_s=1$", r"$t_s=2$", r"$t_s=3$"],
+        colors=["#4477AA", "#228833", "#AA3377"],
+        output_file=OUT_DIR / f"legend_source_t.{EXT}",
+        title=r"source size $t_s$",
+    )
 
 
 TITLE_FONTSIZE = 24
@@ -170,12 +191,15 @@ def style_heatmap_axes(
     show_x = (row_idx == n_rows - 1)
     show_y = (col_idx == 0)
 
+    x_display = [cut_off_metric_name(label) for label in xlabels]
+    y_display = [cut_off_metric_name(label) for label in ylabels]
+
     ax.set_xticks(range(len(xlabels)))
     ax.set_yticks(range(len(ylabels)))
 
     if show_x:
         ax.set_xticklabels(
-            xlabels,
+            x_display,
             rotation=x_rotation,
             ha="right",
             fontsize=x_fontsize,
@@ -186,7 +210,7 @@ def style_heatmap_axes(
         ax.tick_params(axis="x", bottom=False, labelbottom=False)
 
     if show_y:
-        ax.set_yticklabels(ylabels, fontsize=y_fontsize)
+        ax.set_yticklabels(y_display, fontsize=y_fontsize)
         ax.tick_params(axis="y", left=True, labelleft=True)
     else:
         ax.set_yticklabels([])
@@ -232,16 +256,19 @@ def blend_with_white(color: str, amount: float) -> tuple[float, float, float]:
 def safe_name(value: object) -> str:
     return str(value).replace(" ", "_").replace("/", "_").lower()
 
+def cut_off_metric_name(metric_name: object) -> str:
+    return str(metric_name).split("_")[0]
+
 def make_strategy_cmap(strategy: str) -> LinearSegmentedColormap:
     base = STRATEGY_COLORS.get(strategy, "#4477AA")
 
     return LinearSegmentedColormap.from_list(
         f"{strategy}_heatmap",
         [
-            blend_with_white(base, 0.00), 
-            blend_with_white(base, 0.35), 
-            blend_with_white(base, 0.65), 
-            blend_with_white(base, 1.00),  
+            blend_with_white(base, 0.00),  # almost white
+            blend_with_white(base, 0.35),  # light
+            blend_with_white(base, 0.65),  # medium
+            blend_with_white(base, 1.00),  # full colour
         ],
     )
 
@@ -260,8 +287,8 @@ def rq1_heatMap(
     #ax.set_title(title, fontsize=TITLE_FONTSIZE)
     ax.set_xticks(range(len(mat.columns)))
     ax.set_yticks(range(len(mat.index)))
-    ax.set_xticklabels(mat.columns, rotation=45, ha="right", fontsize=TICK_FONTSIZE)
-    ax.set_yticklabels(mat.index, fontsize=TICK_FONTSIZE)
+    ax.set_xticklabels([cut_off_metric_name(m) for m in mat.columns], rotation=45, ha="right", fontsize=TICK_FONTSIZE)
+    ax.set_yticklabels([cut_off_metric_name(m) for m in mat.index], fontsize=TICK_FONTSIZE)
 
     cbar = fig.colorbar(image, ax=ax)
     cbar.ax.tick_params(labelsize=TICK_FONTSIZE)
@@ -291,7 +318,7 @@ def plot_rq1_mean_rho_heatmap(rq1_summary: pd.DataFrame) -> None:
     rq1_heatMap(
         mat=mat,
         title="RQ1: Mean Spearman correlation between metrics",
-        output_file=OUT_DIR / "rq1_mean_rho_heatmap.png",
+        output_file=OUT_DIR / f"rq1_mean_rho_heatmap.{EXT}",
         colorbar_label="mean rho",
         vmin=0.0,
         vmax=1.0,
@@ -332,13 +359,7 @@ def plot_rq1_setting_heatmaps(rq1: pd.DataFrame) -> None:
             dtype=float,
         )
 
-        pair_mean = (
-            subset.groupby(["metric_1", "metric_2"])["rho"]
-            .mean()
-            .resetindex()
-        )
-
-        for _, row in pair_mean.iterrows():
+        for _, row in subset.iterrows():
             metric_1 = row["metric_1"]
             metric_2 = row["metric_2"]
             value = float(row["rho"])
@@ -390,7 +411,7 @@ def plot_rq1_setting_heatmaps(rq1: pd.DataFrame) -> None:
         wspace=0.30,
         hspace=0.28,
     )
-    fig.savefig(OUT_DIR / "rq1_setting_heatmaps.png", dpi=300, bbox_inches="tight")
+    fig.savefig(OUT_DIR / f"rq1_setting_heatmaps.{EXT}", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 def plot_rq1_setting_heatmaps_by_strategy(rq1: pd.DataFrame) -> None:
@@ -498,7 +519,7 @@ def plot_rq1_setting_heatmaps_by_strategy(rq1: pd.DataFrame) -> None:
         # )
 
         fig.savefig(
-            OUT_DIR / f"rq1_setting_heatmaps_{safe_name(strategy)}.png",
+            OUT_DIR / f"rq1_setting_heatmaps_{safe_name(strategy)}.{EXT}",
             dpi=300,
             bbox_inches="tight", pad_inches=0.02,
         )
@@ -506,7 +527,7 @@ def plot_rq1_setting_heatmaps_by_strategy(rq1: pd.DataFrame) -> None:
 
 def plot_rq1_mean_rho_bar(rq1_summary: pd.DataFrame)-> None:
     plot_df = rq1_summary.copy()
-    plot_df["pair"] = plot_df["metric_1"] + " vs " + plot_df["metric_2"]
+    plot_df["pair"] = plot_df["metric_1"].map(cut_off_metric_name) + " vs " + plot_df["metric_2"].map(cut_off_metric_name)
     plot_df = plot_df.sort_values("mean_rho", ascending=False)
 
     fig, ax = plt.subplots(figsize=(12, 10))
@@ -516,7 +537,7 @@ def plot_rq1_mean_rho_bar(rq1_summary: pd.DataFrame)-> None:
     # ax.set_title("RQ1: Average agreement between metric pairs", fontsize=TITLE_FONTSIZE)
 
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "rq1_mean_rho_bar.png", dpi=300, bbox_inches="tight")
+    fig.savefig(OUT_DIR / f"rq1_mean_rho_bar.{EXT}", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 def plot_rq1_default_difference_boxplots(rq1_raw: pd.DataFrame) -> None:
@@ -602,6 +623,7 @@ def plot_rq1_default_difference_boxplots(rq1_raw: pd.DataFrame) -> None:
                 widths=width,
                 patch_artist=True,
                 manage_ticks=False,
+                flierprops=FLIER_STYLE,
             )
 
             for patch in box["boxes"]:
@@ -616,7 +638,7 @@ def plot_rq1_default_difference_boxplots(rq1_raw: pd.DataFrame) -> None:
         ax.set_xticks(base_positions)
         ax.set_xticklabels(ordered_settings, rotation=45, ha="right")
         ax.tick_params(axis="both", labelsize=TICK_FONTSIZE)
-        ax.set_ylabel(f"coverage difference", fontsize=AXIS_LABEL_FONTSIZE)
+        ax.set_ylabel(f"coverage difference ({default_metric} - {other_metric})", fontsize=AXIS_LABEL_FONTSIZE)
         #ax.set_title(f"RQ1: Distribution of {default_metric} - {other_metric}", fontsize=TITLE_FONTSIZE)
 
         if legend_handles:
@@ -631,7 +653,7 @@ def plot_rq1_default_difference_boxplots(rq1_raw: pd.DataFrame) -> None:
         fig.tight_layout()
 
         fig.savefig(
-            OUT_DIR / f"rq1_default_diff_boxplots_{safe_name(other_metric)}.png",
+            OUT_DIR / f"rq1_default_diff_boxplots_{safe_name(other_metric)}.{EXT}",
             dpi=300,
             bbox_inches="tight",
         )
@@ -703,7 +725,7 @@ def plot_rq1_setting_heatmaps_by_strategy_split(rq1: pd.DataFrame) -> None:
                     cmap=cmap,
                 )
 
-                ax.set_title(f"coverage $t_c={coverage_t}$", fontsize=18)
+                ax.set_title(f"coverage $t={coverage_t}$", fontsize=18)
 
                 row_idx, col_idx = divmod(ax_idx, 3)
                 style_heatmap_axes(
@@ -733,7 +755,7 @@ def plot_rq1_setting_heatmaps_by_strategy_split(rq1: pd.DataFrame) -> None:
                 cbar.ax.tick_params(labelsize=13)
 
             fig.savefig(
-                OUT_DIR / f"rq1_setting_heatmaps_{safe_name(strategy)}_source_{source_t}.png",
+                OUT_DIR / f"rq1_setting_heatmaps_{safe_name(strategy)}_source_{source_t}.{EXT}",
                 dpi=300,
                 bbox_inches="tight",
                 pad_inches=0.02,
@@ -783,16 +805,20 @@ def plot_rq1_default_difference_boxplots_split(rq1_raw: pd.DataFrame) -> None:
             - paired["coverage_other"].astype(float)
         )
 
-        for source_t in source_t_order:
-            subset = paired[paired["sample_size_source_t"] == source_t].copy()
-            if subset.empty:
-                continue
+        if paired.empty:
+            continue
 
-            fig, ax = plt.subplots(figsize=(11, 8))
+        fig, axes = plt.subplots(
+            1, 3,
+            figsize=(20, 7),
+            sharey=True,
+        )
+        axes = np.asarray(axes).ravel()
+
+        for panel_idx, source_t in enumerate(source_t_order):
+            ax = cast(Axes, axes[panel_idx])
+            subset = paired[paired["sample_size_source_t"] == source_t]
             base_positions = np.arange(len(coverage_t_order))
-
-            legend_handles: list[object] = []
-            legend_labels: list[str] = []
 
             for strategy in strategy_order:
                 data: list[list[float]] = []
@@ -820,44 +846,136 @@ def plot_rq1_default_difference_boxplots_split(rq1_raw: pd.DataFrame) -> None:
                     widths=width,
                     patch_artist=True,
                     manage_ticks=False,
+                    flierprops=FLIER_STYLE,
                 )
 
                 for patch in box["boxes"]:
                     patch.set_facecolor(STRATEGY_COLORS[strategy])
                     patch.set_alpha(0.6)
 
-                legend_handles.append(box["boxes"][0])
-                legend_labels.append(strategy)
-
             ax.axhline(0.0, linestyle="--", linewidth=1)
-
+            ax.set_title(f"$t_s={source_t}$", fontsize=TITLE_FONTSIZE)
             ax.set_xticks(base_positions)
             ax.set_xticklabels([str(t) for t in coverage_t_order])
             ax.tick_params(axis="both", labelsize=TICK_FONTSIZE)
             ax.set_xlabel("coverage $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
-            ax.set_ylabel(f"coverage difference", fontsize=AXIS_LABEL_FONTSIZE)
-            # ax.set_title(
-            #     f"RQ1: Distribution of {default_metric} - {other_metric} "
-            #     f"(sample size source t={source_t})",
-            #     fontsize=TITLE_FONTSIZE,
-            # )
 
-            if legend_handles:
-                ax.legend(
-                    legend_handles,
-                    legend_labels,
-                    title="strategy",
-                    fontsize=LEGEND_FONTSIZE,
-                    title_fontsize=LEGEND_TITLE_FONTSIZE,
-                )
+            if panel_idx == 0:
+                ax.set_ylabel("coverage difference", fontsize=AXIS_LABEL_FONTSIZE)
 
-            fig.tight_layout()
-            fig.savefig(
-                OUT_DIR / f"rq1_default_diff_boxplots_{safe_name(other_metric)}_source_{source_t}.png",
-                dpi=300,
-                bbox_inches="tight",
+        fig.tight_layout()
+        fig.savefig(
+            OUT_DIR / f"rq1_default_diff_boxplots_{safe_name(other_metric)}.{EXT}",
+            dpi=300,
+            bbox_inches="tight", pad_inches=0.02,
+        )
+        plt.close(fig)
+
+def plot_rq1_default_difference_metric_row(
+    rq1_raw: pd.DataFrame,
+    metrics: list[str] | None = None,
+    source_t: int = 3,
+) -> None:
+    
+    default_metric = "Default"
+    if metrics is None:
+        metrics = ["ALS", "PCI", "MDAP_MF-DF-ALS-PCI"]
+
+    strategy_order = [
+        SamplingStrategy.RANDOM.value,
+        SamplingStrategy.DISTANCE.value,
+        SamplingStrategy.SOLVER.value,
+    ]
+    coverage_t_order = [1, 2, 3]
+
+    offsets = {
+        SamplingStrategy.RANDOM.value: -0.25,
+        SamplingStrategy.DISTANCE.value: 0.0,
+        SamplingStrategy.SOLVER.value: 0.25,
+    }
+    width = 0.22
+
+    default_df = rq1_raw[rq1_raw["metric"] == default_metric].copy()
+
+    fig, axes = plt.subplots(
+        1, len(metrics),
+        figsize=(20, 7),
+        sharey=True,
+    )
+    axes = np.asarray(axes).ravel()
+
+    for panel_idx, other_metric in enumerate(metrics):
+        ax = cast(Axes, axes[panel_idx])
+
+        other_df = rq1_raw[rq1_raw["metric"] == other_metric].copy()
+
+        merge_cols = ["system", "strategy", "coverage_t", "sample_size_source_t"]
+        if "sample_size" in rq1_raw.columns:
+            merge_cols.append("sample_size")
+
+        paired = default_df.merge(
+            other_df,
+            on=merge_cols,
+            suffixes=("_default", "_other"),
+        )
+        paired["difference"] = (
+            paired["coverage_default"].astype(float)
+            - paired["coverage_other"].astype(float)
+        )
+        subset = paired[paired["sample_size_source_t"] == source_t]
+
+        base_positions = np.arange(len(coverage_t_order))
+
+        for strategy in strategy_order:
+            data: list[list[float]] = []
+            positions: list[float] = []
+
+            for idx, coverage_t in enumerate(coverage_t_order):
+                values = subset.loc[
+                    (subset["coverage_t"] == coverage_t) &
+                    (subset["strategy"] == strategy),
+                    "difference",
+                ].dropna().astype(float)
+
+                if values.empty:
+                    continue
+
+                data.append(values.tolist())
+                positions.append(float(base_positions[idx]) + offsets[strategy])
+
+            if not data:
+                continue
+
+            box = ax.boxplot(
+                data,
+                positions=positions,
+                widths=width,
+                patch_artist=True,
+                manage_ticks=False,
+                flierprops=FLIER_STYLE,
             )
-            plt.close(fig)
+
+            for patch in box["boxes"]:
+                patch.set_facecolor(STRATEGY_COLORS[strategy])
+                patch.set_alpha(0.6)
+
+        ax.axhline(0.0, linestyle="--", linewidth=1)
+        ax.set_title(cut_off_metric_name(other_metric), fontsize=TITLE_FONTSIZE)
+        ax.set_xticks(base_positions)
+        ax.set_xticklabels([str(t) for t in coverage_t_order])
+        ax.tick_params(axis="both", labelsize=TICK_FONTSIZE)
+        ax.set_xlabel("coverage $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
+
+        if panel_idx == 0:
+            ax.set_ylabel("coverage difference", fontsize=AXIS_LABEL_FONTSIZE)
+
+    fig.tight_layout()
+    fig.savefig(
+        OUT_DIR / f"rq1_default_diff_metric_row_source_{source_t}.{EXT}",
+        dpi=300,
+        bbox_inches="tight", pad_inches=0.02,
+    )
+    plt.close(fig)
 
 def plot_rq2_best_strategy_heatmap(rq2: pd.DataFrame) -> None:
     heat_df = rq2.pivot(index="metric", columns="setting", values="best_strategy_by_median")
@@ -895,7 +1013,7 @@ def plot_rq2_best_strategy_heatmap(rq2: pd.DataFrame) -> None:
     ax.set_xticks(range(len(heat_df.columns)))
     ax.set_yticks(range(len(heat_df.index)))
     ax.set_xticklabels(heat_df.columns, rotation=45, ha="right")
-    ax.set_yticklabels(heat_df.index)
+    ax.set_yticklabels([cut_off_metric_name(m) for m in heat_df.index])
     ax.tick_params(axis="x", labelrotation=45, labelsize=12)
     ax.tick_params(axis="y", labelsize=12)
     #ax.set_title("RQ2: Best strategy by metric and setting", fontsize=TITLE_FONTSIZE)
@@ -920,7 +1038,7 @@ def plot_rq2_best_strategy_heatmap(rq2: pd.DataFrame) -> None:
     ])
 
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "rq2_best_strategy_heatmap.png", dpi=300, bbox_inches="tight", pad_inches=0.02,)
+    fig.savefig(OUT_DIR / f"rq2_best_strategy_heatmap.{EXT}", dpi=300, bbox_inches="tight", pad_inches=0.02,)
     plt.close(fig)
 
 def plot_rq2_median_bars(rq2: pd.DataFrame) -> None:
@@ -966,7 +1084,7 @@ def plot_rq2_median_bars(rq2: pd.DataFrame) -> None:
         ax.legend(fontsize=LEGEND_FONTSIZE, title_fontsize=LEGEND_TITLE_FONTSIZE)
 
         fig.tight_layout()
-        fig.savefig(OUT_DIR / f"rq2_medians_{safe_name(metric)}.png", dpi=300, bbox_inches="tight", pad_inches=0.02)
+        fig.savefig(OUT_DIR / f"rq2_medians_{safe_name(metric)}.{EXT}", dpi=300, bbox_inches="tight", pad_inches=0.02)
         plt.close(fig)
 
 def plot_rq2_boxplots(rq2_raw: pd.DataFrame) -> None:
@@ -1027,6 +1145,7 @@ def plot_rq2_boxplots(rq2_raw: pd.DataFrame) -> None:
                 widths=width,
                 patch_artist=True,
                 manage_ticks=False,
+                flierprops=FLIER_STYLE,
             )
 
             for patch in box["boxes"]:
@@ -1052,7 +1171,7 @@ def plot_rq2_boxplots(rq2_raw: pd.DataFrame) -> None:
             )
 
         fig.tight_layout()
-        fig.savefig(OUT_DIR / f"rq2_boxplots_{safe_name(metric)}.png", dpi=300, bbox_inches="tight", pad_inches=0.02)
+        fig.savefig(OUT_DIR / f"rq2_boxplots_{safe_name(metric)}.{EXT}", dpi=300, bbox_inches="tight", pad_inches=0.02)
         plt.close(fig)
 
 def plot_rq2_strategy_wins(rq2_summary: pd.DataFrame) -> None:
@@ -1082,13 +1201,13 @@ def plot_rq2_strategy_wins(rq2_summary: pd.DataFrame) -> None:
     )
 
     ax.set_xticks(x)
-    ax.set_xticklabels(plot_df["metric"], rotation=45, ha="right")
+    ax.set_xticklabels([cut_off_metric_name(m) for m in plot_df["metric"]], rotation=45, ha="right")
     ax.set_ylabel("number of settings won", fontsize=AXIS_LABEL_FONTSIZE)
     #ax.set_title("RQ2 summary: strategy wins per metric", fontsize=TITLE_FONTSIZE)
     ax.legend(fontsize=LEGEND_FONTSIZE)
 
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "rq2_strategy_wins.png", dpi=300, bbox_inches="tight")
+    fig.savefig(OUT_DIR / f"rq2_strategy_wins.{EXT}", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 def get_strategy_ranks(row: pd.Series) -> dict[str, int]:
@@ -1139,29 +1258,51 @@ def plot_rq2_full_ordering_bars(rq2: pd.DataFrame) -> None:
         plot_df = pd.DataFrame(rows).sort_values("value", ascending=False)
         colors = [STRATEGY_COLORS[strategy] for strategy in plot_df["strategy"]]
 
-        fig, ax = plt.subplots(figsize=(12, 10))
+        n_rows = len(plot_df)
+        fig_height = max(9.0, 0.42 * n_rows)
+
+        fig, ax = plt.subplots(figsize=(11, fig_height))
         ax.barh(plot_df["label"], plot_df["value"], color=colors)
         ax.invert_yaxis()
         ax.set_xlabel("median metric value", fontsize=AXIS_LABEL_FONTSIZE)
+        ax.tick_params(axis="y", labelsize=14)
+        ax.tick_params(axis="x", labelsize=TICK_FONTSIZE)
         #ax.set_title(f"RQ2: Full ordering for {metric}", fontsize=TITLE_FONTSIZE)
 
         fig.tight_layout()
-        fig.savefig(OUT_DIR / f"rq2_fullordering{metric}.png", dpi=300, bbox_inches="tight")
+        fig.savefig(OUT_DIR / f"rq2_fullordering{metric}.{EXT}", dpi=300, bbox_inches="tight")
         plt.close(fig)
 
 def plot_rq2_median_bars_split(rq2: pd.DataFrame) -> None:
     all_metrics = sorted(rq2["metric"].unique())
     coverage_t_order = [1, 2, 3]
     source_t_order = [1, 2, 3]
+    width = 0.25
 
     for metric in all_metrics:
         metric_df = cast(pd.DataFrame, rq2.loc[rq2["metric"] == metric].copy())
 
-        for source_t in source_t_order:
+        if metric_df.empty:
+            continue
+
+        fig, axes = plt.subplots(
+            1, 3,
+            figsize=(20, 7),
+            sharey=True,
+        )
+        axes = np.asarray(axes).ravel()
+
+        for panel_idx, source_t in enumerate(source_t_order):
+            ax = cast(Axes, axes[panel_idx])
             subset = cast(
                 pd.DataFrame,
                 metric_df.loc[metric_df["sample_size_source_t"] == source_t].copy(),
             )
+
+            ax.set_title(f"$t_s={source_t}$", fontsize=TITLE_FONTSIZE)
+            ax.set_xlabel("coverage $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
+            if panel_idx == 0:
+                ax.set_ylabel("median metric value", fontsize=AXIS_LABEL_FONTSIZE)
 
             if subset.empty:
                 continue
@@ -1174,49 +1315,36 @@ def plot_rq2_median_bars_split(rq2: pd.DataFrame) -> None:
             subset = subset.sort_values("coverage_t")
 
             x = np.arange(len(subset))
-            width = 0.25
-
-            fig, ax = plt.subplots(figsize=(11, 8))
             ax.bar(
                 x - width,
                 subset["median_random"],
                 width,
-                label=SamplingStrategy.RANDOM.value,
                 color=STRATEGY_COLORS[SamplingStrategy.RANDOM.value],
             )
             ax.bar(
                 x,
                 subset["median_distance"],
                 width,
-                label=SamplingStrategy.DISTANCE.value,
                 color=STRATEGY_COLORS[SamplingStrategy.DISTANCE.value],
             )
             ax.bar(
                 x + width,
                 subset["median_solver"],
                 width,
-                label=SamplingStrategy.SOLVER.value,
                 color=STRATEGY_COLORS[SamplingStrategy.SOLVER.value],
             )
 
             ax.set_xticks(x)
             ax.set_xticklabels([str(t) for t in subset["coverage_t"]])
             ax.tick_params(axis="both", labelsize=TICK_FONTSIZE)
-            ax.set_xlabel("coverage $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
-            ax.set_ylabel("median metric value", fontsize=AXIS_LABEL_FONTSIZE)
-            # ax.set_title(
-            #     f"RQ2: Strategy comparison for {metric} (sample size source t={source_t})",
-            #     fontsize=TITLE_FONTSIZE,
-            # )
-            ax.legend(fontsize=LEGEND_FONTSIZE, title_fontsize=LEGEND_TITLE_FONTSIZE)
 
-            fig.tight_layout()
-            fig.savefig(
-                OUT_DIR / f"rq2_medians_{safe_name(metric)}_source_{source_t}.png",
-                dpi=300,
-                bbox_inches="tight", pad_inches=0.02
-            )
-            plt.close(fig)
+        fig.tight_layout()
+        fig.savefig(
+            OUT_DIR / f"rq2_medians_{safe_name(metric)}.{EXT}",
+            dpi=300,
+            bbox_inches="tight", pad_inches=0.02,
+        )
+        plt.close(fig)
 
 def plot_rq2_boxplots_split(rq2_raw: pd.DataFrame) -> None:
     all_metrics = sorted(rq2_raw["metric"].unique())
@@ -1239,11 +1367,27 @@ def plot_rq2_boxplots_split(rq2_raw: pd.DataFrame) -> None:
     for metric in all_metrics:
         metric_df = cast(pd.DataFrame, rq2_raw.loc[rq2_raw["metric"] == metric].copy())
 
-        for source_t in source_t_order:
+        if metric_df.empty:
+            continue
+
+        fig, axes = plt.subplots(
+            1, 3,
+            figsize=(20, 7),
+            sharey=True,
+        )
+        axes = np.asarray(axes).ravel()
+
+        for panel_idx, source_t in enumerate(source_t_order):
+            ax = cast(Axes, axes[panel_idx])
             subset = cast(
                 pd.DataFrame,
                 metric_df.loc[metric_df["sample_size_source_t"] == source_t].copy(),
             )
+
+            ax.set_title(f"$t_s={source_t}$", fontsize=TITLE_FONTSIZE)
+            ax.set_xlabel("coverage $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
+            if panel_idx == 0:
+                ax.set_ylabel("coverage value", fontsize=AXIS_LABEL_FONTSIZE)
 
             if subset.empty:
                 continue
@@ -1255,11 +1399,7 @@ def plot_rq2_boxplots_split(rq2_raw: pd.DataFrame) -> None:
             )
             subset = subset.sort_values(["coverage_t", "strategy"])
 
-            fig, ax = plt.subplots(figsize=(11, 8))
             base_positions = np.arange(len(coverage_t_order))
-
-            legend_handles: list[object] = []
-            legend_labels: list[str] = []
 
             for strategy in strategy_order:
                 data: list[list[float]] = []
@@ -1287,36 +1427,24 @@ def plot_rq2_boxplots_split(rq2_raw: pd.DataFrame) -> None:
                     widths=width,
                     patch_artist=True,
                     manage_ticks=False,
+                    flierprops=FLIER_STYLE,
                 )
 
                 for patch in box["boxes"]:
                     patch.set_facecolor(STRATEGY_COLORS[strategy])
                     patch.set_alpha(0.7)
 
-                legend_handles.append(box["boxes"][0])
-                legend_labels.append(strategy)
-
             ax.set_xticks(base_positions)
             ax.set_xticklabels([str(t) for t in coverage_t_order])
-            ax.set_xlabel("coverage $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
-            ax.set_ylabel("coverage value", fontsize=AXIS_LABEL_FONTSIZE)
-            # ax.set_title(
-            #     f"RQ2: Coverage distribution for {metric} "
-            #     f"(sample size source t={source_t})", fontsize=TITLE_FONTSIZE
-            # )
+            ax.tick_params(axis="both", labelsize=TICK_FONTSIZE)
 
-            if legend_handles:
-                ax.legend(legend_handles, legend_labels, title="strategy", fontsize=LEGEND_FONTSIZE,
-                title_fontsize=LEGEND_TITLE_FONTSIZE,)
-
-            fig.tight_layout()
-            fig.savefig(
-                OUT_DIR / f"rq2_boxplots_{safe_name(metric)}_source_{source_t}.png",
-                dpi=300,
-                bbox_inches="tight", pad_inches=0.02
-            )
-            plt.close(fig)
-
+        fig.tight_layout()
+        fig.savefig(
+            OUT_DIR / f"rq2_boxplots_{safe_name(metric)}.{EXT}",
+            dpi=300,
+            bbox_inches="tight", pad_inches=0.02,
+        )
+        plt.close(fig)
 
 def plot_rq3_trend_lines(rq3: pd.DataFrame) -> None:
     all_metrics = sorted(rq3["metric"].unique())
@@ -1344,7 +1472,7 @@ def plot_rq3_trend_lines(rq3: pd.DataFrame) -> None:
     title_fontsize=LEGEND_TITLE_FONTSIZE,)
 
         fig.tight_layout()
-        fig.savefig(OUT_DIR / f"rq3_trends_{metric}.png", dpi=300, bbox_inches="tight")
+        fig.savefig(OUT_DIR / f"rq3_trends_{metric}.{EXT}", dpi=300, bbox_inches="tight")
         plt.close(fig)
 
 def plot_rq3_weak_minus_verystrong_heatmap(rq3: pd.DataFrame) -> None:
@@ -1358,7 +1486,7 @@ def plot_rq3_weak_minus_verystrong_heatmap(rq3: pd.DataFrame) -> None:
     ax.set_xticks(range(len(heat.columns)))
     ax.set_yticks(range(len(heat.index)))
     ax.set_xticklabels(heat.columns, rotation=45, ha="right")
-    ax.set_yticklabels(heat.index)
+    ax.set_yticklabels([cut_off_metric_name(m) for m in heat.index])
     ax.tick_params(axis="x", labelrotation=45, labelsize=12)
     ax.tick_params(axis="y", labelsize=12)
     #ax.set_title("RQ3: Weak minus Very Strong median gap", fontsize=TITLE_FONTSIZE)
@@ -1374,7 +1502,7 @@ def plot_rq3_weak_minus_verystrong_heatmap(rq3: pd.DataFrame) -> None:
     cbar.set_label("median_weak - median_verystrong", fontsize=AXIS_LABEL_FONTSIZE)
 
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "rq3_weak_minus_verystrong_heatmap.png", dpi=300, bbox_inches="tight")
+    fig.savefig(OUT_DIR / f"rq3_weak_minus_verystrong_heatmap.{EXT}", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 def plot_rq3_trend_direction_summary(rq3_summary: pd.DataFrame) -> None:
@@ -1397,13 +1525,13 @@ def plot_rq3_trend_direction_summary(rq3_summary: pd.DataFrame) -> None:
     )
 
     ax.set_xticks(x)
-    ax.set_xticklabels(plot_df["metric"], rotation=45, ha="right")
+    ax.set_xticklabels([cut_off_metric_name(m) for m in plot_df["metric"]], rotation=45, ha="right")
     ax.set_ylabel("number of settings", fontsize=AXIS_LABEL_FONTSIZE)
     #ax.set_title("RQ3 summary: trend types by metric", fontsize=TITLE_FONTSIZE)
     ax.legend(fontsize=LEGEND_FONTSIZE)
 
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "rq3_trend_direction_summary.png", dpi=300, bbox_inches="tight")
+    fig.savefig(OUT_DIR / f"rq3_trend_direction_summary.{EXT}", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 def plot_rq3_system_counts_by_constraint_level(rq3_raw: pd.DataFrame) -> None:
@@ -1464,7 +1592,7 @@ def plot_rq3_system_counts_by_constraint_level(rq3_raw: pd.DataFrame) -> None:
     title_fontsize=LEGEND_TITLE_FONTSIZE,)
 
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "rq3_system_counts_by_constraint_level.png", dpi=300, bbox_inches="tight")
+    fig.savefig(OUT_DIR / f"rq3_system_counts_by_constraint_level.{EXT}", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -1528,6 +1656,7 @@ def plot_rq3_boxplots(rq3_raw: pd.DataFrame) -> None:
                 widths=width,
                 patch_artist=True,
                 manage_ticks=False,
+                flierprops=FLIER_STYLE,
             )
 
             for patch in box["boxes"]:
@@ -1547,8 +1676,182 @@ def plot_rq3_boxplots(rq3_raw: pd.DataFrame) -> None:
     title_fontsize=LEGEND_TITLE_FONTSIZE,)
 
         fig.tight_layout()
-        fig.savefig(OUT_DIR / f"rq3_boxplots_{metric}.png", dpi=300, bbox_inches="tight")
+        fig.savefig(OUT_DIR / f"rq3_boxplots_{metric}.{EXT}", dpi=300, bbox_inches="tight")
         plt.close(fig)
+
+def plot_rq3_boxplots_split(rq3_raw: pd.DataFrame) -> None:
+    all_metrics = sorted(rq3_raw["metric"].unique())
+    coverage_t_order = [1, 2, 3]
+    source_t_order = [1, 2, 3]
+
+    strength_order = [
+        Strength.WEAK.value,
+        Strength.MODERATE.value,
+        Strength.STRONG.value,
+        Strength.VERYSTRONG.value,
+    ]
+
+    offsets = {
+        Strength.WEAK.value: -0.30,
+        Strength.MODERATE.value: -0.10,
+        Strength.STRONG.value: 0.10,
+        Strength.VERYSTRONG.value: 0.30,
+    }
+    width = 0.16
+
+    for metric in all_metrics:
+        metric_df = cast(pd.DataFrame, rq3_raw.loc[rq3_raw["metric"] == metric].copy())
+
+        for source_t in source_t_order:
+            subset = cast(
+                pd.DataFrame,
+                metric_df.loc[metric_df["sample_size_source_t"] == source_t].copy(),
+            )
+
+            if subset.empty:
+                continue
+
+            subset["coverage_t"] = pd.Categorical(
+                subset["coverage_t"],
+                categories=coverage_t_order,
+                ordered=True,
+            )
+            subset = subset.sort_values(["coverage_t", "constraint_level"])
+
+            fig, ax = plt.subplots(figsize=(11, 8))
+            base_positions = np.arange(len(coverage_t_order))
+
+            legend_handles: list[object] = []
+            legend_labels: list[str] = []
+
+            for strength in strength_order:
+                data: list[list[float]] = []
+                positions: list[float] = []
+
+                for idx, coverage_t in enumerate(coverage_t_order):
+                    values = subset.loc[
+                        (subset["coverage_t"] == coverage_t) &
+                        (subset["constraint_level"] == strength),
+                        "coverage",
+                    ].dropna().astype(float)
+
+                    if values.empty:
+                        continue
+
+                    data.append(values.tolist())
+                    positions.append(float(base_positions[idx]) + offsets[strength])
+
+                if not data:
+                    continue
+
+                box = ax.boxplot(
+                    data,
+                    positions=positions,
+                    widths=width,
+                    patch_artist=True,
+                    manage_ticks=False,
+                    flierprops=FLIER_STYLE,
+                )
+
+                for patch in box["boxes"]:
+                    patch.set_facecolor(CONSTRAINT_COLORS[strength])
+                    patch.set_alpha(0.7)
+
+                legend_handles.append(box["boxes"][0])
+                legend_labels.append(strength)
+
+            ax.set_xticks(base_positions)
+            ax.set_xticklabels([str(t) for t in coverage_t_order])
+            ax.tick_params(axis="both", labelsize=TICK_FONTSIZE)
+            ax.set_xlabel("coverage $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
+            ax.set_ylabel("coverage value", fontsize=AXIS_LABEL_FONTSIZE)
+
+            if legend_handles:
+                ax.legend(
+                    legend_handles,
+                    legend_labels,
+                    title="constraint strength",
+                    fontsize=LEGEND_FONTSIZE,
+                    title_fontsize=LEGEND_TITLE_FONTSIZE,
+                )
+
+            fig.tight_layout()
+            fig.savefig(
+                OUT_DIR / f"rq3_boxplots_{safe_name(metric)}_source_{source_t}.{EXT}",
+                dpi=300,
+                bbox_inches="tight", pad_inches=0.02
+            )
+            plt.close(fig)
+
+def plot_rq3_trend_lines_split(rq3: pd.DataFrame) -> None:
+    all_metrics = sorted(rq3["metric"].unique())
+    coverage_t_order = [1, 2, 3]
+    source_t_order = [1, 2, 3]
+
+    line_colors = {
+        1: "#4477AA",
+        2: "#228833",
+        3: "#AA3377",
+    }
+
+    for metric in all_metrics:
+        metric_df = cast(pd.DataFrame, rq3.loc[rq3["metric"] == metric].copy())
+
+        for source_t in source_t_order:
+            subset = cast(
+                pd.DataFrame,
+                metric_df.loc[metric_df["sample_size_source_t"] == source_t].copy(),
+            )
+
+            if subset.empty:
+                continue
+
+            subset["coverage_t"] = pd.Categorical(
+                subset["coverage_t"],
+                categories=coverage_t_order,
+                ordered=True,
+            )
+            subset = subset.sort_values("coverage_t")
+
+            fig, ax = plt.subplots(figsize=(11, 8))
+
+            plotted_any = False
+            for _, row in subset.iterrows():
+                coverage_t = int(row["coverage_t"])
+                medians = [
+                    float(row["median_weak"]),
+                    float(row["median_moderate"]),
+                    float(row["median_strong"]),
+                    float(row["median_verystrong"]),
+                ]
+                ax.plot(
+                    CONSTRAINT_ORDER,
+                    medians,
+                    marker="o",
+                    color=line_colors.get(coverage_t, None),
+                    label=f"$t_c={coverage_t}$",
+                )
+                plotted_any = True
+
+            ax.set_xticklabels(CONSTRAINT_ORDER, rotation=45, ha="right")
+            ax.tick_params(axis="both", labelsize=TICK_FONTSIZE)
+            ax.set_ylabel("median metric value", fontsize=AXIS_LABEL_FONTSIZE)
+
+            if plotted_any:
+                _ORIGINAL_AXES_LEGEND(
+                    ax,
+                    title="coverage $t_c$",
+                    fontsize=LEGEND_FONTSIZE,
+                    title_fontsize=LEGEND_TITLE_FONTSIZE,
+                )
+
+            fig.tight_layout()
+            fig.savefig(
+                OUT_DIR / f"rq3_trends_{safe_name(metric)}_source_{source_t}.{EXT}",
+                dpi=300,
+                bbox_inches="tight", pad_inches=0.02
+            )
+            plt.close(fig)
 
 def plot_rq3_boxplots_by_strength_and_source_t(rq3_raw: pd.DataFrame) -> None:
     strength_order = [
@@ -1630,6 +1933,7 @@ def plot_rq3_boxplots_by_strength_and_source_t(rq3_raw: pd.DataFrame) -> None:
                     widths=width * 0.9,
                     patch_artist=True,
                     manage_ticks=False,
+                    flierprops=FLIER_STYLE,
                 )
 
                 for patch in box["boxes"]:
@@ -1640,12 +1944,12 @@ def plot_rq3_boxplots_by_strength_and_source_t(rq3_raw: pd.DataFrame) -> None:
                     median.set_color("black")
 
                 legend_handles.append(
-                    Patch(facecolor=metric_colors[metric], edgecolor="black", label=str(metric))
+                    Patch(facecolor=metric_colors[metric], edgecolor="black", label=cut_off_metric_name(metric))
                 )
 
             ax.set_xticks(base_positions)
             ax.set_xticklabels([str(t) for t in coverage_t_order])
-            ax.set_xlabel("coverage $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
+            ax.set_xlabel("coverage t", fontsize=AXIS_LABEL_FONTSIZE)
             ax.set_ylabel("coverage value", fontsize=AXIS_LABEL_FONTSIZE)
             # ax.set_title(
             #     f"RQ3: Coverage distribution by metric "
@@ -1664,11 +1968,258 @@ def plot_rq3_boxplots_by_strength_and_source_t(rq3_raw: pd.DataFrame) -> None:
             fig.tight_layout()
             safe_strength = str(strength).replace(" ", "_").lower()
             fig.savefig(
-                OUT_DIR / f"rq3_boxplots_{safe_strength}_{source_t}.png",
+                OUT_DIR / f"rq3_boxplots_{safe_strength}_{source_t}.{EXT}",
                 dpi=300,
                 bbox_inches="tight",
             )
             plt.close(fig)
+
+def plot_rq3_scatter_labeled(rq3_raw: pd.DataFrame,
+                             metric: str = "Default",
+                             coverage_t: int = 3,
+                             source_t: int = 1) -> None:
+
+    sub = rq3_raw[
+        (rq3_raw["metric"] == metric)
+        & (rq3_raw["coverage_t"] == coverage_t)
+        & (rq3_raw["sample_size_source_t"] == source_t)
+    ][["system", "coverage", "log10_ratio"]].dropna()
+ 
+    if sub.shape[0] < 3:
+        return
+ 
+    rho, p = stats.spearmanr(sub["log10_ratio"], sub["coverage"])
+ 
+    fig, ax = plt.subplots(figsize=(11, 7))
+    ax.scatter(sub["log10_ratio"], sub["coverage"],
+               s=70, color=RQ3_SCATTER_COLOR, alpha=0.85,
+               edgecolor="white", linewidth=0.7, zorder=3)
+ 
+    texts = [
+        ax.text(row["log10_ratio"], row["coverage"], row["system"],
+                fontsize=ANNOTATION_FONTSIZE)
+        for _, row in sub.iterrows()
+    ]
+    adjust_text(
+        texts,
+        ax=ax,
+        arrowprops=dict(arrowstyle="-", color="gray", lw=0.5),
+        expand_points=(1.3, 1.5),
+        only_move={"points": "y", "text": "xy"},
+    )
+ 
+    z = np.polyfit(sub["log10_ratio"], sub["coverage"], 1)
+    xs = np.linspace(sub["log10_ratio"].min(), sub["log10_ratio"].max(), 50)
+    ax.plot(xs, np.polyval(z, xs), color=RQ3_TREND_COLOR, lw=1.8, ls="--", zorder=2)
+ 
+    ax.set_xlabel(r"$10^{-x}$   (more constrained $\leftarrow$    $\rightarrow$ less constrained)",
+                  fontsize=AXIS_LABEL_FONTSIZE)
+    ax.set_ylabel("mean coverage", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.tick_params(labelsize=TICK_FONTSIZE)
+    ax.grid(alpha=0.25)
+    # ax.set_title(f"RQ3: coverage vs constraint strength "
+    #              f"({metric}, t_c={coverage_t}, t_s={source_t}): "
+    #              f"rho={rho:.2f}, p={p:.3f}", fontsize=TITLE_FONTSIZE)
+ 
+    fig.tight_layout()
+    fig.savefig(OUT_DIR / f"rq3_new_scatter_labeled_{metric}_source_{source_t}.{EXT}",
+                dpi=300, bbox_inches="tight")
+    plt.close(fig)
+ 
+ 
+def plot_rq3_scatter_split(rq3_raw: pd.DataFrame,
+                           metric: str = "Default") -> None:
+
+    for source_t in [1, 2, 3]:
+        fig, axes = plt.subplots(1, 3, figsize=(18, 6), sharey=True)
+ 
+        for ax, ct in zip(axes, [1, 2, 3]):
+            sub = rq3_raw[
+                (rq3_raw["metric"] == metric)
+                & (rq3_raw["coverage_t"] == ct)
+                & (rq3_raw["sample_size_source_t"] == source_t)
+            ][["system", "coverage", "log10_ratio"]].dropna()
+            if sub.shape[0] < 3:
+                continue
+ 
+            rho, p = stats.spearmanr(sub["log10_ratio"], sub["coverage"])
+            ax.scatter(sub["log10_ratio"], sub["coverage"],
+                       s=55, color=RQ3_SCATTER_COLOR, alpha=0.85,
+                       edgecolor="white", linewidth=0.6, zorder=3)
+            z = np.polyfit(sub["log10_ratio"], sub["coverage"], 1)
+            xs = np.linspace(sub["log10_ratio"].min(), sub["log10_ratio"].max(), 50)
+            ax.plot(xs, np.polyval(z, xs), color=RQ3_TREND_COLOR, lw=1.6, ls="--", zorder=2)
+ 
+            ax.set_title(rf"$t_c={ct}$   ($\rho={rho:.2f}$, $p={p:.3f}$)",
+                         fontsize=AXIS_LABEL_FONTSIZE)
+            ax.set_xlabel(r"$10^{-x}$", fontsize=AXIS_LABEL_FONTSIZE)
+            ax.tick_params(labelsize=TICK_FONTSIZE)
+            ax.grid(alpha=0.25)
+ 
+        axes[0].set_ylabel("mean coverage", fontsize=AXIS_LABEL_FONTSIZE)
+        fig.tight_layout()
+        fig.savefig(OUT_DIR / f"rq3_new_scatter_{metric}_source_{source_t}.{EXT}",
+                    dpi=300, bbox_inches="tight")
+        plt.close(fig)
+ 
+ 
+def plot_rq3_rho_heatmap(rq3: pd.DataFrame) -> None:
+
+    heat = rq3.pivot(index="metric", columns="setting", values="spearman_rho")
+
+    col_order = [f"({c},{s})" for (c, s) in SETTING_ORDER if f"({c},{s})" in heat.columns]
+    heat = heat[col_order]
+ 
+    fig, ax = plt.subplots(figsize=(12, 7))
+    im = ax.imshow(heat.values, cmap="RdBu", vmin=-0.8, vmax=0.8, aspect="auto")
+ 
+    def _fmt(col):
+        c, s = col.strip("()").split(",")
+        return rf"$t_c={c},\; t_s={s}$"
+
+    ax.set_xticks(range(len(heat.columns)))
+    ax.set_xticklabels([_fmt(c) for c in heat.columns],
+                       rotation=45, ha="right", fontsize=TICK_FONTSIZE)
+    ax.set_yticks(range(len(heat.index)))
+    ax.set_yticklabels([cut_off_metric_name(m) for m in heat.index], fontsize=TICK_FONTSIZE)
+ 
+    for i in range(heat.shape[0]):
+        for j in range(heat.shape[1]):
+            val = heat.values[i, j]
+            ax.text(j, i, f"{val:.2f}", ha="center", va="center",
+                    fontsize=ANNOTATION_FONTSIZE,
+                    color="white" if abs(val) > 0.45 else "black")
+ 
+    cbar = fig.colorbar(im, ax=ax)
+    cbar.set_label(r"Spearman $\rho$", fontsize=AXIS_LABEL_FONTSIZE)
+    #ax.set_xlabel(r"setting $(t_c, t_s)$", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.set_ylabel("metric", fontsize=AXIS_LABEL_FONTSIZE)
+    # ax.set_title(r"RQ3: Spearman $\rho$ (coverage vs $\log_{10} R_i$) per metric and setting",
+    #              fontsize=TITLE_FONTSIZE)
+ 
+    fig.tight_layout()
+    fig.savefig(OUT_DIR / f"rq3_new_rho_heatmap.{EXT}", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+ 
+ 
+def plot_rq3_rho_by_coverage_t(rq3: pd.DataFrame) -> None:
+
+    agg = (rq3.groupby(["metric", "coverage_t"], as_index=False)
+              .agg(mean_rho=("spearman_rho", "mean")))
+ 
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for metric in sorted(agg["metric"].unique()):
+        m = agg[agg["metric"] == metric].sort_values("coverage_t")
+        ax.plot(m["coverage_t"], m["mean_rho"], marker="o", label=cut_off_metric_name(metric), alpha=0.85)
+ 
+    ax.set_xticks([1, 2, 3])
+    ax.set_xlabel(r"coverage strength $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.set_ylabel(r"mean Spearman $\rho$", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.tick_params(labelsize=TICK_FONTSIZE)
+    ax.grid(alpha=0.25)
+    _ORIGINAL_AXES_LEGEND(ax, fontsize=LEGEND_FONTSIZE, ncol=2)
+    # ax.set_title(r"RQ3: correlation strength vs coverage strength $t_c$",
+    #              fontsize=TITLE_FONTSIZE)
+ 
+    fig.tight_layout()
+    fig.savefig(OUT_DIR / f"rq3_new_rho_by_coverage_t.{EXT}", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+def plot_rq3_scatter_labeled_appendix(rq3_raw: pd.DataFrame,
+                                      metric: str = "Default") -> None:
+
+    coverage_t_order = [1, 2, 3]
+    source_t_order = [1, 2, 3]
+ 
+    fig, axes = plt.subplots(3, 3, figsize=(22, 18), sharex=True, sharey=True)
+ 
+    for r, ct in enumerate(coverage_t_order):
+        for c, st in enumerate(source_t_order):
+            ax = cast(Axes, axes[r, c])
+ 
+            sub = rq3_raw[
+                (rq3_raw["metric"] == metric)
+                & (rq3_raw["coverage_t"] == ct)
+                & (rq3_raw["sample_size_source_t"] == st)
+            ][["system", "coverage", "log10_ratio"]].dropna()
+ 
+            if sub.shape[0] < 3:
+                ax.axis("off")
+                continue
+ 
+            rho, p = stats.spearmanr(sub["log10_ratio"], sub["coverage"])
+ 
+            ax.scatter(sub["log10_ratio"], sub["coverage"],
+                       s=45, color=RQ3_SCATTER_COLOR, alpha=0.85,
+                       edgecolor="white", linewidth=0.6, zorder=3)
+ 
+            texts = [
+                ax.text(row["log10_ratio"], row["coverage"], row["system"],
+                        fontsize=10)
+                for _, row in sub.iterrows()
+            ]
+            adjust_text(
+                texts,
+                ax=ax,
+                arrowprops=dict(arrowstyle="-", color="gray", lw=0.5),
+                expand_points=(1.2, 1.4),
+                only_move={"points": "y", "text": "xy"},
+            )
+ 
+            z = np.polyfit(sub["log10_ratio"], sub["coverage"], 1)
+            xs = np.linspace(sub["log10_ratio"].min(), sub["log10_ratio"].max(), 50)
+            ax.plot(xs, np.polyval(z, xs), color=RQ3_TREND_COLOR, lw=1.6, ls="--", zorder=2)
+ 
+            ax.set_title(rf"$t_c={ct},\; t_s={st}$   ($\rho={rho:.2f}$, $p={p:.3f}$)",
+                         fontsize=18)
+            ax.grid(alpha=0.25)
+ 
+    fig.supxlabel(r"$10^{-x}$   (more constrained $\leftarrow$    $\rightarrow$ less constrained)",
+                  fontsize=AXIS_LABEL_FONTSIZE)
+    fig.supylabel("mean coverage", fontsize=AXIS_LABEL_FONTSIZE)
+ 
+    fig.tight_layout(rect=[0.04, 0.03, 1, 1])   
+    fig.savefig(OUT_DIR / f"rq3_new_scatter_labeled_appendix_{safe_name(metric)}.{EXT}",
+                dpi=300, bbox_inches="tight")
+    plt.close(fig)
+ 
+
+def plot_rq3_rho_by_coverage_t_split(rq3: pd.DataFrame) -> None:
+
+    agg = (rq3.groupby(["sample_size_source_t", "coverage_t"], as_index=False)
+              .agg(mean_rho=("spearman_rho", "mean")))
+
+    ts_colors = {
+        1: "#4477AA",
+        2: "#228833",
+        3: "#AA3377",
+    }
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for source_t in [1, 2, 3]:
+        line = agg[agg["sample_size_source_t"] == source_t].sort_values("coverage_t")
+        if line.empty:
+            continue
+        ax.plot(
+            line["coverage_t"],
+            line["mean_rho"],
+            marker="o",
+            color=ts_colors.get(source_t),
+            label=rf"$t_s={source_t}$",
+        )
+
+    ax.set_xticks([1, 2, 3])
+    ax.set_xlabel(r"coverage strength $t_c$", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.set_ylabel(r"mean Spearman $\rho$", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.tick_params(labelsize=TICK_FONTSIZE)
+    ax.grid(alpha=0.25)
+    
+
+    fig.tight_layout()
+    fig.savefig(OUT_DIR / f"rq3_new_rho_by_coverage_t_split.{EXT}",
+                dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
 
 def get_data() -> dict[str, pd.DataFrame]:
     rq1_results = pd.read_csv(RQ1_RESULTS)
@@ -1682,6 +2233,11 @@ def get_data() -> dict[str, pd.DataFrame]:
     rq3_results = pd.read_csv(RQ3_RESULTS)
     rq3_summary = pd.read_csv(RQ3_SUMMARY)
     rq3_raw = pd.read_csv(RQ3_RAW)
+    
+    rq3_results_new = pd.read_csv(RQ3_RESULTS_NEW)
+    rq3_summary_new = pd.read_csv(RQ3_SUMMARY_NEW)
+    rq3_raw_new = pd.read_csv(RQ3_RAW_NEW)
+
 
     rq1_results = get_value_enum_column(rq1_results, "rho_strength")
     rq2_results = get_value_enum_column(rq2_results, "effect_strength")
@@ -1711,13 +2267,15 @@ def get_data() -> dict[str, pd.DataFrame]:
         "rq3": rq3_results,
         "rq3_summary": rq3_summary,
         "rq3_raw": rq3_raw,
+        "rq3_new": rq3_results_new,
+        "rq3_summary_new": rq3_summary_new,
+        "rq3_raw_new": rq3_raw_new,
     }
 
 def main() -> None:
     data = get_data()
 
     export_all_legends(data["rq3_raw"])
-
 
     original_axes_legend = Axes.legend
     Axes.legend = lambda self, *args, **kwargs: None  
@@ -1730,6 +2288,7 @@ def main() -> None:
         plot_rq1_default_difference_boxplots(data["rq1_raw"])
         plot_rq1_setting_heatmaps_by_strategy_split(data["rq1"])
         plot_rq1_default_difference_boxplots_split(data["rq1_raw"])
+        plot_rq1_default_difference_metric_row(data["rq1_raw"])
 
         plot_rq2_best_strategy_heatmap(data["rq2"])
         plot_rq2_full_ordering_bars(data["rq2"])
@@ -1739,12 +2298,26 @@ def main() -> None:
         plot_rq2_median_bars_split(data["rq2"])
         plot_rq2_boxplots_split(data["rq2_raw"])
 
-        plot_rq3_trend_lines(data["rq3"])
-        plot_rq3_weak_minus_verystrong_heatmap(data["rq3"])
-        plot_rq3_trend_direction_summary(data["rq3_summary"])
-        plot_rq3_boxplots(data["rq3_raw"])
-        plot_rq3_system_counts_by_constraint_level(data["rq3_raw"])
-        plot_rq3_boxplots_by_strength_and_source_t(data["rq3_raw"])
+        for m in sorted(data["rq3_raw_new"]["metric"].unique()):
+            plot_rq3_scatter_labeled(data["rq3_raw_new"], metric=m, coverage_t=3, source_t=1)
+            plot_rq3_scatter_split(data["rq3_raw_new"], metric=m)
+        plot_rq3_rho_heatmap(data["rq3_new"])
+        plot_rq3_rho_by_coverage_t(data["rq3_new"])
+
+        for m in sorted(data["rq3_raw_new"]["metric"].unique()):
+            plot_rq3_scatter_labeled_appendix(data["rq3_raw_new"], metric=m)
+
+        plot_rq3_rho_by_coverage_t_split(data["rq3_new"])
+
+
+        # plot_rq3_trend_lines(data["rq3"])
+        # plot_rq3_trend_lines_split(data["rq3"])
+        # plot_rq3_weak_minus_verystrong_heatmap(data["rq3"])
+        # plot_rq3_trend_direction_summary(data["rq3_summary"])
+        # plot_rq3_boxplots(data["rq3_raw"])
+        # plot_rq3_boxplots_split(data["rq3_raw"])
+        # plot_rq3_system_counts_by_constraint_level(data["rq3_raw"])
+        # plot_rq3_boxplots_by_strength_and_source_t(data["rq3_raw"])
     finally:
         Axes.legend = original_axes_legend  
 

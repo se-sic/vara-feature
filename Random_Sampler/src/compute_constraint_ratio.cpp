@@ -16,6 +16,7 @@ struct ModelStats {
     double NumValidConfigs{};  // V_i (using double for large numbers)
     double UnconstrainedSpace{}; // 2^(F_i - 1)
     double Ratio{};            // R_i
+    double LogRatio{};         //log10(R_i)
     
     [[nodiscard]] std::string constraintLevel() const {
         if (Ratio >= 0.5) { 
@@ -69,7 +70,7 @@ size_t countFeaturesInXML(const std::string& XmlPath) {
     std::string Content((std::istreambuf_iterator<char>(File)),
                         std::istreambuf_iterator<char>());
     
-    // Count <configurationOption> tags (each = one feature)
+    // Count <configurationOption> tags 
     std::regex FeatureRegex("<configurationOption>");
     auto Begin = std::sregex_iterator(Content.begin(), Content.end(), FeatureRegex);
     auto End = std::sregex_iterator();
@@ -103,6 +104,9 @@ public:
         Stats.UnconstrainedSpace = std::pow(2.0, XmlFeatures - 1);
         
         Stats.Ratio = Stats.NumValidConfigs / Stats.UnconstrainedSpace;
+
+        Stats.LogRatio = std::log10(Stats.NumValidConfigs)
+               - (static_cast<double>(XmlFeatures) - 1.0) * std::log10(2.0);
         
         std::cout << ModelName << " \n";
         std::cout << "Features (original): " << XmlFeatures << "\n";
@@ -201,11 +205,14 @@ public:
         }
 
         if (WriteHeader) {
-            Out << "system,ratio,constraint_level\n";
+            Out << "system,valid_configs,num_features,ratio,log10_ratio,constraint_level\n";
         }
             
         Out << Stats.Name << ","
-            << std::fixed << std::setprecision(10) << Stats.Ratio << ","
+            << std::scientific << std::setprecision(6) << Stats.NumValidConfigs << ","
+            << Stats.NumFeatures << ","
+            << std::scientific << std::setprecision(6) << Stats.Ratio << ","
+            << std::fixed << std::setprecision(4) << Stats.LogRatio << ","
             << Stats.constraintLevel() << "\n";
     }
 };

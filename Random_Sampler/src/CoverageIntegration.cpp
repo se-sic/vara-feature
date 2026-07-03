@@ -22,7 +22,7 @@ CoverageEvaluator::CoverageEvaluator(
 }
 
 void CoverageEvaluator::initializeAnalysis() {
-    std::cout << "Initializing feature model analysis...\n";
+    std::cout << "Initializing feature model analysis\n";
     
     // Extract basic feature information
     size_t Idx = 0;
@@ -42,11 +42,11 @@ void CoverageEvaluator::initializeAnalysis() {
     std::cout << "  Idx " << Idx << " features\n";
     
     // Compute mandatory and dead features
-    std::cout << "  Computing mandatory features...\n";
+    std::cout << "  Computing mandatory features\n";
     Analysis.MandatoryFeatures = computeMandatoryFeatures();
     std::cout << "    Mandatory features: " << Analysis.MandatoryFeatures.size() << "\n";
     
-    std::cout << "  Computing dead features...\n";
+    std::cout << "  Computing dead features\n";
     Analysis.DeadFeatures = computeDeadFeatures();
     std::cout << "    Dead features: " << Analysis.DeadFeatures.size() << "\n";
 
@@ -72,7 +72,7 @@ void CoverageEvaluator::initializeMetrics() {
 std::set<size_t> CoverageEvaluator::computeMandatoryFeatures() {
     std::set<size_t> MandatoryFeatures;
 
-    std::cout << "Detecting core features (exact)...\n";
+    std::cout << "Detecting core features \n";
 
     for (auto* Feature : FeatureModel.features()) {
         try {
@@ -122,7 +122,7 @@ std::set<size_t> CoverageEvaluator::computeMandatoryFeatures() {
 std::set<size_t> CoverageEvaluator::computeDeadFeatures() {
     std::set<size_t> DeadFeatures;
 
-    std::cout << "Detecting dead features (exact)...\n";
+    std::cout << "Detecting dead features \n";
 
     for (auto* Feature : FeatureModel.features()) {
         try {
@@ -240,7 +240,7 @@ std::set<Interaction> CoverageEvaluator::generateValidInteractions(size_t T) {
         return ValidInteractionsCache[T];
     }
     
-    std::cout << "Generating all valid " << T << "-wise interactions using BDD...\n";
+    std::cout << "Generating all valid " << T << "-wise interactions using BDD \n";
     
     std::set<Interaction> ValidInteractions;
     
@@ -255,7 +255,7 @@ std::set<Interaction> CoverageEvaluator::generateValidInteractions(size_t T) {
     size_t TotalCombination = binomialCoefficient(NumberOfFeatures, T);
     size_t Processed = 0;
     
-    std::cout << "  Checking " << TotalCombination << " feature combinations...\n";
+    std::cout << "  Checking " << TotalCombination << " feature combinations\n";
     
     // Generate all combinations of t features
     std::function<void(size_t, std::vector<size_t>&)> GenerateCombos;
@@ -317,7 +317,7 @@ void CoverageEvaluator::checkAllValueAssignments(
 }
 
 void CoverageEvaluator::buildFeatureVarMap() {
-    std::cout << "Building feature-to-BDD-variable map...\n";
+    std::cout << "Building feature-to-BDD-variable map\n";
 
     FeatureToBddVar.clear();
 
@@ -469,7 +469,7 @@ std::map<std::string, double> CoverageEvaluator::evaluateSample(
     auto ValidInteractions = generateValidInteractions(T);
     
     std::cout << "\nEvaluating sample with " << Sample.size() 
-              << " configurations...\n";
+              << " configurations\n";
     
     // Evaluate each metric
     for (const auto& Metric : Metrics) {
@@ -508,7 +508,7 @@ std::map<std::string, std::vector<double>> CoverageEvaluator::evaluateIncrementa
 
     std::cout << "\n Size of valid interactions" << ValidInteractions.size() << "\n";
     
-    std::cout << "\nEvaluating incremental coverage...\n";
+    std::cout << "\nEvaluating incremental coverage\n";
     
     // Evaluate at each checkpoint
     for (size_t Checkpoint : Checkpoints) {

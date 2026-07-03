@@ -1,22 +1,22 @@
-system,ratio,constraint_level
-7z,0.0000000078,Very Strong
-BerkeleyDBC,0.0195312500,Strong
-Dune,0.0000010729,Very Strong
-Hipacc,0.0000000000,Very Strong
-JavaGC,0.0000007041,Very Strong
-LLVM,1.0000000000,Weak
-lrzip,0.0016479492,Very Strong
-Polly,0.0000001091,Very Strong
-VP9,0.0000000982,Very Strong
-x264,0.0351562500,Strong
-AJStats,0.1250000000,Moderate
-Curl,0.1875000000,Moderate
-HSMGP,0.0000008047,Very Strong
-HSQLDB,0.0065917969,Very Strong
-HyTeG,0.2500000000,Moderate
-PKJab,0.0703125000,Strong
-SQLite,0.0000143051,Very Strong
-TriMesh,0.0000000000,Very Strong
-WGet,0.1562500000,Moderate
-clasp,0.0000002026,Very Strong
-z3,0.1250000000,Moderate
+system,valid_configs,num_features,ratio,log10_ratio,constraint_level
+7z,6.864000e+04,44,7.803465e-09,-8.1077,Very Strong
+BerkeleyDBC,2.560000e+03,18,1.953125e-02,-1.7093,Strong
+Dune,2.304000e+03,32,1.072884e-06,-5.9694,Very Strong
+Hipacc,1.348500e+04,54,1.497136e-12,-11.8247,Very Strong
+JavaGC,1.935360e+05,39,7.040799e-07,-6.1524,Very Strong
+LLVM,1.024000e+03,11,1.000000e+00,0.0000,Weak
+lrzip,4.320000e+02,19,1.647949e-03,-2.7831,Very Strong
+Polly,6.000000e+04,40,1.091394e-07,-6.9620,Very Strong
+VP9,2.160000e+05,42,9.822543e-08,-7.0078,Very Strong
+x264,1.152000e+03,16,3.515625e-02,-1.4540,Strong
+AJStats,6.553600e+04,20,1.250000e-01,-0.9031,Moderate
+Curl,7.680000e+02,13,1.875000e-01,-0.7270,Moderate
+HSMGP,3.456000e+03,33,8.046627e-07,-6.0944,Very Strong
+HSQLDB,8.640000e+02,18,6.591797e-03,-2.1810,Very Strong
+HyTeG,3.200000e+01,8,2.500000e-01,-0.6021,Moderate
+PKJab,7.200000e+01,11,7.031250e-02,-1.1530,Strong
+SQLite,3.932160e+06,39,1.430511e-05,-4.8445,Very Strong
+TriMesh,2.393600e+05,68,1.621966e-15,-14.7900,Very Strong
+WGet,5.120000e+03,16,1.562500e-01,-0.8062,Moderate
+clasp,8.700000e+02,33,2.025627e-07,-6.6934,Very Strong
+z3,2.048000e+03,15,1.250000e-01,-0.9031,Moderate

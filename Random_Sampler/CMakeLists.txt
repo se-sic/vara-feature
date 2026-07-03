@@ -191,7 +191,7 @@ install(TARGETS
 )
 
 if(BUILD_TESTS)
-  message(STATUS "Building tests...")
+  message(STATUS "Building tests")
   enable_testing()
   add_subdirectory(tests)
 endif()

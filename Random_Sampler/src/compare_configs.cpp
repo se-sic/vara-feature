@@ -70,7 +70,7 @@ public:
     // Regex now uses [\s\S]*? to match across newlines
     std::regex ConfigRegex(R"(<data columname="Configuration">([\s\S]*?)</data>)");
     
-    std::cout << "Parsing XML...\n";
+    std::cout << "Parsing XML\n";
     
     auto Begin = std::sregex_iterator(Content.begin(), Content.end(), ConfigRegex);
     auto End = std::sregex_iterator();
@@ -136,7 +136,7 @@ public:
         return Config;
     }
     
-    // Generate configs from your BDD
+    // Generate configs from BDD
     std::set<Config> generateBDDConfigs(
     const vara::feature::FeatureModel& FeatureModel,
     oxidd::bdd_function& bdd,
@@ -154,7 +154,7 @@ public:
     double ExpectedCount = bdd.sat_count_double(Manager.num_vars());
     
     std::cout << "Expected configs from BDD: " << ExpectedCount << "\n";
-    std::cout << "Generating configs...\n";
+    std::cout << "Generating configs\n";
     
     // Generate until we find all unique ones
     int Attempts = 0;
@@ -212,7 +212,7 @@ public:
     void compare(const std::set<Config>& PaperConfigs, 
                  const std::set<Config>& BddConfigs) {
         
-        std::cout << "             CONFIGURATION COMPARISON                    \n";
+        std::cout << "CONFIGURATION COMPARISON\n";
         
         std::cout << "Paper configs: " << PaperConfigs.size() << "\n";
         std::cout << "BDD configs:   " << BddConfigs.size() << "\n";
@@ -246,22 +246,22 @@ public:
         
         std::cout << "Configs in both:           " << InBoth.size() << "\n";
         std::cout << "Only in paper:             " << OnlyInPaper.size() << "\n";
-        std::cout << "Only in BDD (yours):       " << OnlyInBDD.size() << "\n\n";
+        std::cout << "Only in BDD:       " << OnlyInBDD.size() << "\n\n";
         
         if (OnlyInPaper.empty() && OnlyInBDD.empty()) {
-            std::cout << "✓ PERFECT MATCH! All configs are identical.\n\n";
+            std::cout << "All configs are identical.\n\n";
             return;
         }
         
         // Print differences
         if (!OnlyInPaper.empty()) {
-            std::cout << "CONFIGS IN PAPER BUT NOT IN YOUR BDD (" << OnlyInPaper.size() << ")\n";
+            std::cout << "CONFIGS IN PAPER BUT NOT IN BDD (" << OnlyInPaper.size() << ")\n";
             
             int Count = 0;
             for (const auto& Config : OnlyInPaper) {
                 std::cout << "  " << (++Count) << ". Selected: " << Config.toSelectedOnly() << "\n";
                 if (Count >= 20 && OnlyInPaper.size() > 20) {
-                    std::cout << "  ... and " << (OnlyInPaper.size() - 20) << " more\n";
+                    std::cout << " and " << (OnlyInPaper.size() - 20) << " more\n";
                     break;
                 }
             }
@@ -269,13 +269,13 @@ public:
         }
         
         if (!OnlyInBDD.empty()) {
-            std::cout << "CONFIGS IN YOUR BDD BUT NOT IN PAPER (" << OnlyInBDD.size() << ")\n";
+            std::cout << "CONFIGS IN BDD BUT NOT IN PAPER (" << OnlyInBDD.size() << ")\n";
             
             int Count = 0;
             for (const auto& Config : OnlyInBDD) {
                 std::cout << "  " << (++Count) << ". Selected: " << Config.toSelectedOnly() << "\n";
                 if (Count >= 20 && OnlyInBDD.size() > 20) {
-                    std::cout << "  ... and " << (OnlyInBDD.size() - 20) << " more\n";
+                    std::cout << " and " << (OnlyInBDD.size() - 20) << " more\n";
                     break;
                 }
             }
@@ -465,7 +465,7 @@ int main(int argc, char** argv) {
     auto PaperConfigs = Comparator.loadPaperConfigs(PaperMeasurementsPath, AllFeatureNames);
     
     // Generate BDD configs
-    std::cout << "\nGenerating configs from BDD...\n";
+    std::cout << "\nGenerating configs from BDD\n";
     bdd::sample::BDDFactory Factory;
     auto Bdd = Factory.modelToBdd(*FeatureModel);
     auto Manager = Bdd.containing_manager();

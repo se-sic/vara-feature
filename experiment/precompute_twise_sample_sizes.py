@@ -34,7 +34,6 @@ SYSTEMS = [
 
 SOURCE_TS = [1, 2, 3]
 
-# Change this if the actual binary name/path is different.
 GREEDY_TWISE_BIN = ROOT / "build" / "bin" / "greedy_twise_sampling"
 
 

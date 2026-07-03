@@ -424,13 +424,13 @@ std::vector<Configuration> loadOrEnumerateConfigurations(
     const std::string CachePath = getConfigCachePath(SystemName);
 
     if (std::filesystem::exists(CachePath)) {
-        std::cout << "Loading cached configurations from " << CachePath << "...\n";
+        std::cout << "Loading cached configurations from " << CachePath << "\n";
         auto Configs = loadConfigurationsFromCsv(CachePath, FeatureMap);
         std::cout << "Loaded " << Configs.size() << " cached configurations.\n";
         return Configs;
     }
 
-    std::cout << "No configuration cache found. Enumerating all valid configurations...\n";
+    std::cout << "No configuration cache found. Enumerating all valid configurations\n";
     auto Configs = enumerateAllConfigurations(Manager, FinalBDD);
     std::cout << "Enumerated " << Configs.size() << " configurations.\n";
 
@@ -446,7 +446,7 @@ std::set<coverage::Interaction> generateValidInteractions(
     const oxidd::bdd_function& BDD,
     const std::map<std::string, oxidd::bdd_function>& FeatureToBddVar
 ) {
-    std::cout << "Generating all valid " << T << "-wise interactions using BDD...\n";
+    std::cout << "Generating all valid " << T << "-wise interactions using BDD\n";
 
     std::set<coverage::Interaction> ValidInteractions;
 
@@ -602,7 +602,7 @@ CoveredIdsList loadOrPrecomputeCoveredIdsPerConfig(
     const std::string CachePath = getCoveredIdsCachePath(SystemName, T);
 
     if (std::filesystem::exists(CachePath)) {
-        std::cout << "Loading covered-ids cache from " << CachePath << "...\n";
+        std::cout << "Loading covered-ids cache from " << CachePath << "\n";
         auto CoveredIds = loadCoveredIdsFromBinary(
             CachePath,
             CandidateList.size(),
@@ -612,7 +612,7 @@ CoveredIdsList loadOrPrecomputeCoveredIdsPerConfig(
         return CoveredIds;
     }
 
-    std::cout << "No covered-ids cache found. Precomputing covered candidate IDs...\n";
+    std::cout << "No covered-ids cache found. Precomputing covered candidate IDs\n";
     auto CoveredIds = precomputeCoveredIdsPerConfig(
         AllConfigs,
         CandidateList,

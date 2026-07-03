@@ -98,7 +98,7 @@ TEST_F(SpecialModelCoverageTest, DeadFeatureFilterRemovesNegatedDeadLiteral) {
 
     auto Filtered = filterDeadFeatures(AllValid, getAnalysis());
 
-    // The interaction containing Dead=false should be removed by the current DF implementation.
+    // The interaction containing Dead=false should be removed
     EXPECT_EQ(Filtered.size(), 1U);
     EXPECT_TRUE(Filtered.contains(test_utils::makeInteraction({{"root", true}, {"A", true}})));
 }

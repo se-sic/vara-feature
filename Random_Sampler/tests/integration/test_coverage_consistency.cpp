@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
         TestFile.close();
         std::cout << "\033[32m" << "Unconstrained file xml" << "\033[0m\n";
         
-        // STEP 2: Load constrained model and generate sample
+        // Load constrained model and generate sample
         std::cout << "\033[34m" << "LOADING CONSTRAINED MODEL" << "\033[0m\n";
         
         auto Fm1 = test_utils::loadFeatureModel(ConstrainedXmlFile);
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
         std::cout << "BDD constructed" << "\033[0m\n";
         
         // Generate small test sample
-        std::cout << "\n Generating test sample ("<< SampleSize << " configs)..." << "\033[0m\n";
+        std::cout << "\n Generating test sample ("<< SampleSize << " configs)" << "\033[0m\n";
         std::vector<std::vector<bool>> Sample;
         for (size_t I = 0; I < SampleSize; ++I) {
             auto Config = bdd::sample::generateConfiguration(
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
         test_utils::saveConfigsToCSV(Sample, *Fm1, "test_data/test_sample.csv");
         std::cout << "Saved to test_data/test_sample.csv" << "\033[0m\n";
         
-        // STEP 3: Evaluate on constrained model
+        // Evaluate on constrained model
         std::cout << "\033[34m" << "\nEVALUATING WITH CONSTRAINTS" << "\033[0m\n";
         
         coverage::CoverageEvaluator Evaluator1(*Fm1, Bdd1, Manager1, Factory1);
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
             Covered1.insert(Interactions.begin(), Interactions.end());
         } 
         
-        // STEP 4: Load unconstrained model
+        // Load unconstrained model
         std::cout << "\033[34m" << "\nLOADING UNCONSTRAINED MODEL" << "\033[0m\n";
         
         auto Fm2 = test_utils::loadFeatureModel(UnconstrainedXmlFile);
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
         oxidd::bdd_manager Manager2 = Bdd2.containing_manager();
         std::cout  << "\033[32m" << "BDD constructed" << "\033[0m\n";
         
-        // STEP 5: Evaluate SAME sample on unconstrained model
+        // Evaluate same sample on unconstrained model
         std::cout << "\033[34m" << "\nEVALUATING WITHOUT CONSTRAINTS" << "\033[0m\n";
         
         coverage::CoverageEvaluator Evaluator2(*Fm2, Bdd2, Manager2, Factory2);
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
             Covered2.insert(Interactions.begin(), Interactions.end());
         }
         
-        // STEP 6: Compare covered sets
+        // Compare covered sets
    
         std::cout << "\033[34m" << "COMPARISON" << "\033[0m\n";
         
@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
             std::cout << "  Only in constrained: " << OnlyIn1.size() << "\033[0m\n";
         }
         
-        // VERDICT
+        // Verdict
         std::cout << "\033[34m" << "VERDICT" << "\033[0m\n";
         
         if (CoveredMatch) {
