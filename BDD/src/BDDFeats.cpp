@@ -5,10 +5,9 @@
 #include <oxidd/bdd.hpp>
 
 namespace bdd::sample {
-
-        // Add binary feature to the varMap
+    
     namespace {
-        // Add Binary constraint acccording to Z3 rules: 
+        // Add Binary feature + its constraints acccording to Z3 rules: 
         // Add child -> parent
         // If not in XOR and not optional, add parent -> child as well
         Result<SolverErrorCode> addBinaryConstraints(
@@ -16,7 +15,6 @@ namespace bdd::sample {
             oxidd::var_no_t Id,
             const bool IsInXOR,
             const bool IsOpt,
-            //std::map<oxidd::var_no_t, BDDFactory::BDDFeat> &VarMap,
             oxidd::bdd_function &FinalBdd,
             const oxidd::bdd_manager &Manager
         ){
@@ -37,7 +35,7 @@ namespace bdd::sample {
             // Add constraint: child → parent
             oxidd::bdd_function ChildToParent = Child.imp(Parent);
             FinalBdd &= ChildToParent;
-
+            // Add constraint: parent → child if not in XOR and not optional
             if (!IsInXOR && !IsOpt) {
                 oxidd::bdd_function ParentToChild = Parent.imp(Child);
                 FinalBdd &= ParentToChild;
@@ -80,17 +78,16 @@ namespace bdd::sample {
         // Handle different feature types: Only consider Binary and Root features, else return NOT_SUPPORTED
         switch(Feature.getKind()) {
             case Feature::FeatureKind::FK_NUMERIC: {
-                std::cerr << "\033[31m Numeric features are not supported. Please choose a different feature diagram." << "\033[0m\n";
+                std::cerr << "Numeric features are not supported. Please choose a different feature diagram.\n";
                 return SolverErrorCode::NOT_SUPPORTED;
             }
             case Feature::FeatureKind::FK_BINARY: {
                 // Verify it's a binary feature
                 if(!llvm::isa<vara::feature::BinaryFeature>(&Feature)) {
-                    std::cerr << "\033[31m Feature is not a binary feature." << "\033[0m\n";
+                    std::cerr << "Feature is not a binary feature.\n";
                     return SolverErrorCode::NOT_SUPPORTED;
                 }
-
-                // Add binary  constraints according to Z3 ruless
+                // Add binary feature + its constraints according to Z3 ruless
                 auto R = addBinaryConstraints(
                     ParentId,
                     Id,
@@ -103,15 +100,14 @@ namespace bdd::sample {
                 }
                 return vara::Ok<void>();
             }
-            // If root feature, add it to varMap and then add it as AND to the finalBdd
+            // If root feature, add it as AND to the FinalBdd
             case Feature::FeatureKind::FK_ROOT: {
-                FinalBdd = (FinalBdd) & Mgr.var(Id);
-                
+                FinalBdd = (FinalBdd) & Mgr.var(Id);        
                 return vara::Ok<void>();
             }
 
             default: {
-                std::cerr << "\033[31m Unknown feature kind encountered." << "\033[0m\n";
+                std::cerr << "Unknown feature kind encountered.\n";
                 return SolverErrorCode::NOT_SUPPORTED;
             }
         }

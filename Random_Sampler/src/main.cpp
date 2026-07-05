@@ -3,14 +3,17 @@
 #include "EnumerateConfigs.h"
 #include "EnumerateInteractions.h"
 #include "InteractionCoverage.h"
+#include "ParseFM.h"
 #include "Plotter.h"
 #include "TWiseSampler.h"
 #include "oxidd/util.hpp"
+#include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelParser.h"
 #include <cstddef>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,8 +24,25 @@ extern "C" {
 using std::string;
 using std::vector;
 
+/**
+    * @brief BDD-based sampler for feature model configurations and interactions (t-wise and uniform random sampling).
+    *
+    * ----------------------------------------------------------------------------------------------------------------
+    * HOW TO RUN 
+    * ----------------------------------------------------------------------------------------------------------------
+    * 1. Build (from repo root) if not already done:
+        * cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DVARA_FEATURE_USE_Z3_SOLVER=ON -B build ninja -C build
+    * 2. Run the program with following arguments: 
+        * argv: -- <path_to_feature_model.xml>
+        2.1 From the repo root: 
+            * ./build/bin/random_sampler argv[1]
+            * Example: ./build/bin/random_sampler Random_Sampler/examples/Polly.xml
+*/
+
 
 int main(int argc, char* argv[]) noexcept(false){ 
+
+    //--------------Parsing--------------//
 
     if (argc < 2) {
         std::cerr << "Usage: ./my_program <feature_model.xml>\n";
@@ -30,51 +50,22 @@ int main(int argc, char* argv[]) noexcept(false){
     }
 
     std::vector<std::string> Args(argv + 1, argv + argc);
-    std::string FilePath = Args[0];
 
-    // Lambda function to load and parse the feature model
-    std::unique_ptr<vara::feature::FeatureModel> Fd = [&]() {
-        // Read the file content
-        std::ifstream FileIn(FilePath);
-        if (!FileIn) {
-            throw std::runtime_error("Could not open file: " + FilePath);
-        }
-        std::ostringstream Oss;
-        Oss << FileIn.rdbuf();
-        std::string XMLContent = Oss.str();
-
-        // Parse the content
-        vara::feature::FeatureModelXmlParser Parser(XMLContent);
-
-        // Verify if the feature model is valid
-        auto Verify = Parser.verifyFeatureModel();
-        if(!Verify) {
-            throw std::runtime_error("Error parsing XML: verification failed");
-        }   
-
-        // Build the feature model object
-        auto Fm = Parser.buildFeatureModel();
-        if(!Fm) {
-            throw std::runtime_error("Error building Feature Model: ");
-        }
-
-        return Fm;
-    }();
-
-    std::cout << "Feature Model loaded successfully from: " << FilePath <<'\n';
+    //Parse XML to a BDD-readable format
+    std::unique_ptr<vara::feature::FeatureModel> Fd = bdd::sample::ParseXML(Args[0]);
+    std::cout << "Feature Model loaded successfully from: " << Args[0] <<'\n';
 
     // Create BDD factory and convert feature model to BDD
     bdd::sample::BDDFactory Factory;
     oxidd::bdd_function FinalBDD = Factory.modelToBdd(*Fd);
-    oxidd::bdd_manager Manager = FinalBDD.containing_manager();
-    
+    oxidd::bdd_manager Manager = FinalBDD.containing_manager(); 
     std::cout << "BDD constructed successfully." << '\n';
 
     //Enumeration of all configurations
-    auto Pool = bdd::sample::EnumerateConfigs(Manager, FinalBDD);
+    auto ValidCondfigs = bdd::sample::EnumerateConfigs(Manager, FinalBDD);
     double Expected = FinalBDD.sat_count_double(Manager.num_vars());
-    std::cout << "Valid Configs: " << Pool.size() << " (expected " << Expected << ")\n";
-    if (Pool.size() != static_cast<std::size_t>(Expected)) {
+    std::cout << "Valid Configs: " << ValidCondfigs.size() << " (expected " << Expected << ")\n";
+    if (ValidCondfigs.size() != static_cast<std::size_t>(Expected)) {
         std::cerr << "Enumeration count mismatch\n";
     }
 
@@ -84,15 +75,12 @@ int main(int argc, char* argv[]) noexcept(false){
     std::size_t UpperBound = (Num * (Num -1) / 2)* 4;
     std::cout << "Feasibel 2-wise interaction " << Interactions.size() << " (upper bound " << UpperBound << ")\n";
 
+    //--------------Uniform Random Sampling--------------//
 
-    // Uniform Random Sampling //
-    std::vector<size_t> BellCounts;
+    //Map to store the frequency of each configuration
     std::map<std::vector<bool>, int> CountConfig;
-
-    size_t N = 100; // Number of samples to generate
-       
-    BellCounts.reserve(N);
-
+    //Number of samples to generate
+    size_t N = 100; 
     // Generate multiple samples and update frequency counts
     for(size_t I=0; I<N; ++I) {
         auto S = generateConfiguration(
@@ -112,74 +100,54 @@ int main(int argc, char* argv[]) noexcept(false){
             std::cerr << "Generated an invalid configuration at iteration " << I << "This should not happen.\n";
             std::abort();
         }
-
-        size_t Count = 0;
-        for(auto [v, val] : llvm::enumerate(S)) {
-            if(val) { ++Count; };
-        }
-
-        BellCounts.push_back(Count);
-
-        int &FeatureCount = CountConfig[std::move(S)];
-        ++FeatureCount;
     }
 
-
-    {
-        std::ofstream Out("Random_Sampler/scripts/bell.csv");
-        Out << "ActiveFeatures\n";
-        for(size_t C : BellCounts) {
-            Out << C << '\n';
-        }
-    }
-
+    // Write the frequency counts to a CSV file
     std::ofstream Out("Random_Sampler/scripts/Configs.csv");
     Out << "ConfigID,Count\n";
     {
         int Id = 0;
-        for (auto &[_Feat, Count] : CountConfig) {
+        for (auto &[Config, Count] : CountConfig) {
             Out << Id++ << "," << Count << '\n';
         }
     }
     Out.close();
 
 
-    // TWise Sampling //
-    for(size_t I=0; I<1; ++I) {
-        auto S = bdd::sample::TSample(Pool, Interactions);
-        // Validate the generated configurations against the BDD
-        for (const auto &Config : S) {
-            std::vector<std::pair<oxidd::var_no_t, bool>> ValidTSamples;
-            ValidTSamples.reserve(Config.size());
-            for(oxidd::var_no_t V = 0; V < Config.size(); ++V) {
-                ValidTSamples.emplace_back(V, Config[V]);
-            }
-            if(!FinalBDD.eval(ValidTSamples)){
-                std::cerr << "Generated an invalid configuration at iteration " << I << "This should not happen.\n";
-                std::abort();
-            }
+    //--------------T-Wise-Sampling--------------//
+
+    auto S = bdd::sample::TSample(ValidCondfigs, Interactions);
+
+    // Validate the generated configurations against the BDD
+    for (const auto &Config : S) {
+        std::vector<std::pair<oxidd::var_no_t, bool>> ValidTSamples;
+        ValidTSamples.reserve(Config.size());
+        for(oxidd::var_no_t V = 0; V < Config.size(); ++V) {
+            ValidTSamples.emplace_back(V, Config[V]);
         }
-        // Validate the configurations against the coverage of each interaction 
-        for (const auto &I: Interactions) {
-            bool CoveredInts = false;
-            for (const auto &Config : S) {
-                if(bdd::sample::CoverageCheck(Config, I)) {
-                    CoveredInts = true; break;
-                }
-            }
-            if(!CoveredInts) {
-                std::cout << "Sample did not cover all interactions" << "\n";
-            }
+        if(!FinalBDD.eval(ValidTSamples)){
+            std::cerr << "Generated an invalid configuration at iteration. This should not happen.\n";
+            std::abort();
         }
     }
 
+    // Validate the configurations against the coverage of each interaction 
+    for (const auto &I: Interactions) {
+        bool CoveredInts = false;
+        for (const auto &Config : S) {
+            if(bdd::sample::CoverageCheck(Config, I)) {
+                CoveredInts = true; break;
+            }
+        }
+        if(!CoveredInts) {
+            std::cout << "Sample did not cover all interactions" << "\n";
+        }
+    }
 
-    //std::string BellCSV = "Random_Sampler/scripts/bell.csv";
+    //------------Plotting--------------//
+
     std::string ConfigCSV = "Random_Sampler/scripts/Configs.csv";
-    //std::string BellCmd = "/Users/oracionoftime/.pyenv/versions/vara-feature-env/bin/python3 Random_Sampler/scripts/plot_dist.py " + BellCSV;
     std::string ConfigCmd = "python3 Random_Sampler/scripts/plot_dist.py " + ConfigCSV;
-
-    //int Bell = std::system(BellCmd.c_str());
     int Configs = std::system(ConfigCmd.c_str());
 
     if(Configs != 0) {

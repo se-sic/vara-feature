@@ -5,6 +5,7 @@
 #include "oxidd/bdd.hpp"
 #include <algorithm>
 #include <cstddef>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -17,12 +18,15 @@ namespace bdd::sample
        if(Model.size()== 0) {
         std::cerr << "Feature model is empty\n";
        }
-       // Store names of features in XOR relationships (Z3)
-       std::vector<std::string> V; 
 
+       // Add all features to manager including their names
        fillManager(Model);
+       std::cout << "Added all features to BDD manager\n";
 
-       // Process XOR relationships from the feature model (Z3)
+       // Store names of features in XOR relationships
+       std::vector<std::string> V;
+
+       // Process XOR relationships from the feature model
        if(!Model.relationships().empty()) {
         for(const auto &S: Model.relationships()){
             for(const auto &Child: S->children()) {
@@ -31,22 +35,21 @@ namespace bdd::sample
             }
         }
        } else {
-        std::cerr << "Feature model has no XOR relationships\n";
+        std::cout << "Feature model has no XOR relationships\n";
        }
+       std::cout << "Processed XOR relationships\n";
 
-       // Process each feature: add to VarMap and add children-parent relationships to FinalBdd (Z3)
+       // Process each feature: add binary and root features to BDD and process their constraints
        for(auto *F: Model.features()) { 
         auto R = featureToBdd(
             Manager,
             std::ranges::find(V, F->getName().str()) != V.end(),
             *F,
-            //VarMap,
             FinalBdd);
         if(!R) {
             continue;
         }
        }
-
        std::cout << "Passed feature processing\n";
 
        addAlternativeGroupConstraints(Model, FinalBdd);
@@ -57,7 +60,6 @@ namespace bdd::sample
        for (const auto &C : Model.booleanConstraints()) {
             if (!processConstraints(Visitor, C, FinalBdd)) { break; }
         }
-
        std::cout << "Passed processing constraints" << '\n';
 
        auto R = getPr(
@@ -71,16 +73,8 @@ namespace bdd::sample
             std::cerr << "Error calculating probabilities." << '\n';
         }
 
-       /*For Testing*/
-    //    std::string_view DiagramName = "7z";
-    //    std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
-    //    auto Result = Manager.visualize(DiagramName, Funcs);
-    //    auto Export = Manager.export_dddmp("hippacc.dddmp", Funcs);
-    //     if (!Export) {    
-    //         std::cerr << "DDDMP export failed with error" << '\n';
-    //     }
-       std::cout << "Final BDD has " << FinalBdd.node_count() << " nodes and "  << "\n";
-       std::string_view DiagramName = "Bibi";
+       std::cout << "Final BDD has " << FinalBdd.node_count() << " nodes.\n";
+       std::string_view DiagramName = "Sora";
        std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
        auto Result = Manager.visualize(DiagramName, Funcs, 4000);
        if(!Result) {
@@ -89,10 +83,10 @@ namespace bdd::sample
             std::cout << "BDD visualization successful.\n";
        }
        Manager.export_dddmp("hippacc.dddmp", Funcs).value();
-
        return FinalBdd;
     }
 
+    // ----- Auxiliary functions -----
     void BDDFactory::addAlternativeGroupConstraints(
     const vara::feature::FeatureModel &Model,
     oxidd::bdd_function &FinalBdd
@@ -147,8 +141,7 @@ namespace bdd::sample
                     for (const auto* OtherChild : Children) {
                         if (Child == OtherChild) { 
                             continue;
-                        }
-                        
+                        }  
                         // Check if the excluded feature is the other child
                         auto* RightOperand = ExcludeConstraint->getRightOperand();
                         if (auto* Pfc = llvm::dyn_cast<vara::feature::PrimaryFeatureConstraint>(RightOperand)) {
@@ -165,8 +158,7 @@ namespace bdd::sample
                 if (HaveMutualExclusion) { 
                     break;
                 }
-            }
-            
+            }      
             if (!HaveMutualExclusion) { 
                 continue;
             }
@@ -228,10 +220,10 @@ namespace bdd::sample
         // Add all named variables to the BDD manager
         auto  Res = Manager.add_named_vars(NamesCstrSpan);
         if (Res) {
-        auto VarRange = Res.value();
-        for (auto VarNo : VarRange) {
-            Vars.push_back(Manager.var(VarNo));  // Store the variables
+            auto VarRange = Res.value();
+            for (auto VarNo : VarRange) {
+                Vars.push_back(Manager.var(VarNo));  // Store the variables
+            }
         }
-}
     }
 } // namespace bdd::sample
