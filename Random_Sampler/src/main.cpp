@@ -134,10 +134,8 @@ int main(int argc, char* argv[]) noexcept(false){
 
     //------------Plotting--------------//
 
-    const char* Py = std::getenv("VARA_PYTHON");
-    std::string PythonPath = Py ? std::string(Py) : "python3";
     std::string ConfigCSV = "Random_Sampler/scripts/Configs.csv";
-    std::string ConfigCmd = PythonPath + " Random_Sampler/scripts/plot_dist.py " + ConfigCSV;
+    std::string ConfigCmd = "/Users/oracionoftime/.pyenv/versions/vara-feature-env/bin/python3 Random_Sampler/scripts/plot_dist.py " + ConfigCSV;
     int Configs = std::system(ConfigCmd.c_str());
 
     if(Configs != 0) {
