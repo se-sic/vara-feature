@@ -26,7 +26,6 @@ namespace bdd::sample {
         std::vector<oxidd::var_no_t> Variables;
         Variables.reserve(T);
 
-        //
         auto SelectVars =  [&](auto &&Self, oxidd::var_no_t Start, unsigned IntDepth) {
             if(T == IntDepth) {
                 for (unsigned B = 0; B < (1U << T); B++) {

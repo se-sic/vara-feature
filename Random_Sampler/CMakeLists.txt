@@ -47,6 +47,8 @@ add_executable(random_sampler
   src/InteractionCoverage.cpp
   src/TWiseSampler.cpp
   src/ParseFM.cpp
+  src/WriteFrequencies.cpp
+  src/WriteSamples.cpp
   #../BDD/src/BDDFactory.cpp
 )
 

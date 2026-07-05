@@ -6,6 +6,8 @@
 #include "ParseFM.h"
 #include "Plotter.h"
 #include "TWiseSampler.h"
+#include "WriteFrequencies.h"
+#include "WriteSamples.h"
 #include "oxidd/util.hpp"
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelParser.h"
@@ -75,48 +77,10 @@ int main(int argc, char* argv[]) noexcept(false){
     std::size_t UpperBound = (Num * (Num -1) / 2)* 4;
     std::cout << "Feasibel 2-wise interaction " << Interactions.size() << " (upper bound " << UpperBound << ")\n";
 
-    //--------------Uniform Random Sampling--------------//
-
-    //Map to store the frequency of each configuration
-    std::map<std::vector<bool>, int> CountConfig;
-    //Number of samples to generate
-    size_t N = 100; 
-    // Generate multiple samples and update frequency counts
-    for(size_t I=0; I<N; ++I) {
-        auto S = generateConfiguration(
-            Manager, 
-            FinalBDD, 
-            Factory,
-            &Factory.SatMap
-        );
-
-        // Validate the generated configuration against the BDD
-        std::vector<std::pair<oxidd::var_no_t, bool>> ValidSamples; // NOLINT
-        ValidSamples.reserve(S.size());
-        for(oxidd::var_no_t V = 0; V < S.size(); ++V) {
-            ValidSamples.emplace_back(V, S[V]);
-        }
-        if(!FinalBDD.eval(ValidSamples)){
-            std::cerr << "Generated an invalid configuration at iteration " << I << "This should not happen.\n";
-            std::abort();
-        }
-    }
-
-    // Write the frequency counts to a CSV file
-    std::ofstream Out("Random_Sampler/scripts/Configs.csv");
-    Out << "ConfigID,Count\n";
-    {
-        int Id = 0;
-        for (auto &[Config, Count] : CountConfig) {
-            Out << Id++ << "," << Count << '\n';
-        }
-    }
-    Out.close();
-
-
     //--------------T-Wise-Sampling--------------//
 
     auto S = bdd::sample::TSample(ValidCondfigs, Interactions);
+    const auto SampleSize = S.size();
 
     // Validate the generated configurations against the BDD
     for (const auto &Config : S) {
@@ -127,7 +91,7 @@ int main(int argc, char* argv[]) noexcept(false){
         }
         if(!FinalBDD.eval(ValidTSamples)){
             std::cerr << "Generated an invalid configuration at iteration. This should not happen.\n";
-            std::abort();
+            return 0;
         }
     }
 
@@ -144,10 +108,36 @@ int main(int argc, char* argv[]) noexcept(false){
         }
     }
 
+    std::string TFilePath = "Random_Sampler/scripts/TWiseSample.csv";
+    bdd::sample::WriteSampleCSV(Manager, S, TFilePath);
+
+    //--------------Uniform Random Sampling--------------//
+
+    //Number of samples to generate
+    size_t N = SampleSize; 
+    // Generate multiple samples and update frequency counts
+    std::vector<std::vector<bool>> Samples;
+    for(size_t I=0; I<N; ++I) {
+        auto S = generateConfiguration(
+            Manager, 
+            FinalBDD, 
+            Factory,
+            &Factory.SatMap
+        );
+
+        Samples.push_back(S);
+    }
+    
+    bdd::sample::WriteFrequencyCSV(FinalBDD, Samples);
+    std::string FilePath = "Random_Sampler/scripts/RandSample.csv";
+    bdd::sample::WriteSampleCSV(Manager, Samples, FilePath);
+
     //------------Plotting--------------//
 
+    const char* Py = std::getenv("VARA_PYTHON");
+    std::string PythonPath = Py ? std::string(Py) : "python3";
     std::string ConfigCSV = "Random_Sampler/scripts/Configs.csv";
-    std::string ConfigCmd = "python3 Random_Sampler/scripts/plot_dist.py " + ConfigCSV;
+    std::string ConfigCmd = PythonPath + " Random_Sampler/scripts/plot_dist.py " + ConfigCSV;
     int Configs = std::system(ConfigCmd.c_str());
 
     if(Configs != 0) {

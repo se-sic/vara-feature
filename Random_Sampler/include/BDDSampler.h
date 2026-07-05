@@ -5,6 +5,7 @@
 #include "oxidd/bdd.hpp"
 #include <cstdlib> //for RAND_MAX
 #include <utility>
+#include <vector>
 
 namespace bdd::sample {
   
