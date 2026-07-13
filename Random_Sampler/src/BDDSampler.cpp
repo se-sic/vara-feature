@@ -5,16 +5,19 @@
 #include <cstddef>
 #include <random>
 #include <utility>
+#include <vector>
 namespace bdd::sample {
 
   std::vector<bool> Sample; // NOLINT
 
   // Helper function: Generates a random number ∈ [0,1)
-  static std::mt19937 Rng(std::random_device{}()); //NOLINT
+  static std::mt19937 Rng; //NOLINT
   static std::uniform_real_distribution<double> Dist(0.0, 1.0); //NOLINT
   double random() {  
     return Dist(Rng); 
   }
+
+  void SeedRng(std::uint32_t Seed) { Rng.seed(Seed); } //NOLINT
 
   // Generate a random configuration by traversing the BDD
   std::vector<bool> generateConfiguration(const oxidd::bdd_manager &Manager, 
@@ -33,7 +36,7 @@ namespace bdd::sample {
 
       oxidd::level_no_t TotalLevels = Manager.num_vars();
 
-      Sample.clear();
+      std::vector<bool> Sample;
       Sample.reserve(TotalLevels);
 
       // Initialize sample with random values for all variables

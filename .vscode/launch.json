@@ -7,14 +7,26 @@
       "name": "Debug random_sampler",
       "program": "${workspaceFolder}/build/bin/random_sampler",
       "args": [
-        "${workspaceFolder}/Random_Sampler/examples/Irzip.xml"
-      ],
+        "${workspaceFolder}/Random_Sampler/examples/Irzip.xml",
+        "sat_count",
+        "1"
+      ]
+    },
+    {
+      "name": "Debug Controller",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "bindings.python.Interplay_ML.Sampling.Controller",
+      "args": ["run", "1", "dbs", "Irzip", "--t", "1"],
       "cwd": "${workspaceFolder}",
-      "terminal": "integrated",
-      "env": {},
-      "sourceMap": {
-        "/Users/oracionoftime/Documents/UdS/InterplayML_Sampling/vara-feature": "${workspaceFolder}"
-      }
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Attach random_sampler (from Python)",
+      "type": "lldb",
+      "request": "attach",
+      "program": "${workspaceFolder}/build/bin/random_sampler",
+      "waitFor": true
     }
   ]
 }

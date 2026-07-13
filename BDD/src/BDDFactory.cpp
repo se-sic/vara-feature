@@ -21,7 +21,7 @@ namespace bdd::sample
 
        // Add all features to manager including their names
        fillManager(Model);
-       std::cout << "Added all features to BDD manager\n";
+       std::cerr << "Added all features to BDD manager\n";
 
        // Store names of features in XOR relationships
        std::vector<std::string> V;
@@ -35,9 +35,9 @@ namespace bdd::sample
             }
         }
        } else {
-        std::cout << "Feature model has no XOR relationships\n";
+        std::cerr << "Feature model has no XOR relationships\n";
        }
-       std::cout << "Processed XOR relationships\n";
+       std::cerr<< "Processed XOR relationships\n";
 
        // Process each feature: add binary and root features to BDD and process their constraints
        for(auto *F: Model.features()) { 
@@ -50,17 +50,17 @@ namespace bdd::sample
             continue;
         }
        }
-       std::cout << "Passed feature processing\n";
+       std::cerr << "Passed feature processing\n";
 
        addAlternativeGroupConstraints(Model, FinalBdd);
-       std::cout << "Passed alternative group processing\n";
+       std::cerr << "Passed alternative group processing\n";
 
        // Process boolean constraints from the feature model (Z3)
        BDDConstraintVisitor Visitor(Manager, /*VarMap*/ FinalBdd, false, false);    
        for (const auto &C : Model.booleanConstraints()) {
             if (!processConstraints(Visitor, C, FinalBdd)) { break; }
         }
-       std::cout << "Passed processing constraints" << '\n';
+       std::cerr << "Passed processing constraints" << '\n';
 
        auto R = getPr(
         Manager,
@@ -73,15 +73,15 @@ namespace bdd::sample
             std::cerr << "Error calculating probabilities." << '\n';
         }
 
-       std::cout << "Final BDD has " << FinalBdd.node_count() << " nodes.\n";
+       std::cerr << "Final BDD has " << FinalBdd.node_count() << " nodes.\n";
        std::string_view DiagramName = "Sora";
        std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
-       auto Result = Manager.visualize(DiagramName, Funcs, 4000);
+       /*auto Result = Manager.visualize(DiagramName, Funcs, 4000);
        if(!Result) {
             std::cerr << "Error visualizing BDD: " << Result.error().message() << '\n';
        } else {
-            std::cout << "BDD visualization successful.\n";
-       }
+            std::cerr << "BDD visualization successful.\n";
+       }*/
        Manager.export_dddmp("hippacc.dddmp", Funcs).value();
        return FinalBdd;
     }

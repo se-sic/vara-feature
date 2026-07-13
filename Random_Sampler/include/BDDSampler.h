@@ -11,6 +11,8 @@ namespace bdd::sample {
   
   double random();
 
+  void SeedRng(std::uint32_t Seed); //NOLINT
+
   std::vector<bool>
   generateConfiguration(const oxidd::bdd_manager &Manager, 
               const oxidd::bdd_function &Root, 
