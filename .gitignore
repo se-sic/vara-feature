@@ -35,4 +35,5 @@ build/
 build-debug/
 
 # Ignore bulk data from sampling 
-bindings/python//Interplay_ML/Samples
+.venv/
+*.dddmp

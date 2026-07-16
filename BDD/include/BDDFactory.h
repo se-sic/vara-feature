@@ -18,7 +18,7 @@ namespace bdd::sample
             void addAlternativeGroupConstraints(const vara::feature::FeatureModel &Model,oxidd::bdd_function &FinalBdd);
 
             std::map<oxidd::bdd_function, std::pair<double, double>> SatMap;
-            oxidd::bdd_manager Manager = oxidd::bdd_manager(1024L * 1024, 1024L * 1024, 8);
+            oxidd::bdd_manager Manager = oxidd::bdd_manager(1024L * 1024 * 64, 1024L * 1024 * 16, 8);
             oxidd::bdd_function FinalBdd = Manager.t();
             std::vector<oxidd::bdd_function> Vars; 
     };

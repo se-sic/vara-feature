@@ -82,7 +82,7 @@ namespace bdd::sample
        } else {
             std::cerr << "BDD visualization successful.\n";
        }*/
-       Manager.export_dddmp("hippacc.dddmp", Funcs).value();
+       Manager.export_dddmp("hippacc.dddmp", Funcs);
        return FinalBdd;
     }
 

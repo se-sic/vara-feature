@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) noexcept(false){
         return 1;
     }
 
-    std::vector<std::string> Args(argv + 1, argv + argc);
+    std::vector<std::string> Args(argv + 1, argv + argc); //NOLINT
     std::string FMPath = Args[0];
     const std::string &Command = Args[1];
 
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) noexcept(false){
             std::cerr << "Value of t must be between 1 and 3 (inclusive). Provided: " << T << '\n';
             return 1;
         }
-        auto Interactions = bdd::sample::EnumerateInteractions(Manager, FinalBDD, T);
+        auto Interactions = bdd::sample::EnumerateInteractions(Manager, FinalBDD, T, ValidCondfigs);
         auto S = bdd::sample::TSample(ValidCondfigs, Interactions);
 
         // Validate the generated configurations against the BDD
@@ -130,6 +130,10 @@ int main(int argc, char* argv[]) noexcept(false){
         }
 
         std::cout << S.size() << "\n";
+        std::string TPath = (T == 1 ? "T1" : (T == 2 ? "T2" : "T3")); //NOLINT
+        std::string TFilePath = "bindings/python/Interplay_ML/Samples/" + TPath + "/" + Sys + "_TWiseSample.csv";
+        std::filesystem::create_directories(std::filesystem::path(TFilePath).parent_path());
+        bdd::sample::WriteSampleCSV(Manager, S, TFilePath);
         return 0;
     }
 
@@ -151,7 +155,7 @@ int main(int argc, char* argv[]) noexcept(false){
                 return 1;
             }
 
-            auto Interactions = bdd::sample::EnumerateInteractions(Manager, FinalBDD, T);
+            auto Interactions = bdd::sample::EnumerateInteractions(Manager, FinalBDD, T, ValidCondfigs);
             auto S   = bdd::sample::TSample(ValidCondfigs, Interactions);
 
             // Validate the generated configurations against the BDD
@@ -182,6 +186,7 @@ int main(int argc, char* argv[]) noexcept(false){
 
             std::string TPath = (T == 1 ? "T1" : (T == 2 ? "T2" : "T3")); //NOLINT
             std::string TFilePath = "bindings/python/Interplay_ML/Samples/" + TPath + "/" + Sys + "_TWiseSample.csv";
+            std::filesystem::create_directories(std::filesystem::path(TFilePath).parent_path());
             bdd::sample::WriteSampleCSV(Manager, S, TFilePath);
 
         } else if (Strat == "random") {
@@ -214,7 +219,8 @@ int main(int argc, char* argv[]) noexcept(false){
 
                 Samples.push_back(S);
             }
-        std::string FilePath = "bindings/python/Interplay_ML/Samples/RSSeed/" + std::to_string(Seed) + ".csv";
+        std::string FilePath = "bindings/python/Interplay_ML/Samples/RSSeed/" + Sys + "_" + std::to_string(Seed) + ".csv";
+        std::filesystem::create_directories(std::filesystem::path(FilePath).parent_path());
         if (Seed == 1) { bdd::sample::WriteFrequencyCSV(FinalBDD, Samples); }
         bdd::sample::WriteSampleCSV(Manager, Samples, FilePath);
 

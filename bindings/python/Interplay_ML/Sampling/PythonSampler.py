@@ -44,5 +44,6 @@ def variant_sampler(system_path, strategy, sample_size, seed):
     systemPath = Path(system_path).stem
     seedPath = "" if strategy == "sbs" else f"_seed_{seed}"
     stratPath = Samples/strategy.upper()
+    stratPath.mkdir(parents=True, exist_ok=True)
     sampled_csv_path = stratPath/f"{systemPath}{seedPath}.csv"
     export_configurations_to_csv(configurations=sampled_configurations, features=feats, file_path=sampled_csv_path)
