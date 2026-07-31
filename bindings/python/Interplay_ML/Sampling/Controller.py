@@ -1,18 +1,6 @@
 import argparse, subprocess, csv
-from pathlib import Path
 from .PythonSampler import variant_sampler
-from .Path import Workspace, Bin, Sizes, SatCounts, Samples
-
-Systems = ["7z", 
-           "BerkeleyDBC", 
-           "Dune", 
-           "Hippacc", 
-           "Irzip", 
-           "JavaGC", "LLVM", "Polly", "VP9", "x264"
-           ]
-TSize = [1, 2, 3]
-Proportions = [0.05, 0.1, 0.3, 0.5]
-Runs = 100
+from .Config import Workspace, Bin, Sizes, SatCounts, Samples, Systems, TSize, Proportions, Runs
 
 #---------------- Functions to call C++ main.cpp ----------------#‚
 def cpp_tsizes(system_path, tsize):
@@ -21,9 +9,13 @@ def cpp_tsizes(system_path, tsize):
         raise Exception(f"Error getting t size {tsize} for sampling system {system_path}: {r.stderr}\n")
     return int(r.stdout.strip().split("\n")[-1])
 
-def cpp_sample(system_path, strategy, t=None, sample_size=None, seed=None):
+def cpp_sample(system_path, strategy, rq, t, sample_size=None, seed=None, prop=None):
     args = [str(Bin), system_path, "sample", strategy]
-    args += [str(t)] if strategy == "twise" else [str(sample_size), str(seed)]
+    if strategy == "twise":
+        args += [str(t if t is not None else 0)] 
+    else:
+        prop_full = f"{int(prop*100)}" if prop is not None else "NA"
+        args += [str(t), str(sample_size), str(seed), str(rq), prop_full]
     r = subprocess.run(args, capture_output=True, text=True)
     if r.returncode != 0:
         raise Exception(f"Error sampling system {system_path} with strategy {strategy}: {r.stderr}\n")
@@ -94,27 +86,31 @@ def getValidConifgs():
 def run(rq, system, strategy, t=None, prop=None):
     if not Sizes.exists():
         for Sys in Systems: 
-            for t in TSize:
-                writeTSizes(system=Sys, t=t)
+            for ts in TSize:
+                writeTSizes(system=Sys, t=ts)
         mergeTSizes()
     if not SatCounts.exists():
         writeValidConfifgs()
     system_path = Workspace / f"Random_Sampler/examples/{system}.xml"
     if rq == 1:
+        if t is None:
+            parser.error("--t is missing")
         sample_size = getSampleSize()[(system, t)]
     else:
-        sample_size = round(prop * getValidConifgs()[system])
+        if prop is None:
+            parser.error("--prop is missing")
+        sample_size = round(prop * getValidConifgs()[system])   
     
     if strategy == "twise":
-        cpp_sample(system_path, "twise", t=t)
+        cpp_sample(system_path, "twise", rq, t=t)
     elif strategy == "sbs":
-        variant_sampler(system_path=system_path, strategy=strategy, sample_size=sample_size)
+        variant_sampler(system_path=system_path, strategy=strategy, sample_size=sample_size, t=t)
     else:
         for r in range(1, Runs + 1):
             if strategy == "random":
-                cpp_sample(system_path, "random", sample_size=sample_size, seed=r)
+                cpp_sample(system_path, "random", rq, t=t ,sample_size=sample_size, seed=r, prop=prop),  # type: ignore
             else:
-                variant_sampler(system_path=system_path, strategy=strategy, sample_size=sample_size, seed=r)
+                variant_sampler(system_path=system_path, strategy=strategy, sample_size=sample_size, seed=r, t=t)
 
 #---------------- Main ----------------#
 if __name__ == "__main__":

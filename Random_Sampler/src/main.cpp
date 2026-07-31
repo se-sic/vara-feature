@@ -16,6 +16,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -38,8 +39,11 @@ using std::vector;
         * argv[0]: -- <path_to_feature_model.xml>
         * argv[1]: -- Command ("tsizes" or "sample" or "sat_count")
         * argv[2]: -- For "tsizes": <t-value> (1, 2, or 3) | For "sample": <sampling_strategy> ("twise" or "random")
-        * argv[3]: -- For "sample" with "twise": <t-value> (1, 2, or 3) | For "sample" with "random": <sample_size>
-        * argv[4]: -- For "sample" with "random": <seed_value>
+        * argv[3]: -- <t-value> (1, 2, or 3)
+        * argv[4]: -- For sample with "random": <sample_size>
+        * argv[5]: -- For "sample" with "random": <seed_value>
+        * argv[6]: -- For "sample" with "random": <rq> (1 or 2)
+        * argv[7]: -- For "sample" with "random": <proportion>
         2.1 From the repo root: 
             * ./build/bin/random_sampler argv
             * Example: ./build/bin/random_sampler Random_Sampler/examples/Polly.xml tsizes 2
@@ -140,21 +144,24 @@ int main(int argc, char* argv[]) noexcept(false){
     // Command: sample --> Generate t-wise sample and uniform random samples
     if (Command == "sample") {
         std::string &Strat = Args[2];
-        
-        if (Strat == "twise") {
-            unsigned T = 0;
+
+        unsigned T = 0;
+        const bool NeedT = (Strat == "twise") || (Args.size() > 6 && Args[6] == "1");
+
+        if (NeedT) {
             try {
                 T = static_cast<unsigned>(std::stoul(Args[3]));
             } catch (const std::invalid_argument &E) {
                 std::cerr << "Invalid value for t: " << Args[3] << '\n';
                 return 1;
-            }   
-
+            }
             if (T < 1 || T > 3) {
                 std::cerr << "Value of t must be between 1 and 3 (inclusive). Provided: " << T << '\n';
                 return 1;
             }
-
+        }
+        
+        if (Strat == "twise") {
             auto Interactions = bdd::sample::EnumerateInteractions(Manager, FinalBDD, T, ValidCondfigs);
             auto S   = bdd::sample::TSample(ValidCondfigs, Interactions);
 
@@ -192,34 +199,62 @@ int main(int argc, char* argv[]) noexcept(false){
         } else if (Strat == "random") {
             unsigned SampleSize = 0;
             try {
-                SampleSize = static_cast<unsigned>(std::stoul(Args[3]));
+                SampleSize = static_cast<unsigned>(std::stoul(Args[4]));
             } catch (const std::invalid_argument &E) {
-                std::cerr << "Invalid value for sample size: " << Args[3] << '\n';
+                std::cerr << "Invalid value for sample size: " << Args[4] << '\n';
                 return 1;
             }
 
             unsigned Seed = 0;
             try {
-                Seed = static_cast<unsigned>(std::stoul(Args[4]));
+                Seed = static_cast<unsigned>(std::stoul(Args[5]));
             } catch (const std::invalid_argument &E) {
-                std::cerr << "Invalid value for seed: " << Args[4] << '\n';
+                std::cerr << "Invalid value for seed: " << Args[5] << '\n';
                 return 1;
             }
 
+            unsigned Rq = 1;
+            if (Args.size() > 6){
+                try {
+                    Rq = static_cast<unsigned>(std::stoul(Args[6]));
+                } catch (const std::invalid_argument &E) {
+                std::cerr << "Invalid rq number: " << Args[6] << '\n';
+                return 1;
+                }
+            }
+
+            std::set<std::vector<bool>> Seen;
             bdd::sample::SeedRng(Seed);
             std::vector<std::vector<bool>> Samples;
             Samples.reserve(SampleSize);
-            for (size_t I = 0; I < SampleSize; ++I) {
+            std::size_t MaxAttempts = SampleSize * 10000; //NOLINT
+            std::size_t Attempt = 0;
+            while(Samples.size() < SampleSize && Attempt++ < MaxAttempts) {
                 auto S = generateConfiguration(
                     Manager, 
                     FinalBDD, 
                     Factory,
                     &Factory.SatMap
                 );
-
-                Samples.push_back(S);
+                
+                if (Seen.insert(S).second) {
+                    Samples.push_back(S);
+                }
             }
-        std::string FilePath = "bindings/python/Interplay_ML/Samples/RSSeed/" + Sys + "_" + std::to_string(Seed) + ".csv";
+
+            if (Samples.size() < SampleSize) {
+                throw std::runtime_error("Could not draw " + std::to_string(SampleSize) + " many configurations");
+            }
+        
+        std::string Prop = (Args.size() > 7) ? Args[7] : "NA";
+        std::string FilePath;
+        std::string RqPath = "RQ" + std::to_string(Rq);
+        if (Rq == 2) {
+            FilePath = "bindings/python/Interplay_ML/Samples/RQ2/" + Prop + "%/" + Sys +
+               "/" + Sys + "_" + std::to_string(Seed) + ".csv";
+        } else {
+            FilePath = "bindings/python/Interplay_ML/Samples/" + RqPath + "/Random/" + Sys + "/T" + std::to_string(T) + "/" + Sys + "_" + std::to_string(Seed) + ".csv";
+        }
         std::filesystem::create_directories(std::filesystem::path(FilePath).parent_path());
         if (Seed == 1) { bdd::sample::WriteFrequencyCSV(FinalBDD, Samples); }
         bdd::sample::WriteSampleCSV(Manager, Samples, FilePath);
