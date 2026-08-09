@@ -92,6 +92,10 @@
         "cfenv": "cpp",
         "cinttypes": "cpp"
     },
+    "python.analysis.extraPaths": [
+        "/scratch/mani00001/vara-feature-1/build/bindings/python/vara-feature",
+        "/scratch/mani00001/vara-feature-1/bindings/python"
+    ],
     "C_Cpp.default.compilerPath": "/opt/homebrew/opt/llvm/bin/clang++",
     "C_Cpp.errorSquiggles": "disabled"
 }

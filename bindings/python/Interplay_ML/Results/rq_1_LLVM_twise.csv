@@ -1,0 +1,19 @@
+technique,mre,params,trained_count,test_count,learn_time,system,strategy,rq,size_type,seed,tuned
+CART,0.09800308069891572,{},2,1022,0.01,LLVM,twise,1,T1,1,False
+kNN,0.07273540633656457,"{""n_neighbors"": 1}",2,1022,0.01,LLVM,twise,1,T1,1,False
+KRR,0.053452499516349006,{},2,1022,0.02,LLVM,twise,1,T1,1,False
+MR,0.06256893306490466,{},2,1022,0.01,LLVM,twise,1,T1,1,False
+RF,0.05691860729602447,{},2,1022,0.11,LLVM,twise,1,T1,1,False
+SVR,0.054966551227187466,{},2,1022,0.0,LLVM,twise,1,T1,1,False
+CART,0.05900350027634921,"{""max_features"": ""sqrt"", ""min_samples_leaf"": 2, ""splitter"": ""random""}",9,1015,0.0,LLVM,twise,1,T2,1,True
+kNN,0.050596860330905075,"{""n_neighbors"": 7, ""p"": 1, ""weights"": ""distance""}",9,1015,0.0,LLVM,twise,1,T2,1,True
+KRR,0.03982560539502513,"{""regressor__kernel"": ""rbf"", ""regressor__gamma"": 0.01, ""regressor__alpha"": 0.0001}",9,1015,0.01,LLVM,twise,1,T2,1,True
+MR,0.0411745787146501,"{""lasso__regressor__alpha"": 0.001}",9,1015,0.01,LLVM,twise,1,T2,1,True
+RF,0.05721100800103737,"{""max_features"": ""sqrt"", ""min_samples_leaf"": 2, ""n_estimators"": 10}",9,1015,0.01,LLVM,twise,1,T2,1,True
+SVR,0.047577787578214494,"{""regressor__tol"": 0.1, ""regressor__shrinking"": false, ""regressor__epsilon"": 0.3, ""regressor__coef0"": 0.0, ""regressor__C"": 5.0}",9,1015,0.0,LLVM,twise,1,T2,1,True
+CART,0.04330948452164482,"{""max_features"": 1.0, ""min_samples_leaf"": 2, ""splitter"": ""best""}",18,1006,0.0,LLVM,twise,1,T3,1,True
+kNN,0.04816219000532173,"{""n_neighbors"": 10, ""p"": 1, ""weights"": ""distance""}",18,1006,0.0,LLVM,twise,1,T3,1,True
+KRR,0.02855447678811717,"{""regressor__kernel"": ""rbf"", ""regressor__gamma"": 0.01, ""regressor__alpha"": 0.0001}",18,1006,0.0,LLVM,twise,1,T3,1,True
+MR,0.03082249399039493,"{""lasso__regressor__alpha"": 0.001}",18,1006,0.01,LLVM,twise,1,T3,1,True
+RF,0.037427659765630485,"{""max_features"": 1.0, ""min_samples_leaf"": 1, ""n_estimators"": 15}",18,1006,0.02,LLVM,twise,1,T3,1,True
+SVR,0.040768047302341,"{""regressor__tol"": 0.2, ""regressor__shrinking"": false, ""regressor__epsilon"": 0.3, ""regressor__coef0"": 0.0, ""regressor__C"": 2.0}",18,1006,0.0,LLVM,twise,1,T3,1,True

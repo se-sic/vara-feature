@@ -1,6 +1,6 @@
 import argparse, subprocess, csv
 from .PythonSampler import variant_sampler
-from .Config import Workspace, Bin, Sizes, SatCounts, Samples, Systems, TSize, Proportions, Runs
+from .Config import Workspace, Bin, Sizes, SatCounts, Samples, Systems, TSize, Runs, Proportions
 
 #---------------- Functions to call C++ main.cpp ----------------#‚
 def cpp_tsizes(system_path, tsize):
@@ -25,6 +25,17 @@ def cpp_sat_count(system_path):
     if r.returncode != 0:
         raise Exception(f"Error getting sat count for system {system_path}: {r.stderr}\n")
     return int(r.stdout.strip().split("\n")[-1])
+
+def tuning_samples(system):
+    if not Sizes.exists():
+        raise Exception("first generate twise reference sizes")
+    system_path =  Workspace / f"Random_Sampler/examples/{system}.xml"
+    for t in TSize:
+        size = getSampleSize()[(system, t)]
+        cpp_sample(system_path, "random", 1, t, size, 0)
+    for p in Proportions:
+        size = round(p * getValidConifgs()[system])
+        cpp_sample(system_path, "random", 2, t= None, sample_size=size, seed=0, prop=p)
 
 #---------------- Functions to precompute tsizes and to compute valid configs ----------------#
 def writeTSizes(system, t):
@@ -130,6 +141,9 @@ if __name__ == "__main__":
     mparser = parser_2.add_parser("mergetsizes")
     vparser = parser_2.add_parser("validconfigs")
 
+    tune_parser = parser_2.add_parser("tune")
+    tune_parser.add_argument("system")
+
     args = parser.parse_args()
 
     if args.command == "writetsizes":
@@ -138,6 +152,8 @@ if __name__ == "__main__":
         mergeTSizes()
     elif args.command == "validconfigs":
         writeValidConfifgs()
+    elif args.command == "tune":
+        tuning_samples(args.system)
     elif args.command == "run":
         run(args.rq, args.system, args.strategy, t=args.t, prop=args.prop)
 

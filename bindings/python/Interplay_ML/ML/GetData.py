@@ -10,6 +10,8 @@ def getSample(strategy, system, t, seed=None, rq=None, prop=None):
                 sys_path = sys_path/"Random"/system/f"T{t}"/f"{system}_{seed}.csv"
             elif strategy == "twise":
                 sys_path = Samples/f"T{t}"/f"{system}_TWiseSample.csv"
+            elif strategy == "sbs":
+                sys_path = sys_path/strategy.upper()/system/f"T{t}"/f"{system}.csv"
             else: 
                 sys_path = sys_path/strategy.upper()/system/f"T{t}"/f"{system}_seed_{seed}.csv"
             df = pd.read_csv(sys_path)
@@ -34,16 +36,11 @@ def getTrueData(system):
     sys_path = System_CSV/system/f"measurements_{system}.csv"
     if not sys_path.exists():
         sys_path = System_CSV/system/f"measurements-{system}.csv"
-        df = pd.read_csv(sys_path)
-        df.attrs["system"] = system
-        return df 
-    else:
-        df = pd.read_csv(sys_path)
-        df.attrs["system"] = system
-
-        if not (df["Performance"] > 0).all():
+    df = pd.read_csv(sys_path)
+    df.attrs["system"] = system
+    if not (df["Performance"] > 0).all():
             raise KeyError(f"{system} csv has rows with 0-value performance")
-        return df
+    return df
 
 def feature_names(true_data):
     system = true_data.attrs.get("system", "<unknown>")
@@ -54,11 +51,7 @@ def feature_names(true_data):
 
 def split(sample_data, true_data):
     feat_names = feature_names(true_data=true_data)
-
-    for i, c in enumerate(feat_names):
-        u = set(true_data[c].unique())
-        print(i, c, "mandatory" if u == {1} else ("dead" if u == {0} else "optional"))
-
+    
     joined_data = sample_data[feat_names].merge(true_data.reset_index().rename(columns={"index":"_gtidx"}), on=feat_names, how="left", validate="one_to_one")
     assert joined_data["Performance"].notna().all(), "sampled config does not exist"
     sample_idx = joined_data["_gtidx"].astype(int).to_numpy()

@@ -1,0 +1,3463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<results>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level1
+		</data>
+		<data columname="Performance">
+			208900
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level2
+		</data>
+		<data columname="Performance">
+			210450
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level3
+		</data>
+		<data columname="Performance">
+			283750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level4
+		</data>
+		<data columname="Performance">
+			339780
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level5
+		</data>
+		<data columname="Performance">
+			340590
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level6
+		</data>
+		<data columname="Performance">
+			384660
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level7
+		</data>
+		<data columname="Performance">
+			1062250
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level8
+		</data>
+		<data columname="Performance">
+			1179830
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLrzip,level,level9
+		</data>
+		<data columname="Performance">
+			827290
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionBzip2,level,level1
+		</data>
+		<data columname="Performance">
+			208350
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionBzip2,level,level2
+		</data>
+		<data columname="Performance">
+			213220
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionBzip2,level,level3
+		</data>
+		<data columname="Performance">
+			223040
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionBzip2,level,level4
+		</data>
+		<data columname="Performance">
+			234870
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionBzip2,level,level5
+		</data>
+		<data columname="Performance">
+			236720
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionBzip2,level,level6
+		</data>
+		<data columname="Performance">
+			248940
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionBzip2,level,level7
+		</data>
+		<data columname="Performance">
+			257480
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionBzip2,level,level8
+		</data>
+		<data columname="Performance">
+			263430
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionBzip2,level,level9
+		</data>
+		<data columname="Performance">
+			265980
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionGzip,level,level1
+		</data>
+		<data columname="Performance">
+			76470
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionGzip,level,level2
+		</data>
+		<data columname="Performance">
+			80360
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionGzip,level,level3
+		</data>
+		<data columname="Performance">
+			87690
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionGzip,level,level4
+		</data>
+		<data columname="Performance">
+			93090
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionGzip,level,level5
+		</data>
+		<data columname="Performance">
+			106090
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionGzip,level,level6
+		</data>
+		<data columname="Performance">
+			128450
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionGzip,level,level7
+		</data>
+		<data columname="Performance">
+			146410
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionGzip,level,level8
+		</data>
+		<data columname="Performance">
+			187970
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionGzip,level,level9
+		</data>
+		<data columname="Performance">
+			198360
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLzo,level,level1
+		</data>
+		<data columname="Performance">
+			50520
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLzo,level,level2
+		</data>
+		<data columname="Performance">
+			50610
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLzo,level,level3
+		</data>
+		<data columname="Performance">
+			45490
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLzo,level,level4
+		</data>
+		<data columname="Performance">
+			48050
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLzo,level,level5
+		</data>
+		<data columname="Performance">
+			49850
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLzo,level,level6
+		</data>
+		<data columname="Performance">
+			50420
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLzo,level,level7
+		</data>
+		<data columname="Performance">
+			53060
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLzo,level,level8
+		</data>
+		<data columname="Performance">
+			53480
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionLzo,level,level9
+		</data>
+		<data columname="Performance">
+			51500
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionZpaq,level,level1
+		</data>
+		<data columname="Performance">
+			673290
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionZpaq,level,level2
+		</data>
+		<data columname="Performance">
+			679680
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionZpaq,level,level3
+		</data>
+		<data columname="Performance">
+			674140
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionZpaq,level,level4
+		</data>
+		<data columname="Performance">
+			2267650
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionZpaq,level,level5
+		</data>
+		<data columname="Performance">
+			2265330
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionZpaq,level,level6
+		</data>
+		<data columname="Performance">
+			2265250
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionZpaq,level,level7
+		</data>
+		<data columname="Performance">
+			2275110
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionZpaq,level,level8
+		</data>
+		<data columname="Performance">
+			5765920
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			compression,compressionZpaq,level,level9
+		</data>
+		<data columname="Performance">
+			5759100
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			level,level1
+		</data>
+		<data columname="Performance">
+			41150
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			level,level2
+		</data>
+		<data columname="Performance">
+			41790
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			level,level3
+		</data>
+		<data columname="Performance">
+			42300
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			level,level4
+		</data>
+		<data columname="Performance">
+			43680
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			level,level5
+		</data>
+		<data columname="Performance">
+			43560
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			level,level6
+		</data>
+		<data columname="Performance">
+			45720
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			level,level7
+		</data>
+		<data columname="Performance">
+			44370
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			level,level8
+		</data>
+		<data columname="Performance">
+			46950
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			level,level9
+		</data>
+		<data columname="Performance">
+			45770
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLrzip,level,level1
+		</data>
+		<data columname="Performance">
+			220490
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLrzip,level,level2
+		</data>
+		<data columname="Performance">
+			222350
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLrzip,level,level3
+		</data>
+		<data columname="Performance">
+			295950
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLrzip,level,level4
+		</data>
+		<data columname="Performance">
+			350260
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLrzip,level,level5
+		</data>
+		<data columname="Performance">
+			347130
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLrzip,level,level6
+		</data>
+		<data columname="Performance">
+			395130
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLrzip,level,level7
+		</data>
+		<data columname="Performance">
+			1070520
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLrzip,level,level8
+		</data>
+		<data columname="Performance">
+			1185460
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLrzip,level,level9
+		</data>
+		<data columname="Performance">
+			833620
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionBzip2,level,level1
+		</data>
+		<data columname="Performance">
+			213900
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionBzip2,level,level2
+		</data>
+		<data columname="Performance">
+			222830
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionBzip2,level,level3
+		</data>
+		<data columname="Performance">
+			233560
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionBzip2,level,level4
+		</data>
+		<data columname="Performance">
+			243700
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionBzip2,level,level5
+		</data>
+		<data columname="Performance">
+			250030
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionBzip2,level,level6
+		</data>
+		<data columname="Performance">
+			260550
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionBzip2,level,level7
+		</data>
+		<data columname="Performance">
+			263150
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionBzip2,level,level8
+		</data>
+		<data columname="Performance">
+			271090
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionBzip2,level,level9
+		</data>
+		<data columname="Performance">
+			274670
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionGzip,level,level1
+		</data>
+		<data columname="Performance">
+			88600
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionGzip,level,level2
+		</data>
+		<data columname="Performance">
+			89260
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionGzip,level,level3
+		</data>
+		<data columname="Performance">
+			97960
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionGzip,level,level4
+		</data>
+		<data columname="Performance">
+			103630
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionGzip,level,level5
+		</data>
+		<data columname="Performance">
+			114530
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionGzip,level,level6
+		</data>
+		<data columname="Performance">
+			139600
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionGzip,level,level7
+		</data>
+		<data columname="Performance">
+			156680
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionGzip,level,level8
+		</data>
+		<data columname="Performance">
+			198500
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionGzip,level,level9
+		</data>
+		<data columname="Performance">
+			205040
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLzo,level,level1
+		</data>
+		<data columname="Performance">
+			65730
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLzo,level,level2
+		</data>
+		<data columname="Performance">
+			59710
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLzo,level,level3
+		</data>
+		<data columname="Performance">
+			61770
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLzo,level,level4
+		</data>
+		<data columname="Performance">
+			60460
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLzo,level,level5
+		</data>
+		<data columname="Performance">
+			61210
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLzo,level,level6
+		</data>
+		<data columname="Performance">
+			61790
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLzo,level,level7
+		</data>
+		<data columname="Performance">
+			64550
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLzo,level,level8
+		</data>
+		<data columname="Performance">
+			63620
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionLzo,level,level9
+		</data>
+		<data columname="Performance">
+			64620
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionZpaq,level,level1
+		</data>
+		<data columname="Performance">
+			681080
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionZpaq,level,level2
+		</data>
+		<data columname="Performance">
+			684690
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionZpaq,level,level3
+		</data>
+		<data columname="Performance">
+			681250
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionZpaq,level,level4
+		</data>
+		<data columname="Performance">
+			2288260
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionZpaq,level,level5
+		</data>
+		<data columname="Performance">
+			2282110
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionZpaq,level,level6
+		</data>
+		<data columname="Performance">
+			2273900
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionZpaq,level,level7
+		</data>
+		<data columname="Performance">
+			2282560
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionZpaq,level,level8
+		</data>
+		<data columname="Performance">
+			5802460
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,compression,compressionZpaq,level,level9
+		</data>
+		<data columname="Performance">
+			5810950
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,level,level1
+		</data>
+		<data columname="Performance">
+			49760
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,level,level2
+		</data>
+		<data columname="Performance">
+			53200
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,level,level3
+		</data>
+		<data columname="Performance">
+			56980
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,level,level4
+		</data>
+		<data columname="Performance">
+			54820
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,level,level5
+		</data>
+		<data columname="Performance">
+			53500
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,level,level6
+		</data>
+		<data columname="Performance">
+			56570
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,level,level7
+		</data>
+		<data columname="Performance">
+			61280
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,level,level8
+		</data>
+		<data columname="Performance">
+			56430
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,level,level9
+		</data>
+		<data columname="Performance">
+			59650
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLrzip,level,level1
+		</data>
+		<data columname="Performance">
+			212880
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLrzip,level,level2
+		</data>
+		<data columname="Performance">
+			210810
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLrzip,level,level3
+		</data>
+		<data columname="Performance">
+			284060
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLrzip,level,level4
+		</data>
+		<data columname="Performance">
+			339360
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLrzip,level,level5
+		</data>
+		<data columname="Performance">
+			340300
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLrzip,level,level6
+		</data>
+		<data columname="Performance">
+			383910
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLrzip,level,level7
+		</data>
+		<data columname="Performance">
+			1061640
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLrzip,level,level8
+		</data>
+		<data columname="Performance">
+			1178930
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLrzip,level,level9
+		</data>
+		<data columname="Performance">
+			828640
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionBzip2,level,level1
+		</data>
+		<data columname="Performance">
+			208080
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionBzip2,level,level2
+		</data>
+		<data columname="Performance">
+			212850
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionBzip2,level,level3
+		</data>
+		<data columname="Performance">
+			223100
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionBzip2,level,level4
+		</data>
+		<data columname="Performance">
+			232720
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionBzip2,level,level5
+		</data>
+		<data columname="Performance">
+			240110
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionBzip2,level,level6
+		</data>
+		<data columname="Performance">
+			249760
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionBzip2,level,level7
+		</data>
+		<data columname="Performance">
+			258170
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionBzip2,level,level8
+		</data>
+		<data columname="Performance">
+			263330
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionBzip2,level,level9
+		</data>
+		<data columname="Performance">
+			266710
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionGzip,level,level1
+		</data>
+		<data columname="Performance">
+			77610
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionGzip,level,level2
+		</data>
+		<data columname="Performance">
+			81720
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionGzip,level,level3
+		</data>
+		<data columname="Performance">
+			91570
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionGzip,level,level4
+		</data>
+		<data columname="Performance">
+			92590
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionGzip,level,level5
+		</data>
+		<data columname="Performance">
+			109300
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionGzip,level,level6
+		</data>
+		<data columname="Performance">
+			127760
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionGzip,level,level7
+		</data>
+		<data columname="Performance">
+			145950
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionGzip,level,level8
+		</data>
+		<data columname="Performance">
+			187730
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionGzip,level,level9
+		</data>
+		<data columname="Performance">
+			198100
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLzo,level,level1
+		</data>
+		<data columname="Performance">
+			50740
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLzo,level,level2
+		</data>
+		<data columname="Performance">
+			51040
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLzo,level,level3
+		</data>
+		<data columname="Performance">
+			47370
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLzo,level,level4
+		</data>
+		<data columname="Performance">
+			47570
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLzo,level,level5
+		</data>
+		<data columname="Performance">
+			48640
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLzo,level,level6
+		</data>
+		<data columname="Performance">
+			50250
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLzo,level,level7
+		</data>
+		<data columname="Performance">
+			52700
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLzo,level,level8
+		</data>
+		<data columname="Performance">
+			52920
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionLzo,level,level9
+		</data>
+		<data columname="Performance">
+			52010
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionZpaq,level,level1
+		</data>
+		<data columname="Performance">
+			672520
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionZpaq,level,level2
+		</data>
+		<data columname="Performance">
+			671740
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionZpaq,level,level3
+		</data>
+		<data columname="Performance">
+			675720
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionZpaq,level,level4
+		</data>
+		<data columname="Performance">
+			2271260
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionZpaq,level,level5
+		</data>
+		<data columname="Performance">
+			2263060
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionZpaq,level,level6
+		</data>
+		<data columname="Performance">
+			2271620
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionZpaq,level,level7
+		</data>
+		<data columname="Performance">
+			2279890
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionZpaq,level,level8
+		</data>
+		<data columname="Performance">
+			5768350
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,compression,compressionZpaq,level,level9
+		</data>
+		<data columname="Performance">
+			5754200
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,level,level1
+		</data>
+		<data columname="Performance">
+			41260
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,level,level2
+		</data>
+		<data columname="Performance">
+			42910
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,level,level3
+		</data>
+		<data columname="Performance">
+			41830
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,level,level4
+		</data>
+		<data columname="Performance">
+			41590
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,level,level5
+		</data>
+		<data columname="Performance">
+			43550
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,level,level6
+		</data>
+		<data columname="Performance">
+			40550
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,level,level7
+		</data>
+		<data columname="Performance">
+			47130
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,level,level8
+		</data>
+		<data columname="Performance">
+			43330
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,level,level9
+		</data>
+		<data columname="Performance">
+			45980
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLrzip,level,level1
+		</data>
+		<data columname="Performance">
+			221550
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLrzip,level,level2
+		</data>
+		<data columname="Performance">
+			220350
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLrzip,level,level3
+		</data>
+		<data columname="Performance">
+			295410
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLrzip,level,level4
+		</data>
+		<data columname="Performance">
+			350440
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLrzip,level,level5
+		</data>
+		<data columname="Performance">
+			351010
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLrzip,level,level6
+		</data>
+		<data columname="Performance">
+			389840
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLrzip,level,level7
+		</data>
+		<data columname="Performance">
+			1070210
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLrzip,level,level8
+		</data>
+		<data columname="Performance">
+			1186750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLrzip,level,level9
+		</data>
+		<data columname="Performance">
+			832070
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionBzip2,level,level1
+		</data>
+		<data columname="Performance">
+			212659
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionBzip2,level,level2
+		</data>
+		<data columname="Performance">
+			225740
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionBzip2,level,level3
+		</data>
+		<data columname="Performance">
+			234950
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionBzip2,level,level4
+		</data>
+		<data columname="Performance">
+			242800
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionBzip2,level,level5
+		</data>
+		<data columname="Performance">
+			250520
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionBzip2,level,level6
+		</data>
+		<data columname="Performance">
+			259470
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionBzip2,level,level7
+		</data>
+		<data columname="Performance">
+			268620
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionBzip2,level,level8
+		</data>
+		<data columname="Performance">
+			268560
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionBzip2,level,level9
+		</data>
+		<data columname="Performance">
+			276740
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionGzip,level,level1
+		</data>
+		<data columname="Performance">
+			89450
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionGzip,level,level2
+		</data>
+		<data columname="Performance">
+			92770
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionGzip,level,level3
+		</data>
+		<data columname="Performance">
+			100240
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionGzip,level,level4
+		</data>
+		<data columname="Performance">
+			106090
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionGzip,level,level5
+		</data>
+		<data columname="Performance">
+			119050
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionGzip,level,level6
+		</data>
+		<data columname="Performance">
+			140250
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionGzip,level,level7
+		</data>
+		<data columname="Performance">
+			158380
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionGzip,level,level8
+		</data>
+		<data columname="Performance">
+			199390
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionGzip,level,level9
+		</data>
+		<data columname="Performance">
+			208740
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLzo,level,level1
+		</data>
+		<data columname="Performance">
+			60110
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLzo,level,level2
+		</data>
+		<data columname="Performance">
+			64640
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLzo,level,level3
+		</data>
+		<data columname="Performance">
+			58050
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLzo,level,level4
+		</data>
+		<data columname="Performance">
+			61000
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLzo,level,level5
+		</data>
+		<data columname="Performance">
+			61870
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLzo,level,level6
+		</data>
+		<data columname="Performance">
+			61690
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLzo,level,level7
+		</data>
+		<data columname="Performance">
+			65100
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLzo,level,level8
+		</data>
+		<data columname="Performance">
+			64130
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionLzo,level,level9
+		</data>
+		<data columname="Performance">
+			64550
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionZpaq,level,level1
+		</data>
+		<data columname="Performance">
+			680540
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionZpaq,level,level2
+		</data>
+		<data columname="Performance">
+			680310
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionZpaq,level,level3
+		</data>
+		<data columname="Performance">
+			681430
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionZpaq,level,level4
+		</data>
+		<data columname="Performance">
+			2289050
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionZpaq,level,level5
+		</data>
+		<data columname="Performance">
+			2278560
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionZpaq,level,level6
+		</data>
+		<data columname="Performance">
+			2290710
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionZpaq,level,level7
+		</data>
+		<data columname="Performance">
+			2282210
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionZpaq,level,level8
+		</data>
+		<data columname="Performance">
+			5797710
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,compression,compressionZpaq,level,level9
+		</data>
+		<data columname="Performance">
+			5811280
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,level,level1
+		</data>
+		<data columname="Performance">
+			52650
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,level,level2
+		</data>
+		<data columname="Performance">
+			49450
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,level,level3
+		</data>
+		<data columname="Performance">
+			53530
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,level,level4
+		</data>
+		<data columname="Performance">
+			57850
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,level,level5
+		</data>
+		<data columname="Performance">
+			59380
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,level,level6
+		</data>
+		<data columname="Performance">
+			58470
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,level,level7
+		</data>
+		<data columname="Performance">
+			56940
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,level,level8
+		</data>
+		<data columname="Performance">
+			59060
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,level,level9
+		</data>
+		<data columname="Performance">
+			58760
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLrzip,level,level1
+		</data>
+		<data columname="Performance">
+			212530
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLrzip,level,level2
+		</data>
+		<data columname="Performance">
+			209160
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLrzip,level,level3
+		</data>
+		<data columname="Performance">
+			283850
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLrzip,level,level4
+		</data>
+		<data columname="Performance">
+			338900
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLrzip,level,level5
+		</data>
+		<data columname="Performance">
+			339880
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLrzip,level,level6
+		</data>
+		<data columname="Performance">
+			383300
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLrzip,level,level7
+		</data>
+		<data columname="Performance">
+			1060630
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLrzip,level,level8
+		</data>
+		<data columname="Performance">
+			1178530
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLrzip,level,level9
+		</data>
+		<data columname="Performance">
+			828500
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionBzip2,level,level1
+		</data>
+		<data columname="Performance">
+			208010
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionBzip2,level,level2
+		</data>
+		<data columname="Performance">
+			215150
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionBzip2,level,level3
+		</data>
+		<data columname="Performance">
+			223090
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionBzip2,level,level4
+		</data>
+		<data columname="Performance">
+			232880
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionBzip2,level,level5
+		</data>
+		<data columname="Performance">
+			239080
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionBzip2,level,level6
+		</data>
+		<data columname="Performance">
+			248560
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionBzip2,level,level7
+		</data>
+		<data columname="Performance">
+			257790
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionBzip2,level,level8
+		</data>
+		<data columname="Performance">
+			262750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionBzip2,level,level9
+		</data>
+		<data columname="Performance">
+			266990
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionGzip,level,level1
+		</data>
+		<data columname="Performance">
+			77430
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionGzip,level,level2
+		</data>
+		<data columname="Performance">
+			81420
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionGzip,level,level3
+		</data>
+		<data columname="Performance">
+			91630
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionGzip,level,level4
+		</data>
+		<data columname="Performance">
+			94420
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionGzip,level,level5
+		</data>
+		<data columname="Performance">
+			107250
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionGzip,level,level6
+		</data>
+		<data columname="Performance">
+			126550
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionGzip,level,level7
+		</data>
+		<data columname="Performance">
+			145660
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionGzip,level,level8
+		</data>
+		<data columname="Performance">
+			186750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionGzip,level,level9
+		</data>
+		<data columname="Performance">
+			193590
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLzo,level,level1
+		</data>
+		<data columname="Performance">
+			49440
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLzo,level,level2
+		</data>
+		<data columname="Performance">
+			51360
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLzo,level,level3
+		</data>
+		<data columname="Performance">
+			47910
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLzo,level,level4
+		</data>
+		<data columname="Performance">
+			46750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLzo,level,level5
+		</data>
+		<data columname="Performance">
+			49160
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLzo,level,level6
+		</data>
+		<data columname="Performance">
+			50200
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLzo,level,level7
+		</data>
+		<data columname="Performance">
+			52880
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLzo,level,level8
+		</data>
+		<data columname="Performance">
+			53450
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionLzo,level,level9
+		</data>
+		<data columname="Performance">
+			52040
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionZpaq,level,level1
+		</data>
+		<data columname="Performance">
+			672970
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionZpaq,level,level2
+		</data>
+		<data columname="Performance">
+			671500
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionZpaq,level,level3
+		</data>
+		<data columname="Performance">
+			673650
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionZpaq,level,level4
+		</data>
+		<data columname="Performance">
+			2271210
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionZpaq,level,level5
+		</data>
+		<data columname="Performance">
+			2264750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionZpaq,level,level6
+		</data>
+		<data columname="Performance">
+			2267790
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionZpaq,level,level7
+		</data>
+		<data columname="Performance">
+			2275100
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionZpaq,level,level8
+		</data>
+		<data columname="Performance">
+			5565990
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,compression,compressionZpaq,level,level9
+		</data>
+		<data columname="Performance">
+			5578370
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,level,level1
+		</data>
+		<data columname="Performance">
+			40430
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,level,level2
+		</data>
+		<data columname="Performance">
+			44600
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,level,level3
+		</data>
+		<data columname="Performance">
+			41900
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,level,level4
+		</data>
+		<data columname="Performance">
+			42230
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,level,level5
+		</data>
+		<data columname="Performance">
+			43660
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,level,level6
+		</data>
+		<data columname="Performance">
+			44110
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,level,level7
+		</data>
+		<data columname="Performance">
+			46710
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,level,level8
+		</data>
+		<data columname="Performance">
+			48150
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			disableCompressibilityTesting,level,level9
+		</data>
+		<data columname="Performance">
+			45270
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLrzip,level,level1
+		</data>
+		<data columname="Performance">
+			220780
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLrzip,level,level2
+		</data>
+		<data columname="Performance">
+			220370
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLrzip,level,level3
+		</data>
+		<data columname="Performance">
+			296210
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLrzip,level,level4
+		</data>
+		<data columname="Performance">
+			350440
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLrzip,level,level5
+		</data>
+		<data columname="Performance">
+			349540
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLrzip,level,level6
+		</data>
+		<data columname="Performance">
+			392630
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLrzip,level,level7
+		</data>
+		<data columname="Performance">
+			1067140
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLrzip,level,level8
+		</data>
+		<data columname="Performance">
+			1183670
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLrzip,level,level9
+		</data>
+		<data columname="Performance">
+			833190
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionBzip2,level,level1
+		</data>
+		<data columname="Performance">
+			214970
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionBzip2,level,level2
+		</data>
+		<data columname="Performance">
+			224880
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionBzip2,level,level3
+		</data>
+		<data columname="Performance">
+			234460
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionBzip2,level,level4
+		</data>
+		<data columname="Performance">
+			244100
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionBzip2,level,level5
+		</data>
+		<data columname="Performance">
+			250660
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionBzip2,level,level6
+		</data>
+		<data columname="Performance">
+			259530
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionBzip2,level,level7
+		</data>
+		<data columname="Performance">
+			268330
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionBzip2,level,level8
+		</data>
+		<data columname="Performance">
+			268830
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionBzip2,level,level9
+		</data>
+		<data columname="Performance">
+			272930
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionGzip,level,level1
+		</data>
+		<data columname="Performance">
+			89180
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionGzip,level,level2
+		</data>
+		<data columname="Performance">
+			90930
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionGzip,level,level3
+		</data>
+		<data columname="Performance">
+			102280
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionGzip,level,level4
+		</data>
+		<data columname="Performance">
+			106310
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionGzip,level,level5
+		</data>
+		<data columname="Performance">
+			117480
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionGzip,level,level6
+		</data>
+		<data columname="Performance">
+			138260
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionGzip,level,level7
+		</data>
+		<data columname="Performance">
+			155440
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionGzip,level,level8
+		</data>
+		<data columname="Performance">
+			199110
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionGzip,level,level9
+		</data>
+		<data columname="Performance">
+			208540
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLzo,level,level1
+		</data>
+		<data columname="Performance">
+			64910
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLzo,level,level2
+		</data>
+		<data columname="Performance">
+			62210
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLzo,level,level3
+		</data>
+		<data columname="Performance">
+			61350
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLzo,level,level4
+		</data>
+		<data columname="Performance">
+			59970
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLzo,level,level5
+		</data>
+		<data columname="Performance">
+			57750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLzo,level,level6
+		</data>
+		<data columname="Performance">
+			62120
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLzo,level,level7
+		</data>
+		<data columname="Performance">
+			64570
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLzo,level,level8
+		</data>
+		<data columname="Performance">
+			63590
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionLzo,level,level9
+		</data>
+		<data columname="Performance">
+			64670
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionZpaq,level,level1
+		</data>
+		<data columname="Performance">
+			680310
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionZpaq,level,level2
+		</data>
+		<data columname="Performance">
+			683560
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionZpaq,level,level3
+		</data>
+		<data columname="Performance">
+			679100
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionZpaq,level,level4
+		</data>
+		<data columname="Performance">
+			2275940
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionZpaq,level,level5
+		</data>
+		<data columname="Performance">
+			2269330
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionZpaq,level,level6
+		</data>
+		<data columname="Performance">
+			2272580
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionZpaq,level,level7
+		</data>
+		<data columname="Performance">
+			2287710
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionZpaq,level,level8
+		</data>
+		<data columname="Performance">
+			5615690
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,compression,compressionZpaq,level,level9
+		</data>
+		<data columname="Performance">
+			5619060
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,level,level1
+		</data>
+		<data columname="Performance">
+			54530
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,level,level2
+		</data>
+		<data columname="Performance">
+			53870
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,level,level3
+		</data>
+		<data columname="Performance">
+			53750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,level,level4
+		</data>
+		<data columname="Performance">
+			57800
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,level,level5
+		</data>
+		<data columname="Performance">
+			52070
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,level,level6
+		</data>
+		<data columname="Performance">
+			56570
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,level,level7
+		</data>
+		<data columname="Performance">
+			56650
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,level,level8
+		</data>
+		<data columname="Performance">
+			57660
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,disableCompressibilityTesting,level,level9
+		</data>
+		<data columname="Performance">
+			57250
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level1
+		</data>
+		<data columname="Performance">
+			211900
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level2
+		</data>
+		<data columname="Performance">
+			210150
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level3
+		</data>
+		<data columname="Performance">
+			284170
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level4
+		</data>
+		<data columname="Performance">
+			338270
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level5
+		</data>
+		<data columname="Performance">
+			339300
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level6
+		</data>
+		<data columname="Performance">
+			383480
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level7
+		</data>
+		<data columname="Performance">
+			1060950
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level8
+		</data>
+		<data columname="Performance">
+			1179410
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level9
+		</data>
+		<data columname="Performance">
+			828190
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level1
+		</data>
+		<data columname="Performance">
+			207830
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level2
+		</data>
+		<data columname="Performance">
+			214010
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level3
+		</data>
+		<data columname="Performance">
+			223860
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level4
+		</data>
+		<data columname="Performance">
+			232120
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level5
+		</data>
+		<data columname="Performance">
+			240350
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level6
+		</data>
+		<data columname="Performance">
+			248530
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level7
+		</data>
+		<data columname="Performance">
+			257260
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level8
+		</data>
+		<data columname="Performance">
+			262800
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level9
+		</data>
+		<data columname="Performance">
+			265720
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level1
+		</data>
+		<data columname="Performance">
+			77620
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level2
+		</data>
+		<data columname="Performance">
+			80780
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level3
+		</data>
+		<data columname="Performance">
+			91400
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level4
+		</data>
+		<data columname="Performance">
+			94130
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level5
+		</data>
+		<data columname="Performance">
+			108370
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level6
+		</data>
+		<data columname="Performance">
+			132130
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level7
+		</data>
+		<data columname="Performance">
+			145620
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level8
+		</data>
+		<data columname="Performance">
+			189150
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level9
+		</data>
+		<data columname="Performance">
+			199420
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level1
+		</data>
+		<data columname="Performance">
+			50590
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level2
+		</data>
+		<data columname="Performance">
+			51150
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level3
+		</data>
+		<data columname="Performance">
+			47560
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level4
+		</data>
+		<data columname="Performance">
+			47680
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level5
+		</data>
+		<data columname="Performance">
+			49640
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level6
+		</data>
+		<data columname="Performance">
+			50600
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level7
+		</data>
+		<data columname="Performance">
+			52930
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level8
+		</data>
+		<data columname="Performance">
+			52190
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level9
+		</data>
+		<data columname="Performance">
+			52800
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level1
+		</data>
+		<data columname="Performance">
+			678540
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level2
+		</data>
+		<data columname="Performance">
+			672390
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level3
+		</data>
+		<data columname="Performance">
+			673780
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level4
+		</data>
+		<data columname="Performance">
+			2270490
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level5
+		</data>
+		<data columname="Performance">
+			2275750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level6
+		</data>
+		<data columname="Performance">
+			2272850
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level7
+		</data>
+		<data columname="Performance">
+			2272220
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level8
+		</data>
+		<data columname="Performance">
+			5622640
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level9
+		</data>
+		<data columname="Performance">
+			5574160
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,level,level1
+		</data>
+		<data columname="Performance">
+			42130
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,level,level2
+		</data>
+		<data columname="Performance">
+			42170
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,level,level3
+		</data>
+		<data columname="Performance">
+			37470
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,level,level4
+		</data>
+		<data columname="Performance">
+			41880
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,level,level5
+		</data>
+		<data columname="Performance">
+			45160
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,level,level6
+		</data>
+		<data columname="Performance">
+			44970
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,level,level7
+		</data>
+		<data columname="Performance">
+			47280
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,level,level8
+		</data>
+		<data columname="Performance">
+			46170
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			unlimitedWindowSize,disableCompressibilityTesting,level,level9
+		</data>
+		<data columname="Performance">
+			48000
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level1
+		</data>
+		<data columname="Performance">
+			218000
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level2
+		</data>
+		<data columname="Performance">
+			216030
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level3
+		</data>
+		<data columname="Performance">
+			294370
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level4
+		</data>
+		<data columname="Performance">
+			350470
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level5
+		</data>
+		<data columname="Performance">
+			351120
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level6
+		</data>
+		<data columname="Performance">
+			394700
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level7
+		</data>
+		<data columname="Performance">
+			1065840
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level8
+		</data>
+		<data columname="Performance">
+			1181340
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLrzip,level,level9
+		</data>
+		<data columname="Performance">
+			832650
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level1
+		</data>
+		<data columname="Performance">
+			215240
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level2
+		</data>
+		<data columname="Performance">
+			225540
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level3
+		</data>
+		<data columname="Performance">
+			234680
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level4
+		</data>
+		<data columname="Performance">
+			243550
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level5
+		</data>
+		<data columname="Performance">
+			252110
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level6
+		</data>
+		<data columname="Performance">
+			255810
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level7
+		</data>
+		<data columname="Performance">
+			266870
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level8
+		</data>
+		<data columname="Performance">
+			272830
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionBzip2,level,level9
+		</data>
+		<data columname="Performance">
+			278140
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level1
+		</data>
+		<data columname="Performance">
+			89350
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level2
+		</data>
+		<data columname="Performance">
+			92800
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level3
+		</data>
+		<data columname="Performance">
+			102270
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level4
+		</data>
+		<data columname="Performance">
+			107550
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level5
+		</data>
+		<data columname="Performance">
+			118090
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level6
+		</data>
+		<data columname="Performance">
+			139300
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level7
+		</data>
+		<data columname="Performance">
+			155300
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level8
+		</data>
+		<data columname="Performance">
+			200050
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionGzip,level,level9
+		</data>
+		<data columname="Performance">
+			208620
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level1
+		</data>
+		<data columname="Performance">
+			65400
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level2
+		</data>
+		<data columname="Performance">
+			62270
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level3
+		</data>
+		<data columname="Performance">
+			61680
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level4
+		</data>
+		<data columname="Performance">
+			60850
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level5
+		</data>
+		<data columname="Performance">
+			60850
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level6
+		</data>
+		<data columname="Performance">
+			61880
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level7
+		</data>
+		<data columname="Performance">
+			64570
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level8
+		</data>
+		<data columname="Performance">
+			65070
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionLzo,level,level9
+		</data>
+		<data columname="Performance">
+			64270
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level1
+		</data>
+		<data columname="Performance">
+			682360
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level2
+		</data>
+		<data columname="Performance">
+			685410
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level3
+		</data>
+		<data columname="Performance">
+			686140
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level4
+		</data>
+		<data columname="Performance">
+			2277300
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level5
+		</data>
+		<data columname="Performance">
+			2280880
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level6
+		</data>
+		<data columname="Performance">
+			2272890
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level7
+		</data>
+		<data columname="Performance">
+			2274210
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level8
+		</data>
+		<data columname="Performance">
+			5588490
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,compression,compressionZpaq,level,level9
+		</data>
+		<data columname="Performance">
+			5765570
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,level,level1
+		</data>
+		<data columname="Performance">
+			54290
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,level,level2
+		</data>
+		<data columname="Performance">
+			52900
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,level,level3
+		</data>
+		<data columname="Performance">
+			55520
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,level,level4
+		</data>
+		<data columname="Performance">
+			54750
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,level,level5
+		</data>
+		<data columname="Performance">
+			56950
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,level,level6
+		</data>
+		<data columname="Performance">
+			57860
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,level,level7
+		</data>
+		<data columname="Performance">
+			58700
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,level,level8
+		</data>
+		<data columname="Performance">
+			57320
+		</data>
+	</row>
+	<row>
+		<data columname="Configuration">
+			encryption,unlimitedWindowSize,disableCompressibilityTesting,level,level9
+		</data>
+		<data columname="Performance">
+			53990
+		</data>
+	</row>
+</results>
+<!--
+largest relative sample-based standard deviation: 3.18331307643
+-->

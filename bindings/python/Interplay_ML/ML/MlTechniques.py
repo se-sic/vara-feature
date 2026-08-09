@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.kernel_ridge import KernelRidge
-from sklearn.linear_model import LinearRegression, Lasso
+from sklearn.linear_model import Lasso
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.compose import TransformedTargetRegressor
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
@@ -21,23 +22,24 @@ def ml_models():
             "min_samples_leaf": [1, 2]
         }),
         "kNN": (KNeighborsRegressor(algorithm="auto"), {
-            "n_neighbors": [8, 9, 10, 11, 12, 13, 14, 15],
+            "n_neighbors": [8, 10, 12, 15],
             "weights": ["uniform", "distance"],
-            "p": [1, 2, 3]
+            "p": [1, 2]
         }),
         "KRR": (TransformedTargetRegressor(KernelRidge(), transformer=StandardScaler()), {
-            "regressor__alpha": [0.0000001, 0.0001, 0.01, 0.02, 0.05, 0.1],
-            "regressor__kernel": ["linear", "rbf", "poly"],
+            "regressor__alpha": [0.0001, 0.01, 0.1],
+            "regressor__kernel": ["rbf"],
             "regressor__gamma": [0.01, 0.05, 0.1, 0.2],
-            "regressor__degree": [1, 2, 3]
         }),
         "MR": (Pipeline([
             ("poly", PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)),
-            ("lasso", Lasso(max_iter=10000, tol=0.0003, random_state=RAND))]),
-            {"lasso__alpha": [0.001, 0.1, 1.0, 10.0, 100.0, 1000.0]
+            ("var", VarianceThreshold(0.0)),
+            ("lasso", TransformedTargetRegressor(
+                Lasso(max_iter=10000, random_state=RAND), transformer=StandardScaler()))]),
+            {"lasso__regressor__alpha": [0.001, 0.01, 0.1, 1.0]
         }),
         "RF": (RandomForestRegressor(random_state=RAND, n_jobs=1), {
-            "n_estimators": [10, 12, 15, 18, 20],
+            "n_estimators": [10, 15, 20],
             "max_features": [1.0, "sqrt", "log2"],
             "min_samples_leaf": [1, 2]
         }),

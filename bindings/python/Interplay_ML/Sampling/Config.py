@@ -6,6 +6,8 @@ Bin = Workspace / "build/bin/random_sampler"
 Samples = Workspace / "bindings/python/Interplay_ML/Samples"
 Sizes = Samples / "twise_sizes.csv"
 SatCounts = Samples / "sat_counts.csv"
+GridPaths = Workspace / "bindings/python/Interplay_ML/ML/Grids/grid_search_params.json"
+Results = Workspace / "bindings/python/Interplay_ML/Results"
 
 System_CSV = Workspace / "bindings/python/Interplay_ML/Data"
 # ---------- SYSTEMS -----------------------------------------
@@ -25,6 +27,12 @@ PyStrat = {"random" : "random", "twise": "twise", "sbs": "solver", "dbs": "dista
 #---------- REFERENCE SIZES (AS T) ---------------------------
 TSize = [1, 2, 3]
 #---------- REFERENCE SIZES (AS PROPOTIIONS) ----------------
-Proportions = [0.05, 0.1, 0.3, 0.5]
+Proportions = [0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.3, 0.5]
 #---------- REPITITIONS FOR RANDOM STRATEGIES ---------------
 Runs = 100
+#---------- CAPACITIES FOR TOO LARGE SYSTEMS ----------------
+Cap_Default = 20000
+#Cap_Special = {"VP9": 10000, "JavaGC": 10000}
+
+#def set_cap(system):
+    #return Cap_Special.get(system, Cap_Default)

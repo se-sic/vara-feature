@@ -7,8 +7,12 @@
       "name": "Debug random_sampler",
       "program": "${workspaceFolder}/build/bin/random_sampler",
       "args": [
-        "${workspaceFolder}/Random_Sampler/examples/Irzip.xml",
-        "sat_count",
+        "${workspaceFolder}/Random_Sampler/examples/Hippacc.xml",
+        "sample",
+        "random",
+        "2",
+        "361",
+        "1",
         "1"
       ]
     },
@@ -16,10 +20,12 @@
       "name": "Debug Controller",
       "type": "debugpy",
       "request": "launch",
-      "module": "bindings.python.Interplay_ML.Sampling.Controller",
-      "args": ["run", "1", "dbs", "Irzip", "--t", "1"],
+      "module": "bindings.python.Interplay_ML.ML.Learn",
+      "python": "/scratch/mani00001/vara-feature-1/.venv/bin/python",
+      //"args": ["run", "1", "sbs", "VP9", "--t", "3"],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "justMyCode": false
     },
     {
       "name": "Attach random_sampler (from Python)",

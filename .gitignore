@@ -38,4 +38,5 @@ build-debug/
 .venv/
 *.dddmp
 bindings/python/Interplay_ML/Samples/
+bindings/python/Interplay_ML/ML/Grids/
 **/__pycache__/

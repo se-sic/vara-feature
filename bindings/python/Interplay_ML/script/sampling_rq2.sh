@@ -7,17 +7,18 @@
 #SBATCH --partition=anywhere
 #SBATCH --mail-user=mani00001@stud.uni-saarland.de
 #SBATCH --mail-type=END,FAIL
-#SBATCH --array=0-39
+#SBATCH --array=0-9
 
 set -e
-cd /scratch/mani00001/vara-feature-1
+REPO=$(cd "$SLURM_SUBMIT_DIR/../../../.." && pwd)
+cd "$REPO"
 source .venv/bin/activate
-export PYTHONPATH="/scratch/mani00001/vara-feature-1/build/bindings/python/vara-feature:$PYTHONPATH"
+export PYTHONPATH="$REPO/build/bindings/python/vara-feature:$PYTHONPATH"
 
 SYSTEMS=(7z BerkeleyDBC Dune Hippacc Irzip JavaGC LLVM Polly VP9 x264)
-PROPS=(0.05 0.1 0.3 0.5)
-IDX=$SLURM_ARRAY_TASK_ID
-SYS=${SYSTEMS[$((IDX/4))]}
-PROP=${PROPS[$((IDX%4))]}
+PROP=0.2
+SYS=${SYSTEMS[$SLURM_ARRAY_TASK_ID]}
+
+echo "Currently at $SYS"
 
 python -m bindings.python.Interplay_ML.Sampling.Controller run 2 random "$SYS" --prop "$PROP"
