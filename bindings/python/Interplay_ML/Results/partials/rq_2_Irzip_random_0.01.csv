@@ -1,601 +1,601 @@
 technique,mre,params,trained_count,test_count,learn_time,system,strategy,rq,size_type,seed,tuned
-CART,0.4708881980790617,{},4,428,0.01,Irzip,random,2,Prop0.01,1,False
+CART,0.4708881980790617,{},4,428,0.0,Irzip,random,2,Prop0.01,1,False
 kNN,4.213101312526163,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,1,False
 KRR,4.613461403462364,{},4,428,0.01,Irzip,random,2,Prop0.01,1,False
 MR,5.172874702580272,{},4,428,0.01,Irzip,random,2,Prop0.01,1,False
-RF,4.417111018423348,{},4,428,0.21,Irzip,random,2,Prop0.01,1,False
-SVR,3.1674169918780257,{},4,428,0.01,Irzip,random,2,Prop0.01,1,False
-CART,0.4350569518095674,{},4,428,0.01,Irzip,random,2,Prop0.01,2,False
+RF,4.417111018423348,{},4,428,0.17,Irzip,random,2,Prop0.01,1,False
+SVR,3.1674169918780257,{},4,428,0.0,Irzip,random,2,Prop0.01,1,False
+CART,0.4350569518095674,{},4,428,0.0,Irzip,random,2,Prop0.01,2,False
 kNN,0.809064293397686,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,2,False
-KRR,0.7415950521312167,{},4,428,0.02,Irzip,random,2,Prop0.01,2,False
+KRR,0.7415950521312167,{},4,428,0.01,Irzip,random,2,Prop0.01,2,False
 MR,0.8591919761147239,{},4,428,0.01,Irzip,random,2,Prop0.01,2,False
-RF,0.6261423044505715,{},4,428,0.21,Irzip,random,2,Prop0.01,2,False
-SVR,0.667644306212992,{},4,428,0.01,Irzip,random,2,Prop0.01,2,False
+RF,0.6261423044505715,{},4,428,0.17,Irzip,random,2,Prop0.01,2,False
+SVR,0.667644306212992,{},4,428,0.0,Irzip,random,2,Prop0.01,2,False
 CART,2.508391493378091,{},4,428,0.0,Irzip,random,2,Prop0.01,3,False
 kNN,9.630887262223819,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,3,False
 KRR,10.519000557140984,{},4,428,0.01,Irzip,random,2,Prop0.01,3,False
 MR,11.863043925173026,{},4,428,0.01,Irzip,random,2,Prop0.01,3,False
-RF,12.32110164953202,{},4,428,0.2,Irzip,random,2,Prop0.01,3,False
-SVR,11.602448042223482,{},4,428,0.01,Irzip,random,2,Prop0.01,3,False
+RF,12.32110164953202,{},4,428,0.17,Irzip,random,2,Prop0.01,3,False
+SVR,11.602448042223482,{},4,428,0.0,Irzip,random,2,Prop0.01,3,False
 CART,0.4643497454427226,{},4,428,0.0,Irzip,random,2,Prop0.01,4,False
 kNN,0.7597123836210857,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,4,False
 KRR,0.6001944465946817,{},4,428,0.01,Irzip,random,2,Prop0.01,4,False
 MR,0.7378085803312715,{},4,428,0.01,Irzip,random,2,Prop0.01,4,False
-RF,0.6064770757836982,{},4,428,0.2,Irzip,random,2,Prop0.01,4,False
-SVR,0.5765062341291237,{},4,428,0.01,Irzip,random,2,Prop0.01,4,False
+RF,0.6064770757836982,{},4,428,0.17,Irzip,random,2,Prop0.01,4,False
+SVR,0.5765062341291237,{},4,428,0.0,Irzip,random,2,Prop0.01,4,False
 CART,0.4762601946721554,{},4,428,0.0,Irzip,random,2,Prop0.01,5,False
 kNN,0.6383144531885273,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,5,False
-KRR,0.6390929760974308,{},4,428,0.01,Irzip,random,2,Prop0.01,5,False
+KRR,0.6390929760974308,{},4,428,0.0,Irzip,random,2,Prop0.01,5,False
 MR,0.6575206885811161,{},4,428,0.01,Irzip,random,2,Prop0.01,5,False
-RF,0.5930597110634506,{},4,428,0.21,Irzip,random,2,Prop0.01,5,False
-SVR,0.5762668260511827,{},4,428,0.01,Irzip,random,2,Prop0.01,5,False
+RF,0.5930597110634506,{},4,428,0.17,Irzip,random,2,Prop0.01,5,False
+SVR,0.5762668260511827,{},4,428,0.0,Irzip,random,2,Prop0.01,5,False
 CART,2.8941108614487674,{},4,428,0.0,Irzip,random,2,Prop0.01,6,False
 kNN,26.58463440638267,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,6,False
-KRR,23.68755584693405,{},4,428,0.01,Irzip,random,2,Prop0.01,6,False
+KRR,23.68755584693405,{},4,428,0.0,Irzip,random,2,Prop0.01,6,False
 MR,26.956911172818593,{},4,428,0.01,Irzip,random,2,Prop0.01,6,False
-RF,22.066586405544875,{},4,428,0.21,Irzip,random,2,Prop0.01,6,False
-SVR,22.549869038359272,{},4,428,0.01,Irzip,random,2,Prop0.01,6,False
+RF,22.066586405544875,{},4,428,0.17,Irzip,random,2,Prop0.01,6,False
+SVR,22.549869038359272,{},4,428,0.0,Irzip,random,2,Prop0.01,6,False
 CART,5.288047186188447,{},4,428,0.0,Irzip,random,2,Prop0.01,7,False
 kNN,17.056010878648244,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,7,False
-KRR,12.835897364690732,{},4,428,0.01,Irzip,random,2,Prop0.01,7,False
+KRR,12.835897364690732,{},4,428,0.0,Irzip,random,2,Prop0.01,7,False
 MR,17.16555982487727,{},4,428,0.01,Irzip,random,2,Prop0.01,7,False
-RF,13.218704613700265,{},4,428,0.2,Irzip,random,2,Prop0.01,7,False
-SVR,9.643242644522932,{},4,428,0.01,Irzip,random,2,Prop0.01,7,False
+RF,13.218704613700265,{},4,428,0.17,Irzip,random,2,Prop0.01,7,False
+SVR,9.643242644522932,{},4,428,0.0,Irzip,random,2,Prop0.01,7,False
 CART,3.574193890145619,{},4,428,0.0,Irzip,random,2,Prop0.01,8,False
 kNN,3.338099117346977,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,8,False
-KRR,3.3821965927186355,{},4,428,0.01,Irzip,random,2,Prop0.01,8,False
+KRR,3.3821965927186355,{},4,428,0.0,Irzip,random,2,Prop0.01,8,False
 MR,3.4024393683742953,{},4,428,0.01,Irzip,random,2,Prop0.01,8,False
-RF,3.4037526069332724,{},4,428,0.2,Irzip,random,2,Prop0.01,8,False
-SVR,3.3412008374468223,{},4,428,0.01,Irzip,random,2,Prop0.01,8,False
+RF,3.4037526069332724,{},4,428,0.17,Irzip,random,2,Prop0.01,8,False
+SVR,3.3412008374468223,{},4,428,0.0,Irzip,random,2,Prop0.01,8,False
 CART,0.8785541852270461,{},4,428,0.0,Irzip,random,2,Prop0.01,9,False
 kNN,1.3850578054979468,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,9,False
-KRR,1.4786318751878882,{},4,428,0.01,Irzip,random,2,Prop0.01,9,False
+KRR,1.4786318751878882,{},4,428,0.0,Irzip,random,2,Prop0.01,9,False
 MR,1.6751296796071236,{},4,428,0.01,Irzip,random,2,Prop0.01,9,False
-RF,1.2909363380996235,{},4,428,0.2,Irzip,random,2,Prop0.01,9,False
-SVR,1.0813208074448155,{},4,428,0.01,Irzip,random,2,Prop0.01,9,False
+RF,1.2909363380996235,{},4,428,0.17,Irzip,random,2,Prop0.01,9,False
+SVR,1.0813208074448155,{},4,428,0.0,Irzip,random,2,Prop0.01,9,False
 CART,0.4156498978439417,{},4,428,0.0,Irzip,random,2,Prop0.01,10,False
 kNN,0.9669123613717525,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,10,False
-KRR,0.8875009787948338,{},4,428,0.01,Irzip,random,2,Prop0.01,10,False
+KRR,0.8875009787948338,{},4,428,0.0,Irzip,random,2,Prop0.01,10,False
 MR,0.9831738047169218,{},4,428,0.01,Irzip,random,2,Prop0.01,10,False
-RF,0.8034041077761227,{},4,428,0.2,Irzip,random,2,Prop0.01,10,False
-SVR,0.9184586246832668,{},4,428,0.01,Irzip,random,2,Prop0.01,10,False
+RF,0.8034041077761227,{},4,428,0.17,Irzip,random,2,Prop0.01,10,False
+SVR,0.9184586246832668,{},4,428,0.0,Irzip,random,2,Prop0.01,10,False
 CART,1.4920442331671344,{},4,428,0.0,Irzip,random,2,Prop0.01,11,False
 kNN,2.5462896266321966,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,11,False
-KRR,2.67149279211312,{},4,428,0.01,Irzip,random,2,Prop0.01,11,False
+KRR,2.67149279211312,{},4,428,0.0,Irzip,random,2,Prop0.01,11,False
 MR,2.6897296002833535,{},4,428,0.01,Irzip,random,2,Prop0.01,11,False
-RF,2.2169611021889235,{},4,428,0.21,Irzip,random,2,Prop0.01,11,False
-SVR,2.2437501497353827,{},4,428,0.01,Irzip,random,2,Prop0.01,11,False
+RF,2.2169611021889235,{},4,428,0.16,Irzip,random,2,Prop0.01,11,False
+SVR,2.2437501497353827,{},4,428,0.0,Irzip,random,2,Prop0.01,11,False
 CART,1.1788316473003275,{},4,428,0.0,Irzip,random,2,Prop0.01,12,False
 kNN,1.4546758239916437,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,12,False
-KRR,1.2327695787631423,{},4,428,0.01,Irzip,random,2,Prop0.01,12,False
+KRR,1.2327695787631423,{},4,428,0.0,Irzip,random,2,Prop0.01,12,False
 MR,1.3476901137223323,{},4,428,0.01,Irzip,random,2,Prop0.01,12,False
-RF,1.2673773201243008,{},4,428,0.2,Irzip,random,2,Prop0.01,12,False
-SVR,1.3853720698179541,{},4,428,0.01,Irzip,random,2,Prop0.01,12,False
+RF,1.2673773201243008,{},4,428,0.17,Irzip,random,2,Prop0.01,12,False
+SVR,1.3853720698179541,{},4,428,0.0,Irzip,random,2,Prop0.01,12,False
 CART,5.174404203358102,{},4,428,0.0,Irzip,random,2,Prop0.01,13,False
 kNN,3.047562259765865,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,13,False
-KRR,2.233083599624802,{},4,428,0.01,Irzip,random,2,Prop0.01,13,False
+KRR,2.233083599624802,{},4,428,0.0,Irzip,random,2,Prop0.01,13,False
 MR,2.76813286522533,{},4,428,0.01,Irzip,random,2,Prop0.01,13,False
-RF,2.585777060963757,{},4,428,0.21,Irzip,random,2,Prop0.01,13,False
-SVR,1.7810612283539595,{},4,428,0.01,Irzip,random,2,Prop0.01,13,False
+RF,2.585777060963757,{},4,428,0.17,Irzip,random,2,Prop0.01,13,False
+SVR,1.7810612283539595,{},4,428,0.0,Irzip,random,2,Prop0.01,13,False
 CART,6.386498597168528,{},4,428,0.0,Irzip,random,2,Prop0.01,14,False
 kNN,2.6442688580172877,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,14,False
-KRR,3.8701777312623253,{},4,428,0.01,Irzip,random,2,Prop0.01,14,False
+KRR,3.8701777312623253,{},4,428,0.0,Irzip,random,2,Prop0.01,14,False
 MR,3.468359289011994,{},4,428,0.01,Irzip,random,2,Prop0.01,14,False
-RF,3.7146445339762457,{},4,428,0.21,Irzip,random,2,Prop0.01,14,False
-SVR,2.842752569782658,{},4,428,0.01,Irzip,random,2,Prop0.01,14,False
+RF,3.7146445339762457,{},4,428,0.16,Irzip,random,2,Prop0.01,14,False
+SVR,2.842752569782658,{},4,428,0.0,Irzip,random,2,Prop0.01,14,False
 CART,0.8949819451662318,{},4,428,0.0,Irzip,random,2,Prop0.01,15,False
 kNN,3.947581840490503,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,15,False
-KRR,5.2463266651454274,{},4,428,0.01,Irzip,random,2,Prop0.01,15,False
+KRR,5.2463266651454274,{},4,428,0.0,Irzip,random,2,Prop0.01,15,False
 MR,5.526814006344066,{},4,428,0.01,Irzip,random,2,Prop0.01,15,False
-RF,4.654005281125886,{},4,428,0.2,Irzip,random,2,Prop0.01,15,False
-SVR,3.01942897362478,{},4,428,0.01,Irzip,random,2,Prop0.01,15,False
+RF,4.654005281125886,{},4,428,0.17,Irzip,random,2,Prop0.01,15,False
+SVR,3.01942897362478,{},4,428,0.0,Irzip,random,2,Prop0.01,15,False
 CART,0.4083990918548807,{},4,428,0.0,Irzip,random,2,Prop0.01,16,False
 kNN,0.8025981639386931,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,16,False
-KRR,0.6739176556508,{},4,428,0.01,Irzip,random,2,Prop0.01,16,False
+KRR,0.6739176556508,{},4,428,0.0,Irzip,random,2,Prop0.01,16,False
 MR,0.8343430508747328,{},4,428,0.01,Irzip,random,2,Prop0.01,16,False
-RF,0.6172798916536882,{},4,428,0.2,Irzip,random,2,Prop0.01,16,False
-SVR,0.6041655995876974,{},4,428,0.01,Irzip,random,2,Prop0.01,16,False
+RF,0.6172798916536882,{},4,428,0.17,Irzip,random,2,Prop0.01,16,False
+SVR,0.6041655995876974,{},4,428,0.0,Irzip,random,2,Prop0.01,16,False
 CART,5.910984548909104,{},4,428,0.0,Irzip,random,2,Prop0.01,17,False
 kNN,6.123817355042906,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,17,False
-KRR,5.111585249924297,{},4,428,0.01,Irzip,random,2,Prop0.01,17,False
+KRR,5.111585249924297,{},4,428,0.0,Irzip,random,2,Prop0.01,17,False
 MR,5.679994700000108,{},4,428,0.01,Irzip,random,2,Prop0.01,17,False
-RF,5.480386736572922,{},4,428,0.2,Irzip,random,2,Prop0.01,17,False
-SVR,5.408830680401583,{},4,428,0.01,Irzip,random,2,Prop0.01,17,False
+RF,5.480386736572922,{},4,428,0.17,Irzip,random,2,Prop0.01,17,False
+SVR,5.408830680401583,{},4,428,0.0,Irzip,random,2,Prop0.01,17,False
 CART,1.1375886520944491,{},4,428,0.0,Irzip,random,2,Prop0.01,18,False
 kNN,2.1783340607650676,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,18,False
-KRR,1.9584176563676483,{},4,428,0.01,Irzip,random,2,Prop0.01,18,False
+KRR,1.9584176563676483,{},4,428,0.0,Irzip,random,2,Prop0.01,18,False
 MR,2.1878481030022763,{},4,428,0.01,Irzip,random,2,Prop0.01,18,False
-RF,2.080590490334465,{},4,428,0.21,Irzip,random,2,Prop0.01,18,False
-SVR,1.6487934395455843,{},4,428,0.01,Irzip,random,2,Prop0.01,18,False
+RF,2.080590490334465,{},4,428,0.16,Irzip,random,2,Prop0.01,18,False
+SVR,1.6487934395455843,{},4,428,0.0,Irzip,random,2,Prop0.01,18,False
 CART,0.4943082824067132,{},4,428,0.0,Irzip,random,2,Prop0.01,19,False
 kNN,0.952460487442325,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,19,False
-KRR,1.0339789353523023,{},4,428,0.01,Irzip,random,2,Prop0.01,19,False
+KRR,1.0339789353523023,{},4,428,0.0,Irzip,random,2,Prop0.01,19,False
 MR,1.18310013211243,{},4,428,0.01,Irzip,random,2,Prop0.01,19,False
-RF,0.93465041702877,{},4,428,0.2,Irzip,random,2,Prop0.01,19,False
-SVR,1.0138777377591306,{},4,428,0.01,Irzip,random,2,Prop0.01,19,False
+RF,0.93465041702877,{},4,428,0.17,Irzip,random,2,Prop0.01,19,False
+SVR,1.0138777377591306,{},4,428,0.0,Irzip,random,2,Prop0.01,19,False
 CART,2.47405480589348,{},4,428,0.0,Irzip,random,2,Prop0.01,20,False
 kNN,3.3103452492403216,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,20,False
-KRR,3.693748503471192,{},4,428,0.01,Irzip,random,2,Prop0.01,20,False
+KRR,3.693748503471192,{},4,428,0.0,Irzip,random,2,Prop0.01,20,False
 MR,4.827983640034685,{},4,428,0.01,Irzip,random,2,Prop0.01,20,False
-RF,2.241226492382685,{},4,428,0.2,Irzip,random,2,Prop0.01,20,False
-SVR,2.5171236260003593,{},4,428,0.01,Irzip,random,2,Prop0.01,20,False
+RF,2.241226492382685,{},4,428,0.17,Irzip,random,2,Prop0.01,20,False
+SVR,2.5171236260003593,{},4,428,0.0,Irzip,random,2,Prop0.01,20,False
 CART,0.49213683308060724,{},4,428,0.0,Irzip,random,2,Prop0.01,21,False
 kNN,0.711174146038652,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,21,False
-KRR,0.6082787936239263,{},4,428,0.01,Irzip,random,2,Prop0.01,21,False
+KRR,0.6082787936239263,{},4,428,0.0,Irzip,random,2,Prop0.01,21,False
 MR,0.6891768208023116,{},4,428,0.01,Irzip,random,2,Prop0.01,21,False
-RF,0.6493092411786445,{},4,428,0.2,Irzip,random,2,Prop0.01,21,False
-SVR,0.5829675860475962,{},4,428,0.01,Irzip,random,2,Prop0.01,21,False
+RF,0.6493092411786445,{},4,428,0.17,Irzip,random,2,Prop0.01,21,False
+SVR,0.5829675860475962,{},4,428,0.0,Irzip,random,2,Prop0.01,21,False
 CART,0.45572770789602646,{},4,428,0.0,Irzip,random,2,Prop0.01,22,False
 kNN,1.01878136602577,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,22,False
-KRR,0.914383353055849,{},4,428,0.01,Irzip,random,2,Prop0.01,22,False
+KRR,0.914383353055849,{},4,428,0.0,Irzip,random,2,Prop0.01,22,False
 MR,1.0397039601586988,{},4,428,0.01,Irzip,random,2,Prop0.01,22,False
-RF,0.8772233833981985,{},4,428,0.2,Irzip,random,2,Prop0.01,22,False
-SVR,0.9492760805231905,{},4,428,0.01,Irzip,random,2,Prop0.01,22,False
+RF,0.8772233833981985,{},4,428,0.17,Irzip,random,2,Prop0.01,22,False
+SVR,0.9492760805231905,{},4,428,0.0,Irzip,random,2,Prop0.01,22,False
 CART,1.5838266302840227,{},4,428,0.0,Irzip,random,2,Prop0.01,23,False
 kNN,4.059312282616688,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,23,False
-KRR,5.223357961131739,{},4,428,0.01,Irzip,random,2,Prop0.01,23,False
+KRR,5.223357961131739,{},4,428,0.0,Irzip,random,2,Prop0.01,23,False
 MR,5.737457206825919,{},4,428,0.01,Irzip,random,2,Prop0.01,23,False
-RF,4.405259944757419,{},4,428,0.2,Irzip,random,2,Prop0.01,23,False
-SVR,3.430691258593424,{},4,428,0.01,Irzip,random,2,Prop0.01,23,False
+RF,4.405259944757419,{},4,428,0.17,Irzip,random,2,Prop0.01,23,False
+SVR,3.430691258593424,{},4,428,0.0,Irzip,random,2,Prop0.01,23,False
 CART,9.817666283880154,{},4,428,0.0,Irzip,random,2,Prop0.01,24,False
 kNN,20.312005744512025,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,24,False
-KRR,15.00566321657727,{},4,428,0.01,Irzip,random,2,Prop0.01,24,False
+KRR,15.00566321657727,{},4,428,0.0,Irzip,random,2,Prop0.01,24,False
 MR,16.9064507171902,{},4,428,0.01,Irzip,random,2,Prop0.01,24,False
-RF,14.564410744807862,{},4,428,0.2,Irzip,random,2,Prop0.01,24,False
-SVR,11.591876702414112,{},4,428,0.01,Irzip,random,2,Prop0.01,24,False
+RF,14.564410744807862,{},4,428,0.17,Irzip,random,2,Prop0.01,24,False
+SVR,11.591876702414112,{},4,428,0.0,Irzip,random,2,Prop0.01,24,False
 CART,0.520311867527495,{},4,428,0.0,Irzip,random,2,Prop0.01,25,False
 kNN,0.9021929632978819,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,25,False
-KRR,0.8294482412467618,{},4,428,0.01,Irzip,random,2,Prop0.01,25,False
+KRR,0.8294482412467618,{},4,428,0.0,Irzip,random,2,Prop0.01,25,False
 MR,0.9507902381682293,{},4,428,0.01,Irzip,random,2,Prop0.01,25,False
-RF,0.8682128816580751,{},4,428,0.2,Irzip,random,2,Prop0.01,25,False
-SVR,0.7208550806466019,{},4,428,0.01,Irzip,random,2,Prop0.01,25,False
+RF,0.8682128816580751,{},4,428,0.17,Irzip,random,2,Prop0.01,25,False
+SVR,0.7208550806466019,{},4,428,0.0,Irzip,random,2,Prop0.01,25,False
 CART,1.3178207007268987,{},4,428,0.0,Irzip,random,2,Prop0.01,26,False
 kNN,7.544191848321349,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,26,False
-KRR,8.322527599803664,{},4,428,0.01,Irzip,random,2,Prop0.01,26,False
+KRR,8.322527599803664,{},4,428,0.0,Irzip,random,2,Prop0.01,26,False
 MR,10.21870359959672,{},4,428,0.01,Irzip,random,2,Prop0.01,26,False
-RF,8.083340423481502,{},4,428,0.2,Irzip,random,2,Prop0.01,26,False
+RF,8.083340423481502,{},4,428,0.16,Irzip,random,2,Prop0.01,26,False
 SVR,9.405491696335044,{},4,428,0.0,Irzip,random,2,Prop0.01,26,False
 CART,2.705521209451642,{},4,428,0.0,Irzip,random,2,Prop0.01,27,False
 kNN,3.5804724139154325,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,27,False
-KRR,2.801894176237398,{},4,428,0.01,Irzip,random,2,Prop0.01,27,False
+KRR,2.801894176237398,{},4,428,0.0,Irzip,random,2,Prop0.01,27,False
 MR,3.3923422305852404,{},4,428,0.01,Irzip,random,2,Prop0.01,27,False
-RF,2.954766646757954,{},4,428,0.2,Irzip,random,2,Prop0.01,27,False
-SVR,2.5788757870897148,{},4,428,0.01,Irzip,random,2,Prop0.01,27,False
+RF,2.954766646757954,{},4,428,0.17,Irzip,random,2,Prop0.01,27,False
+SVR,2.5788757870897148,{},4,428,0.0,Irzip,random,2,Prop0.01,27,False
 CART,1.4082480387172962,{},4,428,0.0,Irzip,random,2,Prop0.01,28,False
 kNN,1.1364358923043414,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,28,False
-KRR,1.0377041400463978,{},4,428,0.01,Irzip,random,2,Prop0.01,28,False
+KRR,1.0377041400463978,{},4,428,0.0,Irzip,random,2,Prop0.01,28,False
 MR,1.141113511628046,{},4,428,0.01,Irzip,random,2,Prop0.01,28,False
-RF,0.9529974160283602,{},4,428,0.2,Irzip,random,2,Prop0.01,28,False
-SVR,0.8973334197295559,{},4,428,0.01,Irzip,random,2,Prop0.01,28,False
+RF,0.9529974160283602,{},4,428,0.17,Irzip,random,2,Prop0.01,28,False
+SVR,0.8973334197295559,{},4,428,0.0,Irzip,random,2,Prop0.01,28,False
 CART,1.4373177069390113,{},4,428,0.0,Irzip,random,2,Prop0.01,29,False
 kNN,1.8774166484332815,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,29,False
-KRR,2.549495781515973,{},4,428,0.01,Irzip,random,2,Prop0.01,29,False
+KRR,2.549495781515973,{},4,428,0.0,Irzip,random,2,Prop0.01,29,False
 MR,2.3584127926588163,{},4,428,0.01,Irzip,random,2,Prop0.01,29,False
-RF,2.0639075050023044,{},4,428,0.2,Irzip,random,2,Prop0.01,29,False
-SVR,1.5119327350278196,{},4,428,0.01,Irzip,random,2,Prop0.01,29,False
+RF,2.0639075050023044,{},4,428,0.17,Irzip,random,2,Prop0.01,29,False
+SVR,1.5119327350278196,{},4,428,0.0,Irzip,random,2,Prop0.01,29,False
 CART,1.2089001125317265,{},4,428,0.0,Irzip,random,2,Prop0.01,30,False
 kNN,1.784723646455063,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,30,False
-KRR,1.5254931133091483,{},4,428,0.01,Irzip,random,2,Prop0.01,30,False
+KRR,1.5254931133091483,{},4,428,0.0,Irzip,random,2,Prop0.01,30,False
 MR,1.9292803516818424,{},4,428,0.01,Irzip,random,2,Prop0.01,30,False
-RF,1.2093764285563804,{},4,428,0.2,Irzip,random,2,Prop0.01,30,False
-SVR,1.2389912488413235,{},4,428,0.01,Irzip,random,2,Prop0.01,30,False
+RF,1.2093764285563804,{},4,428,0.17,Irzip,random,2,Prop0.01,30,False
+SVR,1.2389912488413235,{},4,428,0.0,Irzip,random,2,Prop0.01,30,False
 CART,1.0694282954954863,{},4,428,0.0,Irzip,random,2,Prop0.01,31,False
 kNN,0.9656472318497828,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,31,False
-KRR,0.9068811538406296,{},4,428,0.01,Irzip,random,2,Prop0.01,31,False
+KRR,0.9068811538406296,{},4,428,0.0,Irzip,random,2,Prop0.01,31,False
 MR,0.9760617994186928,{},4,428,0.01,Irzip,random,2,Prop0.01,31,False
-RF,0.9062857603147928,{},4,428,0.2,Irzip,random,2,Prop0.01,31,False
-SVR,0.9496314948693577,{},4,428,0.01,Irzip,random,2,Prop0.01,31,False
+RF,0.9062857603147928,{},4,428,0.17,Irzip,random,2,Prop0.01,31,False
+SVR,0.9496314948693577,{},4,428,0.0,Irzip,random,2,Prop0.01,31,False
 CART,0.9230692445637129,{},4,428,0.0,Irzip,random,2,Prop0.01,32,False
 kNN,15.39267064878838,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,32,False
-KRR,11.198429257639452,{},4,428,0.01,Irzip,random,2,Prop0.01,32,False
+KRR,11.198429257639452,{},4,428,0.0,Irzip,random,2,Prop0.01,32,False
 MR,13.904137364361237,{},4,428,0.01,Irzip,random,2,Prop0.01,32,False
-RF,7.10650940709197,{},4,428,0.2,Irzip,random,2,Prop0.01,32,False
+RF,7.10650940709197,{},4,428,0.17,Irzip,random,2,Prop0.01,32,False
 SVR,4.542864601061083,{},4,428,0.0,Irzip,random,2,Prop0.01,32,False
 CART,2.770274025893892,{},4,428,0.0,Irzip,random,2,Prop0.01,33,False
 kNN,6.866687273137266,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,33,False
-KRR,4.576033284567308,{},4,428,0.01,Irzip,random,2,Prop0.01,33,False
+KRR,4.576033284567308,{},4,428,0.0,Irzip,random,2,Prop0.01,33,False
 MR,6.1874561935607115,{},4,428,0.01,Irzip,random,2,Prop0.01,33,False
-RF,4.862954913119998,{},4,428,0.2,Irzip,random,2,Prop0.01,33,False
-SVR,3.721455558234791,{},4,428,0.01,Irzip,random,2,Prop0.01,33,False
+RF,4.862954913119998,{},4,428,0.15,Irzip,random,2,Prop0.01,33,False
+SVR,3.721455558234791,{},4,428,0.0,Irzip,random,2,Prop0.01,33,False
 CART,0.8018138101052328,{},4,428,0.0,Irzip,random,2,Prop0.01,34,False
 kNN,2.14871109987502,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,34,False
-KRR,1.801895449900372,{},4,428,0.01,Irzip,random,2,Prop0.01,34,False
+KRR,1.801895449900372,{},4,428,0.0,Irzip,random,2,Prop0.01,34,False
 MR,1.8286103063505295,{},4,428,0.01,Irzip,random,2,Prop0.01,34,False
-RF,1.557707668912048,{},4,428,0.2,Irzip,random,2,Prop0.01,34,False
-SVR,1.2232799471508289,{},4,428,0.01,Irzip,random,2,Prop0.01,34,False
+RF,1.557707668912048,{},4,428,0.17,Irzip,random,2,Prop0.01,34,False
+SVR,1.2232799471508289,{},4,428,0.0,Irzip,random,2,Prop0.01,34,False
 CART,5.799435426004984,{},4,428,0.0,Irzip,random,2,Prop0.01,35,False
 kNN,8.325919854508165,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,35,False
-KRR,17.613793510899523,{},4,428,0.01,Irzip,random,2,Prop0.01,35,False
-MR,12.887903435516277,{},4,428,0.01,Irzip,random,2,Prop0.01,35,False
-RF,13.37330907681515,{},4,428,0.2,Irzip,random,2,Prop0.01,35,False
-SVR,10.136018997271044,{},4,428,0.01,Irzip,random,2,Prop0.01,35,False
+KRR,17.613793510899523,{},4,428,0.0,Irzip,random,2,Prop0.01,35,False
+MR,12.887903435516277,{},4,428,0.0,Irzip,random,2,Prop0.01,35,False
+RF,13.37330907681515,{},4,428,0.16,Irzip,random,2,Prop0.01,35,False
+SVR,10.136018997271044,{},4,428,0.0,Irzip,random,2,Prop0.01,35,False
 CART,0.5999746354056323,{},4,428,0.0,Irzip,random,2,Prop0.01,36,False
 kNN,0.5895323751670616,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,36,False
-KRR,0.592463614289093,{},4,428,0.01,Irzip,random,2,Prop0.01,36,False
+KRR,0.592463614289093,{},4,428,0.0,Irzip,random,2,Prop0.01,36,False
 MR,0.5950983490053824,{},4,428,0.01,Irzip,random,2,Prop0.01,36,False
-RF,0.5934220038453851,{},4,428,0.2,Irzip,random,2,Prop0.01,36,False
-SVR,0.587057047599021,{},4,428,0.01,Irzip,random,2,Prop0.01,36,False
+RF,0.5934220038453851,{},4,428,0.16,Irzip,random,2,Prop0.01,36,False
+SVR,0.587057047599021,{},4,428,0.0,Irzip,random,2,Prop0.01,36,False
 CART,0.4914127843713138,{},4,428,0.0,Irzip,random,2,Prop0.01,37,False
 kNN,1.238321292656138,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,37,False
-KRR,1.3175929976289649,{},4,428,0.01,Irzip,random,2,Prop0.01,37,False
+KRR,1.3175929976289649,{},4,428,0.0,Irzip,random,2,Prop0.01,37,False
 MR,1.3807967785470978,{},4,428,0.01,Irzip,random,2,Prop0.01,37,False
-RF,0.8857454150196258,{},4,428,0.2,Irzip,random,2,Prop0.01,37,False
-SVR,0.8525360146215447,{},4,428,0.01,Irzip,random,2,Prop0.01,37,False
+RF,0.8857454150196258,{},4,428,0.14,Irzip,random,2,Prop0.01,37,False
+SVR,0.8525360146215447,{},4,428,0.0,Irzip,random,2,Prop0.01,37,False
 CART,0.5580346927942927,{},4,428,0.0,Irzip,random,2,Prop0.01,38,False
 kNN,1.5002558411040217,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,38,False
-KRR,1.320335050716024,{},4,428,0.01,Irzip,random,2,Prop0.01,38,False
+KRR,1.320335050716024,{},4,428,0.0,Irzip,random,2,Prop0.01,38,False
 MR,1.5964119157350134,{},4,428,0.01,Irzip,random,2,Prop0.01,38,False
-RF,1.3043886107519778,{},4,428,0.2,Irzip,random,2,Prop0.01,38,False
+RF,1.3043886107519778,{},4,428,0.17,Irzip,random,2,Prop0.01,38,False
 SVR,0.9234948431512318,{},4,428,0.0,Irzip,random,2,Prop0.01,38,False
 CART,5.442604719171241,{},4,428,0.0,Irzip,random,2,Prop0.01,39,False
 kNN,12.424347378774089,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,39,False
-KRR,9.809082573907727,{},4,428,0.01,Irzip,random,2,Prop0.01,39,False
-MR,12.843193119823214,{},4,428,0.01,Irzip,random,2,Prop0.01,39,False
-RF,8.467910377665325,{},4,428,0.2,Irzip,random,2,Prop0.01,39,False
-SVR,6.1527531906641855,{},4,428,0.01,Irzip,random,2,Prop0.01,39,False
+KRR,9.809082573907727,{},4,428,0.0,Irzip,random,2,Prop0.01,39,False
+MR,12.843193119823214,{},4,428,0.0,Irzip,random,2,Prop0.01,39,False
+RF,8.467910377665325,{},4,428,0.17,Irzip,random,2,Prop0.01,39,False
+SVR,6.1527531906641855,{},4,428,0.0,Irzip,random,2,Prop0.01,39,False
 CART,1.0106517280137008,{},4,428,0.0,Irzip,random,2,Prop0.01,40,False
 kNN,14.590578551034255,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,40,False
-KRR,11.575631243687484,{},4,428,0.01,Irzip,random,2,Prop0.01,40,False
+KRR,11.575631243687484,{},4,428,0.0,Irzip,random,2,Prop0.01,40,False
 MR,12.75856551035175,{},4,428,0.01,Irzip,random,2,Prop0.01,40,False
-RF,10.534034012112285,{},4,428,0.2,Irzip,random,2,Prop0.01,40,False
-SVR,6.76972741364613,{},4,428,0.01,Irzip,random,2,Prop0.01,40,False
+RF,10.534034012112285,{},4,428,0.16,Irzip,random,2,Prop0.01,40,False
+SVR,6.76972741364613,{},4,428,0.0,Irzip,random,2,Prop0.01,40,False
 CART,0.795192413967634,{},4,428,0.0,Irzip,random,2,Prop0.01,41,False
 kNN,0.9262598214045711,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,41,False
-KRR,0.77615909800084,{},4,428,0.01,Irzip,random,2,Prop0.01,41,False
+KRR,0.77615909800084,{},4,428,0.0,Irzip,random,2,Prop0.01,41,False
 MR,0.9098158123227746,{},4,428,0.01,Irzip,random,2,Prop0.01,41,False
-RF,0.7742223971088268,{},4,428,0.2,Irzip,random,2,Prop0.01,41,False
-SVR,0.7166219393991309,{},4,428,0.01,Irzip,random,2,Prop0.01,41,False
+RF,0.7742223971088268,{},4,428,0.15,Irzip,random,2,Prop0.01,41,False
+SVR,0.7166219393991309,{},4,428,0.0,Irzip,random,2,Prop0.01,41,False
 CART,0.5832790540036755,{},4,428,0.0,Irzip,random,2,Prop0.01,42,False
 kNN,0.6785073627335484,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,42,False
-KRR,0.659266193250061,{},4,428,0.01,Irzip,random,2,Prop0.01,42,False
+KRR,0.659266193250061,{},4,428,0.0,Irzip,random,2,Prop0.01,42,False
 MR,0.6998059683767749,{},4,428,0.01,Irzip,random,2,Prop0.01,42,False
-RF,0.634253065878406,{},4,428,0.2,Irzip,random,2,Prop0.01,42,False
-SVR,0.6873091086766233,{},4,428,0.01,Irzip,random,2,Prop0.01,42,False
+RF,0.634253065878406,{},4,428,0.17,Irzip,random,2,Prop0.01,42,False
+SVR,0.6873091086766233,{},4,428,0.0,Irzip,random,2,Prop0.01,42,False
 CART,0.5093488217111793,{},4,428,0.0,Irzip,random,2,Prop0.01,43,False
 kNN,1.4369350068126499,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,43,False
-KRR,1.3473631291538282,{},4,428,0.01,Irzip,random,2,Prop0.01,43,False
+KRR,1.3473631291538282,{},4,428,0.0,Irzip,random,2,Prop0.01,43,False
 MR,1.3396667245994451,{},4,428,0.01,Irzip,random,2,Prop0.01,43,False
-RF,1.3010788417131738,{},4,428,0.2,Irzip,random,2,Prop0.01,43,False
-SVR,0.9255805875505949,{},4,428,0.01,Irzip,random,2,Prop0.01,43,False
+RF,1.3010788417131738,{},4,428,0.17,Irzip,random,2,Prop0.01,43,False
+SVR,0.9255805875505949,{},4,428,0.0,Irzip,random,2,Prop0.01,43,False
 CART,1.4161735086417724,{},4,428,0.0,Irzip,random,2,Prop0.01,44,False
 kNN,1.1252831571533801,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,44,False
-KRR,1.1405988588133054,{},4,428,0.01,Irzip,random,2,Prop0.01,44,False
+KRR,1.1405988588133054,{},4,428,0.0,Irzip,random,2,Prop0.01,44,False
 MR,1.227534724115811,{},4,428,0.01,Irzip,random,2,Prop0.01,44,False
-RF,1.139099139597829,{},4,428,0.2,Irzip,random,2,Prop0.01,44,False
+RF,1.139099139597829,{},4,428,0.17,Irzip,random,2,Prop0.01,44,False
 SVR,1.2752199958104453,{},4,428,0.0,Irzip,random,2,Prop0.01,44,False
 CART,0.5294121528349243,{},4,428,0.0,Irzip,random,2,Prop0.01,45,False
 kNN,1.2198151122418863,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,45,False
-KRR,1.1137598055277202,{},4,428,0.01,Irzip,random,2,Prop0.01,45,False
+KRR,1.1137598055277202,{},4,428,0.0,Irzip,random,2,Prop0.01,45,False
 MR,1.454455134690504,{},4,428,0.01,Irzip,random,2,Prop0.01,45,False
-RF,1.0609477367976914,{},4,428,0.2,Irzip,random,2,Prop0.01,45,False
-SVR,0.8762991122183856,{},4,428,0.01,Irzip,random,2,Prop0.01,45,False
+RF,1.0609477367976914,{},4,428,0.15,Irzip,random,2,Prop0.01,45,False
+SVR,0.8762991122183856,{},4,428,0.0,Irzip,random,2,Prop0.01,45,False
 CART,1.012944506510008,{},4,428,0.0,Irzip,random,2,Prop0.01,46,False
 kNN,2.6407518907795846,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,46,False
-KRR,2.1004476309133087,{},4,428,0.01,Irzip,random,2,Prop0.01,46,False
+KRR,2.1004476309133087,{},4,428,0.0,Irzip,random,2,Prop0.01,46,False
 MR,2.5035551323437057,{},4,428,0.01,Irzip,random,2,Prop0.01,46,False
-RF,1.6370601911774707,{},4,428,0.2,Irzip,random,2,Prop0.01,46,False
-SVR,1.3967036874889132,{},4,428,0.01,Irzip,random,2,Prop0.01,46,False
+RF,1.6370601911774707,{},4,428,0.17,Irzip,random,2,Prop0.01,46,False
+SVR,1.3967036874889132,{},4,428,0.0,Irzip,random,2,Prop0.01,46,False
 CART,7.518836936319095,{},4,428,0.0,Irzip,random,2,Prop0.01,47,False
 kNN,15.656724144110656,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,47,False
-KRR,18.567100114323473,{},4,428,0.01,Irzip,random,2,Prop0.01,47,False
+KRR,18.567100114323473,{},4,428,0.0,Irzip,random,2,Prop0.01,47,False
 MR,17.728962054636394,{},4,428,0.01,Irzip,random,2,Prop0.01,47,False
-RF,14.342333470594479,{},4,428,0.2,Irzip,random,2,Prop0.01,47,False
-SVR,11.874367300540118,{},4,428,0.01,Irzip,random,2,Prop0.01,47,False
+RF,14.342333470594479,{},4,428,0.17,Irzip,random,2,Prop0.01,47,False
+SVR,11.874367300540118,{},4,428,0.0,Irzip,random,2,Prop0.01,47,False
 CART,10.458030807052802,{},4,428,0.0,Irzip,random,2,Prop0.01,48,False
 kNN,3.856615314796902,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,48,False
-KRR,4.416236802774416,{},4,428,0.01,Irzip,random,2,Prop0.01,48,False
+KRR,4.416236802774416,{},4,428,0.0,Irzip,random,2,Prop0.01,48,False
 MR,5.593105832510157,{},4,428,0.01,Irzip,random,2,Prop0.01,48,False
-RF,4.882865387275467,{},4,428,0.2,Irzip,random,2,Prop0.01,48,False
-SVR,3.1526822605808587,{},4,428,0.01,Irzip,random,2,Prop0.01,48,False
+RF,4.882865387275467,{},4,428,0.15,Irzip,random,2,Prop0.01,48,False
+SVR,3.1526822605808587,{},4,428,0.0,Irzip,random,2,Prop0.01,48,False
 CART,2.419326214594338,{},4,428,0.0,Irzip,random,2,Prop0.01,49,False
 kNN,2.050693208422856,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,49,False
-KRR,4.74705233418687,{},4,428,0.01,Irzip,random,2,Prop0.01,49,False
+KRR,4.74705233418687,{},4,428,0.0,Irzip,random,2,Prop0.01,49,False
 MR,5.193710927202179,{},4,428,0.01,Irzip,random,2,Prop0.01,49,False
-RF,3.7605843138118757,{},4,428,0.2,Irzip,random,2,Prop0.01,49,False
-SVR,2.6686974140405617,{},4,428,0.01,Irzip,random,2,Prop0.01,49,False
+RF,3.7605843138118757,{},4,428,0.16,Irzip,random,2,Prop0.01,49,False
+SVR,2.6686974140405617,{},4,428,0.0,Irzip,random,2,Prop0.01,49,False
 CART,2.479369572159613,{},4,428,0.0,Irzip,random,2,Prop0.01,50,False
 kNN,3.0022975123020177,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,50,False
-KRR,3.4319471646845043,{},4,428,0.01,Irzip,random,2,Prop0.01,50,False
-MR,3.012566023161777,{},4,428,0.01,Irzip,random,2,Prop0.01,50,False
-RF,3.1805618339500796,{},4,428,0.21,Irzip,random,2,Prop0.01,50,False
+KRR,3.4319471646845043,{},4,428,0.0,Irzip,random,2,Prop0.01,50,False
+MR,3.012566023161777,{},4,428,0.0,Irzip,random,2,Prop0.01,50,False
+RF,3.1805618339500796,{},4,428,0.17,Irzip,random,2,Prop0.01,50,False
 SVR,2.3801873928283173,{},4,428,0.0,Irzip,random,2,Prop0.01,50,False
 CART,1.0045091512608044,{},4,428,0.0,Irzip,random,2,Prop0.01,51,False
 kNN,1.5922082725168794,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,51,False
-KRR,1.4931555283340465,{},4,428,0.01,Irzip,random,2,Prop0.01,51,False
+KRR,1.4931555283340465,{},4,428,0.0,Irzip,random,2,Prop0.01,51,False
 MR,1.7048587857702824,{},4,428,0.01,Irzip,random,2,Prop0.01,51,False
-RF,1.2889838486370415,{},4,428,0.2,Irzip,random,2,Prop0.01,51,False
-SVR,1.0130943326037087,{},4,428,0.01,Irzip,random,2,Prop0.01,51,False
+RF,1.2889838486370415,{},4,428,0.17,Irzip,random,2,Prop0.01,51,False
+SVR,1.0130943326037087,{},4,428,0.0,Irzip,random,2,Prop0.01,51,False
 CART,4.250941649266093,{},4,428,0.0,Irzip,random,2,Prop0.01,52,False
 kNN,5.554545905169315,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,52,False
-KRR,4.324415220960933,{},4,428,0.01,Irzip,random,2,Prop0.01,52,False
+KRR,4.324415220960933,{},4,428,0.0,Irzip,random,2,Prop0.01,52,False
 MR,5.4942707278800285,{},4,428,0.01,Irzip,random,2,Prop0.01,52,False
-RF,4.9015212073735706,{},4,428,0.2,Irzip,random,2,Prop0.01,52,False
-SVR,6.017815608224505,{},4,428,0.01,Irzip,random,2,Prop0.01,52,False
+RF,4.9015212073735706,{},4,428,0.15,Irzip,random,2,Prop0.01,52,False
+SVR,6.017815608224505,{},4,428,0.0,Irzip,random,2,Prop0.01,52,False
 CART,4.111214387928658,{},4,428,0.0,Irzip,random,2,Prop0.01,53,False
 kNN,5.87317146004026,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,53,False
-KRR,5.355944128306511,{},4,428,0.01,Irzip,random,2,Prop0.01,53,False
+KRR,5.355944128306511,{},4,428,0.0,Irzip,random,2,Prop0.01,53,False
 MR,6.917433565411512,{},4,428,0.01,Irzip,random,2,Prop0.01,53,False
-RF,4.53739171834549,{},4,428,0.21,Irzip,random,2,Prop0.01,53,False
-SVR,4.289351590483101,{},4,428,0.01,Irzip,random,2,Prop0.01,53,False
+RF,4.53739171834549,{},4,428,0.17,Irzip,random,2,Prop0.01,53,False
+SVR,4.289351590483101,{},4,428,0.0,Irzip,random,2,Prop0.01,53,False
 CART,9.891684527841292,{},4,428,0.0,Irzip,random,2,Prop0.01,54,False
 kNN,13.157472307750918,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,54,False
-KRR,15.192378207490826,{},4,428,0.01,Irzip,random,2,Prop0.01,54,False
+KRR,15.192378207490826,{},4,428,0.0,Irzip,random,2,Prop0.01,54,False
 MR,15.431349103969495,{},4,428,0.01,Irzip,random,2,Prop0.01,54,False
-RF,10.648439927415994,{},4,428,0.2,Irzip,random,2,Prop0.01,54,False
-SVR,11.138888992405754,{},4,428,0.01,Irzip,random,2,Prop0.01,54,False
+RF,10.648439927415994,{},4,428,0.17,Irzip,random,2,Prop0.01,54,False
+SVR,11.138888992405754,{},4,428,0.0,Irzip,random,2,Prop0.01,54,False
 CART,6.68791519728018,{},4,428,0.0,Irzip,random,2,Prop0.01,55,False
 kNN,20.732253025859027,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,55,False
-KRR,14.676772926090754,{},4,428,0.01,Irzip,random,2,Prop0.01,55,False
+KRR,14.676772926090754,{},4,428,0.0,Irzip,random,2,Prop0.01,55,False
 MR,18.704287857047706,{},4,428,0.01,Irzip,random,2,Prop0.01,55,False
-RF,17.763136588002038,{},4,428,0.2,Irzip,random,2,Prop0.01,55,False
-SVR,12.235962939332328,{},4,428,0.01,Irzip,random,2,Prop0.01,55,False
+RF,17.763136588002038,{},4,428,0.17,Irzip,random,2,Prop0.01,55,False
+SVR,12.235962939332328,{},4,428,0.0,Irzip,random,2,Prop0.01,55,False
 CART,2.572136664735037,{},4,428,0.0,Irzip,random,2,Prop0.01,56,False
 kNN,7.931068882852083,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,56,False
-KRR,7.416291286816025,{},4,428,0.01,Irzip,random,2,Prop0.01,56,False
-MR,8.980581529750909,{},4,428,0.01,Irzip,random,2,Prop0.01,56,False
-RF,8.700477424379173,{},4,428,0.2,Irzip,random,2,Prop0.01,56,False
-SVR,6.704880769332401,{},4,428,0.01,Irzip,random,2,Prop0.01,56,False
+KRR,7.416291286816025,{},4,428,0.0,Irzip,random,2,Prop0.01,56,False
+MR,8.980581529750909,{},4,428,0.0,Irzip,random,2,Prop0.01,56,False
+RF,8.700477424379173,{},4,428,0.17,Irzip,random,2,Prop0.01,56,False
+SVR,6.704880769332401,{},4,428,0.0,Irzip,random,2,Prop0.01,56,False
 CART,1.5086606302016534,{},4,428,0.0,Irzip,random,2,Prop0.01,57,False
 kNN,6.2981805295186755,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,57,False
-KRR,7.793834355028298,{},4,428,0.01,Irzip,random,2,Prop0.01,57,False
+KRR,7.793834355028298,{},4,428,0.0,Irzip,random,2,Prop0.01,57,False
 MR,7.338526493971602,{},4,428,0.01,Irzip,random,2,Prop0.01,57,False
-RF,7.612072047110995,{},4,428,0.2,Irzip,random,2,Prop0.01,57,False
-SVR,4.912404175573739,{},4,428,0.01,Irzip,random,2,Prop0.01,57,False
+RF,7.612072047110995,{},4,428,0.13,Irzip,random,2,Prop0.01,57,False
+SVR,4.912404175573739,{},4,428,0.0,Irzip,random,2,Prop0.01,57,False
 CART,0.8225451921296374,{},4,428,0.0,Irzip,random,2,Prop0.01,58,False
 kNN,1.0930823724915966,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,58,False
-KRR,0.9577384223800054,{},4,428,0.01,Irzip,random,2,Prop0.01,58,False
+KRR,0.9577384223800054,{},4,428,0.0,Irzip,random,2,Prop0.01,58,False
 MR,1.069078182923401,{},4,428,0.01,Irzip,random,2,Prop0.01,58,False
-RF,1.0096630748141295,{},4,428,0.2,Irzip,random,2,Prop0.01,58,False
-SVR,1.0988642427498083,{},4,428,0.01,Irzip,random,2,Prop0.01,58,False
+RF,1.0096630748141295,{},4,428,0.17,Irzip,random,2,Prop0.01,58,False
+SVR,1.0988642427498083,{},4,428,0.0,Irzip,random,2,Prop0.01,58,False
 CART,11.338485522458106,{},4,428,0.0,Irzip,random,2,Prop0.01,59,False
 kNN,5.722090431552352,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,59,False
-KRR,6.8978524990074215,{},4,428,0.01,Irzip,random,2,Prop0.01,59,False
+KRR,6.8978524990074215,{},4,428,0.0,Irzip,random,2,Prop0.01,59,False
 MR,7.007897443436368,{},4,428,0.01,Irzip,random,2,Prop0.01,59,False
-RF,8.195762665718767,{},4,428,0.2,Irzip,random,2,Prop0.01,59,False
-SVR,4.569924771594044,{},4,428,0.01,Irzip,random,2,Prop0.01,59,False
+RF,8.195762665718767,{},4,428,0.17,Irzip,random,2,Prop0.01,59,False
+SVR,4.569924771594044,{},4,428,0.0,Irzip,random,2,Prop0.01,59,False
 CART,1.6350404317845184,{},4,428,0.0,Irzip,random,2,Prop0.01,60,False
 kNN,7.869594715848717,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,60,False
-KRR,7.896879830830898,{},4,428,0.01,Irzip,random,2,Prop0.01,60,False
+KRR,7.896879830830898,{},4,428,0.0,Irzip,random,2,Prop0.01,60,False
 MR,8.002313050221208,{},4,428,0.01,Irzip,random,2,Prop0.01,60,False
-RF,6.4351639406375885,{},4,428,0.2,Irzip,random,2,Prop0.01,60,False
-SVR,6.188223518602127,{},4,428,0.01,Irzip,random,2,Prop0.01,60,False
+RF,6.4351639406375885,{},4,428,0.17,Irzip,random,2,Prop0.01,60,False
+SVR,6.188223518602127,{},4,428,0.0,Irzip,random,2,Prop0.01,60,False
 CART,0.4996561716202691,{},4,428,0.0,Irzip,random,2,Prop0.01,61,False
 kNN,0.8082315887677756,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,61,False
-KRR,0.6500020857764323,{},4,428,0.01,Irzip,random,2,Prop0.01,61,False
+KRR,0.6500020857764323,{},4,428,0.0,Irzip,random,2,Prop0.01,61,False
 MR,0.8039972858040109,{},4,428,0.01,Irzip,random,2,Prop0.01,61,False
-RF,0.6457406509588104,{},4,428,0.2,Irzip,random,2,Prop0.01,61,False
-SVR,0.6027175879054281,{},4,428,0.01,Irzip,random,2,Prop0.01,61,False
+RF,0.6457406509588104,{},4,428,0.17,Irzip,random,2,Prop0.01,61,False
+SVR,0.6027175879054281,{},4,428,0.0,Irzip,random,2,Prop0.01,61,False
 CART,0.4955314160536862,{},4,428,0.0,Irzip,random,2,Prop0.01,62,False
 kNN,0.604202598515345,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,62,False
-KRR,0.6101433602889167,{},4,428,0.01,Irzip,random,2,Prop0.01,62,False
+KRR,0.6101433602889167,{},4,428,0.0,Irzip,random,2,Prop0.01,62,False
 MR,0.7031222640873174,{},4,428,0.01,Irzip,random,2,Prop0.01,62,False
-RF,0.567888358684003,{},4,428,0.2,Irzip,random,2,Prop0.01,62,False
-SVR,0.5710396632496529,{},4,428,0.01,Irzip,random,2,Prop0.01,62,False
+RF,0.567888358684003,{},4,428,0.17,Irzip,random,2,Prop0.01,62,False
+SVR,0.5710396632496529,{},4,428,0.0,Irzip,random,2,Prop0.01,62,False
 CART,2.689087500600918,{},4,428,0.0,Irzip,random,2,Prop0.01,63,False
 kNN,6.444165471161356,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,63,False
-KRR,5.208115233646283,{},4,428,0.01,Irzip,random,2,Prop0.01,63,False
+KRR,5.208115233646283,{},4,428,0.0,Irzip,random,2,Prop0.01,63,False
 MR,5.610157313639335,{},4,428,0.01,Irzip,random,2,Prop0.01,63,False
-RF,4.843601723842817,{},4,428,0.2,Irzip,random,2,Prop0.01,63,False
-SVR,3.9086896419972907,{},4,428,0.01,Irzip,random,2,Prop0.01,63,False
+RF,4.843601723842817,{},4,428,0.17,Irzip,random,2,Prop0.01,63,False
+SVR,3.9086896419972907,{},4,428,0.0,Irzip,random,2,Prop0.01,63,False
 CART,0.4272699345889052,{},4,428,0.0,Irzip,random,2,Prop0.01,64,False
 kNN,0.8506456178480399,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,64,False
-KRR,0.7892678506242541,{},4,428,0.01,Irzip,random,2,Prop0.01,64,False
+KRR,0.7892678506242541,{},4,428,0.0,Irzip,random,2,Prop0.01,64,False
 MR,0.8937760498988458,{},4,428,0.01,Irzip,random,2,Prop0.01,64,False
-RF,0.771018400688647,{},4,428,0.2,Irzip,random,2,Prop0.01,64,False
-SVR,0.8151909874767711,{},4,428,0.01,Irzip,random,2,Prop0.01,64,False
+RF,0.771018400688647,{},4,428,0.17,Irzip,random,2,Prop0.01,64,False
+SVR,0.8151909874767711,{},4,428,0.0,Irzip,random,2,Prop0.01,64,False
 CART,0.6049406807767986,{},4,428,0.0,Irzip,random,2,Prop0.01,65,False
 kNN,6.462194610066369,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,65,False
-KRR,5.296800198463547,{},4,428,0.01,Irzip,random,2,Prop0.01,65,False
+KRR,5.296800198463547,{},4,428,0.0,Irzip,random,2,Prop0.01,65,False
 MR,6.636047863361984,{},4,428,0.01,Irzip,random,2,Prop0.01,65,False
-RF,3.8018387700949163,{},4,428,0.2,Irzip,random,2,Prop0.01,65,False
-SVR,3.120857991648299,{},4,428,0.01,Irzip,random,2,Prop0.01,65,False
+RF,3.8018387700949163,{},4,428,0.17,Irzip,random,2,Prop0.01,65,False
+SVR,3.120857991648299,{},4,428,0.0,Irzip,random,2,Prop0.01,65,False
 CART,1.848805128371697,{},4,428,0.0,Irzip,random,2,Prop0.01,66,False
 kNN,1.1191875541033396,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,66,False
-KRR,1.1054868164037974,{},4,428,0.01,Irzip,random,2,Prop0.01,66,False
+KRR,1.1054868164037974,{},4,428,0.0,Irzip,random,2,Prop0.01,66,False
 MR,1.177800364870656,{},4,428,0.01,Irzip,random,2,Prop0.01,66,False
-RF,1.1733365114144256,{},4,428,0.2,Irzip,random,2,Prop0.01,66,False
-SVR,1.134983756562509,{},4,428,0.01,Irzip,random,2,Prop0.01,66,False
+RF,1.1733365114144256,{},4,428,0.17,Irzip,random,2,Prop0.01,66,False
+SVR,1.134983756562509,{},4,428,0.0,Irzip,random,2,Prop0.01,66,False
 CART,3.747243176861346,{},4,428,0.0,Irzip,random,2,Prop0.01,67,False
 kNN,5.57124397740251,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,67,False
-KRR,5.396835272339233,{},4,428,0.01,Irzip,random,2,Prop0.01,67,False
+KRR,5.396835272339233,{},4,428,0.0,Irzip,random,2,Prop0.01,67,False
 MR,6.515272067121648,{},4,428,0.01,Irzip,random,2,Prop0.01,67,False
-RF,3.74434978078698,{},4,428,0.2,Irzip,random,2,Prop0.01,67,False
-SVR,3.772310370203442,{},4,428,0.01,Irzip,random,2,Prop0.01,67,False
+RF,3.74434978078698,{},4,428,0.17,Irzip,random,2,Prop0.01,67,False
+SVR,3.772310370203442,{},4,428,0.0,Irzip,random,2,Prop0.01,67,False
 CART,1.3798282510325923,{},4,428,0.0,Irzip,random,2,Prop0.01,68,False
 kNN,4.462306664363431,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,68,False
-KRR,5.570522384599245,{},4,428,0.01,Irzip,random,2,Prop0.01,68,False
+KRR,5.570522384599245,{},4,428,0.0,Irzip,random,2,Prop0.01,68,False
 MR,5.750774214252538,{},4,428,0.01,Irzip,random,2,Prop0.01,68,False
-RF,4.945242170199057,{},4,428,0.2,Irzip,random,2,Prop0.01,68,False
-SVR,3.8358541425093344,{},4,428,0.01,Irzip,random,2,Prop0.01,68,False
+RF,4.945242170199057,{},4,428,0.17,Irzip,random,2,Prop0.01,68,False
+SVR,3.8358541425093344,{},4,428,0.0,Irzip,random,2,Prop0.01,68,False
 CART,0.45460096506545006,{},4,428,0.0,Irzip,random,2,Prop0.01,69,False
 kNN,0.8422421587288897,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,69,False
-KRR,0.9492348613938023,{},4,428,0.01,Irzip,random,2,Prop0.01,69,False
+KRR,0.9492348613938023,{},4,428,0.0,Irzip,random,2,Prop0.01,69,False
 MR,1.008852846009283,{},4,428,0.01,Irzip,random,2,Prop0.01,69,False
-RF,0.801852622564293,{},4,428,0.2,Irzip,random,2,Prop0.01,69,False
-SVR,0.9390966286939466,{},4,428,0.01,Irzip,random,2,Prop0.01,69,False
+RF,0.801852622564293,{},4,428,0.17,Irzip,random,2,Prop0.01,69,False
+SVR,0.9390966286939466,{},4,428,0.0,Irzip,random,2,Prop0.01,69,False
 CART,0.6210003454935588,{},4,428,0.0,Irzip,random,2,Prop0.01,70,False
 kNN,1.5634390908366758,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,70,False
-KRR,1.8345855094276167,{},4,428,0.01,Irzip,random,2,Prop0.01,70,False
+KRR,1.8345855094276167,{},4,428,0.0,Irzip,random,2,Prop0.01,70,False
 MR,1.7000292890235533,{},4,428,0.01,Irzip,random,2,Prop0.01,70,False
-RF,1.0576089629635268,{},4,428,0.2,Irzip,random,2,Prop0.01,70,False
-SVR,1.050960863952881,{},4,428,0.01,Irzip,random,2,Prop0.01,70,False
+RF,1.0576089629635268,{},4,428,0.17,Irzip,random,2,Prop0.01,70,False
+SVR,1.050960863952881,{},4,428,0.0,Irzip,random,2,Prop0.01,70,False
 CART,0.4530458545369063,{},4,428,0.0,Irzip,random,2,Prop0.01,71,False
 kNN,0.6883046023350327,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,71,False
-KRR,0.6814188657133005,{},4,428,0.01,Irzip,random,2,Prop0.01,71,False
+KRR,0.6814188657133005,{},4,428,0.0,Irzip,random,2,Prop0.01,71,False
 MR,0.7620631406018497,{},4,428,0.01,Irzip,random,2,Prop0.01,71,False
-RF,0.6727172628306562,{},4,428,0.2,Irzip,random,2,Prop0.01,71,False
-SVR,0.635327474560771,{},4,428,0.01,Irzip,random,2,Prop0.01,71,False
+RF,0.6727172628306562,{},4,428,0.17,Irzip,random,2,Prop0.01,71,False
+SVR,0.635327474560771,{},4,428,0.0,Irzip,random,2,Prop0.01,71,False
 CART,1.269106215572289,{},4,428,0.0,Irzip,random,2,Prop0.01,72,False
 kNN,1.364508133128414,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,72,False
-KRR,1.234083519330132,{},4,428,0.01,Irzip,random,2,Prop0.01,72,False
+KRR,1.234083519330132,{},4,428,0.0,Irzip,random,2,Prop0.01,72,False
 MR,1.368359028432034,{},4,428,0.01,Irzip,random,2,Prop0.01,72,False
-RF,1.2848493186887304,{},4,428,0.2,Irzip,random,2,Prop0.01,72,False
-SVR,1.2566948343439834,{},4,428,0.01,Irzip,random,2,Prop0.01,72,False
+RF,1.2848493186887304,{},4,428,0.17,Irzip,random,2,Prop0.01,72,False
+SVR,1.2566948343439834,{},4,428,0.0,Irzip,random,2,Prop0.01,72,False
 CART,0.5543582908297717,{},4,428,0.0,Irzip,random,2,Prop0.01,73,False
 kNN,1.3098904642514797,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,73,False
-KRR,1.7240865525852833,{},4,428,0.01,Irzip,random,2,Prop0.01,73,False
+KRR,1.7240865525852833,{},4,428,0.0,Irzip,random,2,Prop0.01,73,False
 MR,1.6549302633474583,{},4,428,0.01,Irzip,random,2,Prop0.01,73,False
-RF,1.7140561580641185,{},4,428,0.2,Irzip,random,2,Prop0.01,73,False
-SVR,1.2112660019562358,{},4,428,0.01,Irzip,random,2,Prop0.01,73,False
+RF,1.7140561580641185,{},4,428,0.17,Irzip,random,2,Prop0.01,73,False
+SVR,1.2112660019562358,{},4,428,0.0,Irzip,random,2,Prop0.01,73,False
 CART,8.241490457494875,{},4,428,0.0,Irzip,random,2,Prop0.01,74,False
 kNN,7.285079249025519,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,74,False
-KRR,6.740123174334195,{},4,428,0.01,Irzip,random,2,Prop0.01,74,False
+KRR,6.740123174334195,{},4,428,0.0,Irzip,random,2,Prop0.01,74,False
 MR,7.933252379211457,{},4,428,0.01,Irzip,random,2,Prop0.01,74,False
-RF,7.164713523630487,{},4,428,0.2,Irzip,random,2,Prop0.01,74,False
-SVR,5.680647146650373,{},4,428,0.01,Irzip,random,2,Prop0.01,74,False
+RF,7.164713523630487,{},4,428,0.17,Irzip,random,2,Prop0.01,74,False
+SVR,5.680647146650373,{},4,428,0.0,Irzip,random,2,Prop0.01,74,False
 CART,0.7624066514579361,{},4,428,0.0,Irzip,random,2,Prop0.01,75,False
 kNN,1.454785962386758,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,75,False
-KRR,1.2892613902205885,{},4,428,0.01,Irzip,random,2,Prop0.01,75,False
+KRR,1.2892613902205885,{},4,428,0.0,Irzip,random,2,Prop0.01,75,False
 MR,1.3789033633264778,{},4,428,0.01,Irzip,random,2,Prop0.01,75,False
-RF,1.2810076843482616,{},4,428,0.2,Irzip,random,2,Prop0.01,75,False
-SVR,1.3709632130254035,{},4,428,0.01,Irzip,random,2,Prop0.01,75,False
+RF,1.2810076843482616,{},4,428,0.17,Irzip,random,2,Prop0.01,75,False
+SVR,1.3709632130254035,{},4,428,0.0,Irzip,random,2,Prop0.01,75,False
 CART,3.8536712175155134,{},4,428,0.0,Irzip,random,2,Prop0.01,76,False
 kNN,2.0849932489010734,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,76,False
-KRR,1.5575123796899726,{},4,428,0.01,Irzip,random,2,Prop0.01,76,False
+KRR,1.5575123796899726,{},4,428,0.0,Irzip,random,2,Prop0.01,76,False
 MR,1.9596891644797227,{},4,428,0.01,Irzip,random,2,Prop0.01,76,False
-RF,1.8854440520852618,{},4,428,0.2,Irzip,random,2,Prop0.01,76,False
-SVR,1.4148823903111805,{},4,428,0.01,Irzip,random,2,Prop0.01,76,False
+RF,1.8854440520852618,{},4,428,0.17,Irzip,random,2,Prop0.01,76,False
+SVR,1.4148823903111805,{},4,428,0.0,Irzip,random,2,Prop0.01,76,False
 CART,0.567578042791793,{},4,428,0.0,Irzip,random,2,Prop0.01,77,False
 kNN,7.708151366129237,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,77,False
-KRR,8.295718142410088,{},4,428,0.01,Irzip,random,2,Prop0.01,77,False
+KRR,8.295718142410088,{},4,428,0.0,Irzip,random,2,Prop0.01,77,False
 MR,9.715639368129702,{},4,428,0.01,Irzip,random,2,Prop0.01,77,False
-RF,6.650950432959062,{},4,428,0.2,Irzip,random,2,Prop0.01,77,False
-SVR,6.88110028656942,{},4,428,0.01,Irzip,random,2,Prop0.01,77,False
+RF,6.650950432959062,{},4,428,0.17,Irzip,random,2,Prop0.01,77,False
+SVR,6.88110028656942,{},4,428,0.0,Irzip,random,2,Prop0.01,77,False
 CART,26.469820566728103,{},4,428,0.0,Irzip,random,2,Prop0.01,78,False
 kNN,13.760524768336973,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,78,False
-KRR,13.327944608744941,{},4,428,0.01,Irzip,random,2,Prop0.01,78,False
+KRR,13.327944608744941,{},4,428,0.0,Irzip,random,2,Prop0.01,78,False
 MR,14.287132939385577,{},4,428,0.01,Irzip,random,2,Prop0.01,78,False
-RF,14.860727137045881,{},4,428,0.2,Irzip,random,2,Prop0.01,78,False
-SVR,9.806042091561414,{},4,428,0.01,Irzip,random,2,Prop0.01,78,False
+RF,14.860727137045881,{},4,428,0.17,Irzip,random,2,Prop0.01,78,False
+SVR,9.806042091561414,{},4,428,0.0,Irzip,random,2,Prop0.01,78,False
 CART,0.47536773384238273,{},4,428,0.0,Irzip,random,2,Prop0.01,79,False
 kNN,0.9329497153116809,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,79,False
-KRR,0.8402380149121733,{},4,428,0.01,Irzip,random,2,Prop0.01,79,False
+KRR,0.8402380149121733,{},4,428,0.0,Irzip,random,2,Prop0.01,79,False
 MR,1.0593606175448678,{},4,428,0.01,Irzip,random,2,Prop0.01,79,False
-RF,0.7536662431042718,{},4,428,0.2,Irzip,random,2,Prop0.01,79,False
-SVR,0.6396605343364873,{},4,428,0.01,Irzip,random,2,Prop0.01,79,False
+RF,0.7536662431042718,{},4,428,0.17,Irzip,random,2,Prop0.01,79,False
+SVR,0.6396605343364873,{},4,428,0.0,Irzip,random,2,Prop0.01,79,False
 CART,1.2279961026836788,{},4,428,0.0,Irzip,random,2,Prop0.01,80,False
 kNN,1.0063653272402289,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,80,False
-KRR,0.9710489939051524,{},4,428,0.01,Irzip,random,2,Prop0.01,80,False
+KRR,0.9710489939051524,{},4,428,0.0,Irzip,random,2,Prop0.01,80,False
 MR,1.0377419063140565,{},4,428,0.01,Irzip,random,2,Prop0.01,80,False
-RF,0.9708585909443975,{},4,428,0.2,Irzip,random,2,Prop0.01,80,False
-SVR,0.883000924634152,{},4,428,0.01,Irzip,random,2,Prop0.01,80,False
+RF,0.9708585909443975,{},4,428,0.17,Irzip,random,2,Prop0.01,80,False
+SVR,0.883000924634152,{},4,428,0.0,Irzip,random,2,Prop0.01,80,False
 CART,0.4302367628190191,{},4,428,0.0,Irzip,random,2,Prop0.01,81,False
 kNN,3.341849235596294,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,81,False
-KRR,4.436745855897908,{},4,428,0.01,Irzip,random,2,Prop0.01,81,False
+KRR,4.436745855897908,{},4,428,0.0,Irzip,random,2,Prop0.01,81,False
 MR,5.144478735957638,{},4,428,0.01,Irzip,random,2,Prop0.01,81,False
-RF,4.021472263222137,{},4,428,0.2,Irzip,random,2,Prop0.01,81,False
+RF,4.021472263222137,{},4,428,0.17,Irzip,random,2,Prop0.01,81,False
 SVR,2.797755804538605,{},4,428,0.0,Irzip,random,2,Prop0.01,81,False
 CART,0.5650066077436392,{},4,428,0.0,Irzip,random,2,Prop0.01,82,False
 kNN,4.035306004282217,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,82,False
-KRR,4.432803718779276,{},4,428,0.01,Irzip,random,2,Prop0.01,82,False
+KRR,4.432803718779276,{},4,428,0.0,Irzip,random,2,Prop0.01,82,False
 MR,4.871839455402657,{},4,428,0.01,Irzip,random,2,Prop0.01,82,False
-RF,3.953620194757856,{},4,428,0.2,Irzip,random,2,Prop0.01,82,False
-SVR,2.5084921589950873,{},4,428,0.01,Irzip,random,2,Prop0.01,82,False
+RF,3.953620194757856,{},4,428,0.17,Irzip,random,2,Prop0.01,82,False
+SVR,2.5084921589950873,{},4,428,0.0,Irzip,random,2,Prop0.01,82,False
 CART,7.601970382311422,{},4,428,0.0,Irzip,random,2,Prop0.01,83,False
 kNN,7.754296136779365,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,83,False
-KRR,10.121924539962102,{},4,428,0.01,Irzip,random,2,Prop0.01,83,False
+KRR,10.121924539962102,{},4,428,0.0,Irzip,random,2,Prop0.01,83,False
 MR,8.698633933251639,{},4,428,0.01,Irzip,random,2,Prop0.01,83,False
-RF,9.60147812661774,{},4,428,0.2,Irzip,random,2,Prop0.01,83,False
-SVR,7.353151730420125,{},4,428,0.01,Irzip,random,2,Prop0.01,83,False
+RF,9.60147812661774,{},4,428,0.17,Irzip,random,2,Prop0.01,83,False
+SVR,7.353151730420125,{},4,428,0.0,Irzip,random,2,Prop0.01,83,False
 CART,5.185673227978966,{},4,428,0.0,Irzip,random,2,Prop0.01,84,False
 kNN,8.599570831396361,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,84,False
-KRR,11.824304751111542,{},4,428,0.01,Irzip,random,2,Prop0.01,84,False
+KRR,11.824304751111542,{},4,428,0.0,Irzip,random,2,Prop0.01,84,False
 MR,12.445598716305222,{},4,428,0.01,Irzip,random,2,Prop0.01,84,False
-RF,4.624045242695357,{},4,428,0.2,Irzip,random,2,Prop0.01,84,False
-SVR,6.3856371423769405,{},4,428,0.01,Irzip,random,2,Prop0.01,84,False
+RF,4.624045242695357,{},4,428,0.17,Irzip,random,2,Prop0.01,84,False
+SVR,6.3856371423769405,{},4,428,0.0,Irzip,random,2,Prop0.01,84,False
 CART,2.502062691925164,{},4,428,0.0,Irzip,random,2,Prop0.01,85,False
 kNN,5.368163659254878,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,85,False
-KRR,7.222096870274046,{},4,428,0.01,Irzip,random,2,Prop0.01,85,False
+KRR,7.222096870274046,{},4,428,0.0,Irzip,random,2,Prop0.01,85,False
 MR,6.297399348388173,{},4,428,0.01,Irzip,random,2,Prop0.01,85,False
-RF,5.1508906754714285,{},4,428,0.2,Irzip,random,2,Prop0.01,85,False
-SVR,4.563822763573307,{},4,428,0.01,Irzip,random,2,Prop0.01,85,False
+RF,5.1508906754714285,{},4,428,0.17,Irzip,random,2,Prop0.01,85,False
+SVR,4.563822763573307,{},4,428,0.0,Irzip,random,2,Prop0.01,85,False
 CART,1.1096387698600636,{},4,428,0.0,Irzip,random,2,Prop0.01,86,False
 kNN,7.382553170839985,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,86,False
-KRR,7.476688317097097,{},4,428,0.01,Irzip,random,2,Prop0.01,86,False
+KRR,7.476688317097097,{},4,428,0.0,Irzip,random,2,Prop0.01,86,False
 MR,10.203647191705484,{},4,428,0.01,Irzip,random,2,Prop0.01,86,False
-RF,6.987502013821752,{},4,428,0.2,Irzip,random,2,Prop0.01,86,False
-SVR,9.430502781881774,{},4,428,0.01,Irzip,random,2,Prop0.01,86,False
+RF,6.987502013821752,{},4,428,0.17,Irzip,random,2,Prop0.01,86,False
+SVR,9.430502781881774,{},4,428,0.0,Irzip,random,2,Prop0.01,86,False
 CART,0.5547380395465683,{},4,428,0.0,Irzip,random,2,Prop0.01,87,False
 kNN,0.7438110738980385,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,87,False
-KRR,0.720523935239438,{},4,428,0.01,Irzip,random,2,Prop0.01,87,False
+KRR,0.720523935239438,{},4,428,0.0,Irzip,random,2,Prop0.01,87,False
 MR,0.8357257247929449,{},4,428,0.01,Irzip,random,2,Prop0.01,87,False
-RF,0.6808640458566063,{},4,428,0.2,Irzip,random,2,Prop0.01,87,False
-SVR,0.6717406989602509,{},4,428,0.01,Irzip,random,2,Prop0.01,87,False
+RF,0.6808640458566063,{},4,428,0.15,Irzip,random,2,Prop0.01,87,False
+SVR,0.6717406989602509,{},4,428,0.0,Irzip,random,2,Prop0.01,87,False
 CART,0.6415061228323562,{},4,428,0.0,Irzip,random,2,Prop0.01,88,False
 kNN,1.8358321337545893,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,88,False
-KRR,1.1759177241450247,{},4,428,0.01,Irzip,random,2,Prop0.01,88,False
+KRR,1.1759177241450247,{},4,428,0.0,Irzip,random,2,Prop0.01,88,False
 MR,1.7445621770432895,{},4,428,0.01,Irzip,random,2,Prop0.01,88,False
-RF,1.156701025631961,{},4,428,0.2,Irzip,random,2,Prop0.01,88,False
-SVR,0.9067967682162917,{},4,428,0.01,Irzip,random,2,Prop0.01,88,False
+RF,1.156701025631961,{},4,428,0.17,Irzip,random,2,Prop0.01,88,False
+SVR,0.9067967682162917,{},4,428,0.0,Irzip,random,2,Prop0.01,88,False
 CART,7.1439790394562035,{},4,428,0.0,Irzip,random,2,Prop0.01,89,False
 kNN,10.685068942027938,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,89,False
-KRR,12.290293745691343,{},4,428,0.01,Irzip,random,2,Prop0.01,89,False
+KRR,12.290293745691343,{},4,428,0.0,Irzip,random,2,Prop0.01,89,False
 MR,14.283432802183178,{},4,428,0.01,Irzip,random,2,Prop0.01,89,False
-RF,11.220307406542616,{},4,428,0.2,Irzip,random,2,Prop0.01,89,False
-SVR,6.321271895616394,{},4,428,0.01,Irzip,random,2,Prop0.01,89,False
+RF,11.220307406542616,{},4,428,0.17,Irzip,random,2,Prop0.01,89,False
+SVR,6.321271895616394,{},4,428,0.0,Irzip,random,2,Prop0.01,89,False
 CART,3.310828712023713,{},4,428,0.0,Irzip,random,2,Prop0.01,90,False
 kNN,7.39019203614714,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,90,False
-KRR,5.8491193448473755,{},4,428,0.01,Irzip,random,2,Prop0.01,90,False
+KRR,5.8491193448473755,{},4,428,0.0,Irzip,random,2,Prop0.01,90,False
 MR,6.895601237980759,{},4,428,0.01,Irzip,random,2,Prop0.01,90,False
-RF,5.0607528942038496,{},4,428,0.2,Irzip,random,2,Prop0.01,90,False
-SVR,4.375163701080346,{},4,428,0.01,Irzip,random,2,Prop0.01,90,False
+RF,5.0607528942038496,{},4,428,0.17,Irzip,random,2,Prop0.01,90,False
+SVR,4.375163701080346,{},4,428,0.0,Irzip,random,2,Prop0.01,90,False
 CART,0.5576650011666971,{},4,428,0.0,Irzip,random,2,Prop0.01,91,False
 kNN,2.4637528142348075,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,91,False
-KRR,2.1877879736845767,{},4,428,0.01,Irzip,random,2,Prop0.01,91,False
+KRR,2.1877879736845767,{},4,428,0.0,Irzip,random,2,Prop0.01,91,False
 MR,2.750827670299536,{},4,428,0.01,Irzip,random,2,Prop0.01,91,False
-RF,1.853945748553818,{},4,428,0.2,Irzip,random,2,Prop0.01,91,False
-SVR,1.846426035194282,{},4,428,0.01,Irzip,random,2,Prop0.01,91,False
+RF,1.853945748553818,{},4,428,0.17,Irzip,random,2,Prop0.01,91,False
+SVR,1.846426035194282,{},4,428,0.0,Irzip,random,2,Prop0.01,91,False
 CART,0.6916600367619546,{},4,428,0.0,Irzip,random,2,Prop0.01,92,False
 kNN,1.8116602456883393,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,92,False
-KRR,2.013093046377947,{},4,428,0.01,Irzip,random,2,Prop0.01,92,False
+KRR,2.013093046377947,{},4,428,0.0,Irzip,random,2,Prop0.01,92,False
 MR,1.8789850124530316,{},4,428,0.01,Irzip,random,2,Prop0.01,92,False
-RF,1.892595029945371,{},4,428,0.2,Irzip,random,2,Prop0.01,92,False
-SVR,1.3004099115010097,{},4,428,0.01,Irzip,random,2,Prop0.01,92,False
+RF,1.892595029945371,{},4,428,0.17,Irzip,random,2,Prop0.01,92,False
+SVR,1.3004099115010097,{},4,428,0.0,Irzip,random,2,Prop0.01,92,False
 CART,0.7595081882013093,{},4,428,0.0,Irzip,random,2,Prop0.01,93,False
 kNN,1.6501307911535206,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,93,False
-KRR,2.5657087302597827,{},4,428,0.01,Irzip,random,2,Prop0.01,93,False
+KRR,2.5657087302597827,{},4,428,0.0,Irzip,random,2,Prop0.01,93,False
 MR,2.0850718050881762,{},4,428,0.01,Irzip,random,2,Prop0.01,93,False
-RF,1.8187513306493648,{},4,428,0.2,Irzip,random,2,Prop0.01,93,False
-SVR,1.1389389175628952,{},4,428,0.01,Irzip,random,2,Prop0.01,93,False
+RF,1.8187513306493648,{},4,428,0.17,Irzip,random,2,Prop0.01,93,False
+SVR,1.1389389175628952,{},4,428,0.0,Irzip,random,2,Prop0.01,93,False
 CART,2.8325214754233903,{},4,428,0.0,Irzip,random,2,Prop0.01,94,False
 kNN,5.373496040254586,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,94,False
-KRR,5.207673144613551,{},4,428,0.01,Irzip,random,2,Prop0.01,94,False
+KRR,5.207673144613551,{},4,428,0.0,Irzip,random,2,Prop0.01,94,False
 MR,5.329219769456694,{},4,428,0.01,Irzip,random,2,Prop0.01,94,False
-RF,3.9918608720810824,{},4,428,0.2,Irzip,random,2,Prop0.01,94,False
-SVR,3.4015185731593807,{},4,428,0.01,Irzip,random,2,Prop0.01,94,False
+RF,3.9918608720810824,{},4,428,0.17,Irzip,random,2,Prop0.01,94,False
+SVR,3.4015185731593807,{},4,428,0.0,Irzip,random,2,Prop0.01,94,False
 CART,1.4242278991300341,{},4,428,0.0,Irzip,random,2,Prop0.01,95,False
 kNN,5.729120089157439,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,95,False
-KRR,5.183412825908948,{},4,428,0.01,Irzip,random,2,Prop0.01,95,False
+KRR,5.183412825908948,{},4,428,0.0,Irzip,random,2,Prop0.01,95,False
 MR,5.680710667212497,{},4,428,0.01,Irzip,random,2,Prop0.01,95,False
-RF,4.798625829960147,{},4,428,0.2,Irzip,random,2,Prop0.01,95,False
-SVR,3.4163608797191984,{},4,428,0.01,Irzip,random,2,Prop0.01,95,False
+RF,4.798625829960147,{},4,428,0.16,Irzip,random,2,Prop0.01,95,False
+SVR,3.4163608797191984,{},4,428,0.0,Irzip,random,2,Prop0.01,95,False
 CART,1.2374262880412832,{},4,428,0.0,Irzip,random,2,Prop0.01,96,False
 kNN,1.9332854741856667,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,96,False
-KRR,2.563609676506963,{},4,428,0.01,Irzip,random,2,Prop0.01,96,False
+KRR,2.563609676506963,{},4,428,0.0,Irzip,random,2,Prop0.01,96,False
 MR,2.2867041244785002,{},4,428,0.01,Irzip,random,2,Prop0.01,96,False
-RF,2.2265109957900555,{},4,428,0.2,Irzip,random,2,Prop0.01,96,False
-SVR,2.0740427398791734,{},4,428,0.01,Irzip,random,2,Prop0.01,96,False
+RF,2.2265109957900555,{},4,428,0.17,Irzip,random,2,Prop0.01,96,False
+SVR,2.0740427398791734,{},4,428,0.0,Irzip,random,2,Prop0.01,96,False
 CART,1.2760194493617618,{},4,428,0.0,Irzip,random,2,Prop0.01,97,False
 kNN,1.130449442523572,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,97,False
-KRR,1.0406452342597046,{},4,428,0.01,Irzip,random,2,Prop0.01,97,False
+KRR,1.0406452342597046,{},4,428,0.0,Irzip,random,2,Prop0.01,97,False
 MR,1.154221086683089,{},4,428,0.01,Irzip,random,2,Prop0.01,97,False
-RF,0.9907132609924961,{},4,428,0.2,Irzip,random,2,Prop0.01,97,False
-SVR,1.0439287234897885,{},4,428,0.01,Irzip,random,2,Prop0.01,97,False
+RF,0.9907132609924961,{},4,428,0.17,Irzip,random,2,Prop0.01,97,False
+SVR,1.0439287234897885,{},4,428,0.0,Irzip,random,2,Prop0.01,97,False
 CART,0.4733884790143341,{},4,428,0.0,Irzip,random,2,Prop0.01,98,False
 kNN,0.7961029307339449,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,98,False
-KRR,0.713785724181597,{},4,428,0.01,Irzip,random,2,Prop0.01,98,False
+KRR,0.713785724181597,{},4,428,0.0,Irzip,random,2,Prop0.01,98,False
 MR,0.804440078041953,{},4,428,0.01,Irzip,random,2,Prop0.01,98,False
-RF,0.6659587440038194,{},4,428,0.2,Irzip,random,2,Prop0.01,98,False
-SVR,0.6340786447102822,{},4,428,0.01,Irzip,random,2,Prop0.01,98,False
+RF,0.6659587440038194,{},4,428,0.17,Irzip,random,2,Prop0.01,98,False
+SVR,0.6340786447102822,{},4,428,0.0,Irzip,random,2,Prop0.01,98,False
 CART,0.5185871309508584,{},4,428,0.0,Irzip,random,2,Prop0.01,99,False
 kNN,1.2587510177469596,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,99,False
-KRR,1.0766549122695062,{},4,428,0.01,Irzip,random,2,Prop0.01,99,False
+KRR,1.0766549122695062,{},4,428,0.0,Irzip,random,2,Prop0.01,99,False
 MR,1.3399184221285627,{},4,428,0.01,Irzip,random,2,Prop0.01,99,False
-RF,0.9728647101178347,{},4,428,0.2,Irzip,random,2,Prop0.01,99,False
-SVR,1.2179301419871065,{},4,428,0.01,Irzip,random,2,Prop0.01,99,False
+RF,0.9728647101178347,{},4,428,0.16,Irzip,random,2,Prop0.01,99,False
+SVR,1.2179301419871065,{},4,428,0.0,Irzip,random,2,Prop0.01,99,False
 CART,0.9077954755826771,{},4,428,0.0,Irzip,random,2,Prop0.01,100,False
 kNN,0.7341336824866099,"{""n_neighbors"": 3}",4,428,0.0,Irzip,random,2,Prop0.01,100,False
-KRR,0.7187627128505242,{},4,428,0.01,Irzip,random,2,Prop0.01,100,False
-MR,0.8191671049280518,{},4,428,0.01,Irzip,random,2,Prop0.01,100,False
-RF,0.7146978428789962,{},4,428,0.18,Irzip,random,2,Prop0.01,100,False
+KRR,0.7187627128505242,{},4,428,0.0,Irzip,random,2,Prop0.01,100,False
+MR,0.8191671049280518,{},4,428,0.0,Irzip,random,2,Prop0.01,100,False
+RF,0.7146978428789962,{},4,428,0.09,Irzip,random,2,Prop0.01,100,False
 SVR,0.7001128234347365,{},4,428,0.0,Irzip,random,2,Prop0.01,100,False

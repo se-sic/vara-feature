@@ -39,4 +39,5 @@ build-debug/
 *.dddmp
 bindings/python/Interplay_ML/Samples/
 bindings/python/Interplay_ML/ML/Grids/
+bindings/python/Interplay_ML/Results_backup_20260814_1148
 **/__pycache__/

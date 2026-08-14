@@ -1,21 +1,23 @@
-import argparse as ap
+import argparse
 import numpy as np
 import pandas as pd
 import json as json
 import time as time
+import os
+import glob
 from pathlib import Path
 from joblib import Parallel, delayed
 from .Metrics import mre
-from ..Sampling.Config import GridPaths, TSize, Proportions, Runs, Cap_Default#, set_cap
+from ..Sampling.Config import GridPaths, TSize, Proportions, Runs, Systems, Results, set_cap
 from .MlTechniques import ml_models
 from .GetData import getSample, getTrueData, split
 
 def fit(X_S, Y_S, X_E, Y_E, technique, estimator, params, system):
     t_start: float = time.time()
-    #cap = set_cap(system)
+    cap = set_cap(system)
 
-    if technique in ("SVR", "kNN", "KRR") and len(X_S) > Cap_Default:
-        mult_idx = np.random.RandomState(0).choice(len(X_S), Cap_Default, replace=False)
+    if cap is not None and technique in ("SVR", "kNN", "KRR") and len(X_S) > cap:
+        mult_idx = np.random.RandomState(0).choice(len(X_S), cap, replace=False)
         X_S, Y_S = X_S[mult_idx], Y_S[mult_idx]
     if technique == "kNN":
         default = params.get("n_neighbors", 5)
@@ -49,6 +51,7 @@ def run_one_seed(r, rq, system, strategy, val, size_type, true_data, hyper_param
         res = fit(X_S, Y_S, X_E, Y_E, ml_tech, est, params, system)
         res.update(system = system, strategy = strategy, rq = rq, size_type = f"{size_type}{val}", seed = r, tuned = tuned)
         rows.append(res)
+        print(f"{system} {ml_tech} with {val} done", flush=True)
     print(f"{system} {size_type} with {val} done", flush=True)
     return rows
 
@@ -66,7 +69,7 @@ def run(rq, system, strategy, out_path, only_prop=None):
     for size_type, val in getSize(rq):
         if only_prop is not None and val != only_prop:
             continue
-        res = Parallel(n_jobs=-1)(
+        res = Parallel(-1)(
             delayed(run_one_seed)(r, rq, system, strategy, val, size_type, true_data, hyper_params, techniques)
             for r in its
         )
@@ -83,12 +86,37 @@ def getSize(rq):
         for p in Proportions:
             yield f"Prop", p
 
+def merge_fittings():
+    partials = os.path.join(str(Results), "partials")
+    for sys in Systems:
+        sys_part = sorted(glob.glob(os.path.join(str(partials), f"rq_2_{sys}_random_*.csv")))
+        if len(sys_part) != len(Proportions):
+            raise Exception(f"Error: a RQ2 fitting was not performed for system {sys}")
+        df = pd.concat([pd.read_csv(part) for part in sys_part], ignore_index=True)
+        df.to_csv(os.path.join(str(Results), f"rq_2_{sys}_random.csv"), index=False)
+        print(f"{sys}: {len(sys_part)} system files; {len(df)} many rows; nulls={df['mre'].isna().sum()}")
+    files = glob.glob(os.path.join(str(Results), "rq_*.csv"))
+    print(f"Total: {len(files)} files (want 70)")
+
+
+
 if __name__ == "__main__":
-    parser = ap.ArgumentParser()
-    parser.add_argument("rq", type=int, choices=[1,2])
-    parser.add_argument("system")
-    parser.add_argument("strategy")
-    parser.add_argument("out_path")
-    parser.add_argument("--only_prop", type=float, default=None)
+    parser = argparse.ArgumentParser()
+    parser_2 = parser.add_subparsers(dest="cmd", required=True)
+
+    fit_parser = parser_2.add_parser("fit")
+
+    fit_parser.add_argument("rq", type=int, choices=[1,2])
+    fit_parser.add_argument("system")
+    fit_parser.add_argument("strategy")
+    fit_parser.add_argument("out_path")
+    fit_parser.add_argument("--only_prop", type=float, default=None)
+
+    parser_2.add_parser("merge")
+
     args = parser.parse_args()
-    run(args.rq, args.system, args.strategy, args.out_path, only_prop=args.only_prop)
+
+    if args.cmd == "fit":
+        run(args.rq, args.system, args.strategy, args.out_path, only_prop=args.only_prop)
+    elif args.cmd == "merge":
+        merge_fittings()

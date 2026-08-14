@@ -27,12 +27,11 @@ PyStrat = {"random" : "random", "twise": "twise", "sbs": "solver", "dbs": "dista
 #---------- REFERENCE SIZES (AS T) ---------------------------
 TSize = [1, 2, 3]
 #---------- REFERENCE SIZES (AS PROPOTIIONS) ----------------
-Proportions = [0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.3, 0.5]
+Proportions = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2]
 #---------- REPITITIONS FOR RANDOM STRATEGIES ---------------
 Runs = 100
 #---------- CAPACITIES FOR TOO LARGE SYSTEMS ----------------
-Cap_Default = 20000
-#Cap_Special = {"VP9": 10000, "JavaGC": 10000}
+Cap_Special = {"VP9": 22000, "JavaGC": 22000 }
 
-#def set_cap(system):
-    #return Cap_Special.get(system, Cap_Default)
+def set_cap(system):
+    return Cap_Special.get(system, None)

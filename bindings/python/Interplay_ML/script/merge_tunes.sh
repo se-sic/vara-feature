@@ -2,8 +2,8 @@
 #SBATCH --job-name=tuning
 #SBATCH --output=/scratch/mani00001/slurm_logs/tuning_%A_%a.out
 #SBATCH --constraint=kine
-#SBATCH --time=24:00:00
-#SBATCH --mem=64G
+#SBATCH --time=00:10:00
+#SBATCH --mem=8G
 #SBATCH --partition=anywhere
 #SBATCH --mail-user=mani00001@stud.uni-saarland.de
 #SBATCH --mail-type=END,FAIL

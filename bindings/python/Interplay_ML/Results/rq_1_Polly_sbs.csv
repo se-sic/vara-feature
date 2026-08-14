@@ -1,19 +1,19 @@
 technique,mre,params,trained_count,test_count,learn_time,system,strategy,rq,size_type,seed,tuned
-CART,0.3065725669049875,"{""max_features"": ""log2"", ""min_samples_leaf"": 1, ""splitter"": ""best""}",5,59995,0.02,Polly,sbs,1,T1,1,True
-kNN,0.30456463421000207,"{""n_neighbors"": 3, ""p"": 1, ""weights"": ""distance""}",5,59995,0.05,Polly,sbs,1,T1,1,True
-KRR,0.3084058413765933,"{""regressor__kernel"": ""rbf"", ""regressor__gamma"": 0.01, ""regressor__alpha"": 0.0001}",5,59995,0.03,Polly,sbs,1,T1,1,True
-MR,0.3033738689640009,"{""lasso__regressor__alpha"": 0.1}",5,59995,0.58,Polly,sbs,1,T1,1,True
-RF,0.30479627433507767,"{""max_features"": ""sqrt"", ""min_samples_leaf"": 1, ""n_estimators"": 15}",5,59995,0.04,Polly,sbs,1,T1,1,True
-SVR,0.3060244682752912,"{""regressor__tol"": 0.3, ""regressor__shrinking"": false, ""regressor__epsilon"": 0.1, ""regressor__coef0"": 2.0, ""regressor__C"": 0.5}",5,59995,0.03,Polly,sbs,1,T1,1,True
+CART,0.30657256690498746,"{""max_features"": ""log2"", ""min_samples_leaf"": 1, ""splitter"": ""best""}",5,59995,0.01,Polly,sbs,1,T1,1,True
+kNN,0.30456463421000207,"{""n_neighbors"": 3, ""p"": 1, ""weights"": ""distance""}",5,59995,0.04,Polly,sbs,1,T1,1,True
+KRR,0.3084058413765934,"{""regressor__kernel"": ""rbf"", ""regressor__gamma"": 0.01, ""regressor__alpha"": 0.0001}",5,59995,0.03,Polly,sbs,1,T1,1,True
+MR,0.3033738689640009,"{""lasso__regressor__alpha"": 0.1}",5,59995,0.54,Polly,sbs,1,T1,1,True
+RF,0.30479627433507767,"{""max_features"": ""sqrt"", ""min_samples_leaf"": 1, ""n_estimators"": 15}",5,59995,0.03,Polly,sbs,1,T1,1,True
+SVR,0.30602446827529123,"{""regressor__tol"": 0.3, ""regressor__shrinking"": false, ""regressor__epsilon"": 0.1, ""regressor__coef0"": 2.0, ""regressor__C"": 0.5}",5,59995,0.03,Polly,sbs,1,T1,1,True
 CART,0.2786557196020317,"{""max_features"": 1.0, ""min_samples_leaf"": 2, ""splitter"": ""random""}",33,59967,0.01,Polly,sbs,1,T2,1,True
-kNN,0.2803938359850342,"{""n_neighbors"": 10, ""p"": 1, ""weights"": ""distance""}",33,59967,0.15,Polly,sbs,1,T2,1,True
-KRR,0.2691972006851736,"{""regressor__kernel"": ""rbf"", ""regressor__gamma"": 0.2, ""regressor__alpha"": 0.01}",33,59967,0.06,Polly,sbs,1,T2,1,True
-MR,0.2968693662956191,"{""lasso__regressor__alpha"": 0.1}",33,59967,0.71,Polly,sbs,1,T2,1,True
-RF,0.2906652037622047,"{""max_features"": ""sqrt"", ""min_samples_leaf"": 2, ""n_estimators"": 15}",33,59967,0.04,Polly,sbs,1,T2,1,True
-SVR,0.30128044703341583,"{""regressor__tol"": 0.3, ""regressor__shrinking"": false, ""regressor__epsilon"": 0.1, ""regressor__coef0"": 2.0, ""regressor__C"": 0.5}",33,59967,0.04,Polly,sbs,1,T2,1,True
+kNN,0.2803938359850342,"{""n_neighbors"": 10, ""p"": 1, ""weights"": ""distance""}",33,59967,0.14,Polly,sbs,1,T2,1,True
+KRR,0.2691972006851736,"{""regressor__kernel"": ""rbf"", ""regressor__gamma"": 0.2, ""regressor__alpha"": 0.01}",33,59967,0.05,Polly,sbs,1,T2,1,True
+MR,0.2968693662956191,"{""lasso__regressor__alpha"": 0.1}",33,59967,0.65,Polly,sbs,1,T2,1,True
+RF,0.29083746734860066,"{""max_features"": ""sqrt"", ""min_samples_leaf"": 2, ""n_estimators"": 15}",33,59967,0.04,Polly,sbs,1,T2,1,True
+SVR,0.30128044703341583,"{""regressor__tol"": 0.3, ""regressor__shrinking"": false, ""regressor__epsilon"": 0.1, ""regressor__coef0"": 2.0, ""regressor__C"": 0.5}",33,59967,0.03,Polly,sbs,1,T2,1,True
 CART,0.048163870516339004,"{""max_features"": 1.0, ""min_samples_leaf"": 1, ""splitter"": ""random""}",168,59832,0.01,Polly,sbs,1,T3,1,True
-kNN,0.20912683655062597,"{""n_neighbors"": 8, ""p"": 1, ""weights"": ""distance""}",168,59832,0.59,Polly,sbs,1,T3,1,True
-KRR,0.1511892002931158,"{""regressor__kernel"": ""rbf"", ""regressor__gamma"": 0.1, ""regressor__alpha"": 0.0001}",168,59832,0.2,Polly,sbs,1,T3,1,True
-MR,0.1447815107165279,"{""lasso__regressor__alpha"": 0.01}",168,59832,0.79,Polly,sbs,1,T3,1,True
-RF,0.08246918405321052,"{""max_features"": 1.0, ""min_samples_leaf"": 2, ""n_estimators"": 20}",168,59832,0.08,Polly,sbs,1,T3,1,True
-SVR,0.17063243409612708,"{""regressor__tol"": 0.05, ""regressor__shrinking"": true, ""regressor__epsilon"": 0.1, ""regressor__coef0"": 1.0, ""regressor__C"": 5.0}",168,59832,0.61,Polly,sbs,1,T3,1,True
+kNN,0.20912683655062597,"{""n_neighbors"": 8, ""p"": 1, ""weights"": ""distance""}",168,59832,0.54,Polly,sbs,1,T3,1,True
+KRR,0.1511892002931158,"{""regressor__kernel"": ""rbf"", ""regressor__gamma"": 0.1, ""regressor__alpha"": 0.0001}",168,59832,0.19,Polly,sbs,1,T3,1,True
+MR,0.14478151071652792,"{""lasso__regressor__alpha"": 0.01}",168,59832,0.72,Polly,sbs,1,T3,1,True
+RF,0.08209442236170673,"{""max_features"": 1.0, ""min_samples_leaf"": 2, ""n_estimators"": 20}",168,59832,0.07,Polly,sbs,1,T3,1,True
+SVR,0.17063243409612705,"{""regressor__tol"": 0.05, ""regressor__shrinking"": true, ""regressor__epsilon"": 0.1, ""regressor__coef0"": 1.0, ""regressor__C"": 5.0}",168,59832,0.4,Polly,sbs,1,T3,1,True

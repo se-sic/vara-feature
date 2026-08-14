@@ -1,5 +1,6 @@
 import glob
 import argparse
+import os
 import pandas as pd
 import numpy as np
 import json as json
@@ -9,15 +10,15 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from .GetData import getSample, getTrueData, split
 from .MlTechniques import ml_models, technique_cv, RAND
 from .Metrics import SCORER_FUNC
-from ..Sampling.Config import Systems, Workspace, TSize, Proportions, GridPaths, Cap_Default#, set_cap,
+from ..Sampling.Config import Systems, Workspace, TSize, Proportions, GridPaths, Results, set_cap
 
 Grid_dir_path = GridPaths.parent
 
 def tune_helper(technique, X_S, grid_params, estimator, Y_S, system):
-    #cap = set_cap(system)
+    cap = set_cap(system)
 
-    if technique in ("SVR", "kNN", "KRR") and len(X_S) > Cap_Default:
-        mult_idx = np.random.RandomState(0).choice(len(X_S), Cap_Default, replace=False)
+    if cap is not None and technique in ("SVR", "kNN", "KRR") and len(X_S) > cap:
+        mult_idx = np.random.RandomState(0).choice(len(X_S), cap, replace=False)
         X_S, Y_S = X_S[mult_idx], Y_S[mult_idx]
     if technique == "kNN":
         lengthSample = len(X_S)
@@ -51,14 +52,16 @@ def grid_tune(system):
         X_S, Y_S, X_E, Y_E = split(sample_data, true_data)
         for technique, (estimator, grid_params) in ml_models().items():
             out[f"{system}/{technique}/rq1/T{t}"] = tune_helper(technique, X_S, grid_params, estimator, Y_S, system)
-            print(out[f"{system}/{technique}/rq1/T{t}"], flush=True)
+            print(f"{system}/{technique}/rq1/T{t}", flush=True)
+            #print(out[f"{system}/{technique}/rq1/T{t}"], flush=True)
 
     for p in Proportions:
         sample_data = getSample("random", system, None, 0, 2, p)
         X_S, Y_S, X_E, Y_E = split(sample_data, true_data)
         for technique, (estimator, grid_params) in ml_models().items():
             out[f"{system}/{technique}/rq2/Prop{p}"] = tune_helper(technique, X_S, grid_params, estimator, Y_S, system)
-            print(out[f"{system}/{technique}/rq2/Prop{p}"], flush=True)
+            print(f"{system}/{technique}/rq2/Prop{p}", flush=True)
+            #print(out[f"{system}/{technique}/rq2/Prop{p}"], flush=True)
     
     Grid_dir_path.mkdir(parents=True, exist_ok=True)
     Grid_single = Grid_dir_path/f"{system}.json"
@@ -79,8 +82,7 @@ def merge_grids():
     if len(merged) != exp:
         print("A system may be missing or a grid may be incomplete.")
     else:
-        print(f"Merged {len(grid_singles)} systems")
-
+        print(f"Merged {len(grid_singles)} systems")      
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
