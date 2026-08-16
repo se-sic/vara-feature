@@ -23,7 +23,7 @@ Systems = ["7z",
            "x264"
 ]
 #---------- STRATEGIES ---------------------------------------
-PyStrat = {"random" : "random", "twise": "twise", "sbs": "solver", "dbs": "distance", "ddbs": "diversified-distance"}
+PyStrat = {"random" : "random", "twise": "twise", "sbs": "solver", "dbs": "distance", "ddbs": "diversified-distance", "rsbs": "random-solver"}
 #---------- REFERENCE SIZES (AS T) ---------------------------
 TSize = [1, 2, 3]
 #---------- REFERENCE SIZES (AS PROPOTIIONS) ----------------

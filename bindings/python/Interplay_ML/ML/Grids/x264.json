@@ -1,0 +1,248 @@
+{
+  "x264/CART/rq1/T1": {},
+  "x264/kNN/rq1/T1": {},
+  "x264/KRR/rq1/T1": {},
+  "x264/MR/rq1/T1": {},
+  "x264/RF/rq1/T1": {},
+  "x264/SVR/rq1/T1": {},
+  "x264/CART/rq1/T2": {
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "splitter": "random"
+  },
+  "x264/kNN/rq1/T2": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "distance"
+  },
+  "x264/KRR/rq1/T2": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.01,
+    "regressor__alpha": 0.0001
+  },
+  "x264/MR/rq1/T2": {
+    "lasso__regressor__alpha": 0.001
+  },
+  "x264/RF/rq1/T2": {
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "n_estimators": 10
+  },
+  "x264/SVR/rq1/T2": {
+    "regressor__tol": 0.3,
+    "regressor__shrinking": true,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 0.0,
+    "regressor__C": 5.0
+  },
+  "x264/CART/rq1/T3": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "best"
+  },
+  "x264/kNN/rq1/T3": {
+    "n_neighbors": 10,
+    "p": 1,
+    "weights": "distance"
+  },
+  "x264/KRR/rq1/T3": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.1,
+    "regressor__alpha": 0.0001
+  },
+  "x264/MR/rq1/T3": {
+    "lasso__regressor__alpha": 0.001
+  },
+  "x264/RF/rq1/T3": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 20
+  },
+  "x264/SVR/rq1/T3": {
+    "regressor__tol": 0.3,
+    "regressor__shrinking": true,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 0.0,
+    "regressor__C": 5.0
+  },
+  "x264/CART/rq2/Prop0.01": {
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "splitter": "random"
+  },
+  "x264/kNN/rq2/Prop0.01": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "distance"
+  },
+  "x264/KRR/rq2/Prop0.01": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.01,
+    "regressor__alpha": 0.0001
+  },
+  "x264/MR/rq2/Prop0.01": {
+    "lasso__regressor__alpha": 0.001
+  },
+  "x264/RF/rq2/Prop0.01": {
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "n_estimators": 10
+  },
+  "x264/SVR/rq2/Prop0.01": {
+    "regressor__tol": 0.3,
+    "regressor__shrinking": true,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 0.0,
+    "regressor__C": 5.0
+  },
+  "x264/CART/rq2/Prop0.02": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "best"
+  },
+  "x264/kNN/rq2/Prop0.02": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "distance"
+  },
+  "x264/KRR/rq2/Prop0.02": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.1,
+    "regressor__alpha": 0.0001
+  },
+  "x264/MR/rq2/Prop0.02": {
+    "lasso__regressor__alpha": 0.01
+  },
+  "x264/RF/rq2/Prop0.02": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 20
+  },
+  "x264/SVR/rq2/Prop0.02": {
+    "regressor__tol": 0.05,
+    "regressor__shrinking": true,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 5.0
+  },
+  "x264/CART/rq2/Prop0.05": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "random"
+  },
+  "x264/kNN/rq2/Prop0.05": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "distance"
+  },
+  "x264/KRR/rq2/Prop0.05": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.01,
+    "regressor__alpha": 0.0001
+  },
+  "x264/MR/rq2/Prop0.05": {
+    "lasso__regressor__alpha": 0.001
+  },
+  "x264/RF/rq2/Prop0.05": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 15
+  },
+  "x264/SVR/rq2/Prop0.05": {
+    "regressor__tol": 0.05,
+    "regressor__shrinking": true,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 5.0
+  },
+  "x264/CART/rq2/Prop0.1": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "best"
+  },
+  "x264/kNN/rq2/Prop0.1": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "distance"
+  },
+  "x264/KRR/rq2/Prop0.1": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.05,
+    "regressor__alpha": 0.0001
+  },
+  "x264/MR/rq2/Prop0.1": {
+    "lasso__regressor__alpha": 0.001
+  },
+  "x264/RF/rq2/Prop0.1": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 15
+  },
+  "x264/SVR/rq2/Prop0.1": {
+    "regressor__tol": 0.05,
+    "regressor__shrinking": true,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 5.0
+  },
+  "x264/CART/rq2/Prop0.15": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "best"
+  },
+  "x264/kNN/rq2/Prop0.15": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "distance"
+  },
+  "x264/KRR/rq2/Prop0.15": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.05,
+    "regressor__alpha": 0.0001
+  },
+  "x264/MR/rq2/Prop0.15": {
+    "lasso__regressor__alpha": 0.001
+  },
+  "x264/RF/rq2/Prop0.15": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 20
+  },
+  "x264/SVR/rq2/Prop0.15": {
+    "regressor__tol": 0.05,
+    "regressor__shrinking": true,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 5.0
+  },
+  "x264/CART/rq2/Prop0.2": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "random"
+  },
+  "x264/kNN/rq2/Prop0.2": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "distance"
+  },
+  "x264/KRR/rq2/Prop0.2": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.05,
+    "regressor__alpha": 0.0001
+  },
+  "x264/MR/rq2/Prop0.2": {
+    "lasso__regressor__alpha": 0.001
+  },
+  "x264/RF/rq2/Prop0.2": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 15
+  },
+  "x264/SVR/rq2/Prop0.2": {
+    "regressor__tol": 0.05,
+    "regressor__shrinking": true,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 5.0
+  }
+}

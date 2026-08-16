@@ -1,0 +1,272 @@
+{
+  "Dune/CART/rq1/T1": {
+    "max_features": 1.0,
+    "min_samples_leaf": 2,
+    "splitter": "best"
+  },
+  "Dune/kNN/rq1/T1": {
+    "n_neighbors": 6,
+    "p": 1,
+    "weights": "distance"
+  },
+  "Dune/KRR/rq1/T1": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.1,
+    "regressor__alpha": 0.0001
+  },
+  "Dune/MR/rq1/T1": {
+    "lasso__regressor__alpha": 1.0
+  },
+  "Dune/RF/rq1/T1": {
+    "max_features": "log2",
+    "min_samples_leaf": 1,
+    "n_estimators": 10
+  },
+  "Dune/SVR/rq1/T1": {
+    "regressor__tol": 0.3,
+    "regressor__shrinking": false,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 2.0,
+    "regressor__C": 0.5
+  },
+  "Dune/CART/rq1/T2": {
+    "max_features": 1.0,
+    "min_samples_leaf": 2,
+    "splitter": "best"
+  },
+  "Dune/kNN/rq1/T2": {
+    "n_neighbors": 10,
+    "p": 1,
+    "weights": "distance"
+  },
+  "Dune/KRR/rq1/T2": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.1,
+    "regressor__alpha": 0.01
+  },
+  "Dune/MR/rq1/T2": {
+    "lasso__regressor__alpha": 0.001
+  },
+  "Dune/RF/rq1/T2": {
+    "max_features": "log2",
+    "min_samples_leaf": 1,
+    "n_estimators": 20
+  },
+  "Dune/SVR/rq1/T2": {
+    "regressor__tol": 0.1,
+    "regressor__shrinking": false,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 2.0
+  },
+  "Dune/CART/rq1/T3": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "best"
+  },
+  "Dune/kNN/rq1/T3": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "distance"
+  },
+  "Dune/KRR/rq1/T3": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.2,
+    "regressor__alpha": 0.1
+  },
+  "Dune/MR/rq1/T3": {
+    "lasso__regressor__alpha": 0.01
+  },
+  "Dune/RF/rq1/T3": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 10
+  },
+  "Dune/SVR/rq1/T3": {
+    "regressor__tol": 0.1,
+    "regressor__shrinking": false,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 2.0
+  },
+  "Dune/CART/rq2/Prop0.01": {
+    "max_features": "log2",
+    "min_samples_leaf": 2,
+    "splitter": "best"
+  },
+  "Dune/kNN/rq2/Prop0.01": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "uniform"
+  },
+  "Dune/KRR/rq2/Prop0.01": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.01,
+    "regressor__alpha": 0.1
+  },
+  "Dune/MR/rq2/Prop0.01": {
+    "lasso__regressor__alpha": 0.1
+  },
+  "Dune/RF/rq2/Prop0.01": {
+    "max_features": 1.0,
+    "min_samples_leaf": 2,
+    "n_estimators": 15
+  },
+  "Dune/SVR/rq2/Prop0.01": {
+    "regressor__tol": 0.1,
+    "regressor__shrinking": false,
+    "regressor__epsilon": 0.3,
+    "regressor__coef0": 1.0,
+    "regressor__C": 0.5
+  },
+  "Dune/CART/rq2/Prop0.02": {
+    "max_features": "log2",
+    "min_samples_leaf": 2,
+    "splitter": "random"
+  },
+  "Dune/kNN/rq2/Prop0.02": {
+    "n_neighbors": 12,
+    "p": 1,
+    "weights": "distance"
+  },
+  "Dune/KRR/rq2/Prop0.02": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.05,
+    "regressor__alpha": 0.1
+  },
+  "Dune/MR/rq2/Prop0.02": {
+    "lasso__regressor__alpha": 0.1
+  },
+  "Dune/RF/rq2/Prop0.02": {
+    "max_features": 1.0,
+    "min_samples_leaf": 2,
+    "n_estimators": 10
+  },
+  "Dune/SVR/rq2/Prop0.02": {
+    "regressor__tol": 0.1,
+    "regressor__shrinking": false,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 2.0
+  },
+  "Dune/CART/rq2/Prop0.05": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "best"
+  },
+  "Dune/kNN/rq2/Prop0.05": {
+    "n_neighbors": 15,
+    "p": 1,
+    "weights": "distance"
+  },
+  "Dune/KRR/rq2/Prop0.05": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.05,
+    "regressor__alpha": 0.1
+  },
+  "Dune/MR/rq2/Prop0.05": {
+    "lasso__regressor__alpha": 0.01
+  },
+  "Dune/RF/rq2/Prop0.05": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 20
+  },
+  "Dune/SVR/rq2/Prop0.05": {
+    "regressor__tol": 0.1,
+    "regressor__shrinking": false,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 2.0
+  },
+  "Dune/CART/rq2/Prop0.1": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "best"
+  },
+  "Dune/kNN/rq2/Prop0.1": {
+    "n_neighbors": 8,
+    "p": 1,
+    "weights": "distance"
+  },
+  "Dune/KRR/rq2/Prop0.1": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.2,
+    "regressor__alpha": 0.1
+  },
+  "Dune/MR/rq2/Prop0.1": {
+    "lasso__regressor__alpha": 0.01
+  },
+  "Dune/RF/rq2/Prop0.1": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 20
+  },
+  "Dune/SVR/rq2/Prop0.1": {
+    "regressor__tol": 0.05,
+    "regressor__shrinking": true,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 5.0
+  },
+  "Dune/CART/rq2/Prop0.15": {
+    "max_features": 1.0,
+    "min_samples_leaf": 2,
+    "splitter": "random"
+  },
+  "Dune/kNN/rq2/Prop0.15": {
+    "n_neighbors": 15,
+    "p": 1,
+    "weights": "distance"
+  },
+  "Dune/KRR/rq2/Prop0.15": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.2,
+    "regressor__alpha": 0.1
+  },
+  "Dune/MR/rq2/Prop0.15": {
+    "lasso__regressor__alpha": 0.01
+  },
+  "Dune/RF/rq2/Prop0.15": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 10
+  },
+  "Dune/SVR/rq2/Prop0.15": {
+    "regressor__tol": 0.1,
+    "regressor__shrinking": false,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 1.0
+  },
+  "Dune/CART/rq2/Prop0.2": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "splitter": "best"
+  },
+  "Dune/kNN/rq2/Prop0.2": {
+    "n_neighbors": 15,
+    "p": 1,
+    "weights": "distance"
+  },
+  "Dune/KRR/rq2/Prop0.2": {
+    "regressor__kernel": "rbf",
+    "regressor__gamma": 0.2,
+    "regressor__alpha": 0.1
+  },
+  "Dune/MR/rq2/Prop0.2": {
+    "lasso__regressor__alpha": 0.01
+  },
+  "Dune/RF/rq2/Prop0.2": {
+    "max_features": 1.0,
+    "min_samples_leaf": 1,
+    "n_estimators": 20
+  },
+  "Dune/SVR/rq2/Prop0.2": {
+    "regressor__tol": 0.1,
+    "regressor__shrinking": false,
+    "regressor__epsilon": 0.1,
+    "regressor__coef0": 1.0,
+    "regressor__C": 2.0
+  }
+}

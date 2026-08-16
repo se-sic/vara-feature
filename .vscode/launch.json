@@ -21,7 +21,7 @@
       "type": "debugpy",
       "request": "launch",
       "module": "bindings.python.Interplay_ML.ML.Learn",
-      "python": "/scratch/mani00001/vara-feature-1/.venv/bin/python",
+      "python": "/scratch/mani00001/vara-feature-1/bindings/python/Interplay_ML/Stats/Aggregate.py",
       //"args": ["run", "1", "sbs", "VP9", "--t", "3"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
