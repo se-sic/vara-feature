@@ -24,6 +24,8 @@ Systems = ["7z",
 ]
 #---------- STRATEGIES ---------------------------------------
 PyStrat = {"random" : "random", "twise": "twise", "sbs": "solver", "dbs": "distance", "ddbs": "diversified-distance", "rsbs": "random-solver"}
+#---------- TECHNIQUES ---------------------------------------
+Techniques = ["CART", "kNN", "KRR", "MR", "RF", "SVR"]
 #---------- REFERENCE SIZES (AS T) ---------------------------
 TSize = [1, 2, 3]
 #---------- REFERENCE SIZES (AS PROPOTIIONS) ----------------

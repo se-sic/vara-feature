@@ -72,7 +72,7 @@ def run_metric(metric, out):
         
         fried = friedman(df)
 
-        mean_ranking(df).to_csv(OUT_PATH / f"rq1_ranks_{metric}_{size_key}.csv")
+        mean_ranking(df).to_csv(OUT_PATH / f"rq1_ranks_{metric}_{size_key}.csv", index=False)
 
         if fried["p_imandav"] < 0.05:
             wilcoxon_holm_bh(df).to_csv(OUT_PATH / f"rq1_posthoc_{metric}_{size_key}.csv", index=False)
