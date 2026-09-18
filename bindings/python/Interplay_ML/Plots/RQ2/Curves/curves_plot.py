@@ -3,6 +3,7 @@
 from pathlib import Path
 from ....Sampling.Config import PyStrat, Techniques, Systems
 from matplotlib.ticker import ScalarFormatter
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plot 
 import matplotlib.patches as patches
 import pandas as pd
@@ -27,6 +28,18 @@ SYSTEM_COLORS = {
     "VP9":          "#CCB974",
     "x264":         "#64B5CD",
 }
+SYSTEM_MARKERS = {
+    "7z":           "o",
+    "BerkeleyDBC":  "s",
+    "Dune":         "D",
+    "Hippacc":      "^",
+    "Irzip":        "v",
+    "JavaGC":       "P",
+    "LLVM":         "X",
+    "Polly":        "*",
+    "VP9":          "p",
+    "x264":         "h",
+}
 
 def getRQ2Res(metric):
     df = pd.read_csv(INPUT_PATH / f"rq2_{metric}.csv")
@@ -41,16 +54,18 @@ def check_skipped(system, tech, prop):
 def plot_curves(metric, out, use_log):
     plot.rcParams.update({
         "font.family": "serif",
-        "font.size": 10,
-        "axes.labelsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
+        "font.size": 14,
+        "axes.labelsize": 14,
+        "axes.titlesize": 14,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 13,
+        "legend.fontsize": 13,
         "pdf.fonttype": 42,
     })
 
     df = getRQ2Res(metric)
 
-    fig, axes = plot.subplots(2, 3, figsize=(10, 8), sharex=True)
+    fig, axes = plot.subplots(2, 3, figsize=(10, 8), sharex=True, sharey= True)
     axes = axes.flatten()
 
     for ax, tech in zip(axes, Techniques):
@@ -64,7 +79,7 @@ def plot_curves(metric, out, use_log):
             if len(df_sys) == 0:
                 continue
 
-            ax.plot(df_sys["proportion"], df_sys[metric], marker="o", markersize=3, linewidth=1, color=SYSTEM_COLORS[sys], label=sys, alpha=0.5)
+            ax.plot(df_sys["proportion"], df_sys[metric], marker=SYSTEM_MARKERS[sys], markersize=4, linewidth=1, color=SYSTEM_COLORS[sys], label=sys, alpha=0.75)
             ax.set_title(tech, fontsize=10, weight="bold")
             ax.grid(axis="y", linestyle=":", linewidth=0.5, alpha=0.5)
             ax.spines["top"].set_visible(True)
@@ -75,20 +90,24 @@ def plot_curves(metric, out, use_log):
                 ax.yaxis.set_major_formatter(ScalarFormatter())
     
     for ax in axes[3:]:
-        ax.set_xlabel("Proportion of valid conifguration space")
+        ax.set_xlabel("")
+    fig.supxlabel("Proportion of the valid configuration space", fontsize=12)
     for i in (0, 3):
-        axes[i].set_ylabel(metric.upper())
+        axes[i].set_ylabel(f"{metric.upper()} (log scale)" if use_log else f"{metric.upper()}")
     
-    handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="center left", bbox_to_anchor=(1, 0.5), frameon=False, fontsize=10, title="System")
-    fig.tight_layout(rect=(0, 0, 1, 1))
+    handles, labels = [], []
+    for sys in Systems:
+        handles.append(Line2D([], [], color=SYSTEM_COLORS[sys], marker=SYSTEM_MARKERS[sys], markersize=6, linewidth=1.2, label=sys))
+        labels.append(sys)
+    fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 1.06), frameon=False, ncol=5, title="System")
+    fig.tight_layout(rect=(0, 0, 1, 0.9))
     fig.savefig(out, format="pdf", bbox_inches="tight")
     plot.close(fig)
 
 
 def run():
     PLOT_PATH.mkdir(parents=True, exist_ok=True)
-    plot_curves("mre", PLOT_PATH / "curves_mre.pdf", use_log=False)
+    plot_curves("mre", PLOT_PATH / "curves_mre.pdf", use_log=True)
     plot_curves("var", PLOT_PATH / "curves_var.pdf", use_log=True)
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from ....Sampling.Config import PyStrat, Techniques
-from matplotlib.ticker import ScalarFormatter
+from matplotlib.ticker import ScalarFormatter, LogFormatterSciNotation
 import matplotlib.pyplot as plot 
 import matplotlib.patches as patches
 import pandas as pd
@@ -47,16 +47,18 @@ def getComboData(metric, strats):
 def plot_line_evolution(metric, strats, out, use_log):
     plot.rcParams.update({
         "font.family": "serif",
-        "font.size": 10,
-        "axes.labelsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
+        "font.size": 14,
+        "axes.labelsize": 14,
+        "axes.titlesize": 14,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 13,
+        "legend.fontsize": 13,
         "pdf.fonttype": 42,
     })
 
     data = getComboData(metric, strats)
 
-    fig, axes = plot.subplots(figsize=(8, 3))
+    fig, axes = plot.subplots(figsize=(10, 5))
     x = list(range(len(SAMPLE_SIZES)))
 
     for tech in Techniques:
@@ -67,11 +69,11 @@ def plot_line_evolution(metric, strats, out, use_log):
         sign = TECHNIQUE_SIGNS[tech]
 
         #axes.fill_between(x, q25, q75, color=color, alpha=0.15, zorder=1)
-        axes.plot(x, medians, marker=sign, color=color, label=tech, linewidth=2, markersize=5, zorder=3)
+        axes.plot(x, medians, marker=sign, color=color, label=tech, linewidth=2, markersize=7, zorder=3)
 
     if use_log:
         axes.set_yscale("log")
-        axes.yaxis.set_major_formatter(ScalarFormatter())
+        axes.yaxis.set_major_formatter(LogFormatterSciNotation())
     
     axes.set_xticks(x)
     axes.set_xticklabels([f"$t= {i+1}$" for i in x])
@@ -81,7 +83,7 @@ def plot_line_evolution(metric, strats, out, use_log):
     axes.grid(axis="y", linestyle=":", linewidth=0.5, alpha=0.5)
     axes.spines["top"].set_visible(False)
     axes.spines["right"].set_visible(False)
-    axes.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=False, ncol=2, fontsize=10)
+    axes.legend(loc="upper center", bbox_to_anchor=(0.5, 1.12), frameon=False, ncol=len(Techniques))
 
     fig.tight_layout()
     fig.savefig(out, format="pdf", bbox_inches="tight")

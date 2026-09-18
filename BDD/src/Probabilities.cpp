@@ -11,8 +11,12 @@
 using vara::Result;
 using bdd::sample::BDDFactory;
 
+/**
+    * @brief This file computes the probability of picking each feature in the BDD whilst traversing from thhe root to each leaf respectively
+    * getPr: Uses Bryant's algorithm to calculate the probabilities used for uniform, random sampling
+*/
+
 namespace bdd::sample {
-    // Using Bryant's algorithm to calculate the probabilities used for uniform, ranodm samplin
     Result<vara::solver::SolverErrorCode>getPr(
         const oxidd::bdd_manager &Manager,
         oxidd::bdd_function &Node,

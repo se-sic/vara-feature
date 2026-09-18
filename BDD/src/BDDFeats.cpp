@@ -4,12 +4,17 @@
 #include <optional>
 #include <oxidd/bdd.hpp>
 
+/**
+    * @brief This file converst single BDD features into BDD representation and adds their constraints to the BDD
+    * addBinaryConstraints: Adds binary features and their constraints to the BDD according to Z3 rules: 
+        * Add child -> parent
+        * If not in XOR and not optional, add parent -> child as well
+    * featureToBdd: Converts a feature to BDD representation and adds child-parent relationships
+*/
+
 namespace bdd::sample {
     
     namespace {
-        // Add Binary feature + its constraints acccording to Z3 rules: 
-        // Add child -> parent
-        // If not in XOR and not optional, add parent -> child as well
         Result<SolverErrorCode> addBinaryConstraints(
             oxidd::var_no_t ParentId,
             oxidd::var_no_t Id,
@@ -28,14 +33,10 @@ namespace bdd::sample {
                 }
                 return vara::Ok<void>();
             }
-
-            // Get BDD nodes for parent
             oxidd::bdd_function Parent = Manager.var(ParentId);
 
-            // Add constraint: child → parent
             oxidd::bdd_function ChildToParent = Child.imp(Parent);
             FinalBdd &= ChildToParent;
-            // Add constraint: parent → child if not in XOR and not optional
             if (!IsInXOR && !IsOpt) {
                 oxidd::bdd_function ParentToChild = Parent.imp(Child);
                 FinalBdd &= ParentToChild;
@@ -45,14 +46,13 @@ namespace bdd::sample {
         }
     } // namespace
 
-    // Convert a feature to BDD representation and add child-parent relationships
     Result<SolverErrorCode>featureToBdd(
         oxidd::bdd_manager &Mgr,
         const bool IsInXOR,
         const Feature &Feature,
         oxidd::bdd_function &FinalBdd
     ){
-        // Extract feature properties
+        //Extract feature properties
         bool IsOpt = Feature.isOptional();
         const class Feature *Parent = Feature.getParentFeature();
         const std::string FeatureName = Feature.getName().str();

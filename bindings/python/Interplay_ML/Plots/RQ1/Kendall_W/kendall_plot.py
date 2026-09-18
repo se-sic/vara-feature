@@ -13,7 +13,7 @@ INPUT_PATH = Path("bindings/python/Interplay_ML/Stats/Out/rq1_stats_res.csv")
 PLOT_PATH = Path("bindings/python/Interplay_ML/Plots/RQ1")
 
 SAMPLE_SIZES = ["T1", "T2", "T3"]
-COHEN_BENCHMARK = [(0.10, "small"), (0.30, "moderate"), (0.5, "strong")]
+#KENDALL_W_THRESHOLD = [(0.10, "very weak"), (0.30, "weak"), (0.5, "moderate"), (0.7, "strong"), (0.9, "unusually strong")]
 
 def getRQ1Res():
     df = pd.read_csv(INPUT_PATH)
@@ -23,36 +23,37 @@ def getRQ1Res():
 
 def plot_kendall(df, Out):
     plot.rcParams.update({
-        "font.family": "serif", # type: ignore
-        "font.size": 10,
-        "axes.labelsize": 10,
-        "legend.fontsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
-        "pdf.fonttype": 42.
+        "font.family": "serif",
+        "font.size": 14,
+        "axes.labelsize": 14,
+        "axes.titlesize": 14,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 13,
+        "legend.fontsize": 13,
+        "pdf.fonttype": 42,
     })
-    fig, axes = plot.subplots()
+    fig, axes = plot.subplots(figsize=(10, 5))
 
     x = list(range(len(SAMPLE_SIZES)))
 
-    for metric, marker, color, label, y_off in [("mre", "o", "#B23A48", r"$\overline{MRE}$", 18), ("var", "s", "#3A5A80", r"$Var$", 10)]:
+    for metric, marker, color, label, y_off in [("mre", "o", "#B23A48", r"$\overline{MRE}$", 12), ("var", "s", "#3A5A80", r"$Var$", 10)]:
         y = (df[df["metric"] == metric].set_index("size").reindex(SAMPLE_SIZES)["w_kendall"].to_numpy())
-        axes.plot(x, y, marker=marker, color=color, label=label, linewidth=2, markersize=6, zorder=3)
+        axes.plot(x, y, marker=marker, color=color, label=label, linewidth=2, markersize=8, zorder=3)
         for x_i, y_i in zip(x, y):
-            axes.annotate(f"{y_i:.2f}", (x_i, y_i), textcoords="offset points", xytext=(0,y_off), fontsize=10, color=color, zorder=4)
+            axes.annotate(f"{y_i:.2f}", (x_i, y_i), textcoords="offset points", xytext=(0,y_off), fontsize=11, color=color, zorder=4)
     
-    y_axis = axes.get_yaxis_transform()
-    for bench, name in COHEN_BENCHMARK:
-        axes.axhline(bench, color="gray", linewidth=0.5, alpha=0.6, zorder=1, linestyle="--")
-        axes.text(0.01, bench - 0.02, name, fontsize=10, color="gray", ha="left", alpha=0.9, transform=y_axis)
+    #y_axis = axes.get_yaxis_transform()
+    #for bench, name in KENDALL_W_THRESHOLD:
+        #axes.axhline(bench, color="gray", linewidth=0.5, alpha=0.6, zorder=1, linestyle="--")
+        #axes.text(0.01, bench - 0.02, name, fontsize=10, color="gray", ha="left", alpha=0.9, transform=y_axis)
 
     axes.set_xticks(x)
     axes.set_xticklabels([f"$t= {i+1}$" for i in x])
     axes.set_xlabel("Reference sample size")
     axes.set_ylabel("Kendall's $W$")
-    axes.set_ylim(0, 1)
+    axes.set_ylim(0, 0.7)
     axes.set_xlim(-0.3, len(SAMPLE_SIZES)-0.7)
-    axes.legend(loc="center right", frameon=False)
+    axes.legend(loc="upper center", bbox_to_anchor=(0.5, 1.12), ncol=2, frameon=False)
     axes.grid(axis="y", linestyle=":", linewidth=0.4)
     axes.spines["top"].set_visible(False)
     axes.spines["right"].set_visible(False)

@@ -12,15 +12,21 @@ PLOT_PATH = Path("bindings/python/Interplay_ML/Plots/RQ1")
 
 SAMPLE_SIZES = ["T1", "T2", "T3"]
 COLORMAP_GRID = LinearSegmentedColormap.from_list(
-    "blue_red_div", ["#3A5A80", "#ffffff", "#B23A48"], N=256
+    "blue_red_div", ["#ffffff", "#1a5c97"], N=256
 )
 def getRQ1Ranks(metric, t):
     input = INPUT_PATH / f"rq1_ranks_{metric}_{t}.csv"
-    df = pd.read_csv(input, index_col=0)
-    df.index.name = "comb"
-    df = df.reset_index()
-    df[["strategy", "technique"]] = df["comb"].str.split("_", n=1, expand=True)
-    return df.pivot(index="strategy", columns="technique", values="mean_ranks")
+    ranks_df = pd.read_csv(input)
+    wide_df = pd.read_csv(INPUT_PATH / f"rq1_wide_{metric}_{t}.csv", index_col=0)
+
+    ranks_df["comb"] = wide_df.rank(axis=1).mean(axis=0).sort_values().index.tolist()
+    ranks_df[["strategy", "technique"]] = ranks_df["comb"].str.split("_", n=1, expand=True)
+    return ranks_df.pivot(index="strategy", columns="technique", values="mean_ranks")
+    #df = pd.read_csv(input, index_col=0)
+    #df.index.name = "comb"
+    #df = df.reset_index()
+    #df[["strategy", "technique"]] = df["comb"].str.split("_", n=1, expand=True)
+    #return df.pivot(index="strategy", columns="technique", values="mean_ranks")
 
 def plot_ranks(metric, strats, out):
     plot.rcParams.update({
@@ -57,7 +63,7 @@ def plot_ranks(metric, strats, out):
                           ha="center",
                           va="center",
                           fontsize=10,
-                          color=text_color)
+                          color="black")
                 
     axes[0].set_ylabel("Sampling Strategy")
     for a in axes:

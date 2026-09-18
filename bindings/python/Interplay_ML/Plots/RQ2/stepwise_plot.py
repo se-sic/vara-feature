@@ -10,7 +10,7 @@ INPUT_PATH = Path("bindings/python/Interplay_ML/Stats/Out")
 PLOT_PATH = Path("bindings/python/Interplay_ML/Plots/RQ2")
 
 COLORMAP_GRID = LinearSegmentedColormap.from_list(
-    "blue_red_div", ["#3A5A80", "#ffffff", "#B23A48"], N=256
+    "blue_red_div", ["#ffffff", "#6D071A"], N=256
 )
 
 STEPS = [
@@ -30,10 +30,12 @@ def getRQ2Res():
 def plot_steps(out):
     plot.rcParams.update({
         "font.family": "serif",
-        "font.size": 10,
-        "axes.labelsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
+        "font.size": 14,
+        "axes.labelsize": 14,
+        "axes.titlesize": 14,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 13,
+        "legend.fontsize": 13,
         "pdf.fonttype": 42,
     })
 
@@ -50,17 +52,16 @@ def plot_steps(out):
     axes.set_yticklabels(Techniques)
     axes.set_xlabel("Proportion transition")
     axes.set_ylabel("ML technique")
-    axes.set_title("Number of systems with BH-significant MRE reduction per step", fontsize=10, weight="bold", pad=10)
 
     for i in range(len(Techniques)):
         for j in range(len(STEP_LABELS)):
             val = int(mx.values[i, j])
             diff = float(diff_mx.values[i, j])
-            text_color = "white" if val > 5 else "black"
-            axes.text(j, i, f"{val}\n Δ={diff:.3f}", ha="center", va="center", fontsize=10, color=text_color, weight="bold", linespacing=1)
+            text_color = "white" if val > 4 else "black"
+            axes.text(j, i, f"{val}\n Δ={diff:.3f}", ha="center", va="center", fontsize=11, color=text_color, weight="bold", linespacing=1)
     
     col_bar = fig.colorbar(im, ax=axes, shrink=1, pad=0.05)
-    col_bar.set_label("Systems significantly improving", fontsize=10)
+    col_bar.set_label("Systems significantly improving", fontsize=11)
     col_bar.set_ticks([0, 2, 4, 6, 8, 10])
 
     fig.tight_layout()

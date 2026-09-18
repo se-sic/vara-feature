@@ -9,23 +9,27 @@
 #include <string>
 #include <vector>
 
+/**
+    * @brief This file converts a feature model into a BDD and provides functions to sample from it
+    * modelToBdd: Converts a feature model into a BDD + processes feaature constraints and alternative groups + calculates probabilities
+    * addAlternativeGroupConstraints: Adds constraints for alternative groups in the feature model
+    * fillManager: Adds all variables corresponding to features in the feature model to the BDD manager
+*/
+
 namespace bdd::sample    
 { 
-    // Conversion of the given feature model to a BDD representation
     oxidd::bdd_function BDDFactory::modelToBdd(
-        const vara::feature::FeatureModel &Model
+        const vara::feature::FeatureModel &Model 
     ) {
        if(Model.size()== 0) {
         std::cerr << "Feature model is empty\n";
        }
-
-       // Add all features to manager including their names
        fillManager(Model);
        std::cerr << "Added all features to BDD manager\n";
 
        // Store names of features in XOR relationships
        std::vector<std::string> V;
-
+ 
        // Process XOR relationships from the feature model
        if(!Model.relationships().empty()) {
         for(const auto &S: Model.relationships()){
@@ -39,7 +43,7 @@ namespace bdd::sample
        }
        std::cerr<< "Processed XOR relationships\n";
 
-       // Process each feature: add binary and root features to BDD and process their constraints
+       // Add binary and root features to BDD and process their constraints
        for(auto *F: Model.features()) { 
         auto R = featureToBdd(
             Manager,
@@ -68,28 +72,27 @@ namespace bdd::sample
         &SatMap,
         *this
        );
-
        if(!R){
             std::cerr << "Error calculating probabilities." << '\n';
         }
 
-       std::cerr << "Final BDD has " << FinalBdd.node_count() << " nodes.\n";
-       std::string_view DiagramName = "Sora";
-       std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
+       //------ Code for visualizing the BDD on the Oxidd Viz page ------
+       //std::string_view DiagramName = "Sora";
+       //std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
        /*auto Result = Manager.visualize(DiagramName, Funcs, 4000);
        if(!Result) {
             std::cerr << "Error visualizing BDD: " << Result.error().message() << '\n';
        } else {
             std::cerr << "BDD visualization successful.\n";
        }*/
-       Manager.export_dddmp("hippacc.dddmp", Funcs);
+       //Manager.export_dddmp("hippacc.dddmp", Funcs);
        return FinalBdd;
     }
 
-    // ----- Auxiliary functions -----
+    //------ Auxiliary functions ------
     void BDDFactory::addAlternativeGroupConstraints(
-    const vara::feature::FeatureModel &Model,
-    oxidd::bdd_function &FinalBdd
+        const vara::feature::FeatureModel &Model, 
+        oxidd::bdd_function &FinalBdd
     ) {
         // Track which parents we've already processed
         std::set<std::string> ProcessedParents;
@@ -190,7 +193,6 @@ namespace bdd::sample
         }
     }
 
-    // Add all features to manager including their names
     void BDDFactory::fillManager(
         const vara::feature::FeatureModel &Model
     ) { 
@@ -222,7 +224,7 @@ namespace bdd::sample
         if (Res) {
             auto VarRange = Res.value();
             for (auto VarNo : VarRange) {
-                Vars.push_back(Manager.var(VarNo));  // Store the variables
+                Vars.push_back(Manager.var(VarNo));
             }
         }
     }

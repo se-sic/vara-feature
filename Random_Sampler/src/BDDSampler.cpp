@@ -6,6 +6,12 @@
 #include <random>
 #include <utility>
 #include <vector>
+
+/**
+    * @brief This file uniformly samples a configuration from the given BDD using the probabilities calculated by getPr
+    * generateConfiguration: Generates a random configuration by traversing the BDD 
+*/
+
 namespace bdd::sample {
 
   std::vector<bool> Sample; // NOLINT

@@ -4,6 +4,7 @@ from pathlib import Path
 from ....Sampling.Config import PyStrat, Techniques
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plot 
+import matplotlib.cm as cm
 import pandas as pd
 import numpy as np
 
@@ -12,8 +13,15 @@ PLOT_PATH = Path("bindings/python/Interplay_ML/Plots/RQ1")
 
 SAMPLE_SIZES = ["T1", "T2", "T3"]
 COLORMAP_GRID = LinearSegmentedColormap.from_list(
-    "blue_red_div", ["#3A5A80", "#ffffff", "#B23A48"], N=256
+    "blue_red_div", ["#ffffff","#6D071A"], N=256 #3A5A80" in the middle
 )
+
+greys = cm.get_cmap("gray_r", 256)
+COLORMAP_DIAG = LinearSegmentedColormap.from_list(
+    "gray_reduced", greys(np.linspace(0.0, 0.75, 256)), N=256
+)
+
+BORDER_COLOR_SIG = "#FFB000"
 
 def getRQ1Wides(metric, t):
     df = pd.read_csv(INPUT_PATH / f"rq1_wide_{metric}_{t}.csv", index_col=0)
@@ -47,10 +55,12 @@ def count_sig_bh(tech_row, tech_col, strat, posthoc):
 def plot_kaltenecker(metric, t, strat, out):
     plot.rcParams.update({
         "font.family": "serif",
-        "font.size": 10,
-        "axes.labelsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
+        "font.size": 14,
+        "axes.labelsize": 14,
+        "axes.titlesize": 14,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 13,
+        "legend.fontsize": 16,
         "pdf.fonttype": 42,
     })
 
@@ -65,9 +75,8 @@ def plot_kaltenecker(metric, t, strat, out):
 
     threshold = 4 if len(strat) == 6 else 3
 
-    fig, axes = plot.subplots(len(Techniques), len(Techniques), figsize=(15,10))
+    fig, axes = plot.subplots(len(Techniques), len(Techniques), figsize=(14,10))
     fig.subplots_adjust(wspace=0.1, hspace=0.1, left=0.10, right=0.85, top=0.85, bottom=0.15)
-    fig.suptitle(f"{metric.upper()} - $t = {t[-1]}$", fontsize=10, weight="bold")
 
     diag_im = off_im = None
 
@@ -77,36 +86,42 @@ def plot_kaltenecker(metric, t, strat, out):
 
             if i==j:
                 mx = create_diagonals(wide_df, tech_row, strat)
-                diag_im = ax.imshow(mx, cmap="gray_r", vmin=diag_vmin, vmax=diag_vmax, aspect="auto")
+                diag_im = ax.imshow(mx, cmap=COLORMAP_DIAG, vmin=diag_vmin, vmax=diag_vmax, aspect="auto")
             else:
                 mx = create_offdiagonal(wide_df, tech_row, tech_col, strat)
                 off_im = ax.imshow(mx, cmap=COLORMAP_GRID, vmin=offdiag__vmin, vmax=offdiag_vmax, aspect="auto")
                 if count_sig_bh(tech_row, tech_col, strat, posthoc_df) >= threshold:
                     for spine in ax.spines.values():
                         spine.set_linewidth(4)
-                        spine.set_edgecolor("black")
+                        spine.set_edgecolor(BORDER_COLOR_SIG)
 
             if i==len(Techniques) - 1:
                 ax.set_xticks(range(len(strat)))
-                ax.set_xticklabels(strat,rotation=45, ha="right", fontsize=10)
+                ax.set_xticklabels(strat,rotation=45, ha="right", fontsize=15)
                 ax.xaxis.set_ticks_position("bottom")
                 ax.xaxis.set_label_position("bottom")
+            #if j==0:
+                #ax.set_yticks(range(len(strat)))
+                #ax.set_yticklabels(strat, fontsize=10)
+                #ax.yaxis.set_ticks_position("left")
             else:
                 ax.set_xticks([])
+                #ax.set_yticks([])
             
             ax.set_yticks([])
+            #ax.set_xticks([])
             
     for i, tech in enumerate(Techniques):
-        axes[i, 0].set_ylabel(tech, fontsize=11, rotation=0, ha="right", va="center", labelpad=15)
-        axes[0, i].set_title(tech, fontsize=11, pad=8)
+        axes[i, 0].set_ylabel(tech, fontsize=13, rotation=0, ha="right", va="center", labelpad=15)
+        axes[0, i].set_title(tech, fontsize=13, pad=8)
 
     diag_cax = fig.add_axes((0.9, 0.5, 0.015, 0.3))  
     diag_colbar = fig.colorbar(diag_im, cax=diag_cax) # type: ignore
-    diag_colbar.set_label(f"{metric.upper()} (diagonal)", fontsize=9)
+    diag_colbar.set_label(f"{metric.upper()} (diagonal)", fontsize=14)
 
     offdiag_cax = fig.add_axes((0.9, 0.15, 0.015, 0.3))
     offdiag_colbar = fig.colorbar(off_im, cax=offdiag_cax) # type: ignore
-    offdiag_colbar.set_label("row - column difference (off_diagonal)", fontsize=10)
+    offdiag_colbar.set_label("row - column difference (off-diagonal)", fontsize=14)
 
     fig.savefig(out, format="pdf", bbox_inches="tight")
     plot.close(fig)
