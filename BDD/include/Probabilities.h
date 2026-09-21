@@ -6,18 +6,30 @@
 #include "oxidd/util.hpp"
 #include "vara/Solver/Error.h"
 #include "vara/Utils/Result.h"
-#include <utility>
 
-using vara::Result;
-using vara::solver::SolverErrorCode;
+#include <map>
+#include <utility>
 
 namespace bdd::sample {
 
-    Result<vara::solver::SolverErrorCode>getPr(
+    /// \brief Computes per-node satisfiability counts and the branching probability for 
+    /// uniform random sampling
+    ///
+    /// At each internal node of the BDD, during the traversal from root to leaf, the stored
+    /// probability is used to decide whether to the treu or false branch, guaranteeing that
+    /// each satisfying assignment is equally likely.
+    ///
+    /// We uuse Bryant's algorithm: recursion over the BDD, memoizing the results in \p SatMap.
+    ///
+    /// \param Manager The BDD manager owning \p Node
+    /// \param Node The subtree root for which we compute the probability
+    /// \param SatMap Memoization table: For each non-terminal node, we map (SatCount, Probability)
+    ///
+    /// \return A vara error code: vara::Ok::void() if successful
+    vara::Result<vara::solver::SolverErrorCode>getPr(
         const oxidd::bdd_manager &Manager,
         oxidd::bdd_function &Node,
-        std::map<oxidd::bdd_function, std::pair<double, double>> *SatMap,
-        BDDFactory &Factory
+        std::map<oxidd::bdd_function, std::pair<double, double>> *SatMap
     );
     
 } // namespace bdd::sample

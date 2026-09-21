@@ -41,7 +41,6 @@ endif()
 add_executable(random_sampler
   src/main.cpp
   src/BDDSampler.cpp
-  src/Plotter.cpp
   src/EnumerateConfigs.cpp
   src/EnumerateInteractions.cpp
   src/InteractionCoverage.cpp
@@ -82,7 +81,6 @@ target_link_libraries(random_sampler PRIVATE
 
 target_sources(random_sampler PRIVATE
   ${CMAKE_SOURCE_DIR}/Random_Sampler/src/BDDSampler.cpp
-  ${CMAKE_SOURCE_DIR}/Random_Sampler/src/Plotter.cpp
 )
 
 set_target_properties(random_sampler PROPERTIES

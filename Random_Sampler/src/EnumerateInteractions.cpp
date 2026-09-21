@@ -1,17 +1,21 @@
 #include "EnumerateInteractions.h"
 #include "oxidd/bdd.hpp"
+
 #include <cstddef>
 #include <iostream>
 #include <vector>
 
 namespace bdd::sample {
 
-    oxidd::bdd_function Literal(const oxidd::bdd_manager &Manager, oxidd::var_no_t VarID, bool VarValue) { //NOLINT
-        oxidd::bdd_function Int = Manager.var(VarID);
-        return VarValue ? Int : ~Int;
-    }
+    // Currently unused due to performance reasons, see header doc fir further information
+    /*  
+        oxidd::bdd_function Literal(const oxidd::bdd_manager &Manager, oxidd::var_no_t VarID, bool VarValue) { //NOLINT
+            oxidd::bdd_function Int = Manager.var(VarID);
+            return VarValue ? Int : ~Int;
+        }
+    */
 
-    bool AreLiteralsSat(const std::vector<oxidd::var_no_t> &Variables, const std::vector<bool> &VarValues, const std::vector<std::vector<bool>> &ValidConfigs) { //NOLINT
+    bool AreLiteralsSat(const std::vector<oxidd::var_no_t> &Variables, const std::vector<bool> &VarValues, const std::vector<std::vector<bool>> &ValidConfigs) {  //NOLINT Invalid case style for function 'AreLiteralsSat'
         for (const auto &Config : ValidConfigs) {
             bool Check = true;
             for (std::size_t I = 0; I < Variables.size(); ++I) {
@@ -20,32 +24,33 @@ namespace bdd::sample {
                     break;
                 }
             }
-            if (Check) { return true; }
-        }
-        
-        /*auto TestBDD = FinalBDD;
-        for (std::size_t I = 0; I < Variables.size(); ++I) {
-            TestBDD &= Literal(Manager, Variables[I], VarValues[I]);
-            if (TestBDD.is_invalid()) { 
-                throw std::runtime_error("BDD manager exhausted — increase inner_node_capacity");
-
+            if (Check) { 
+                return true; 
             }
         }
-        return TestBDD.satisfiable();
+        
+        /*
+            auto CopyBDD = FinalBDD;
+            for (std::size_t I = 0; I < Variables.size(); ++I) {
+                CopyBDD &= Literal(Manager, Variables[I], VarValues[I]);
+                if (CopyBDD.is_invalid()) { 
+                    throw std::runtime_error("BDD manager exhausted — increase inner_node_capacity");
+
+                }
+            }
+            return CopyBDD.satisfiable();
         */
         
         return false;
     }
 
-    std::vector<bdd::sample::Interaction> EnumerateInteractions(const oxidd::bdd_manager &Manager, const oxidd::bdd_function &FinalBDD, unsigned T, const std::vector<std::vector<bool>> &ValidConfigs) { //NOLINT
-        //Number of variables in current BDD
+    std::vector<bdd::sample::Interaction> EnumerateInteractions(const oxidd::bdd_manager &Manager, unsigned T, const std::vector<std::vector<bool>> &ValidConfigs) { //NOLINT Invalid case style for function 'EnumerateInteractions'
         oxidd::var_no_t NumVars =  Manager.num_vars();
-        //All valid interactions - what we return 
         std::vector<bdd::sample::Interaction> Outputs;
-        //Currently considered Nodes 
         std::vector<oxidd::var_no_t> Variables;
         Variables.reserve(T);
 
+        // Subset selection: we pick  T-many variables in ascending order, then for each for each of the 2^T possible combinations we test satisfiability
         auto SelectVars =  [&](auto &&Self, oxidd::var_no_t Start, unsigned IntDepth) {
             if(T == IntDepth) {
                 for (unsigned B = 0; B < (1U << T); B++) {

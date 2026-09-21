@@ -1,25 +1,26 @@
+#include "TWiseSampler.h"
 #include "EnumerateInteractions.h"
 #include "InteractionCoverage.h"
+
 #include <bit>
 #include <cstddef>
+#include <cstdint>
 #include <vector>
-
 
 namespace bdd::sample {
 
     std::vector<std::vector<bool>> TSample(const std::vector<std::vector<bool>> &ValidConfigs, const std::vector<bdd::sample::Interaction> &Interactions) { //NOLINT
-        //std::vector<bool> Uncovered(Interactions.size(), true);
-        std::vector<bool> Chosen(ValidConfigs.size(), false);
-        std::vector<std::vector<bool>> Sample;
         const std::size_t ValidConfigSize = ValidConfigs.size();
         const std::size_t IntSize = Interactions.size();
+        std::vector<bool> Chosen(ValidConfigSize, false);
+        std::vector<std::vector<bool>> Sample;
 
-        // To increase performane and allow sampling in larger constrained systems with more configurations, we encode interactions as bits
-        // Words in this case represent how many uint64_t's are required to store the amount of interaction bits
+        // To increase performane and allow sampling in larger constrained systems with more configurations, we encode 
+        // interactions as a bit-packed matrix: one uint64 word per 64 interactions.
         const std::size_t Words = (IntSize + 63) / 64;
         std::vector<std::uint64_t> Uncovered(Words, ~std::uint64_t{0});
      
-        // We precompute a coverage matrix, that, for each configuration, it checks whether it covers teh current interaction
+        // Precomputed per-config coverage as a bit matrix
         std::vector<std::uint64_t> Coverage(ValidConfigSize * Words, 0);
         for (std::size_t Config = 0; Config < ValidConfigSize; ++Config) {
             for (std::size_t Int = 0; Int < IntSize; ++Int) {
@@ -29,18 +30,20 @@ namespace bdd::sample {
             }
         }
 
-        // If amount of Words needed to be rounded up, the resulting tail needs to be masked to 0 so that it is not considered
+        // If amount of Words need to be rounded up, the resulting tail needs to be masked to 0 so that it is not considered
         if(IntSize % 64) {
             Uncovered[Words - 1] = (std::uint64_t{1} << (IntSize % 64)) - 1;
         }
 
+        // Greedy loop: pick config with the highest uncovered-coverage count, mark its interactions as covered and repeat
         while(true) {
             std::size_t BestConfig = 0;
             std::size_t MaxCoveredInts = 0;
-            //bool BetterFound = false;
 
             for (std::size_t Config = 0; Config < ValidConfigs.size(); Config++) {
-                if(Chosen[Config]) { continue;}
+                if(Chosen[Config]) { 
+                    continue;
+                }
 
                 std::size_t CoveredInts = 0;
                 for (std::size_t W = 0; W < Words; W++) {
@@ -50,7 +53,6 @@ namespace bdd::sample {
                 if(CoveredInts > MaxCoveredInts){
                     MaxCoveredInts = CoveredInts;
                     BestConfig = Config;
-                    //BetterFound = true;
                 }
             }
 

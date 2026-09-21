@@ -3,97 +3,90 @@
 #include "Constraints.h"
 #include "Probabilities.h"
 #include "oxidd/bdd.hpp"
+
 #include <algorithm>
 #include <cstddef>
 #include <iostream>
+#include <set>
+#include <span>
 #include <string>
 #include <vector>
 
-/**
-    * @brief This file converts a feature model into a BDD and provides functions to sample from it
-    * modelToBdd: Converts a feature model into a BDD + processes feaature constraints and alternative groups + calculates probabilities
-    * addAlternativeGroupConstraints: Adds constraints for alternative groups in the feature model
-    * fillManager: Adds all variables corresponding to features in the feature model to the BDD manager
-*/
-
-namespace bdd::sample    
-{ 
+namespace bdd::sample { 
     oxidd::bdd_function BDDFactory::modelToBdd(
-        const vara::feature::FeatureModel &Model 
-    ) {
+        const vara::feature::FeatureModel &Model) {
        if(Model.size()== 0) {
-        std::cerr << "Feature model is empty\n";
+        std::cerr << "Error: Feature model is empty\n";
+        return Manager.f();
        }
-       fillManager(Model);
-       std::cerr << "Added all features to BDD manager\n";
 
-       // Store names of features in XOR relationships
-       std::vector<std::string> V;
- 
-       // Process XOR relationships from the feature model
+       fillManager(Model);
+
+       // XOR processing 1: collect al feature names that appear in alternative groups, such that 
+       // we can check whether we have to add constraint: parent -> child.
+       std::vector<std::string> XorList;
        if(!Model.relationships().empty()) {
-        for(const auto &S: Model.relationships()){
-            for(const auto &Child: S->children()) {
-                const auto *ChildFeature = (const vara::feature::Feature *)Child;
-                V.insert(V.begin(), ChildFeature->getName().str());
+        for(const auto &Relation: Model.relationships()){
+            for(const auto &Child: Relation->children()) {
+                const auto *ChildFeature = llvm::dyn_cast<vara::feature::Feature>(Child);
+                if (!ChildFeature) {
+                    std::cerr << "Note: Child is not a feature\n";
+                    continue;
+                }
+                XorList.insert(XorList.begin(), ChildFeature->getName().str());
             }
         }
        } else {
-        std::cerr << "Feature model has no XOR relationships\n";
+        std::cerr << "Note: Feature model has no XOR relationships\n";
        }
-       std::cerr<< "Processed XOR relationships\n";
 
-       // Add binary and root features to BDD and process their constraints
+       // Encode all binary and root features and the parent-relations constraints
        for(auto *F: Model.features()) { 
-        auto R = featureToBdd(
-            Manager,
-            std::ranges::find(V, F->getName().str()) != V.end(),
-            *F,
-            FinalBdd);
+        const bool IsInXor = std::ranges::find(XorList, F->getName().str()) != XorList.end();
+        auto R = featureToBdd( Manager, IsInXor, *F, FinalBdd);
         if(!R) {
-            continue;
+            std::cerr << "Error: featureToBdd failed on feature " << F->getName().str() << '\n';
+            return Manager.f();
         }
        }
-       std::cerr << "Passed feature processing\n";
 
+       // XOR processing 2: adds parent constraint parent -> (child1 | child2 | ... | childN)
        addAlternativeGroupConstraints(Model, FinalBdd);
-       std::cerr << "Passed alternative group processing\n";
 
-       // Process boolean constraints from the feature model (Z3)
+       // Apply all constraints from the feature model
        BDDConstraintVisitor Visitor(Manager, /*VarMap*/ FinalBdd, false, false);    
        for (const auto &C : Model.booleanConstraints()) {
-            if (!processConstraints(Visitor, C, FinalBdd)) { break; }
-        }
-       std::cerr << "Passed processing constraints" << '\n';
-
-       auto R = getPr(
-        Manager,
-        FinalBdd,
-        &SatMap,
-        *this
-       );
-       if(!R){
-            std::cerr << "Error calculating probabilities." << '\n';
+            if (!processConstraints(Visitor, C, FinalBdd)) { 
+                std::cerr << "Error: processCosntraints failed." << '\n';
+                return Manager.f();
+            }
         }
 
-       //------ Code for visualizing the BDD on the Oxidd Viz page ------
+        auto R = getPr(Manager, FinalBdd, &SatMap);
+        if(!R){
+            std::cerr << "Error: calculating probabilities failed." << '\n';
+            return Manager.f();
+        }
+
+       //------ Code for visualizing the BDD on the Oxidd Viz page ---------------------
        //std::string_view DiagramName = "Sora";
        //std::vector<oxidd::bdd_function> Funcs = {FinalBdd};
        /*auto Result = Manager.visualize(DiagramName, Funcs, 4000);
        if(!Result) {
-            std::cerr << "Error visualizing BDD: " << Result.error().message() << '\n';
+            std::cerr << "Error: visualizing BDD: " << Result.error().message() << '\n';
        } else {
-            std::cerr << "BDD visualization successful.\n";
+            std::cerr << "Note: BDD visualization successful.\n";
        }*/
        //Manager.export_dddmp("hippacc.dddmp", Funcs);
+       //-------------------------------------------------------------------------------
+
        return FinalBdd;
     }
 
-    //------ Auxiliary functions ------
     void BDDFactory::addAlternativeGroupConstraints(
         const vara::feature::FeatureModel &Model, 
-        oxidd::bdd_function &FinalBdd
-    ) {
+        oxidd::bdd_function &FinalBdd) {
+
         // Track which parents we've already processed
         std::set<std::string> ProcessedParents;
         
@@ -140,11 +133,13 @@ namespace bdd::sample
             bool HaveMutualExclusion = false;
             for (const auto* Child : Children) {
                 for (auto* ExcludeConstraint : Child->excludes()) {
+
                     // Check if this child excludes other siblings
                     for (const auto* OtherChild : Children) {
                         if (Child == OtherChild) { 
                             continue;
-                        }  
+                        }
+
                         // Check if the excluded feature is the other child
                         auto* RightOperand = ExcludeConstraint->getRightOperand();
                         if (auto* Pfc = llvm::dyn_cast<vara::feature::PrimaryFeatureConstraint>(RightOperand)) {
@@ -168,14 +163,13 @@ namespace bdd::sample
             
             // This is a mandatory alternative group!
             // Add constraint: Parent → (child1 | child2 | ... | childN)
-            
             auto ParentIdOpt = Manager.name_to_var(ParentName);
             if (!ParentIdOpt.has_value()) { 
                 continue;
             }
             
             oxidd::bdd_function ParentVar = Manager.var(ParentIdOpt.value());
-            oxidd::bdd_function ChildrenOr = Manager.f();  // Start with false
+            oxidd::bdd_function ChildrenOr = Manager.f();
             
             for (const auto* Child : Children) {
                 auto ChildIdOpt = Manager.name_to_var(Child->getName().str());
@@ -193,9 +187,8 @@ namespace bdd::sample
         }
     }
 
-    void BDDFactory::fillManager(
-        const vara::feature::FeatureModel &Model
-    ) { 
+    void BDDFactory::fillManager(const vara::feature::FeatureModel &Model) { 
+
         // Collect all features from the model
         std::vector<const vara::feature::Feature*> Features;
         Features.reserve(Model.size());
@@ -226,6 +219,9 @@ namespace bdd::sample
             for (auto VarNo : VarRange) {
                 Vars.push_back(Manager.var(VarNo));
             }
+        } else {
+            std::cerr << "Error: Failed to register variables." << '\n';
+            return;
         }
     }
 } // namespace bdd::sample

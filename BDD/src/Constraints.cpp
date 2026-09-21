@@ -1,22 +1,23 @@
 #include "Constraints.h"
 #include <oxidd/bdd.hpp>
 #include <oxidd/util.hpp>
+
 namespace bdd::sample {
 
-    /**
-     * Add a constraint to the BDD, optionally negating it
-     */
     oxidd::bdd_function BDDConstraintVisitor::addConstraint(vara::feature::Constraint* C, bool Negate, bool RequireAll) {
+        
+        // Reset accumulators such that all nested visits within one call share a consistent starting state
         this->RequireAll = RequireAll;
-        ExprBDD = Manager->t();             // Reset ExprBDD to true
-        VariableConstraint = Manager->f();  // Reset VariableConstraint to false
-
-        if (C->accept(*this)) {         // Visit the constraint
+        ExprBDD = Manager->t();
+        VariableConstraint = Manager->f();
+        if (C->accept(*this)) {
             oxidd::bdd_function FinalExpr = ExprBDD;
 
             if (Negate) {
-                FinalExpr= ~FinalExpr;      // Negate if requested
+                FinalExpr= ~FinalExpr;
             }
+
+            // Fallback for mixed constraints outside of binary ones, for more info see header doc.
             if (IsMixedConstraint && RequireAll) {
                 FinalExpr = VariableConstraint | FinalExpr;
             } 
@@ -25,23 +26,18 @@ namespace bdd::sample {
             return FinalExpr;
         }
 
-        return Manager->f();                // Return false BDD on failure
+        return Manager->f();
     }
 
-    /**
-     * Visit binary constraints (AND, OR, IMPLIES, etc.)
-     */
     bool BDDConstraintVisitor::visit(vara::feature::BinaryConstraint* C) {
         using CK = vara::feature::Constraint::ConstraintKind;
 
-        // Process Left and Right operands
         C->getLeftOperand()->accept(*this);
         oxidd::bdd_function Left  = ExprBDD;
         
         C->getRightOperand()->accept(*this);
         oxidd::bdd_function Right = ExprBDD;
 
-        // Apply appropriate BDD operation based on constraint type
         switch(C->getKind()) {
             case CK::CK_AND:
                 ExprBDD = Left & Right;
@@ -64,13 +60,15 @@ namespace bdd::sample {
                 ExprBDD = Left.imp(~(Right));       
                 break;
             }
+
+            // Both CK_EQUAL and CK_NOT_EQUAL fall into the numeric feature case group.
+            // For boolean opearands we use equivalence/not-equivalence, just as above.
             case CK::CK_LESS:
             case CK::CK_GREATER:
             case CK::CK_LESS_EQUAL:
             case CK::CK_GREATER_EQUAL:
-            case CK::CK_EQUAL:                  // Boolean equality handled below
-            case CK::CK_NOT_EQUAL:              // Boolean inequality handled below
-                // For boolean comparisons, use equivalence/not equivalence
+            case CK::CK_EQUAL:
+            case CK::CK_NOT_EQUAL:
                 if (C->getKind() == CK::CK_EQUAL) {
                     ExprBDD = Left.equiv(Right);
                 } else if (C->getKind() == CK::CK_NOT_EQUAL) {
@@ -99,9 +97,6 @@ namespace bdd::sample {
         return true;
     }
 
-    /**
-     * / Visit unary constraints (NOT, NEG)
-     */
     bool BDDConstraintVisitor::visit(vara::feature::UnaryConstraint* C) {
         using CK = vara::feature::Constraint::ConstraintKind;
         
@@ -121,9 +116,6 @@ namespace bdd::sample {
         }
     }
 
-    /**
-     * Visit feature constraints (e.g., "FeatureA")
-     */
     bool BDDConstraintVisitor::visit(vara::feature::PrimaryFeatureConstraint* C) {
         std::string FeatureName = C->getFeature()->getName().str();
         auto IdCheck = Manager->name_to_var(FeatureName);
@@ -133,10 +125,12 @@ namespace bdd::sample {
         }
         oxidd::var_no_t Id = IdCheck.value();
 
-        // Check for unsupported numeric features
         if (C->getFeature()->getKind() == vara::feature::Feature::FeatureKind::FK_NUMERIC) {
             std::cerr << "Error: Numeric features are not supported. Feature '" << FeatureName 
                     << "' is numeric. Only binary features are supported.\n";
+
+            // In case of a numeric feature, we immediately return a false BDD, as we
+            // do not support this kind of feature in our setup.
             (*CurrentBDD) = Manager->f();
             return false;
         }
@@ -144,6 +138,7 @@ namespace bdd::sample {
         oxidd::bdd_function Var = Manager->var(Id);
         ExprBDD = Var;
 
+        // Fallback for mixed constraints outside of binary ones, for more info see header doc.
         if(IsMixedConstraint) {
             VariableConstraint = VariableConstraint | ~Var;
         }

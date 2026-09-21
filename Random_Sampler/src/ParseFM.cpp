@@ -1,42 +1,40 @@
-#include "Plotter.h"
 #include "ParseFM.h"
+
 #include "vara/Feature/FeatureModel.h"
 #include "vara/Feature/FeatureModelParser.h"
+
 #include <cstddef>
-#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
-
-using std::string;
-
 
 namespace bdd::sample {
 
-    std::unique_ptr<vara::feature::FeatureModel> ParseXML(std::string &FilePath) { //NOLINT
-        // Read the file content
+    std::unique_ptr<vara::feature::FeatureModel> ParseXML(const std::string &FilePath) { //NOLINT
         std::ifstream FileIn(FilePath);
         if (!FileIn) {
-            throw std::runtime_error("Could not open file: " + FilePath);
+            std::cerr << "Error: Could not open file " << FilePath << "\n";
+            return nullptr;
         }
+
         std::ostringstream Oss;
         Oss << FileIn.rdbuf();
         std::string XMLContent = Oss.str();
 
-        // Parse the content
         vara::feature::FeatureModelXmlParser Parser(XMLContent);
 
-        // Verify if the feature model is valid
         auto Verify = Parser.verifyFeatureModel();
         if(!Verify) {
-            throw std::runtime_error("Error parsing XML: verification failed");
+            std::cerr << "Error: XML verification failed for file " << FilePath << "\n";
+            return nullptr;
         }   
 
-        // Build the feature model object
         auto Fm = Parser.buildFeatureModel();
         if(!Fm) {
-            throw std::runtime_error("Error building Feature Model: ");
+            std::cerr << "Error: Failed to build feature model from XML for file " << FilePath << "\n";
+            return nullptr;
         }
 
         return Fm;
